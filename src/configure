@@ -530,7 +530,7 @@ check_gmock()
 				COMPFLAGS_GTEST_CPP='-I/usr/include'
 			else
 				USE_GMOCK='no'
-				echores "could not find gtest.h header"
+				echores "could not find gtest headers"
 				break
 			fi
 		else
@@ -553,7 +553,7 @@ check_gmock()
 				echores "yes"
 			else
 				USE_GMOCK='no'
-				echores "no"
+				echores "could not find gmock headers"
 			fi
 
 		else
