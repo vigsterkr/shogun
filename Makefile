@@ -16,7 +16,7 @@
 #
 #       make release SNAPSHOT=yes
 # 
-# * To sign/md5sum the created tarballs and copy them to the webpage
+# * To sign/sha256sum the created tarballs and copy them to the webpage
 #
 #       make update-webpage
 #
@@ -162,15 +162,15 @@ package-from-release:
 	$(COMPRESS) -9 $(DESTDIR).tar
 
 update-webpage: 
-	md5sum $(DESTDIR).tar.bz2 >$(DESTDIR).md5sum
-	md5sum $(DATADESTDIR).tar.bz2 >$(DATADESTDIR).md5sum
+	shasum -a 256 $(DESTDIR).tar.bz2 >$(DESTDIR).sha256sum
+	shasum -a 256 $(DATADESTDIR).tar.bz2 >$(DATADESTDIR).sha256sum
 	gpg --no-emit-version -s -b -a $(DESTDIR).tar.bz2
 	gpg --no-emit-version -s -b -a $(DATADESTDIR).tar.bz2
 
 	ssh 7nn.de mkdir -m 0755 -p /var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources
-	rsync --progress $(DATADESTDIR).tar.bz2 $(DATADESTDIR).md5sum \
+	rsync --progress $(DATADESTDIR).tar.bz2 $(DATADESTDIR).sha256sum \
 		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/data/
-	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.asc $(DESTDIR).md5sum \
+	rsync --progress $(DESTDIR).tar.bz2 $(DESTDIR).tar.bz2.asc $(DESTDIR).sha256sum \
 		7nn.de:/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/
 	ssh 7nn.de chmod 644 "/var/www/shogun-toolbox.org/archives/shogun/releases/$(VERSIONBASE)/sources/*.* /var/www/shogun-toolbox.org/archives/shogun/data/*"
 	
