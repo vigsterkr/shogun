@@ -1,0 +1,25 @@
+version: 2.2.{build}
+
+image: Visual Studio 2015
+
+platform:
+  - x64
+
+configuration:
+  - Release
+
+install:
+  - cmake --version
+  - git submodule -q update --init
+
+before_build:
+  - cmake -G"%VSVER%" .
+
+build:
+  parallel: true
+  project: build\shogun.sln
+
+test_script:
+  - cd build\test\
+  - ctest -V
+  - cd ..\..
