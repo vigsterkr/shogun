@@ -10,8 +10,8 @@
 
 %typemap(javaimports) shogun::CSGObject
 %{
-import org.shogun.SerializableFile;
-import org.shogun.SerializableAsciiFile;
+import ml.shogun.SerializableFile;
+import ml.shogun.SerializableAsciiFile;
 %}
 %typemap(javacode) shogun::CSGObject
 %{

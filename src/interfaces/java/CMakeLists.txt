@@ -13,7 +13,7 @@ ELSE()
 		"It is required for java interface!")
 ENDIF()
 
-SET(TARGET_SWIGFLAGS "-package\;org.shogun")
+SET(TARGET_SWIGFLAGS "-package\;ml.shogun")
 
 include(ShogunInterfaces)
 include_directories(${JNI_INCLUDE_DIRS})
@@ -30,8 +30,8 @@ ADD_CUSTOM_COMMAND(TARGET interface_java POST_BUILD
 			-d ${CMAKE_CURRENT_BINARY_DIR}/shogun_jar
 			-cp "${CMAKE_JAVA_INCLUDE_PATH}"
 	COMMAND cmake -E echo "Creating jar file..."
-	COMMAND ${Java_JAR_EXECUTABLE} cvf shogun.jar
-			-C ${CMAKE_CURRENT_BINARY_DIR}/shogun_jar org
+	COMMAND ${Java_JAR_EXECUTABLE} cvf shogun-${VERSION}.jar
+			-C ${CMAKE_CURRENT_BINARY_DIR}/shogun_jar ml
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 
@@ -51,7 +51,7 @@ INSTALL(TARGETS interface_java
 	LIBRARY DESTINATION ${JNI_INSTALL_DIR}
 	COMPONENT java)
 
-SET(SHOGUN_JAR "${CMAKE_CURRENT_BINARY_DIR}/shogun.jar" PARENT_SCOPE)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/shogun.jar
+SET(SHOGUN_JAR "${CMAKE_CURRENT_BINARY_DIR}/shogun-${VERSION}.jar" PARENT_SCOPE)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/shogun-${VERSION}.jar
 		DESTINATION ${JAVA_INSTALL_DIR}
 		COMPONENT java)

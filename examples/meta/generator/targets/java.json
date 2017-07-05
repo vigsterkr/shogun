@@ -1,9 +1,9 @@
 {
-    "Program": "import org.jblas.DoubleMatrix;\nimport org.jblas.FloatMatrix;\n\nimport org.shogun.modshogun;\n$dependencies\n\npublic class $programName {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
+    "Program": "import org.jblas.DoubleMatrix;\nimport org.jblas.FloatMatrix;\n\nimport ml.shogun.modshogun;\n$dependencies\n\npublic class $programName {\nstatic {\nSystem.loadLibrary(\"modshogun\");\n}\n\npublic static void main(String argv[]) {\nmodshogun.init_shogun_with_defaults();\n\n$program\n}\n}\n",
     "Dependencies": {
         "IncludeAllClasses": true, 
         "IncludeEnums": true,
-        "DependencyListElement": "import org.shogun.$typeName;",
+        "DependencyListElement": "import ml.shogun.$typeName;",
         "DependencyListSeparator": "\n"
     },
     "Statement": "$statement;\n",
@@ -33,7 +33,7 @@
     "Assign": "$identifier = $expr",
     "Type": {
         "Default": "$typeName",
-        "Math": "org.shogun.Math",
+        "Math": "ml.shogun.Math",
         "bool": "boolean",
         "int": "int",
         "float": "float",
