@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Saurabh Mahindre, Evgeniy Andreev, Wu Lin, Vladislav Horbatiuk, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Saurabh Mahindre, Evgeniy Andreev, Wu Lin, Vladislav Horbatiuk,
  *          Yuyu Zhang, Björn Esser, Soumyajit De
  */
 
@@ -335,19 +335,44 @@ class CFeatures : public CSGObject
 		 */
 		virtual bool support_compatible_class() const {return false;}
 
-		/** Given a class in right hand side, does this class support compatible computation? 
+		/** Given a class in right hand side, does this class support compatible computation?
 		 *
 		 * for example, is this->dot(rhs_prt) valid,
-		 * where rhs_prt is the class in right hand side 
+		 * where rhs_prt is the class in right hand side
 		 *
-		 * @param rhs the class in right hand side 
+		 * @param rhs the class in right hand side
 		 * @return whether this class supports compatible computation
 		 */
 		virtual bool get_feature_class_compatibility (EFeatureClass rhs) const;
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CFeatures* shallow_subset_copy() 
-		{ 
+		/**
+		 * Utility method to specialize the feature to the required type.
+		 *
+		 * @param f CFeatures base type
+		 * @return The requested type if casting was successful.
+		 */
+		template<class T> static T* as(CFeatures* f)
+		{
+			return f->as<T>();
+		}
+
+		/**
+		 * Utility method to specialize the feature to the required type.
+		 *
+		 * @param f CFeatures base type
+		 * @return The requested type if casting was successful.
+		 */
+		template<class T> T* as()
+		{
+			REQUIRE(T::class_type() == this->get_feature_class(),
+				"Provided features (%s) is not of type %s!\n",
+				this->get_feature_class());
+			return (T*)this;
+		}
+
+		virtual CFeatures* shallow_subset_copy()
+		{
 			SG_SNOTIMPLEMENTED;
 			return NULL;
 		}

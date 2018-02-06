@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Heiko Strathmann, Saurabh Mahindre, Soeren Sonnenburg, 
- *          Vladislav Horbatiuk, Yuyu Zhang, Kevin Hughes, Evgeniy Andreev, 
+ * Authors: Soumyajit De, Heiko Strathmann, Saurabh Mahindre, Soeren Sonnenburg,
+ *          Vladislav Horbatiuk, Yuyu Zhang, Kevin Hughes, Evgeniy Andreev,
  *          Thoralf Klein, Fernando Iglesias, Björn Esser, Sergey Lisitsyn
  */
 
@@ -86,6 +86,12 @@ public:
 	 * @param num_vec number of vectors in matrix
 	 */
 	CDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec);
+
+	/** constructor from DotFeatures
+	 *
+	 * @param features DotFeatures object
+	 */
+	CDenseFeatures(CDotFeatures* features);
 
 	/** constructor loading features from file
 	 *
@@ -255,14 +261,6 @@ public:
 	 */
 	ST* get_transposed(int32_t &num_feat, int32_t &num_vec);
 
-	/** obtain dense features from other dotfeatures
-	 *
-	 * removes any subset before
-	 *
-	 * @param df dotfeatures to obtain features from
-	 */
-	void obtain_from_dot(CDotFeatures* df);
-
 	/** apply preprocessor
 	 *
 	 * applies preprocessors to ALL features (subset removed before and
@@ -311,7 +309,15 @@ public:
 	 *
 	 * @return feature class DENSE
 	 */
-	virtual EFeatureClass get_feature_class() const;
+	virtual EFeatureClass get_feature_class() const
+	{
+		return this->class_type();
+	}
+
+	static EFeatureClass class_type()
+	{
+		return C_DENSE;
+	}
 
 	/** get feature type
 	 *

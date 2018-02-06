@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
- *          Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
+ *          Vladislav Horbatiuk, Evgeniy Andreev, Yuyu Zhang, Evan Shelhamer,
  *          Björn Esser, Evangelos Anagnostopoulos
  */
 
@@ -147,6 +147,11 @@ class CCombinedDotFeatures : public CDotFeatures
 		 * @return feature class
 		 */
 		virtual EFeatureClass get_feature_class() const
+		{
+			return this->class_type();
+		}
+
+		static EFeatureClass class_type()
 		{
 			return C_COMBINED_DOT;
 		}
