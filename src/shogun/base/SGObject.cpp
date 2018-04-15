@@ -868,6 +868,10 @@ public:
 	{
 		stream() << *v;
 	}
+	virtual void on(uint64_t* v)
+	{
+		stream() << *v;
+	}
 	virtual void on(float* v)
 	{
 		stream() << *v;
@@ -914,6 +918,12 @@ public:
 	virtual void on(SGMatrix<double>* mat)
 	{
 		to_string(mat);
+	}
+
+	virtual void on(std::vector<CSGObject*>* sg_vector)
+	{
+		for (auto v: *sg_vector)
+			on(&v);
 	}
 
 private:
@@ -1146,4 +1156,10 @@ std::string CSGObject::string_enum_reverse_lookup(
 		    return p.second == enum_value;
 	    });
 	return enum_map_it->first;
+}
+
+void CSGObject::visit_parameter(const BaseTag& _tag, AnyVisitor* v) const
+{
+	auto p = get_parameter(_tag);
+	p.get_value().visit(v);
 }

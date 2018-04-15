@@ -80,7 +80,7 @@ public:
 class Object : public CSGObject
 {
 public:
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "Object";
 	}

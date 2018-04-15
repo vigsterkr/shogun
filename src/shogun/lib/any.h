@@ -44,6 +44,9 @@
 #include <string>
 #include <typeinfo>
 #include <type_traits>
+#include <vector>
+
+#include <shogun/util/traits.h>
 
 namespace shogun {
 
@@ -172,15 +175,18 @@ namespace shogun {
 		virtual void on(bool*) = 0;
 		virtual void on(int32_t*) = 0;
 		virtual void on(int64_t*) = 0;
-		virtual void on(float*) = 0;
-		virtual void on(double*) = 0;
+		virtual void on(uint64_t*) = 0;
+		virtual void on(float32_t*) = 0;
+		virtual void on(float64_t*) = 0;
+		virtual void on(floatmax_t*) = 0;
 		virtual void on(CSGObject**) = 0;
-		virtual void on(SGVector<int>*) = 0;
-		virtual void on(SGVector<float>*) = 0;
-		virtual void on(SGVector<double>*) = 0;
-		virtual void on(SGMatrix<int>*) = 0;
-		virtual void on(SGMatrix<float>*) = 0;
-		virtual void on(SGMatrix<double>*) = 0;
+		virtual void on(SGVector<int32_t>*) = 0;
+		virtual void on(SGVector<float32_t>*) = 0;
+		virtual void on(SGVector<float64_t>*) = 0;
+		virtual void on(SGMatrix<int32_t>*) = 0;
+		virtual void on(SGMatrix<float32_t>*) = 0;
+		virtual void on(SGMatrix<float64_t>*) = 0;
+		virtual void on(std::vector<CSGObject*>*) = 0;
 
 		template<class T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
 		void on(T** v)
@@ -336,6 +342,21 @@ namespace shogun {
 			auto cloned = clone_impl(maybe_most_important(), value);
 			mutable_value_of<decltype(cloned)>(storage) = cloned;
 			return cloned;
+		}
+
+		template <class T,
+			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
+		inline auto clone(void** storage, const T& value)
+		{
+			T cloned;
+			std::transform(
+				value.cbegin(), value.cend(),
+				std::inserter(cloned, cloned.end()),
+				[](auto o) {
+					return static_cast<typename T::value_type>(
+						clone_impl(maybe_most_important(), o));
+				});
+			mutable_value_of<decltype(cloned)>(storage) = cloned;
 		}
 
 		template <class T, class S>
