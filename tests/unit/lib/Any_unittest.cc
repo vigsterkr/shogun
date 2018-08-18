@@ -762,3 +762,13 @@ TEST(AnyParameterProperties, remove_property)
 	EXPECT_TRUE(params.has_property(ParameterProperties::MODEL));
 	EXPECT_TRUE(params.compare_mask(ParameterProperties::MODEL));
 }
+
+TEST(Any, compare_string_vectors)
+{
+	std::string str("some string");
+	std::vector<std::string> lhs{str};
+	std::vector<std::string> rhs{str};
+	Any any_lhs = make_any(lhs);
+	Any any_rhs = make_any(rhs);
+	EXPECT_EQ(any_lhs, any_rhs);
+}
