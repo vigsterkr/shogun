@@ -1,0 +1,22 @@
+steps:
+- checkout: self
+  clean: true
+  fetchDepth: 5
+
+- bash: |
+    brew update
+    brew install cmake, pkg-config, arpack, eigen, glpk, hdf5, json-c, lapack, lzo, nlopt, snappy, xz
+  displayName: Install dependencies
+
+- task: CMake@1
+  displayName: Setup
+  inputs:
+    cmakeArgs: -DBUILD_EXAMPLES=OFF -DBUNDLE_JSON=OFF -DBUNDLE_NLOPT=OFF -DENABLE_TESTING=ON -DENABLE_COVERAGE=OFF -DBUILD_META_EXAMPLES=OFF ..
+
+- script: make -j4
+  displayName: Build
+  workingDirectory: build
+
+- script: ctest --output-on-failure -j 2
+  displayName: Test
+  workingDirectory: build

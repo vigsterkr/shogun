@@ -1,0 +1,44 @@
+steps:
+- checkout: self
+  clean: true
+  fetchDepth: 5
+
+- ${{ if ne(parameters.targetBranch, '') }}:
+  - powershell: |
+      git fetch -q origin ${{ parameters.targetbranch }}
+      if (-not (git diff --name-only HEAD (git merge-base HEAD FETCH_HEAD) | sls -NotMatch '(\.rst$)|(^Doc)|(^Misc)')) {
+        Write-Host 'Only docs were updated. Skipping build'
+        Write-Host '##vso[task.setvariable variable=DocOnly]true'
+      }
+    displayName: Detect doc-only changes
+- powershell: |
+    # Relocate build outputs outside of source directory to make cleaning faster
+    Write-Host '##vso[task.setvariable variable=Py_IntDir]$(Build.BinariesDirectory)\obj'
+    # UNDONE: Do not build to a different directory because of broken tests
+    Write-Host '##vso[task.setvariable variable=Py_OutDir]$(Build.SourcesDirectory)\PCbuild'
+    Write-Host '##vso[task.setvariable variable=EXTERNAL_DIR]$(Build.BinariesDirectory)\externals'
+  displayName: Update build locations
+  condition: and(succeeded(), ne(variables['DocOnly'], 'true'))
+
+- script: PCbuild\build.bat -e $(buildOpt)
+  displayName: 'Build Shogun'
+  condition: and(succeeded(), ne(variables['DocOnly'], 'true'))
+
+- script: python.bat -m test.pythoninfo
+  displayName: 'Display build info'
+  condition: and(succeeded(), ne(variables['DocOnly'], 'true'))
+
+- script: PCbuild\rt.bat -q -uall -u-cpu -rwW --slowest --timeout=1200 -j0 --junit-xml="$(Build.BinariesDirectory)\test-results.xml"
+  displayName: 'Tests'
+  env:
+    PREFIX: $(Py_OutDir)\$(arch)
+  condition: and(succeeded(), ne(variables['DocOnly'], 'true'))
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFiles: '$(Build.BinariesDirectory)\test-results.xml'
+    mergeTestResults: true
+    testRunTitle: $(testRunTitle)
+    platform: $(testRunPlatform)
+condition: and(succeededOrFailed(), ne(variables['DocOnly'], 'true'))

@@ -1,0 +1,14 @@
+jobs:
+- job: macOS
+  displayName: macOS CI Tests
+
+  variables:
+    testRunTitle: '$(build.sourceBranchName)-macos'
+    testRunPlatform: macos
+
+  pool:
+    vmImage: xcode9-macos10.13
+
+  steps:
+  - template: ./macos-steps.yml
+
