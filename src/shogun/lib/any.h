@@ -271,6 +271,14 @@ namespace shogun {
 			return compare_impl(maybe_most_important(), lhs, rhs);
 		}
 
+
+		template <class T1, class T2>
+		inline bool compare(const std::pair<T1, T2>& lhs, const std::pair<T1, T2>& rhs)
+		{
+			return (compare_impl(maybe_most_important(), lhs.first, rhs.first) &&
+				compare_impl(maybe_most_important(), lhs.second, rhs.second));
+		}
+
 		template <class T>
 		bool compare_impl(
 		    maybe_most_important, const std::function<T()>& lhs,
@@ -279,10 +287,10 @@ namespace shogun {
 			return compare(lhs(), rhs());
 		}
 
-		template <class T>
+		template <class T,
+			std::enable_if_t<utils::is_container<T>::value>* = nullptr>
 		bool compare_impl(
-		    maybe_most_important, const std::vector<T>& lhs,
-		    const std::vector<T>& rhs)
+		    maybe_most_important, const T& lhs, const T& rhs)
 		{
 			if (lhs.size() != rhs.size())
 			{

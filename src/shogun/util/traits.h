@@ -73,12 +73,6 @@ namespace shogun
 		template <typename T>
 		struct is_container<std::valarray<T>> : std::true_type { };
 
-		template <typename T1, typename T2>
-		struct is_container<std::pair<T1, T2>> : std::true_type { };
-
-		template <typename ...Args>
-		struct is_container<std::tuple<Args...>> : std::true_type { };
-
 }
 }	//namespace
 #endif

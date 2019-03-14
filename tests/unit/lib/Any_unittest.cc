@@ -36,6 +36,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/lib/memory.h>
 #include <stdexcept>
+#include <map>
 
 using namespace shogun;
 
@@ -780,6 +781,30 @@ TEST(Any, compare_object_vectors)
 	EXPECT_TRUE(lhs_obj->equals(rhs_obj.get()));
 	std::vector<CSGObject*> lhs{lhs_obj.get()};
 	std::vector<CSGObject*> rhs{rhs_obj.get()};
+	Any any_lhs = make_any(lhs);
+	Any any_rhs = make_any(rhs);
+	EXPECT_EQ(any_lhs, any_rhs);
+}
+
+TEST(Any, compare_string_maps)
+{
+	std::string key("key");
+	std::string value("value");
+	std::map<std::string, std::string> lhs = {{key, value}};
+	std::map<std::string, std::string> rhs = {{key, value}};
+	Any any_lhs = make_any(lhs);
+	Any any_rhs = make_any(rhs);
+	EXPECT_EQ(any_lhs, any_rhs);
+}
+
+TEST(Any, compare_object_maps)
+{
+
+	auto lhs_obj = std::make_shared<Object>();
+	auto rhs_obj = std::make_shared<Object>();
+	EXPECT_TRUE(lhs_obj->equals(rhs_obj.get()));
+	std::map<std::string, CSGObject*> lhs = {{"test", lhs_obj.get()}};
+	std::map<std::string, CSGObject*> rhs = {{"test", rhs_obj.get()}};
 	Any any_lhs = make_any(lhs);
 	Any any_rhs = make_any(rhs);
 	EXPECT_EQ(any_lhs, any_rhs);
