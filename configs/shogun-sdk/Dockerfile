@@ -3,14 +3,14 @@ MAINTAINER shogun@shogun-toolbox.org
 
 RUN apt-get update -qq && apt-get upgrade -y && \
     apt-get install -qq --force-yes --no-install-recommends make gcc g++ \
-    libc6-dev libbz2-dev libjson-c-dev ccache libarpack2-dev libatlas-base-dev \
+    libc6-dev libbz2-dev ccache libarpack2-dev libatlas-base-dev \
     libblas-dev libglpk-dev libhdf5-serial-dev zlib1g-dev liblapacke-dev cmake \
-    libnlopt-dev liblpsolve55-dev libxml2-dev libsnappy-dev liblzo2-dev \
+    libnlopt-dev liblpsolve55-dev libsnappy-dev liblzo2-dev \
     liblzma-dev libeigen3-dev swig3.0 python-dev python-numpy python-matplotlib python-scipy \
     python-jinja2 python-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     openjdk-8-jdk ruby ruby-dev python-ply sphinx-doc python-pip \
-    exuberant-ctags clang-format-3.8 libcereal-dev libcolpack-dev lcov \
+    exuberant-ctags clang-format-3.8 libcolpack-dev lcov \
     protobuf-compiler libprotobuf-dev scala googletest gnupg dirmngr
 
 RUN apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 8A9CA30DB3C431E3
