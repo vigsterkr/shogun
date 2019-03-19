@@ -49,10 +49,11 @@ class CDynamicObjectArray : public CSGObject
 		 * @param dim2 dimension 2
 		 */
 		CDynamicObjectArray(size_t dim1, size_t dim2 = 1)
-		: CSGObject(), m_array(dim1*dim2)
+		: CSGObject()
 		{
 			dim1_size = dim1;
 			dim2_size = dim2;
+			m_array.reserve(dim1_size*dim2_size);
 			init();
 		}
 
@@ -264,7 +265,8 @@ class CDynamicObjectArray : public CSGObject
 		SG_FORCED_INLINE auto delete_element(size_t idx)
 		{
 			auto e=m_array[idx];
-			std::remove(m_array.begin(), m_array.end(), e);
+			m_array.erase(std::remove(m_array.begin(), m_array.end(), e),
+				m_array.end());
 			SG_UNREF(e);
 			return true;
 		}
@@ -290,7 +292,7 @@ class CDynamicObjectArray : public CSGObject
 		SG_FORCED_INLINE CDynamicObjectArray& operator=(CDynamicObjectArray& orig)
 		{
 			/* SG_REF all new elements (implicitly) */
-			for (auto v: orig.m_array)
+			for (auto& v: orig.m_array)
 				SG_REF(v);
 
 			/* unref after adding to avoid possible deletion */
@@ -321,21 +323,6 @@ class CDynamicObjectArray : public CSGObject
 		using CSGObject::save_serializable;
 		using CSGObject::load_serializable;
 
-		/** Can (optionally) be overridden to pre-initialize some member
-		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
-		 *  first the overridden method BASE_CLASS::LOAD_SERIALIZABLE_PRE
-		 *  is called.
-		 *
-		 *  @exception ShogunException Will be thrown if an error
-		 *                             occurres.
-		 *
-		virtual void load_serializable_pre() throw (ShogunException)
-		{
-			CSGObject::load_serializable_pre();
-			m_array.shrink_to_fit();
-			m_array.resize_array(m_array.get_num_elements(), true);
-		}
-*/
 		/** Can (optionally) be overridden to pre-initialize some member
 		 *  variables which are not PARAMETER::ADD'ed.  Make sure that at
 		 *  first the overridden method BASE_CLASS::SAVE_SERIALIZABLE_PRE
@@ -369,7 +356,7 @@ class CDynamicObjectArray : public CSGObject
 		SG_FORCED_INLINE void unref_all()
 		{
 			/* SG_UNREF all my elements */
-			for (auto o: m_array)
+			for (auto& o: m_array)
 				SG_UNREF(o);
 		}
 

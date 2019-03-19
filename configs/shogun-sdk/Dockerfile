@@ -10,7 +10,7 @@ RUN apt-get update -qq && apt-get upgrade -y && \
     python-jinja2 python-setuptools git-core wget jblas mono-devel mono-dmcs cli-common-dev \
     lua5.1 liblua5.1-0-dev octave liboctave-dev r-base-core clang \
     openjdk-8-jdk ruby ruby-dev python-ply sphinx-doc python-pip \
-    exuberant-ctags clang-format-3.8 libcolpack-dev lcov \
+    exuberant-ctags clang-format-3.8 libcolpack-dev rapidjson-dev lcov \
     protobuf-compiler libprotobuf-dev scala googletest gnupg dirmngr
 
 RUN apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 8A9CA30DB3C431E3

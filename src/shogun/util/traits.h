@@ -6,7 +6,8 @@
 
 namespace shogun
 {
-	namespace utils {
+	namespace utils
+	{
 		//from: https://raw.githubusercontent.com/louisdx/cxx-prettyprint/master/prettyprint.hpp
 		//also see https://gist.github.com/louisdx/1076849
 		namespace detail
@@ -73,6 +74,6 @@ namespace shogun
 		template <typename T>
 		struct is_container<std::valarray<T>> : std::true_type { };
 
-}
-}	//namespace
+	} // namespace utils
+} // namespace shogun
 #endif
