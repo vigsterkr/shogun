@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Kevin Hughes, Soeren Sonnenburg, Sergey Lisitsyn, Michele Mazzoni, 
- *          Heiko Strathmann, Sanuj Sharma, Weijie Lin, Bjoern Esser, 
+ * Authors: Kevin Hughes, Soeren Sonnenburg, Sergey Lisitsyn, Michele Mazzoni,
+ *          Heiko Strathmann, Sanuj Sharma, Weijie Lin, Bjoern Esser,
  *          Youssef Emad El-Din, Sourav Singh, Pan Deng
  */
 
@@ -34,7 +34,7 @@ CQDA::CQDA(float64_t tolerance, bool store_covs)
 	m_store_covs = store_covs;
 }
 
-CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab)
+CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab)
 : CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
@@ -42,7 +42,7 @@ CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab)
 	set_labels(trainlab);
 }
 
-CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance)
+CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance)
 : CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
@@ -51,7 +51,7 @@ CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tol
 	m_tolerance = tolerance;
 }
 
-CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, bool store_covs)
+CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, bool store_covs)
 : CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
@@ -62,7 +62,7 @@ CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, bool store_co
 
 
 
-CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs)
+CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance, bool store_covs)
 : CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
@@ -74,7 +74,7 @@ CQDA::CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tol
 
 CQDA::~CQDA()
 {
-	SG_UNREF(m_features);
+
 
 	cleanup();
 }
@@ -85,7 +85,7 @@ void CQDA::init()
 	m_store_covs = false;
 	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", ParameterProperties::HYPER);
 	SG_ADD(&m_store_covs, "m_store_covs", "Store covariances member");
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_features, "m_features", "Feature object.");
 	SG_ADD(&m_means, "m_means", "Mean vectors list");
 	SG_ADD(&m_slog, "m_slog", "Vector used in classification");
 	SG_ADD(&m_dim, "m_dim", "dimension of feature space");
@@ -103,14 +103,14 @@ void CQDA::cleanup()
 	m_num_classes = 0;
 }
 
-CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CQDA::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<CDotFeatures>());
 	}
 
 	if ( !m_features )
@@ -120,7 +120,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	ASSERT(num_vecs > 0)
 	ASSERT( m_dim == m_features->get_dim_feature_space() )
 
-	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
+	auto rf = m_features->as<CDenseFeatures<float64_t>>();
 
 	MatrixXd X(num_vecs, m_dim);
 	MatrixXd A(num_vecs, m_dim);
@@ -160,7 +160,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 		}
 
 
-	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
+	auto out = std::make_shared<CMulticlassLabels>(num_vecs);
 
 	for (int i = 0 ; i < num_vecs; i++)
 		out->set_label(i, CMath::arg_max(norm2.data()+i, num_vecs, m_num_classes));
@@ -168,7 +168,7 @@ CMulticlassLabels* CQDA::apply_multiclass(CFeatures* data)
 	return out;
 }
 
-bool CQDA::train_machine(CFeatures* data)
+bool CQDA::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (!m_labels)
 		SG_ERROR("No labels allocated in QDA training\n")
@@ -178,20 +178,20 @@ bool CQDA::train_machine(CFeatures* data)
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Speficied features are not of type CDotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<CDotFeatures>());
 	}
 
 	if (!m_features)
 		SG_ERROR("No features allocated in QDA training\n")
 
-	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector< int32_t > train_labels = multiclass_labels(m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
 		SG_ERROR("No train_labels allocated in QDA training\n")
 
 	cleanup();
 
-	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
+	m_num_classes = multiclass_labels(m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 
@@ -247,7 +247,7 @@ bool CQDA::train_machine(CFeatures* data)
 	rot_dims[2] = m_num_classes;
 	SGNDArray< float64_t > rotations = SGNDArray< float64_t >(rot_dims, 3);
 
-	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
+	auto rf = m_features->as<CDenseFeatures<float64_t>>();
 
 	m_means.zero();
 

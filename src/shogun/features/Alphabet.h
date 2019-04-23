@@ -110,7 +110,7 @@ class CAlphabet : public CSGObject
 		 *
 		 * @param alpha alphabet to use
 		 */
-		CAlphabet(CAlphabet* alpha);
+		CAlphabet(std::shared_ptr<CAlphabet> alpha);
 		virtual ~CAlphabet();
 
 		/** set alphabet and initialize mapping table (for remap)
@@ -302,7 +302,7 @@ class CAlphabet : public CSGObject
 		template <class ST>
 		static void translate_from_single_order_reversed(ST* obs, int32_t sequence_length, int32_t start, int32_t p_order, int32_t max_val, int32_t gap);
 
-		virtual CSGObject* clone() const;
+		virtual std::shared_ptr<CSGObject> clone() const;
 
 	private:
 		/** Do basic initialisations like default settings

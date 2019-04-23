@@ -67,7 +67,7 @@ public:
 	 *
 	 * @param size the size of input layer
 	 */
-	CNeuralLayers* input(int32_t size);
+	std::shared_ptr<CNeuralLayers> input(int32_t size);
 
 	/** Adds logistic neural layer.
 	 *
@@ -75,7 +75,7 @@ public:
 	 *
 	 * @param size the size of logistic layer
 	 */
-	CNeuralLayers* logistic(int32_t size);
+	std::shared_ptr<CNeuralLayers> logistic(int32_t size);
 
 	/** Adds linear neural layer.
 	 *
@@ -83,7 +83,7 @@ public:
 	 *
 	 * @param size the size of linear layer
 	 */
-	CNeuralLayers* linear(int32_t size);
+	std::shared_ptr<CNeuralLayers> linear(int32_t size);
 
 	/** Adds rectified linear neural layer.
 	 *
@@ -91,7 +91,7 @@ public:
 	 *
 	 * @param size the size of rectified linear layer
 	 */
-	CNeuralLayers* rectified_linear(int32_t size);
+	std::shared_ptr<CNeuralLayers> rectified_linear(int32_t size);
 
 	/** Adds leaky rectified linear neural layer.
 	 *
@@ -99,7 +99,7 @@ public:
 	 *
 	 * @param size the size of leaky rectified linear layer
 	 */
-	CNeuralLayers* leaky_rectified_linear(int32_t size);
+	std::shared_ptr<CNeuralLayers> leaky_rectified_linear(int32_t size);
 
 	/** Adds softmax neural layer.
 	 *
@@ -107,17 +107,17 @@ public:
 	 *
 	 * @param size the size of softmax layer
 	 */
-	CNeuralLayers* softmax(int32_t size);
+	std::shared_ptr<CNeuralLayers> softmax(int32_t size);
 
 	/** Adds custom neural layer.
 	 *
 	 * @param layer layer to add
 	 */
-	CNeuralLayers* with_layer(CNeuralLayer* layer);
+	std::shared_ptr<CNeuralLayers> with_layer(std::shared_ptr<CNeuralLayer> layer);
 
 	/** Finalizes
 	 */
-	CDynamicObjectArray* done();
+	std::shared_ptr<CDynamicObjectArray> done();
 
 	/** Clears the constructed layers.
 	 */
@@ -132,7 +132,7 @@ public:
 	virtual const char* get_name() const;
 
 private:
-	CDynamicObjectArray* m_layers;
+	std::shared_ptr<CDynamicObjectArray> m_layers;
 };
 
 }

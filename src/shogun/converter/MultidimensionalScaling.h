@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg,
  *          Evan Shelhamer
  */
 
@@ -68,14 +68,14 @@ public:
 	 * @param distance (should be approximate euclidean for consistent result)
 	 * @return new features with distance similar to given as much as possible
 	 */
-	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> embed_distance(std::shared_ptr<CDistance> distance);
 
 	/** apply preprocessor to feature matrix,
 	 * changes feature matrix to the one having target dimensionality
 	 * @param features features which feature matrix should be processed
 	 * @return new feature matrix
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 	/** get name */
 	const char* get_name() const;

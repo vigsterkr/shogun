@@ -51,8 +51,8 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 			ASSERT(num_lhs>0)
 			ASSERT(num_rhs>0)
 
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
@@ -122,10 +122,11 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
+					auto cwsk = k->as<CCommWordStringKernel>();
 					if (use_optimized_diagonal_computation)
-						v[i]=((CCommWordStringKernel*) k)->compute_diag(i);
+						v[i]=cwsk->compute_diag(i);
 					else
-						v[i]=((CCommWordStringKernel*) k)->compute_helper(i,i, true);
+						v[i]=cwsk->compute_helper(i,i, true);
 				}
 				else
 					v[i]=k->compute(i,i);

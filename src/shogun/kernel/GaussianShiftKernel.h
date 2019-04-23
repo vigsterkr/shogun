@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Roman Votyakov, Evan Shelhamer, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Roman Votyakov, Evan Shelhamer, Yuyu Zhang,
  *          Sergey Lisitsyn
  */
 
@@ -61,7 +61,7 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param size cache size
 		 */
 		CGaussianShiftKernel(
-			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+			std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r,
 			float64_t width, int32_t max_shift, int32_t shift_step,
 			int32_t size=10);
 
@@ -71,7 +71,7 @@ class CGaussianShiftKernel: public CGaussianKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 		{
 			return CGaussianKernel::init(l,r);
 		}

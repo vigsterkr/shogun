@@ -66,7 +66,7 @@ bool CFastICA::get_whiten() const
 	return whiten;
 }
 
-void CFastICA::fit_dense(CDenseFeatures<float64_t>* features)
+void CFastICA::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 	REQUIRE(X.data(), "Features have not been provided.\n");

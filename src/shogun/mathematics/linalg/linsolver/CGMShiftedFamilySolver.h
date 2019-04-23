@@ -46,7 +46,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<float64_t> solve(CLinearOperator<float64_t>* A,
+	virtual SGVector<float64_t> solve(std::shared_ptr<CLinearOperator<float64_t>> A,
 		SGVector<float64_t> b);
 
 	/**
@@ -61,7 +61,7 @@ public:
 	 * shift
 	 */
 	virtual SGVector<complex128_t> solve_shifted_weighted(
-		CLinearOperator<float64_t>* A, SGVector<float64_t> b,
+		std::shared_ptr<CLinearOperator<float64_t>> A, SGVector<float64_t> b,
 		SGVector<complex128_t> shifts, SGVector<complex128_t> weights,
 		bool negate = false);
 

@@ -40,7 +40,7 @@ class CConstKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @param c constant c
 		 */
-		CConstKernel(CFeatures* l, CFeatures *r, float64_t c);
+		CConstKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures >r, float64_t c);
 
 		virtual ~CConstKernel();
 
@@ -50,7 +50,7 @@ class CConstKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *

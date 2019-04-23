@@ -72,7 +72,7 @@ class CPeriodicKernel: public CDotKernel
 		 * @param period period
 		 * @param size cache size. Default value: 10
 		 */
-		CPeriodicKernel(CDotFeatures* l, CDotFeatures* r,
+		CPeriodicKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r,
 			float64_t length_scale, float64_t period, int32_t size=10);
 
 		virtual ~CPeriodicKernel() { };
@@ -83,7 +83,7 @@ class CPeriodicKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *
@@ -169,7 +169,7 @@ class CPeriodicKernel: public CDotKernel
 		 * @param buf buffer to store squared terms
 		 * @param df dot feature object based on which k(i,i) is computed
 		 * */
-		void precompute_squared_helper(SGVector<float64_t>& buf, CDotFeatures* df);
+		void precompute_squared_helper(SGVector<float64_t>& buf, std::shared_ptr<CDotFeatures> df);
 
 		void init();
 

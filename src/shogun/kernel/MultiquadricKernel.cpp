@@ -14,19 +14,19 @@ CMultiquadricKernel::CMultiquadricKernel(): CKernel(0), m_distance(NULL), m_coef
 	init();
 }
 
-CMultiquadricKernel::CMultiquadricKernel(int32_t cache, float64_t coef, CDistance* dist)
+CMultiquadricKernel::CMultiquadricKernel(int32_t cache, float64_t coef, std::shared_ptr<CDistance> dist)
 : CKernel(cache), m_distance(dist), m_coef(coef)
 {
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init();
 }
 
-CMultiquadricKernel::CMultiquadricKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist)
+CMultiquadricKernel::CMultiquadricKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t coef, std::shared_ptr<CDistance> dist)
 : CKernel(10), m_distance(dist), m_coef(coef)
 {
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init(l, r);
 	init();
 }
@@ -34,10 +34,10 @@ CMultiquadricKernel::CMultiquadricKernel(CFeatures *l, CFeatures *r, float64_t c
 CMultiquadricKernel::~CMultiquadricKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CMultiquadricKernel::init(CFeatures* l, CFeatures* r)
+bool CMultiquadricKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(m_distance)
 	CKernel::init(l,r);

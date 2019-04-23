@@ -24,17 +24,17 @@ CBinnedDotFeatures::CBinnedDotFeatures(const CBinnedDotFeatures & orig)
 	init();
 }
 
-CBinnedDotFeatures::CBinnedDotFeatures(CFeatures* sf, SGMatrix<float64_t> bins)
+CBinnedDotFeatures::CBinnedDotFeatures(std::shared_ptr<CFeatures> sf, SGMatrix<float64_t> bins)
 {
 	init();
-	set_simple_features(sf->as<CDenseFeatures<float64_t>>());
+	set_simple_features(std::static_pointer_cast<CDenseFeatures<float64_t>>(sf));
 	set_bins(bins);
 
 }
 
 CBinnedDotFeatures::~CBinnedDotFeatures()
 {
-	SG_UNREF(m_features);
+
 }
 
 int32_t CBinnedDotFeatures::get_dim_feature_space() const
@@ -42,7 +42,7 @@ int32_t CBinnedDotFeatures::get_dim_feature_space() const
 	return m_bins.num_rows*m_bins.num_cols;
 }
 
-float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
@@ -52,8 +52,9 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 	double sum1=0;
 	double sum2=0;
 
+	auto bin_dots = std::static_pointer_cast<CBinnedDotFeatures>(df);
 	SGVector<float64_t> vec1=m_features->get_feature_vector(vec_idx1);
-	SGVector<float64_t> vec2=((CBinnedDotFeatures*) df)->m_features->get_feature_vector(vec_idx2);
+	SGVector<float64_t> vec2=bin_dots->m_features->get_feature_vector(vec_idx2);
 
 	for (int32_t i=0; i<m_bins.num_cols; i++)
 	{
@@ -106,7 +107,7 @@ float64_t CBinnedDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t ve
 		}
 	}
 	m_features->free_feature_vector(vec1, vec_idx1);
-	((CBinnedDotFeatures*) df)->m_features->free_feature_vector(vec2, vec_idx2);
+	bin_dots->m_features->free_feature_vector(vec2, vec_idx2);
 
 	if (m_fill && m_norm_one && sum1!=0 && sum2!=0)
 		result /= std::sqrt(sum1 * sum2);
@@ -283,15 +284,13 @@ SGMatrix<float64_t> CBinnedDotFeatures::get_bins()
 	return m_bins;
 }
 
-void CBinnedDotFeatures::set_simple_features(CDenseFeatures<float64_t>* features)
+void CBinnedDotFeatures::set_simple_features(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
-	SG_REF(features);
 	m_features=features;
 }
 
-CDenseFeatures<float64_t>* CBinnedDotFeatures::get_simple_features()
+std::shared_ptr<CDenseFeatures<float64_t>> CBinnedDotFeatures::get_simple_features()
 {
-	SG_REF(m_features);
 	return m_features;
 }
 
@@ -307,9 +306,9 @@ const char* CBinnedDotFeatures::get_name() const
 	return "BinnedDotFeatures";
 }
 
-CFeatures* CBinnedDotFeatures::duplicate() const
+std::shared_ptr<CFeatures> CBinnedDotFeatures::duplicate() const
 {
-	return new CBinnedDotFeatures(*this);
+	return std::make_shared<CBinnedDotFeatures>(*this);
 }
 
 EFeatureType CBinnedDotFeatures::get_feature_type() const

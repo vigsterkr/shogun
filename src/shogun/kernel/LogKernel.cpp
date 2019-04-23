@@ -14,30 +14,30 @@ CLogKernel::CLogKernel(): CKernel(0), m_distance(NULL), m_degree(1.8)
 	init();
 }
 
-CLogKernel::CLogKernel(int32_t cache, float64_t degree, CDistance* dist)
+CLogKernel::CLogKernel(int32_t cache, float64_t degree, std::shared_ptr<CDistance> dist)
 : CKernel(cache), m_distance(dist), m_degree(degree)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 }
 
-CLogKernel::CLogKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist)
+CLogKernel::CLogKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t degree, std::shared_ptr<CDistance> dist)
 : CKernel(10), m_distance(dist), m_degree(degree)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init(l, r);
 }
 
 CLogKernel::~CLogKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CLogKernel::init(CFeatures* l, CFeatures* r)
+bool CLogKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(m_distance)
 	CKernel::init(l,r);

@@ -34,7 +34,7 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(bnode_t *node, SGVector<float32_t> ex);
+	virtual bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex);
 };
 
 } /* shogun */

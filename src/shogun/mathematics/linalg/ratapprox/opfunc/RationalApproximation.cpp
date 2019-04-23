@@ -28,14 +28,14 @@ CRationalApproximation::CRationalApproximation()
 }
 
 CRationalApproximation::CRationalApproximation(
-	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
+	std::shared_ptr<CLinearOperator<float64_t>> linear_operator, std::shared_ptr<CEigenSolver> eigen_solver,
 	float64_t desired_accuracy, EOperatorFunction function_type)
 	: COperatorFunction<float64_t>(linear_operator, function_type)
 {
 	init();
 
 	m_eigen_solver=eigen_solver;
-	SG_REF(m_eigen_solver);
+	
 
 	m_desired_accuracy=desired_accuracy;
 
@@ -44,7 +44,7 @@ CRationalApproximation::CRationalApproximation(
 
 CRationalApproximation::~CRationalApproximation()
 {
-	SG_UNREF(m_eigen_solver);
+	
 
 	SG_GCDEBUG("%s destroyed (%p)\n", this->get_name(), this)
 }
@@ -56,7 +56,7 @@ void CRationalApproximation::init()
 	m_num_shifts=0;
 	m_desired_accuracy=0.0;
 
-	SG_ADD((CSGObject**)&m_eigen_solver, "eigen_solver",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_eigen_solver, "eigen_solver",
 		"Eigen solver for computing extremal eigenvalues");
 
 	SG_ADD(&m_shifts, "complex_shifts", "Complex shifts in the linear system");

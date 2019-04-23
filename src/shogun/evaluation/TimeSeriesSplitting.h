@@ -65,7 +65,7 @@ namespace shogun
 		 * @param num_subsets desired number of subsets, the labels are split
 		 * into
 		 */
-		CTimeSeriesSplitting(CLabels* labels, index_t num_subsets);
+		CTimeSeriesSplitting(std::shared_ptr<CLabels> labels, index_t num_subsets);
 
 		/** Sets the minimum subset size for subsets. If forecasting h-step
 		 * ahead, set min_size to h.
@@ -85,7 +85,7 @@ namespace shogun
 		void build_subsets() override;
 
 		/** Custom rng if using cross validation across different threads */
-		CRandom* m_rng;
+		std::shared_ptr<CRandom> m_rng;
 
 		/**  The minimum subset size for test set.*/
 		index_t m_min_subset_size;

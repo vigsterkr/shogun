@@ -49,7 +49,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param outer_degree outer degree
 		 */
 		CLocalityImprovedStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+			std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 			int32_t length, int32_t inner_degree, int32_t outer_degree);
 
 		virtual ~CLocalityImprovedStringKernel();
@@ -60,7 +60,7 @@ class CLocalityImprovedStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Soumyajit De, 
- *          Chiyuan Zhang, Viktor Gal, Fernando Iglesias, Bjoern Esser, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Soumyajit De,
+ *          Chiyuan Zhang, Viktor Gal, Fernando Iglesias, Bjoern Esser,
  *          Yuyu Zhang
  */
 
@@ -45,7 +45,7 @@ public:
 	CSubsetStack(const CSubsetStack& other);
 
 	/** destructor */
-	virtual ~CSubsetStack();
+	virtual ~CSubsetStack() = default;
 
 	/** @return name of the SGSerializable */
 	inline const char* get_name() const { return "SubsetStack"; }
@@ -87,14 +87,14 @@ public:
 	/** @return true iff subset was added */
 	virtual bool has_subsets() const
 	{
-		return (m_active_subsets_stack->get_num_elements() > 0);
+		return (m_active_subsets_stack.size() > 0);
 	}
 
 	/** returns last (active) subset of the stack
 	 *
 	 * @return active subset
 	 */
-	CSubset* get_last_subset() const { return m_active_subset; }
+	std::shared_ptr<CSubset> get_last_subset() const { return m_active_subset; }
 
 	/** returns the corresponding real index of a subset index
 	 * Maps through all added subsets in stack.
@@ -115,10 +115,10 @@ private:
 	 * recomputing them when subsets are removed. There is always the identity
 	 * subset as first element in here (only internal visible, has_subsets()
 	 * returns false if only this identity is present) */
-	CDynamicObjectArray* m_active_subsets_stack;
+	std::vector<std::shared_ptr<CSubset>> m_active_subsets_stack;
 
 	/** active index subset. Last element on stack for quick access */
-	CSubset* m_active_subset;
+	std::shared_ptr<CSubset> m_active_subset;
 };
 
 }

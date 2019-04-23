@@ -234,7 +234,7 @@ public:
 	 *
 	 * @param pm plif matrix object
 	 */
-	void set_plif_matrices(CPlifMatrix* pm);
+	void set_plif_matrices(std::shared_ptr<CPlifMatrix> pm);
 
 	// best_path result retrieval functions
 	/** best path get scores
@@ -456,10 +456,10 @@ public:
 	 * @param intron_list
 	 * @param num_plifs number of intron plifs
 	 */
-	void set_intron_list(CIntronList* intron_list, int32_t num_plifs);
+	void set_intron_list(std::shared_ptr<CIntronList> intron_list, int32_t num_plifs);
 
 	/** get the segment loss object */
-	CSegmentLoss* get_segment_loss_object()
+	std::shared_ptr<CSegmentLoss> get_segment_loss_object()
 	{
 		return m_seg_loss_obj;
 	}
@@ -698,7 +698,7 @@ protected:
 
 	/** segment loss object containing the functions
 	 *  to compute the segment loss*/
-	CSegmentLoss* m_seg_loss_obj;
+	std::shared_ptr<CSegmentLoss> m_seg_loss_obj;
 
 	// output arguments
 	/** scores */
@@ -713,7 +713,7 @@ protected:
 	/** sparse feature matrix dim2*/
 	CSparseFeatures<float64_t>* m_seq_sparse2;
 	/** plif matrices*/
-	CPlifMatrix* m_plif_matrices;
+	std::shared_ptr<CPlifMatrix> m_plif_matrices;
 
 	/** storeage of stop codons
 	 *  array of size length(sequence)
@@ -722,7 +722,7 @@ protected:
 
 	/** administers a list of introns and quality scores
 	 *  and provides functions for fast access */
-	CIntronList* m_intron_list;
+	std::shared_ptr<CIntronList> m_intron_list;
 
 	/** number of intron features and plifs*/
 	int32_t m_num_intron_plifs;

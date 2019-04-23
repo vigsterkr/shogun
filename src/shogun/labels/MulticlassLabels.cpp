@@ -21,12 +21,12 @@ CMulticlassLabels::CMulticlassLabels(const SGVector<float64_t> src) : CDenseLabe
 	set_labels(src);
 }
 
-CMulticlassLabels::CMulticlassLabels(CFile* loader) : CDenseLabels(loader)
+CMulticlassLabels::CMulticlassLabels(std::shared_ptr<CFile> loader) : CDenseLabels(loader)
 {
 	init();
 }
 
-CMulticlassLabels::CMulticlassLabels(CBinaryLabels* labels)
+CMulticlassLabels::CMulticlassLabels(std::shared_ptr<CBinaryLabels> labels)
     : CDenseLabels(labels->get_num_labels())
 {
 	init();
@@ -123,7 +123,7 @@ ELabelType CMulticlassLabels::get_label_type() const
 	return LT_MULTICLASS;
 }
 
-CBinaryLabels* CMulticlassLabels::get_binary_for_class(int32_t i)
+std::shared_ptr<CBinaryLabels> CMulticlassLabels::get_binary_for_class(int32_t i)
 {
 	SGVector<float64_t> binary_labels(get_num_labels());
 
@@ -149,7 +149,7 @@ CBinaryLabels* CMulticlassLabels::get_binary_for_class(int32_t i)
 			binary_labels[k] = label == i ? +1.0 : -1.0;
 		}
 	}
-	return new CBinaryLabels(binary_labels);
+	return std::make_shared<CBinaryLabels>(binary_labels);
 }
 
 SGVector<float64_t> CMulticlassLabels::get_unique_labels()
@@ -172,20 +172,19 @@ int32_t CMulticlassLabels::get_num_classes()
 	return unique.vlen;
 }
 
-CLabels* CMulticlassLabels::shallow_subset_copy()
+std::shared_ptr<CLabels> CMulticlassLabels::shallow_subset_copy()
 {
-	CLabels* shallow_copy_labels=NULL;
 	SGVector<float64_t> shallow_copy_vector(m_labels);
-	shallow_copy_labels=new CMulticlassLabels(m_labels.size());
-	SG_REF(shallow_copy_labels);
-	((CDenseLabels*) shallow_copy_labels)->set_labels(shallow_copy_vector);
+	auto shallow_copy_labels=std::make_shared<CMulticlassLabels>(m_labels.size());
+
+	shallow_copy_labels->set_labels(shallow_copy_vector);
 	if (m_subset_stack->has_subsets())
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 
 	return shallow_copy_labels;
 }
 
-CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
+std::shared_ptr<CMulticlassLabels> CMulticlassLabels::obtain_from_generic(std::shared_ptr<CLabels> labels)
 {
 	if (labels == NULL)
 		return NULL;
@@ -196,19 +195,17 @@ CMulticlassLabels* CMulticlassLabels::obtain_from_generic(CLabels* labels)
 		return NULL;
 	}
 
-	CMulticlassLabels* casted = dynamic_cast<CMulticlassLabels*>(labels);
-	SG_REF(casted)
-	return casted;
+	return std::dynamic_pointer_cast<CMulticlassLabels>(labels);
 }
 
-CLabels* CMulticlassLabels::duplicate() const
+std::shared_ptr<CLabels> CMulticlassLabels::duplicate() const
 {
-	return new CMulticlassLabels(*this);
+	return std::make_shared<CMulticlassLabels>(*this);
 }
 
 namespace shogun
 {
-	SG_FORCED_INLINE Some<CMulticlassLabels> to_multiclass(CDenseLabels* orig)
+	SG_FORCED_INLINE std::shared_ptr<CMulticlassLabels> to_multiclass(std::shared_ptr<CDenseLabels> orig)
 	{
 		auto result_vector = orig->get_labels();
 		std::set<int32_t> unique(result_vector.begin(), result_vector.end());
@@ -239,10 +236,10 @@ namespace shogun
 				});
 			result_vector = converted;
 		}
-		return some<CMulticlassLabels>(result_vector);
+		return std::make_shared<CMulticlassLabels>(result_vector);
 	}
 
-	Some<CMulticlassLabels> multiclass_labels(CLabels* orig)
+	std::shared_ptr<CMulticlassLabels> multiclass_labels(std::shared_ptr<CLabels> orig)
 	{
 		REQUIRE(orig, "No labels provided.\n");
 		try
@@ -250,10 +247,9 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_MULTICLASS:
-				return Some<CMulticlassLabels>::from_raw(
-				    (CMulticlassLabels*)orig);
+				return std::static_pointer_cast<CMulticlassLabels>(orig);
 			case LT_BINARY:
-				return to_multiclass((CBinaryLabels*)orig);
+				return to_multiclass(std::static_pointer_cast<CBinaryLabels>(orig));
 			default:
 				SG_SNOTIMPLEMENTED
 			}
@@ -265,6 +261,6 @@ namespace shogun
 			    orig->get_name(), e.what());
 		}
 
-		return Some<CMulticlassLabels>::from_raw(nullptr);
+		return nullptr;
 	}
 } // namespace shogun

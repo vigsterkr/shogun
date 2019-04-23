@@ -37,7 +37,7 @@ CConjugateOrthogonalCGSolver::~CConjugateOrthogonalCGSolver()
 }
 
 SGVector<complex128_t> CConjugateOrthogonalCGSolver::solve(
-	CLinearOperator<complex128_t>* A, SGVector<float64_t> b)
+	std::shared_ptr<CLinearOperator<complex128_t>> A, SGVector<float64_t> b)
 {
 	SG_DEBUG("CConjugateOrthogonalCGSolver::solve(): Entering..\n");
 

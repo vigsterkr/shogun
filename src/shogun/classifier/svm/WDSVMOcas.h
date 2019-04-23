@@ -46,7 +46,7 @@ class CWDSVMOcas : public CMachine
 		 */
 		CWDSVMOcas(
 			float64_t C, int32_t d, int32_t from_d,
-			CStringFeatures<uint8_t>* traindat, CLabels* trainlab);
+			std::shared_ptr<CStringFeatures<uint8_t>> traindat, std::shared_ptr<CLabels> trainlab);
 		virtual ~CWDSVMOcas();
 
 		/** get classifier type
@@ -91,10 +91,10 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		inline void set_features(CStringFeatures<uint8_t>* feat)
+		inline void set_features(std::shared_ptr<CStringFeatures<uint8_t>> feat)
 		{
-			SG_REF(feat);
-			SG_UNREF(features);
+			
+			
 			features=feat;
 		}
 
@@ -102,9 +102,9 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @return features
 		 */
-		inline CStringFeatures<uint8_t>* get_features()
+		inline std::shared_ptr<CStringFeatures<uint8_t>> get_features()
 		{
-			SG_REF(features);
+			
 			return features;
 		}
 
@@ -155,7 +155,7 @@ class CWDSVMOcas : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
 
 		/** classify objects
 		 * for regression problems
@@ -163,7 +163,7 @@ class CWDSVMOcas : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
 
 		/** classify one example
 		 *
@@ -223,7 +223,7 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @param data features to apply for
 		 */
-		SGVector<float64_t> apply_get_outputs(CFeatures* data);
+		SGVector<float64_t> apply_get_outputs(std::shared_ptr<CFeatures> data);
 
 		/** set wd weights
 		 *
@@ -311,11 +311,11 @@ class CWDSVMOcas : public CMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	protected:
 		/** features */
-		CStringFeatures<uint8_t>* features;
+		std::shared_ptr<CStringFeatures<uint8_t>> features;
 		/** if bias shall be used */
 		bool use_bias;
 		/** buffer size */

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni,
  *          Michele Mazzoni, Heiko Strathmann, Fernando Iglesias
  */
 
@@ -33,13 +33,13 @@ CPerceptron::~CPerceptron()
 {
 }
 
-void CPerceptron::init_model(CFeatures* data)
+void CPerceptron::init_model(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<CDotFeatures>(data));
 	}
 
 	int32_t num_feat = features->get_dim_feature_space();

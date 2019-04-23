@@ -67,7 +67,7 @@ public:
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 */
-	CShiftInvariantKernel(CFeatures *l, CFeatures *r);
+	CShiftInvariantKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r);
 
 	/** Destructor. */
 	virtual ~CShiftInvariantKernel();
@@ -79,7 +79,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/** Method that precomputes the distance */
 	virtual void precompute_distance();
@@ -132,24 +132,24 @@ protected:
 	virtual float64_t distance(int32_t idx_a, int32_t idx_b) const;
 
 	/** Distance instance for the kernel. MUST be initialized by the subclasses */
-	CDistance* m_distance;
+	std::shared_ptr<CDistance> m_distance;
 
 private:
 	/** Registers the parameters (serialization support). */
 	virtual void register_params();
 
 	/** Precomputed distance instance */
-	CCustomDistance* m_precomputed_distance;
+	std::shared_ptr<CCustomDistance> m_precomputed_distance;
 
 	/**
 	 * Method that sets a precomputed distance.
 	 *
 	 * @param precomputed_distance The precomputed distance object.
 	 */
-	void set_precomputed_distance(CCustomDistance* precomputed_distance);
+	void set_precomputed_distance(std::shared_ptr<CCustomDistance> precomputed_distance);
 
 	/** @return the precomputed distance. */
-	CCustomDistance* get_precomputed_distance() const;
+	std::shared_ptr<CCustomDistance> get_precomputed_distance() const;
 
 };
 

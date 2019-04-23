@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Evan Shelhamer, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -411,7 +411,7 @@ class CPlif: public CPlifBase
 		 * @param PEN array of plifs
 		 * @param P id of plif
 		 */
-		static void delete_penalty_struct(CPlif** PEN, int32_t P);
+		static void delete_penalty_struct(std::vector<std::shared_ptr<CPlif>>& PEN, int32_t P);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Plif"; }

@@ -43,7 +43,7 @@ class CLibSVM : public CSVM
 		 * @param lab labels
 		 * @param st solver type to use, C-SVC or nu-SVC
 		 */
-		CLibSVM(float64_t C, CKernel* k, CLabels* lab,
+		CLibSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab,
 				LIBSVM_SOLVER_TYPE st=LIBSVM_C_SVC);
 
 		virtual ~CLibSVM();
@@ -69,7 +69,7 @@ class CLibSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	protected:
 		/** solver type */

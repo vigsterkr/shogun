@@ -28,20 +28,18 @@ public:
 	CDenseSubsetFeatures():m_fea(NULL) { set_generic<ST>(); }
 
 	/** constructor */
-	CDenseSubsetFeatures(CDenseFeatures<ST> *fea, SGVector<int32_t> idx)
-		:m_fea(fea), m_idx(idx) { SG_REF(m_fea); set_generic<ST>(); }
+	CDenseSubsetFeatures(std::shared_ptr<CDenseFeatures<ST>> fea, SGVector<int32_t> idx)
+		:m_fea(fea), m_idx(idx) { set_generic<ST>(); }
 
     /** destructor */
-	virtual ~CDenseSubsetFeatures() { SG_UNREF(m_fea); }
+	virtual ~CDenseSubsetFeatures() { }
 
     /** get name */
     virtual const char* get_name() const { return "DenseSubsetFeatures"; }
 
 	/** set the underlying features */
-	void set_features(CDenseFeatures<ST> *fea)
+	void set_features(std::shared_ptr<CDenseFeatures<ST>> fea)
 	{
-		SG_REF(fea);
-		SG_UNREF(m_fea);
 		m_fea = fea;
 	}
 
@@ -57,9 +55,9 @@ public:
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const
+	virtual std::shared_ptr<CFeatures> duplicate() const
 	{
-		return new CDenseSubsetFeatures(m_fea, m_idx);
+		return std::make_shared<CDenseSubsetFeatures>(m_fea, m_idx);
 	}
 
 	/** get feature type
@@ -114,9 +112,9 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 	{
-		CDenseSubsetFeatures<ST> *dsf = dynamic_cast<CDenseSubsetFeatures<ST> *>(df);
+		auto dsf = std::dynamic_pointer_cast<CDenseSubsetFeatures<ST>>(df);
 		if (dsf == NULL)
 			SG_ERROR("Require DenseSubsetFeatures of the same kind to perform dot\n")
 
@@ -231,7 +229,7 @@ public:
 		SG_NOTIMPLEMENTED
 	}
 private:
-	CDenseFeatures<ST> *m_fea;
+	std::shared_ptr<CDenseFeatures<ST>> m_fea;
 	SGVector<int32_t> m_idx;
 };
 } /*  shogun */

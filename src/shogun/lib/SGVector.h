@@ -546,13 +546,13 @@ template<class T> class SGVector : public SGReferencedData
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(CFile* loader);
+		void load(std::shared_ptr<CFile> loader);
 
 		/** Save vector to file
 		 *
 		 * @param saver File object via which to save data
 		 */
-		void save(CFile* saver);
+		void save(std::shared_ptr<CFile> saver);
 
 		/** Real part of a complex128_t vector */
 		SGVector<float64_t> get_real();

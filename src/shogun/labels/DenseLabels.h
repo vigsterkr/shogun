@@ -53,7 +53,7 @@ namespace shogun
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CDenseLabels(CFile* loader);
+		CDenseLabels(std::shared_ptr<CFile> loader);
 
 		/** destructor */
 		virtual ~CDenseLabels() override;
@@ -74,7 +74,7 @@ namespace shogun
 		 *
 		 * @param loader File object via which to load data
 		 */
-		virtual void load(CFile* loader);
+		virtual void load(std::shared_ptr<CFile> loader);
 
 		/** save labels to file
 		 *
@@ -82,7 +82,7 @@ namespace shogun
 		 *
 		 * @param writer File object via which to save data
 		 */
-		virtual void save(CFile* writer);
+		virtual void save(std::shared_ptr<CFile> writer);
 
 		/** set label
 		 *
@@ -144,7 +144,7 @@ namespace shogun
 		 * @param idx index of label to get
 		 * @return INT value of label
 		 */
-		int32_t get_int_label(int32_t idx);
+		int32_t get_int_label(int32_t idx) const;
 
 		/** Gets a copy of the labels.
 		 *
@@ -237,7 +237,7 @@ namespace shogun
 		 *
 		 * @return INT labels
 		 */
-		SGVector<int32_t> get_int_labels();
+		SGVector<int32_t> get_int_labels() const;
 
 		/** set INT labels
 		 *

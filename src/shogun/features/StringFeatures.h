@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
- *          Evgeniy Andreev, Vladislav Horbatiuk, Evan Shelhamer, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
+ *          Evgeniy Andreev, Vladislav Horbatiuk, Evan Shelhamer, Yuyu Zhang,
  *          Thoralf Klein, Fernando Iglesias, Bjoern Esser
  */
 
@@ -93,20 +93,20 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param string_list
 		 * @param alpha an actual alphabet
 		 */
-		CStringFeatures(SGStringList<ST> string_list, CAlphabet* alpha);
+		CStringFeatures(SGStringList<ST> string_list, std::shared_ptr<CAlphabet> alpha);
 
 		/** constructor
 		 *
 		 * @param alpha alphabet to use for string features
 		 */
-		CStringFeatures(CAlphabet* alpha);
+		CStringFeatures(std::shared_ptr<CAlphabet> alpha);
 
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
 		 * @param alpha alphabet (type) to use for string features
 		 */
-		CStringFeatures(CFile* loader, EAlphabet alpha=DNA);
+		CStringFeatures(std::shared_ptr<CFile> loader, EAlphabet alpha=DNA);
 
 		/** destructor */
 		virtual ~CStringFeatures();
@@ -151,13 +151,13 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return alphabet
 		 */
-		CAlphabet* get_alphabet() const;
+		std::shared_ptr<CAlphabet> get_alphabet() const;
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** get string for selected example num
 		 *
@@ -203,7 +203,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @return transposed copy
 		 */
-		CStringFeatures<ST>* get_transposed();
+		std::shared_ptr<CStringFeatures<ST>> get_transposed();
 
 		/** compute and return the transpose of string features matrix
 		 * which will be prepocessed.
@@ -329,7 +329,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param loader File object via which to load data
 		 */
-		virtual void load(CFile* loader);
+		virtual void load(std::shared_ptr<CFile> loader);
 
 		/** load ascii line-based string features from file.
 		 *
@@ -402,7 +402,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param sf features to append
 		 * @return if setting was successful
 		 */
-		bool append_features(CStringFeatures<ST>* sf);
+		bool append_features(std::shared_ptr<CStringFeatures<ST>> sf);
 
 		/** append features
 		 *
@@ -459,7 +459,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 *
 		 * @param writer File object via which to save data
 		 */
-		virtual void save(CFile* writer);
+		virtual void save(std::shared_ptr<CFile> writer);
 
 		/** load compressed features from file
 		 *
@@ -506,7 +506,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param skip skip
 		 * @return something inty
 		 */
-		int32_t obtain_by_position_list(int32_t window_size, CDynamicArray<int32_t>* positions,
+		int32_t obtain_by_position_list(int32_t window_size, std::shared_ptr<CDynamicArray<int32_t>> positions,
 				int32_t skip=0);
 
 		/** obtain string features from char features
@@ -522,7 +522,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param rev reverse
 		 * @return if obtaining was successful
 		 */
-		bool obtain_from_char(CStringFeatures<char>* sf, int32_t start,
+		bool obtain_from_char(std::shared_ptr<CStringFeatures<char>> sf, int32_t start,
 				int32_t p_order, int32_t gap, bool rev);
 
 		/** template obtain from char features
@@ -537,7 +537,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @return if obtaining was successful
 		 */
 		template <class CT>
-			bool obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start,
+			bool obtain_from_char_features(std::shared_ptr<CStringFeatures<CT>> sf, int32_t start,
 					int32_t p_order, int32_t gap, bool rev);
 
 		/** check if length of each vector in this feature object equals the
@@ -628,7 +628,7 @@ template <class ST> class CStringFeatures : public CFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+		virtual std::shared_ptr<CFeatures> copy_subset(SGVector<index_t> indices) const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "StringFeatures"; }
@@ -654,7 +654,7 @@ template <class ST> class CStringFeatures : public CFeatures
 
 	protected:
 		/** alphabet */
-		CAlphabet* alphabet;
+		std::shared_ptr<CAlphabet> alphabet;
 
 		/** number of string vectors (for subset, is updated) */
 		int32_t num_vectors;

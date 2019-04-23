@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Evgeniy Andreev, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Evgeniy Andreev, Viktor Gal,
  *          Sergey Lisitsyn, Bjoern Esser, Sanuj Sharma, Saurabh Goyal
  */
 
@@ -87,12 +87,12 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc() :
 		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 
-		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		/*m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");*/
 		watch_param(
 		    "randomcoeff_additive", &randomcoeff_additive,
 		    &cur_dim_feature_space);
 
-		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		/*m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");*/
 		watch_param(
 		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
 		    &cur_dim_feature_space, &cur_dim_input_space);
@@ -123,12 +123,12 @@ CRandomFourierGaussPreproc::CRandomFourierGaussPreproc(
 		SG_ADD(&kernelwidth, "kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 		SG_ADD(&cur_kernelwidth, "cur_kernelwidth", "Kernel width.", ParameterProperties::HYPER);
 
-		m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");
+		/*m_parameters->add_vector(&randomcoeff_additive,&cur_dim_feature_space,"randomcoeff_additive");*/
 		watch_param(
 		    "randomcoeff_additive", &randomcoeff_additive,
 		    &cur_dim_feature_space);
 
-		m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");
+		/*m_parameters->add_matrix(&randomcoeff_multiplicative,&cur_dim_feature_space,&cur_dim_input_space,"randomcoeff_multiplicative");*/
 		watch_param(
 		    "randomcoeff_multiplicative", &randomcoeff_multiplicative,
 		    &cur_dim_feature_space, &cur_dim_input_space);
@@ -329,7 +329,7 @@ void CRandomFourierGaussPreproc::set_randomcoefficients(
 
 }
 
-void CRandomFourierGaussPreproc::fit(CFeatures* f)
+void CRandomFourierGaussPreproc::fit(std::shared_ptr<CFeatures> f)
 {
 	if (dim_feature_space <= 0) {
 		throw ShogunException(

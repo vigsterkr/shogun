@@ -36,7 +36,7 @@ CDenseLabels::CDenseLabels(const CDenseLabels& orig)
 	init();
 }
 
-CDenseLabels::CDenseLabels(CFile* loader)
+CDenseLabels::CDenseLabels(std::shared_ptr<CFile> loader)
 : CLabels()
 {
 	init();
@@ -104,7 +104,7 @@ SGVector<float64_t> CDenseLabels::get_labels_copy() const
 	return result;
 }
 
-SGVector<int32_t> CDenseLabels::get_int_labels()
+SGVector<int32_t> CDenseLabels::get_int_labels() const
 {
 	SGVector<int32_t> intlab(get_num_labels());
 
@@ -148,14 +148,14 @@ void CDenseLabels::ensure_valid(const char* context)
 	REQUIRE(is_valid(), "Labels cannot be empty!\n");
 }
 
-void CDenseLabels::load(CFile* loader)
+void CDenseLabels::load(std::shared_ptr<CFile> loader)
 {
 	remove_subset();
 	m_labels = SGVector<float64_t>();
 	m_labels.load(loader);
 }
 
-void CDenseLabels::save(CFile* writer)
+void CDenseLabels::save(std::shared_ptr<CFile> writer)
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("save() is not possible on subset")
@@ -194,7 +194,7 @@ float64_t CDenseLabels::get_label(int32_t idx) const
 	return m_labels.vector[real_num];
 }
 
-int32_t CDenseLabels::get_int_label(int32_t idx)
+int32_t CDenseLabels::get_int_label(int32_t idx) const
 {
 	int32_t real_num=m_subset_stack->subset_idx_conversion(idx);
 	ASSERT(m_labels.vector && idx<get_num_labels())

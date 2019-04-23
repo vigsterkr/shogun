@@ -70,8 +70,8 @@ public:
 				labels[i / 2] = (i < data.num_cols / 2) ? 1.0 : -1.0;
 			}
 
-			labels_train = new CBinaryLabels(labels);
-			labels_test = new CBinaryLabels(labels);
+			labels_train = std::make_shared<CBinaryLabels>(labels);
+			labels_test = std::make_shared<CBinaryLabels>(labels);
 		}
 		if (num_labels > 2)
 		{
@@ -85,47 +85,41 @@ public:
 				}
 			}
 
-			labels_train = new CMulticlassLabels(labels);
-			labels_test = new CMulticlassLabels(labels);
+			labels_train = std::make_shared<CMulticlassLabels>(labels);
+			labels_test = std::make_shared<CMulticlassLabels>(labels);
 		}
 
 		features_train =
-		    (CDenseFeatures<float64_t>*)features.copy_subset(train_idx);
+		    features.copy_subset(train_idx)->as<CDenseFeatures<float64_t>>();
 		features_test =
-		    (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
+		    features.copy_subset(test_idx)->as<CDenseFeatures<float64_t>>();
 
-		SG_REF(labels_train)
-		SG_REF(labels_test)
 	}
 
 	~GaussianCheckerboard()
 	{
-		SG_UNREF(features_train)
-		SG_UNREF(features_test)
-		SG_UNREF(labels_train)
-		SG_UNREF(labels_test)
 	}
 
 	/* get the traning features */
-	CDenseFeatures<float64_t>* get_features_train() const
+	auto get_features_train() const
 	{
 		return features_train;
 	}
 
 	/* get the test features */
-	CDenseFeatures<float64_t>* get_features_test() const
+	auto get_features_test() const
 	{
 		return features_test;
 	}
 
 	/* get the test labels */
-	CLabels* get_labels_train() const
+	auto get_labels_train() const
 	{
 		return labels_train;
 	}
 
 	/* get the traning labels */
-	CLabels* get_labels_test() const
+	auto get_labels_test() const
 	{
 		return labels_test;
 	}
@@ -138,16 +132,16 @@ public:
 
 protected:
 	// data for training
-	CDenseFeatures<float64_t>* features_train;
+	std::shared_ptr<CDenseFeatures<float64_t>> features_train;
 
 	// data for testing
-	CDenseFeatures<float64_t>* features_test;
+	std::shared_ptr<CDenseFeatures<float64_t>> features_test;
 
 	// traning label
-	CLabels* labels_train;
+	std::shared_ptr<CLabels> labels_train;
 
 	// testing label
-	CLabels* labels_test;
+	std::shared_ptr<CLabels> labels_test;
 
 	// the size of generated data set
 	int32_t set_size;

@@ -37,57 +37,57 @@ using namespace shogun;
 
 TEST(MultilabelLabels, constructor_zero_args)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels();
+	auto ml = std::make_shared<CMultilabelLabels>();
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 0);
 	ml->ensure_valid("unittest");
 
-	SG_UNREF(ml);
+
 }
 
 
 TEST(MultilabelLabels, constructor_one_arg)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(6);
+	auto ml = std::make_shared<CMultilabelLabels>(6);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 0);
 	EXPECT_EQ(ml->get_num_classes(), 6);
 	ml->ensure_valid("unittest");
 
-	SG_UNREF(ml);
+
 }
 
 
 TEST(MultilabelLabels, constructor_two_args)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(5, 6);
+	auto ml = std::make_shared<CMultilabelLabels>(5, 6);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 5);
 	EXPECT_EQ(ml->get_num_classes(), 6);
 	ml->ensure_valid("unittest");
 
-	SG_UNREF(ml);
+
 }
 
 
 TEST(MultilabelLabels, clone)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(5, 6);
+	auto ml = std::make_shared<CMultilabelLabels>(5, 6);
 	ASSERT_TRUE(ml != NULL);
 	EXPECT_EQ(ml->get_num_labels(), 5);
 	EXPECT_EQ(ml->get_num_classes(), 6);
 
-	CMultilabelLabels * mlc = (CMultilabelLabels *)ml->clone();
-	SG_UNREF(ml);
+	auto mlc = ml->clone()->as<CMultilabelLabels>();
+
 
 	ASSERT_TRUE(mlc != NULL);
 	EXPECT_EQ(mlc->get_num_labels(), 5);
 	EXPECT_EQ(mlc->get_num_classes(), 6);
 
-	SG_UNREF(mlc);
+
 }
 
 
@@ -109,7 +109,7 @@ TEST(MultilabelLabels, to_dense)
 
 TEST(MultilabelLabels, get_label)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(10, 5);
+	auto ml = std::make_shared<CMultilabelLabels>(10, 5);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 10);
@@ -127,13 +127,13 @@ TEST(MultilabelLabels, get_label)
 	// TODO: Check for failure:
 	// CBinaryLabels label_invalid = ml->get_binary_for_label(5);
 
-	SG_UNREF(ml);
+
 }
 
 
 TEST(MultilabelLabels, get_class_labels)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(10, 5);
+	auto ml = std::make_shared<CMultilabelLabels>(10, 5);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 10);
@@ -153,7 +153,7 @@ TEST(MultilabelLabels, get_class_labels)
 	}
 
 	SG_FREE(class_labels);
-	SG_UNREF(ml);
+
 }
 
 
@@ -177,7 +177,7 @@ TEST(MultilabelLabels, set_class_labels)
 		// class_labels[i]->display_vector("yC");
 	}
 
-	CMultilabelLabels * ml = new CMultilabelLabels(num_labels, num_classes);
+	auto ml = std::make_shared<CMultilabelLabels>(num_labels, num_classes);
 	ASSERT_TRUE(ml != NULL);
 
 	ml->set_class_labels(class_labels);
@@ -214,7 +214,7 @@ TEST(MultilabelLabels, set_class_labels)
 	EXPECT_EQ(3, (ml->get_label(4))[1]);
 	EXPECT_EQ(4, (ml->get_label(4))[2]);
 
-	SG_UNREF(ml);
+
 }
 
 
@@ -239,7 +239,7 @@ TEST(MultilabelLabels, set_class_labels_overflow)
 	SGVector<int32_t>::range_fill_vector(class_labels[2]->vector, class_labels[2]->vlen, 1);
 	// class_labels[2]->display_vector("v_2");
 
-	CMultilabelLabels * ml = new CMultilabelLabels(num_labels, num_classes);
+	auto ml = std::make_shared<CMultilabelLabels>(num_labels, num_classes);
 	ASSERT_TRUE(ml != NULL);
 
 	ml->set_class_labels(class_labels);
@@ -267,13 +267,13 @@ TEST(MultilabelLabels, set_class_labels_overflow)
 	}
 	SG_FREE(class_labels);
 
-	SG_UNREF(ml);
+
 }
 
 
 TEST(MultilabelLabels, display)
 {
-	CMultilabelLabels * ml = new CMultilabelLabels(10, 5);
+	auto ml = std::make_shared<CMultilabelLabels>(10, 5);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 10);
@@ -281,5 +281,5 @@ TEST(MultilabelLabels, display)
 
 	ml->display();
 
-	SG_UNREF(ml);
+
 }

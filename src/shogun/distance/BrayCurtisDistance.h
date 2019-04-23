@@ -36,7 +36,7 @@ class CBrayCurtisDistance: public CDenseDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CBrayCurtisDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
+		CBrayCurtisDistance(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r);
 		virtual ~CBrayCurtisDistance();
 
 		/** init distance
@@ -45,7 +45,7 @@ class CBrayCurtisDistance: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

@@ -38,7 +38,7 @@ public:
 	 *
 	 * @param method chosen inference method
 	 */
-	CGaussianProcessRegression(CInference* method);
+	CGaussianProcessRegression(std::shared_ptr<CInference> method);
 
 	virtual ~CGaussianProcessRegression();
 
@@ -47,19 +47,19 @@ public:
 	 * @param data (test)data to be classified
 	 * @return classified labels
 	 */
-	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+	virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
 
 	/** get predicted mean vector
 	 *
 	 * @return predicted mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(CFeatures* data);
+	SGVector<float64_t> get_mean_vector(std::shared_ptr<CFeatures> data);
 
 	/** get variance vector
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(CFeatures* data);
+	SGVector<float64_t> get_variance_vector(std::shared_ptr<CFeatures> data);
 
 	/** get classifier type
 	 *
@@ -83,7 +83,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	/** check whether training labels are valid for regression
 	 *
@@ -91,7 +91,7 @@ protected:
 	 *
 	 * @return whether training labels are valid for regression
 	 */
-	virtual bool is_label_valid(CLabels *lab) const
+	virtual bool is_label_valid(std::shared_ptr<CLabels >lab) const
 	{
 		return lab->get_label_type()==LT_REGRESSION;
 	}

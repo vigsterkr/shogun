@@ -54,9 +54,9 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		CRidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
 			: CKernelNormalizer()
 		{
-			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER);
-			SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", ParameterProperties::HYPER);
+			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    ParameterProperties::HYPER)*/;
+			/*SG_ADD(&ridge, "ridge", "Ridge added to diagonal.", ParameterProperties::HYPER)*/;
 
 			scale=c;
 			ridge=r;
@@ -77,8 +77,8 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 				int32_t num=k->get_num_vec_lhs();
 				ASSERT(num>0)
 
-				CFeatures* old_lhs=k->lhs;
-				CFeatures* old_rhs=k->rhs;
+				auto old_lhs=k->lhs;
+				auto old_rhs=k->rhs;
 				k->lhs=old_lhs;
 				k->rhs=old_lhs;
 

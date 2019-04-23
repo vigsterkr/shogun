@@ -51,6 +51,7 @@
 #endif
 
 %include "shogun_ignores.i"
+%include "shogun_shared_ptr.i"
 
 %include "Machine_includes.i"
 %include "Classifier_includes.i"

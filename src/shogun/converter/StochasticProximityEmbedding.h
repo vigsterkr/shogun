@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Sergey Lisitsyn, Chiyuan Zhang, Heiko Strathmann, 
+ * Authors: Fernando Iglesias, Sergey Lisitsyn, Chiyuan Zhang, Heiko Strathmann,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -72,7 +72,7 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 * @param features features to embed
 		 * @return embedding features
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 		/** setter for number of neighbors k in local strategy
 		 *
@@ -146,7 +146,7 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		 * @param distance TODO Euclidean works fine, check with others
 		 * @return new features in the embedded space
 		 */
-		virtual CDenseFeatures< float64_t >* embed_distance(CDistance* distance);
+		virtual std::shared_ptr<CDenseFeatures<float64_t>> embed_distance(std::shared_ptr<CDistance> distance);
 
 	private:
 

@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Shashwat Lal Das, Sergey Lisitsyn, Thoralf Klein, 
- *          Evgeniy Andreev, Chiyuan Zhang, Viktor Gal, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Shashwat Lal Das, Sergey Lisitsyn, Thoralf Klein,
+ *          Evgeniy Andreev, Chiyuan Zhang, Viktor Gal, Evan Shelhamer,
  *          Sanuj Sharma
  */
 
@@ -21,35 +21,35 @@ COnlineLinearMachine::COnlineLinearMachine()
 {
 	SG_ADD(&m_w, "m_w", "Parameter vector w.", ParameterProperties::MODEL);
 	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
-	SG_ADD((CSGObject**) &features, "features",
+	SG_ADD((std::shared_ptr<CSGObject>*) &features, "features",
 	    "Feature object.");
 }
 
 COnlineLinearMachine::~COnlineLinearMachine()
 {
-	SG_UNREF(features);
+
 }
 
-CBinaryLabels* COnlineLinearMachine::apply_binary(CFeatures* data)
+std::shared_ptr<CBinaryLabels> COnlineLinearMachine::apply_binary(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CBinaryLabels(outputs);
+	return std::make_shared<CBinaryLabels>(outputs);
 }
 
-CRegressionLabels* COnlineLinearMachine::apply_regression(CFeatures* data)
+std::shared_ptr<CRegressionLabels> COnlineLinearMachine::apply_regression(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<CRegressionLabels>(outputs);
 }
 
-SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(CFeatures* data)
+SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
 			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
 
-		set_features((CStreamingDotFeatures*) data);
+		set_features(data->as<CStreamingDotFeatures>());
 	}
 
 	ASSERT(features)
@@ -83,13 +83,13 @@ float32_t COnlineLinearMachine::apply_to_current_example()
 		return features->dense_dot(m_w.vector, m_w.vlen)+bias;
 }
 
-bool COnlineLinearMachine::train_machine(CFeatures *data)
+bool COnlineLinearMachine::train_machine(std::shared_ptr<CFeatures >data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
 			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
-		set_features((CStreamingDotFeatures*) data);
+		set_features(data->as<CStreamingDotFeatures>());
 	}
 	start_train();
 	features->start_parser();

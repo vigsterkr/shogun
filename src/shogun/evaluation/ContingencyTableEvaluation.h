@@ -88,7 +88,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
 
 	virtual EEvaluationDirection get_evaluation_direction() const;
 
@@ -249,7 +249,7 @@ public:
 protected:
 
 	/** get scores for TP, FP, TN, FN */
-	void compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth);
+	void compute_scores(std::shared_ptr<CBinaryLabels> predicted, std::shared_ptr<CBinaryLabels> ground_truth);
 
 	/** type of measure to evaluate */
 	EContingencyTableMeasureType m_type;

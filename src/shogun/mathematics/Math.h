@@ -100,7 +100,7 @@ static inline complex128_t function(complex128_t a)	\
 namespace shogun
 {
 	/** random number generator */
-	extern CRandom* sg_rand;
+	extern std::shared_ptr<CRandom> sg_rand;
 /** @brief Class which collects generic mathematical functions
  */
 class CMath : public CSGObject
@@ -806,7 +806,7 @@ class CMath : public CSGObject
 		 * @param rand random object that might be used to generate the permutations.
 		 */
 		template <class T>
-			static void permute(SGVector<T> v, CRandom* rand=NULL)
+			static void permute(SGVector<T> v, std::shared_ptr<CRandom> rand=NULL)
 			{
 				if (rand)
 				{

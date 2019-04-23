@@ -159,13 +159,13 @@ public:
 	 * @param features the input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 	/** Apply inverse transformation. This method is not supported by feature
 	 * selection preprocessors.
 	 */
-	virtual CFeatures*
-	inverse_transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures>
+	inverse_transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 	/**
 	 * Abstract method that is defined in the subclasses to compute the
@@ -177,7 +177,7 @@ public:
 	 * the measure on
 	 * @return the measure based on which features are selected
 	 */
-	virtual float64_t compute_measures(CFeatures* features, index_t idx)=0;
+	virtual float64_t compute_measures(std::shared_ptr<CFeatures> features, index_t idx)=0;
 
 	/**
 	 * Abstract method which is defined in the subclasses to handle the removal
@@ -190,7 +190,7 @@ public:
 	 * 0 being the index of the feature corresponding to the smallest measure.
 	 * @return the feature object after removal of features based on the policy
 	 */
-	virtual CFeatures* remove_feats(CFeatures* features,
+	virtual std::shared_ptr<CFeatures> remove_feats(std::shared_ptr<CFeatures> features,
 			SGVector<index_t> argsorted)=0;
 
 	/** @return indices of selected features */
@@ -255,10 +255,10 @@ public:
 	 *
 	 * @param labels the labels
 	 */
-	virtual void set_labels(CLabels* labels);
+	virtual void set_labels(std::shared_ptr<CLabels> labels);
 
 	/** @return the labels */
-	CLabels* get_labels() const;
+	std::shared_ptr<CLabels> get_labels() const;
 
 	/** performs cleanup */
 	virtual void cleanup();
@@ -279,7 +279,7 @@ protected:
 	 * @param features the input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* apply_backward_elimination(CFeatures* features);
+	virtual std::shared_ptr<CFeatures> apply_backward_elimination(std::shared_ptr<CFeatures> features);
 
 	/**
 	 * Performs the tasks which can be computed beforehand before the actual
@@ -295,7 +295,7 @@ protected:
 	 * @param features the features based on which parameters are needed to be
 	 * tuned for computing measures
 	 */
-	virtual void adapt_params(CFeatures* features);
+	virtual void adapt_params(std::shared_ptr<CFeatures> features);
 
 	/**
 	 * Returns the number of features of the provided feature object. Since the
@@ -306,7 +306,7 @@ protected:
 	 * @param features the feature object
 	 * @return the number of features
 	 */
-	index_t get_num_features(CFeatures* features) const;
+	index_t get_num_features(std::shared_ptr<CFeatures> features) const;
 
 	/** Target dimension */
 	index_t m_target_dim;
@@ -326,10 +326,10 @@ protected:
 	index_t m_num_remove;
 
 	/** The labels for the feature vectors */
-	CLabels* m_labels;
+	std::shared_ptr<CLabels> m_labels;
 
 	/** The indices of features that are selected */
-	CSubsetStack* m_subset;
+	std::shared_ptr<CSubsetStack> m_subset;
 
 private:
 	/** Register params and initialize with default values */

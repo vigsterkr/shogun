@@ -31,7 +31,7 @@ public:
 
 TEST_F(RegressionLabels, regression_labels_from_regression)
 {
-	auto labels = some<CRegressionLabels>(labels_regression);
+	auto labels = std::make_shared<CRegressionLabels>(labels_regression);
 	auto labels2 = regression_labels(labels);
 	EXPECT_EQ(labels, labels2);
 }

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Jonas Behr, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Soeren Sonnenburg, Jonas Behr, Evgeniy Andreev, Yuyu Zhang,
  *          Evan Shelhamer, Sergey Lisitsyn
  */
 
@@ -28,6 +28,7 @@ template <class T> class SGString;
 class CPlifMatrix: public CSGObject
 {
 	public:
+		using PlifVector = std::vector<std::shared_ptr<CPlifBase>>;
 		/** constructor
 		 *
 		 */
@@ -42,13 +43,13 @@ class CPlifMatrix: public CSGObject
 		 *
 		 * @return plif array
 		 */
-		inline CPlif** get_PEN() { return m_PEN; }
+		inline std::vector<std::shared_ptr<CPlif>> get_PEN() { return m_PEN; }
 
 		/** get plif matrix
 		 *
 		 * @return matrix of plifs
 		 */
-		inline CPlifBase** get_plif_matrix() { return m_plif_matrix; }
+		inline PlifVector get_plif_matrix() { return m_plif_matrix; }
 
 		/** get number of states
 		 *  the number of states determines the size of the plif matrix
@@ -62,7 +63,7 @@ class CPlifMatrix: public CSGObject
 		 *
 		 * @return plifs
 		 */
-		inline CPlifBase** get_state_signals() { return m_state_signals; }
+		inline PlifVector get_state_signals() { return m_state_signals; }
 
 		/** get number of plifs
 		 *
@@ -191,7 +192,7 @@ class CPlifMatrix: public CSGObject
 	protected:
 
 		/** array of plifs*/
-		CPlif** m_PEN;
+		std::vector<std::shared_ptr<CPlif>> m_PEN;
 
 		/** number of plifs */
 		int32_t m_num_plifs;
@@ -209,10 +210,10 @@ class CPlifMatrix: public CSGObject
 		CDynamicArray<int32_t> m_ids;
 
 		/** plif matrix */
-		CPlifBase** m_plif_matrix;
+		PlifVector m_plif_matrix;
 
 		/** state signals*/
-		CPlifBase** m_state_signals;
+		PlifVector m_state_signals;
 };
 }
 #endif /* _PLIFMATRIX_H_ */

@@ -61,7 +61,7 @@ using namespace shogun;
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 struct S_THREAD_PARAM_REACTIVATE_LINADD
 {
-	CKernel* kernel;
+	std::shared_ptr<CKernel> kernel;
 	float64_t* lin;
 	float64_t* last_lin;
 	int32_t* active;
@@ -77,12 +77,12 @@ struct S_THREAD_PARAM_SVMLIGHT
 	int32_t start, end;
 	int32_t * active2dnum ;
 	int32_t * docs ;
-	CKernel* kernel ;
+	std::shared_ptr<CKernel> kernel ;
 };
 
 struct S_THREAD_PARAM_REACTIVATE_VANILLA
 {
-	CKernel* kernel;
+	std::shared_ptr<CKernel> kernel;
 	float64_t* lin;
 	float64_t* aicache;
 	float64_t* a;
@@ -99,7 +99,7 @@ struct S_THREAD_PARAM_KERNEL
 	float64_t *Kval ;
 	int32_t *KI, *KJ ;
 	int32_t start, end;
-    CSVMLight* svmlight;
+    std::shared_ptr<CSVMLight> svmlight;
 };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -134,7 +134,7 @@ CSVMLight::CSVMLight()
 	set_kernel(NULL);
 }
 
-CSVMLight::CSVMLight(float64_t C, CKernel* k, CLabels* lab)
+CSVMLight::CSVMLight(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
 : CSVM(C, k, lab)
 {
 	init();
@@ -182,7 +182,7 @@ CSVMLight::~CSVMLight()
   SG_FREE(primal);
 }
 
-bool CSVMLight::train_machine(CFeatures* data)
+bool CSVMLight::train_machine(std::shared_ptr<CFeatures> data)
 {
 	//certain setup params
 	mkl_converged=false;
@@ -257,12 +257,12 @@ bool CSVMLight::train_machine(CFeatures* data)
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
 
-		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
+		for (index_t k_idx=0; k_idx<(std::static_pointer_cast<CCombinedKernel>(kernel))->get_num_kernels(); k_idx++)
 		{
-			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
+			auto kn = (std::static_pointer_cast<CCombinedKernel>(kernel))->get_kernel(k_idx);
 			// allocate kernel cache but clean up beforehand
 			kn->resize_kernel_cache(kn->get_cache_size());
-			SG_UNREF(kn);
+
 		}
 	}
 
@@ -441,13 +441,13 @@ void CSVMLight::svm_learn()
 	if (use_kernel_cache)
 	{
 		if (callback &&
-				(!((CCombinedKernel*) kernel)->get_append_subkernel_weights())
+				(!(std::static_pointer_cast<CCombinedKernel>(kernel))->get_append_subkernel_weights())
 		   )
 		{
-			CCombinedKernel* k = (CCombinedKernel*) kernel;
+			auto k = std::static_pointer_cast<CCombinedKernel>(kernel);
 			for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 			{
-				CKernel* kn = k->get_kernel(k_idx);
+				auto kn = k->get_kernel(k_idx);
 				for (i=0;i<totdoc;i++)     // fill kernel cache with unbounded SV
 					if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i])
 							&& (kn->kernel_cache_space_available()))
@@ -458,7 +458,7 @@ void CSVMLight::svm_learn()
 							&& (kn->kernel_cache_space_available()))
 						kn->cache_kernel_row(i);
 
-				SG_UNREF(kn);
+
 			}
 		}
 		else
@@ -766,15 +766,15 @@ int32_t CSVMLight::optimize_to_convergence(int32_t* docs, int32_t* label, int32_
 		  // in case of MKL w/o linadd cache each kernel independently
 		  // else if linadd is disabled cache single kernel
 		  if ( callback &&
-				  (!((CCombinedKernel*) kernel)->get_append_subkernel_weights())
+				  (!(std::static_pointer_cast<CCombinedKernel>(kernel))->get_append_subkernel_weights())
 			 )
 		  {
-			  CCombinedKernel* k = (CCombinedKernel*) kernel;
+			  auto k = std::static_pointer_cast<CCombinedKernel>(kernel);
 			  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 			  {
-				  CKernel* kn = k->get_kernel(k_idx);
+				  auto kn = k->get_kernel(k_idx);
 				  kn->cache_multiple_kernel_rows(working2dnum, choosenum);
-				  SG_UNREF(kn);
+
 			  }
 		  }
 		  else
@@ -1119,7 +1119,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(
 		//SG_DEBUG("\nkernel-step size: %i\n", step)
 		for (int32_t t=0; t<num_threads-1; t++)
 		{
-			params[t].svmlight = this;
+			params[t].svmlight = std::shared_ptr<CSVMLight>(this);
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
 			params[t].KI=KI ;
@@ -1556,15 +1556,15 @@ void CSVMLight::update_linear_component_mkl(
 	ASSERT(num_weights==num_kernels)
 
 	if ((kernel->get_kernel_type()==K_COMBINED) &&
-			 (!((CCombinedKernel*) kernel)->get_append_subkernel_weights()))// for combined kernel
+			 (!(std::static_pointer_cast<CCombinedKernel>(kernel))->get_append_subkernel_weights()))// for combined kernel
 	{
-		CCombinedKernel* k = (CCombinedKernel*) kernel;
+		auto k = std::static_pointer_cast<CCombinedKernel>(kernel);
 
 		int32_t n = 0, i, j ;
 
 		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 		{
-			CKernel* kn = k->get_kernel(k_idx);
+			auto kn = k->get_kernel(k_idx);
 			for (i=0;i<num;i++)
 			{
 				if(a[i] != a_old[i])
@@ -1575,7 +1575,7 @@ void CSVMLight::update_linear_component_mkl(
 				}
 			}
 
-			SG_UNREF(kn);
+
 			n++ ;
 		}
 	}
@@ -2066,7 +2066,7 @@ void* CSVMLight::reactivate_inactive_examples_linadd_helper(void* p)
 {
 	S_THREAD_PARAM_REACTIVATE_LINADD* params = (S_THREAD_PARAM_REACTIVATE_LINADD*) p;
 
-	CKernel* k = params->kernel;
+	auto k = params->kernel;
 	float64_t* lin = params->lin;
 	float64_t* last_lin = params->last_lin;
 	int32_t* active = params->active;
@@ -2098,7 +2098,7 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 	ASSERT(params->inactive2dnum)
 	ASSERT(params->label)
 
-	CKernel* k = params->kernel;
+	auto k = params->kernel;
 	float64_t* lin = params->lin;
 	float64_t* aicache = params->aicache;
 	float64_t* a= params->a;

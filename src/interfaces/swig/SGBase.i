@@ -8,9 +8,7 @@
 %include "stdint.i"
 %include "std_string.i"
 %include "exception.i"
-
-%feature("ref")   shogun::CSGObject "SG_REF($this);"
-%feature("unref") shogun::CSGObject "SG_UNREF($this);"
+%include "std_shared_ptr.i"
 
 #ifdef SWIGJAVA
 %typemap(javainterfaces) shogun::CSGObject "java.io.Externalizable"
@@ -27,7 +25,6 @@ import org.jblas.*;
 %typemap(javacode) shogun::CSGObject
 %{
 public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
-/* TODO: enable once shared_ptr is merged
     ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
     JsonSerializer jsonSerializer = new JsonSerializer();
     jsonSerializer.attach(byteArrayOS);
@@ -39,7 +36,6 @@ public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
 }
 
 public void readExternal(java.io.ObjectInput in) throws java.io.IOException, java.lang.ClassNotFoundException {
-/* TODO: enable once shared_ptr is merged
     StringBuffer sb = new StringBuffer();
     int ch;
     while ((ch=in.read()) != -1) {
@@ -49,7 +45,6 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
     JsonDeserializer jsonDeserializer = new JsonDeserializer();
     jsonDeserializer.attach(bis);
     this.deserialize(jsonDeserializer);
-*/
 }
     %}
 #endif
@@ -208,13 +203,13 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
         static int print_sgobject(PyObject *pyobj, FILE *f, int flags) {
             void *argp;
             int res;
-            res = SWIG_ConvertPtr(pyobj, &argp, SWIGTYPE_p_shogun__CSGObject, 0);
+            res = SWIG_ConvertPtr(pyobj, &argp, SWIGTYPE_p_std__shared_ptrT_SGObject_t, 0);
             if (!SWIG_IsOK(res)) {
-                SWIG_Error(SWIG_ArgError(res), "in method 'CSGObject::tp_print', argument 1 of type 'CSGObject *'");
+                SWIG_Error(SWIG_ArgError(res), "in method 'CSGObject::tp_print', argument 1 of type 'std::shared_ptr<CSGObject>'");
                 return SWIG_ERROR;
             }
 
-            CSGObject *obj = reinterpret_cast<CSGObject*>(argp);
+            auto obj = reinterpret_cast<std::shared_ptr<CSGObject>>(argp);
             std::string s = obj->to_string();
             fprintf(f, "%s", s.c_str());
             return 0;
@@ -331,6 +326,7 @@ public void readExternal(java.io.ObjectInput in) throws java.io.IOException, jav
 %ignore sg_cancel_computations;
 
 %rename(SGObject) CSGObject;
+%shared_ptr(SGObject)
 
 %include <shogun/lib/common.h>
 %include <shogun/lib/exception/ShogunException.h>
@@ -426,17 +422,15 @@ namespace shogun
 
         PyObject* __getstate__()
         {
-            io::CSerializer* serializer = nullptr;
+            std::shared_ptr<io::CSerializer> serializer = nullptr;
             if (pickle_ascii)
-                serializer = new io::CJsonSerializer();
+                serializer = std::make_shared<io::CJsonSerializer>();
             else
-                serializer = new io::CBitserySerializer();
-            auto byte_stream = some<io::CByteArrayOutputStream>();
+                serializer = std::make_shared<io::CBitserySerializer>();
+            auto byte_stream = std::make_shared<io::CByteArrayOutputStream>();
             serializer->attach(byte_stream);
             serializer->write(wrap($self));
-
             auto serialized_obj = byte_stream->content();
-            SG_UNREF(serializer);
 #ifdef PYTHON3
             PyObject* str=PyBytes_FromStringAndSize(serialized_obj.data(), serialized_obj.size());
 #else
@@ -461,16 +455,15 @@ namespace shogun
 #else
             PyString_AsStringAndSize(py_str, &str, &len);
 #endif
-            io::CDeserializer* deser = nullptr;
+            std::shared_ptr<io::CDeserializer> deser = nullptr;
             if (pickle_ascii)
-                deser = new io::CJsonDeserializer();
+                deser = std::make_shared<io::CJsonDeserializer>();
             else
-                deser = new io::CBitseryDeserializer();
+                deser = std::make_shared<io::CBitseryDeserializer>();
 
             auto byte_input_stream = some<io::CByteArrayInputStream>(str, len);
             deser->attach(byte_input_stream);
             $self->deserialize(deser);
-            SG_UNREF(deser);
         }
 
         /*int getbuffer(PyObject *obj, Py_buffer *view, int flags) { return 0; }*/

@@ -3,10 +3,10 @@
 
 using namespace shogun;
 
-CMKLOneClass::CMKLOneClass(CSVM* s) : CMKL(s)
+CMKLOneClass::CMKLOneClass(std::shared_ptr<CSVM> s) : CMKL(s)
 {
 	if (!s)
-		set_svm(new CLibSVMOneClass());
+		set_svm(std::make_shared<CLibSVMOneClass>());
 }
 
 CMKLOneClass::~CMKLOneClass()

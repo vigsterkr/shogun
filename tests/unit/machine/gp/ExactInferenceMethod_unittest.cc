@@ -67,17 +67,17 @@ TEST(ExactInferenceMethod,get_cholesky)
 	}
 
 	/* shogun representation */
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<CZeroMean>();
+	auto lik=std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
@@ -96,7 +96,7 @@ TEST(ExactInferenceMethod,get_cholesky)
 	EXPECT_LE(CMath::abs(L(2,1)-0), 10E-15);
 	EXPECT_LE(CMath::abs(L(2,2)-1.359759121359794), 10E-15);
 
-	SG_UNREF(inf);
+
 }
 
 TEST(ExactInferenceMethod,get_alpha)
@@ -122,17 +122,17 @@ TEST(ExactInferenceMethod,get_alpha)
 	}
 
 	/* shogun representation */
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<CZeroMean>();
+	auto lik=std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
@@ -146,7 +146,7 @@ TEST(ExactInferenceMethod,get_alpha)
 	EXPECT_LE(CMath::abs(alpha[1]-0.396533145765454), 10E-15);
 	EXPECT_LE(CMath::abs(alpha[2]-0.301389368713216), 10E-15);
 
-	SG_UNREF(inf);
+
 }
 
 TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
@@ -172,17 +172,17 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 	}
 
 	/* shogun representation */
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<CZeroMean>();
+	auto lik=std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
@@ -191,7 +191,7 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
 	EXPECT_LE(CMath::abs(nml-4.017065867797999), 10E-15);
 
-	SG_UNREF(inf);
+
 }
 
 TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
@@ -215,29 +215,28 @@ TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2*ell*ell);
 
-	CZeroMean* mean=new CZeroMean();
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
-	inf->build_gradient_parameter_dictionary(parameter_dictionary);
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -259,9 +258,9 @@ TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_ell, -0.015133, 1E-6);
 	EXPECT_NEAR(dnlZ_sf2, 1.699483, 1E-6);
 
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+
+
+
 }
 
 TEST(ExactInferenceMethod,get_posterior_mean)
@@ -285,19 +284,19 @@ TEST(ExactInferenceMethod,get_posterior_mean)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
@@ -316,7 +315,7 @@ TEST(ExactInferenceMethod,get_posterior_mean)
 	EXPECT_NEAR(mu[4], -0.07500012155336166, 1E-15);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(ExactInferenceMethod,get_posterior_covariance)
@@ -340,19 +339,19 @@ TEST(ExactInferenceMethod,get_posterior_covariance)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
@@ -424,7 +423,7 @@ TEST(ExactInferenceMethod,get_posterior_covariance)
 	EXPECT_NEAR(Sigma(4,4),  0.0569395017595935928889084,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(ExactInferenceMethod,get_posterior_mean2)
@@ -448,19 +447,19 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
-	CConstMean* mean=new CConstMean(1.0);
+	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<CConstMean>(1.0);
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
@@ -487,5 +486,5 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	EXPECT_NEAR(mu[4],  -0.9860387397670280495987072,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }

@@ -36,7 +36,7 @@ namespace shogun
 			 *
 			 * @param labels the (y_i) labels
 			 */
-			CLatentLabels(CLabels* labels);
+			CLatentLabels(std::shared_ptr<CLabels> labels);
 
 			/** destructor */
 			virtual ~CLatentLabels() override;
@@ -45,20 +45,20 @@ namespace shogun
 			 *
 			 * @return the CDynamicObjectArray with the latent labels in it
 			 */
-			CDynamicObjectArray* get_latent_labels() const;
+			std::shared_ptr<CDynamicObjectArray> get_latent_labels() const;
 
 			/** get the latent label of a given example
 			 *
 			 * @param idx index of the label
 			 * @return the user defined latent label
 			 */
-			CData* get_latent_label(int32_t idx);
+			std::shared_ptr<CData> get_latent_label(int32_t idx);
 
 			/** append the latent label
 			 *
 			 * @param label latent label
 			 */
-			void add_latent_label(CData* label);
+			void add_latent_label(std::shared_ptr<CData> label);
 
 			/** set latent label at a given index
 			 *
@@ -66,7 +66,7 @@ namespace shogun
 			 * @param label the latent label
 			 * @return TRUE if success, FALSE otherwise
 			 */
-			bool set_latent_label(int32_t idx, CData* label);
+			bool set_latent_label(int32_t idx, std::shared_ptr<CData> label);
 
 		    virtual bool is_valid() const override;
 
@@ -100,19 +100,19 @@ namespace shogun
 			 *
 			 * @param labels the labels (y_i)
 			 */
-			void set_labels(CLabels* labels);
+			void set_labels(std::shared_ptr<CLabels> labels);
 
 			/** get the labels (y_i)
 			 *
 			 * @return the labels (y_i)
 			 */
-			CLabels* get_labels() const;
+			std::shared_ptr<CLabels> get_labels() const;
 
 		protected:
 			/** the of CData, the latent labels (h_i) */
-			CDynamicObjectArray* m_latent_labels;
+			std::shared_ptr<CDynamicObjectArray> m_latent_labels;
 			/** the labels (y_i) */
-			CLabels* m_labels;
+			std::shared_ptr<CLabels> m_labels;
 
 		private:
 			/** initalize the values to default values */

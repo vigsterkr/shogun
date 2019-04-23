@@ -28,7 +28,7 @@ class CCanberraWordDistance: public CStringDistance<uint16_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CCanberraWordDistance(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r);
+		CCanberraWordDistance(std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r);
 		virtual ~CCanberraWordDistance();
 
 		/** init distance
@@ -37,7 +37,7 @@ class CCanberraWordDistance: public CStringDistance<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

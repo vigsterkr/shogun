@@ -15,13 +15,13 @@ CParser::CParser()
 	init();
 }
 
-CParser::CParser(SGVector<char> text, CTokenizer* tokenizer)
+CParser::CParser(SGVector<char> text, std::shared_ptr<CTokenizer> tokenizer)
 {
 	init();
 
 	m_text=text;
 
-	SG_REF(tokenizer);
+	
 	m_tokenizer=tokenizer;
 
 	if (m_tokenizer!=NULL)
@@ -30,7 +30,7 @@ CParser::CParser(SGVector<char> text, CTokenizer* tokenizer)
 
 CParser::~CParser()
 {
-	SG_UNREF(m_tokenizer);
+	
 }
 
 bool CParser::has_next()
@@ -140,10 +140,10 @@ void CParser::set_text(SGVector<char> text)
 		m_tokenizer->set_text(m_text);
 }
 
-void CParser::set_tokenizer(CTokenizer* tokenizer)
+void CParser::set_tokenizer(std::shared_ptr<CTokenizer> tokenizer)
 {
-	SG_REF(tokenizer);
-	SG_UNREF(m_tokenizer);
+	
+	
 	m_tokenizer=tokenizer;
 
 	if (m_tokenizer!=NULL)

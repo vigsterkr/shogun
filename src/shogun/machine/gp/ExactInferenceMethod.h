@@ -77,8 +77,8 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CExactInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	CExactInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
 
 	virtual ~CExactInferenceMethod();
 
@@ -99,7 +99,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CExactInferenceMethod object
 	 */
-	static CExactInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CExactInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -191,7 +191,7 @@ public:
          *
          * @param minimizer minimizer used in inference method
          */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;

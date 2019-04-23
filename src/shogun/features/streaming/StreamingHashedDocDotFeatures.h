@@ -52,8 +52,8 @@ public:
 	 * @param tzer the tokenizer to use on the document collection
 	 * @param bits the number of bits of the new dimension (means a dimension of size 2^bits)
 	 */
-	CStreamingHashedDocDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size,
-			CTokenizer* tzer, int32_t bits=20);
+	CStreamingHashedDocDotFeatures(std::shared_ptr<CStreamingFile> file, bool is_labelled, int32_t size,
+			std::shared_ptr<CTokenizer> tzer, int32_t bits=20);
 
 	/**
 	 * Constructor taking a CDotFeatures object and optionally,
@@ -71,7 +71,7 @@ public:
 	 * @param bits the number of bits of the new dimension (means a dimension of size 2^bits)
 	 * @param lab labels (optional)
 	 */
-	CStreamingHashedDocDotFeatures(CStringFeatures<char>* dot_features,CTokenizer* tzer,
+	CStreamingHashedDocDotFeatures(std::shared_ptr<CStringFeatures<char>> dot_features,std::shared_ptr<CTokenizer> tzer,
 			int32_t bits=20, float64_t* lab=NULL);
 
 	/** Destructor */
@@ -83,7 +83,7 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float32_t dot(CStreamingDotFeatures* df);
+	virtual float32_t dot(std::shared_ptr<CStreamingDotFeatures> df);
 
 	/** compute dot product between current vector and a dense vector
 	 *
@@ -224,7 +224,7 @@ public:
 	void set_k_skip_n_grams(int32_t k, int32_t n);
 
 private:
-	void init(CStreamingFile* file, bool is_labelled, int32_t size, CTokenizer* tzer,
+	void init(std::shared_ptr<CStreamingFile> file, bool is_labelled, int32_t size, std::shared_ptr<CTokenizer> tzer,
 		int32_t bits, bool normalize, int32_t n_grams, int32_t skips);
 
 protected:
@@ -236,10 +236,10 @@ protected:
 	SGSparseVector<float64_t> current_vector;
 
 	/** CTokenizer */
-	CTokenizer *tokenizer;
+	std::shared_ptr<CTokenizer >tokenizer;
 
 	/** Converter */
-	CHashedDocConverter* converter;
+	std::shared_ptr<CHashedDocConverter> converter;
 
 	/** The parser */
 	CInputParser<char> parser;

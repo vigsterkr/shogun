@@ -53,6 +53,8 @@
 using namespace shogun;
 using namespace internal;
 
+using FeatureVector = std::vector<std::shared_ptr<CFeatures>>;
+
 struct CStreamingMMD::Self
 {
 	Self(CStreamingMMD& cmmd);
@@ -61,8 +63,8 @@ struct CStreamingMMD::Self
 	void create_variance_job();
 	void create_computation_jobs();
 
-	void merge_samples(NextSamples&, std::vector<CFeatures*>&) const;
-	void compute_kernel(ComputationManager&, std::vector<CFeatures*>&, CKernel*) const;
+	void merge_samples(NextSamples&, FeatureVector&) const;
+	void compute_kernel(ComputationManager&, FeatureVector&, std::shared_ptr<CKernel>) const;
 	void compute_jobs(ComputationManager&) const;
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
@@ -131,21 +133,21 @@ void CStreamingMMD::Self::create_variance_job()
 	};
 }
 
-void CStreamingMMD::Self::merge_samples(NextSamples& next_burst, std::vector<CFeatures*>& blocks) const
+void CStreamingMMD::Self::merge_samples(NextSamples& next_burst, FeatureVector& blocks) const
 {
 	blocks.resize(next_burst.num_blocks());
 #pragma omp parallel for
 	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
 	{
-		CFeatures *block_p=next_burst[0][i];
-		CFeatures *block_q=next_burst[1][i];
+		std::shared_ptr<CFeatures> block_p=next_burst[0][i];
+		std::shared_ptr<CFeatures> block_q=next_burst[1][i];
 		auto block_p_and_q=block_p->create_merged_copy(block_q);
 		blocks[i]=block_p_and_q;
 	}
 	next_burst.clear();
 }
 
-void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFeatures*>& blocks, CKernel* kernel) const
+void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& blocks, std::shared_ptr<CKernel> kernel) const
 {
 	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
 	cm.num_data(blocks.size());
@@ -154,7 +156,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, std::vector<CFe
 	{
 		try
 		{
-			auto kernel_clone=std::unique_ptr<CKernel>(static_cast<CKernel*>(kernel->clone()));
+			auto kernel_clone=kernel->clone()->as<CKernel>();
 			kernel_clone->init(blocks[i], blocks[i]);
 			cm.data(i)=kernel_clone->get_kernel_matrix<float32_t>();
 			kernel_clone->remove_lhs_and_rhs();
@@ -196,7 +198,7 @@ std::pair<float64_t, float64_t> CStreamingMMD::Self::compute_statistic_variance(
 		cm.enqueue_job(statistic_job);
 		cm.enqueue_job(variance_job);
 
-		std::vector<CFeatures*> blocks;
+		FeatureVector blocks;
 
 		while (!next_burst.empty())
 		{
@@ -276,7 +278,7 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 
 	data_mgr.start();
 	auto next_burst=data_mgr.next();
-	std::vector<CFeatures*> blocks;
+	FeatureVector blocks;
 	std::vector<std::vector<float32_t> > mmds(num_kernels);
 	while (!next_burst.empty())
 	{
@@ -285,10 +287,9 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 				"The number of blocks per burst (%d this burst) has to be even!\n",
 				num_blocks);
 		merge_samples(next_burst, blocks);
-		std::for_each(blocks.begin(), blocks.end(), [](CFeatures* ptr) { SG_REF(ptr); });
 		for (auto k=0; k<num_kernels; ++k)
 		{
-			CKernel* kernel=kernel_selection_mgr.kernel_at(k);
+			auto kernel=kernel_selection_mgr.kernel_at(k);
 			compute_kernel(cm, blocks, kernel);
 			compute_jobs(cm);
 			mmds[k]=cm.result(0);
@@ -298,7 +299,6 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 				statistic[k]+=delta/term_counters_statistic[k]++;
 			}
 		}
-		std::for_each(blocks.begin(), blocks.end(), [](CFeatures* ptr) { SG_UNREF(ptr); });
 		blocks.resize(0);
 		for (auto i=0; i<num_kernels; ++i)
 		{
@@ -344,7 +344,7 @@ SGVector<float64_t> CStreamingMMD::Self::sample_null()
 	create_statistic_job();
 	cm.enqueue_job(permutation_job);
 
-	std::vector<CFeatures*> blocks;
+	FeatureVector blocks;
 
 	data_mgr.start();
 	auto next_burst=data_mgr.next();

@@ -26,12 +26,12 @@ CKMeansMiniBatch::CKMeansMiniBatch():CKMeansBase()
 	init_mb_params();
 }
 
-CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, CDistance* d_i, bool use_kmpp_i):CKMeansBase(k_i, d_i, use_kmpp_i)
+CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, std::shared_ptr<CDistance> d_i, bool use_kmpp_i):CKMeansBase(k_i, d_i, use_kmpp_i)
 {
 	init_mb_params();
 }
 
-CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i):CKMeansBase(k_i, d_i, centers_i)
+CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i):CKMeansBase(k_i, d_i, centers_i)
 {
 	init_mb_params();
 }
@@ -49,10 +49,10 @@ void CKMeansMiniBatch::minibatch_KMeans()
 		              "iterations %d \n",
 		max_iter);
 
-	CDenseFeatures<float64_t>* lhs=
+	auto lhs=
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
-	auto rhs_mus=some<CDenseFeatures<float64_t>>(mus);
-	CFeatures* rhs_cache=distance->replace_rhs(rhs_mus);
+	auto rhs_mus=std::make_shared<CDenseFeatures<float64_t>>(mus);
+	auto rhs_cache=distance->replace_rhs(rhs_mus);
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dims=lhs->get_num_features();
 
@@ -96,7 +96,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 		mus = rhs_mus->get_feature_matrix();
 		observe<SGMatrix<float64_t>>(i, "mus");
 	}
-	SG_UNREF(lhs);
+
 	distance->replace_rhs(rhs_cache);
 }
 
@@ -127,7 +127,7 @@ void CKMeansMiniBatch::init_mb_params()
 		&batch_size, "batch_size", "batch size for mini-batch KMeans");
 }
 
-bool CKMeansMiniBatch::train_machine(CFeatures* data)
+bool CKMeansMiniBatch::train_machine(std::shared_ptr<CFeatures> data)
 {
 	initialize_training(data);
 	minibatch_KMeans();

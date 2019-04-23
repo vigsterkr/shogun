@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Soeren Sonnenburg, Heiko Strathmann, Saloni Nigam, 
+ * Authors: Thoralf Klein, Soeren Sonnenburg, Heiko Strathmann, Saloni Nigam,
  *          Sergey Lisitsyn
  */
 #ifndef __STREAMING_FILE_H__
@@ -271,7 +271,7 @@ template <class ST> struct SGSparseVectorEntry;
 	protected:
 
 		/// Buffer to hold stuff in memory
-		CIOBuffer* buf;
+		std::shared_ptr<CIOBuffer> buf;
 		/// Task
 		char task;
 		/// Name of the handled file

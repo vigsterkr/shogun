@@ -74,10 +74,10 @@ public:
 	 *
 	 * @param kernel_p The kernel instance to be used for samples from p
 	 */
-	void set_kernel_p(CKernel* kernel_p);
+	void set_kernel_p(std::shared_ptr<CKernel> kernel_p);
 
 	/** @return The kernel instance that is used for samples from p */
-	CKernel* get_kernel_p() const;
+	std::shared_ptr<CKernel> get_kernel_p() const;
 
 	/**
 	 * Method that sets the kernel to be used for performing the test for the
@@ -85,10 +85,10 @@ public:
 	 *
 	 * @param kernel_q The kernel instance to be used for samples from q
 	 */
-	void set_kernel_q(CKernel* kernel_q);
+	void set_kernel_q(std::shared_ptr<CKernel> kernel_q);
 
 	/** @return The kernel instance that is used for samples from q */
-	CKernel* get_kernel_q() const;
+	std::shared_ptr<CKernel> get_kernel_q() const;
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

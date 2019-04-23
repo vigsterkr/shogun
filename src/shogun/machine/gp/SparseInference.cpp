@@ -52,11 +52,11 @@ void CSparseInference::check_features()
 
 void CSparseInference::convert_features()
 {
-	CDotFeatures *feat_type=dynamic_cast<CDotFeatures *>(m_features);
+	auto feat_type=m_features->as<CDotFeatures>();
 
 	SGMatrix<float64_t>lat_m(m_inducing_features.matrix,
 		m_inducing_features.num_rows,m_inducing_features.num_cols,false);
-	CDotFeatures *lat_type=new CDenseFeatures<float64_t>(lat_m);
+	auto lat_type=std::make_shared<CDenseFeatures<float64_t>>(lat_m);
 
 	REQUIRE(feat_type, "Input features (%s) must be DotFeatures"
 		" or one of its subclasses\n", m_features->get_name())
@@ -80,15 +80,15 @@ void CSparseInference::convert_features()
 		}
 		SG_WARNING("Input features may be deleted\n");
 		SGMatrix<float64_t> feat_m=feat_type->get_computed_dot_feature_matrix();
-		SG_UNREF(m_features);
-		m_features=new CDenseFeatures<float64_t>(feat_m);
-		SG_REF(m_features);
+
+		m_features=std::make_shared<CDenseFeatures<float64_t>>(feat_m);
+
 	}
-	SG_UNREF(lat_type);
+
 }
 
-CSparseInference::CSparseInference(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
+CSparseInference::CSparseInference(std::shared_ptr<CKernel> kern, std::shared_ptr<CFeatures> feat,
+		std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod, std::shared_ptr<CFeatures> lat)
 		: CInference(kern, feat, m, lab, mod)
 {
 	init();
@@ -159,7 +159,7 @@ void CSparseInference::update_train_kernel()
 	m_kernel->init(m_features, m_features);
 	m_ktrtr_diag=m_kernel->get_kernel_diagonal();
 
-	CFeatures* inducing_features=get_inducing_features();
+	auto inducing_features=get_inducing_features();
 
 	// create kernel matrix for inducing features
 	m_kernel->init(inducing_features, inducing_features);
@@ -169,6 +169,6 @@ void CSparseInference::update_train_kernel()
 	m_kernel->init(inducing_features, m_features);
 	m_ktru=m_kernel->get_kernel_matrix();
 
-	SG_UNREF(inducing_features);
+
 }
 

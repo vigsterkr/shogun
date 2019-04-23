@@ -120,7 +120,7 @@ SGVector<float64_t> CLogitDVGLikelihood::get_dual_first_derivative(
 
 void CLogitDVGLikelihood::init_likelihood()
 {
-	set_likelihood(new CLogitVGLikelihood());
+	set_likelihood(std::make_shared<CLogitVGLikelihood>());
 }
 
 void CLogitDVGLikelihood::init()

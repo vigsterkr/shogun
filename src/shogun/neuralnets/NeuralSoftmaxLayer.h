@@ -69,7 +69,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+			std::shared_ptr<CDynamicObjectArray> layers);
 
 	/** Computes the gradients of the error with respect to this layer's
 	 * pre-activations. Results are stored in m_local_gradients.

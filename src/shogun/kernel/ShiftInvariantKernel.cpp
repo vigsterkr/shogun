@@ -39,7 +39,7 @@ CShiftInvariantKernel::CShiftInvariantKernel() : CKernel(0)
 	register_params();
 }
 
-CShiftInvariantKernel::CShiftInvariantKernel(CFeatures *l, CFeatures *r) : CKernel(l, r, 0)
+CShiftInvariantKernel::CShiftInvariantKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r) : CKernel(l, r, 0)
 {
 	register_params();
 	init(l, r);
@@ -48,10 +48,10 @@ CShiftInvariantKernel::CShiftInvariantKernel(CFeatures *l, CFeatures *r) : CKern
 CShiftInvariantKernel::~CShiftInvariantKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CShiftInvariantKernel::init(CFeatures* l, CFeatures* r)
+bool CShiftInvariantKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	REQUIRE(m_distance, "The distance instance cannot be NULL!\n");
 	CKernel::init(l,r);
@@ -67,8 +67,8 @@ void CShiftInvariantKernel::precompute_distance()
 	SGMatrix<float32_t> dist_mat=m_distance->get_distance_matrix<float32_t>();
 	if (m_precomputed_distance==NULL)
 	{
-		m_precomputed_distance=new CCustomDistance();
-		SG_REF(m_precomputed_distance);
+		m_precomputed_distance=std::make_shared<CCustomDistance>();
+		
 	}
 
 	if (lhs==rhs)
@@ -79,7 +79,7 @@ void CShiftInvariantKernel::precompute_distance()
 
 void CShiftInvariantKernel::cleanup()
 {
-	SG_UNREF(m_precomputed_distance);
+	
 	m_precomputed_distance=NULL;
 	CKernel::cleanup();
 	m_distance->cleanup();
@@ -102,24 +102,24 @@ float64_t CShiftInvariantKernel::distance(int32_t a, int32_t b) const
 
 void CShiftInvariantKernel::register_params()
 {
-	SG_ADD((CSGObject**) &m_distance, "m_distance", "Distance to be used.");
-	SG_ADD((CSGObject**) &m_precomputed_distance, "m_precomputed_distance", "Precomputed istance to be used.");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_distance, "m_distance", "Distance to be used.");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_precomputed_distance, "m_precomputed_distance", "Precomputed istance to be used.");
 
 	m_distance=NULL;
 	m_precomputed_distance=NULL;
 }
 
-void CShiftInvariantKernel::set_precomputed_distance(CCustomDistance* precomputed_distance)
+void CShiftInvariantKernel::set_precomputed_distance(std::shared_ptr<CCustomDistance> precomputed_distance)
 {
 	REQUIRE(precomputed_distance, "The precomputed distance instance cannot be NULL!\n");
-	SG_REF(precomputed_distance);
-	SG_UNREF(m_precomputed_distance);
+	
+	
 	m_precomputed_distance=precomputed_distance;
 }
 
-CCustomDistance* CShiftInvariantKernel::get_precomputed_distance() const
+std::shared_ptr<CCustomDistance> CShiftInvariantKernel::get_precomputed_distance() const
 {
 	REQUIRE(m_precomputed_distance, "The precomputed distance instance cannot be NULL!\n");
-	SG_REF(m_precomputed_distance);
+	
 	return m_precomputed_distance;
 }

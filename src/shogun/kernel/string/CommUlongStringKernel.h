@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser,
  *          Evangelos Anagnostopoulos
  */
 
@@ -64,7 +64,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param size cache size
 		 */
 		CCommUlongStringKernel(
-			CStringFeatures<uint64_t>* l, CStringFeatures<uint64_t>* r,
+			std::shared_ptr<CStringFeatures<uint64_t>> l, std::shared_ptr<CStringFeatures<uint64_t>> r,
 			bool use_sign=false,
 			int32_t size=10);
 
@@ -76,7 +76,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

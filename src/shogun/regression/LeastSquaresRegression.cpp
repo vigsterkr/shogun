@@ -20,7 +20,7 @@ CLeastSquaresRegression::CLeastSquaresRegression()
 	m_tau=0;
 }
 
-CLeastSquaresRegression::CLeastSquaresRegression(CDenseFeatures<float64_t>* data, CLabels* lab)
+CLeastSquaresRegression::CLeastSquaresRegression(std::shared_ptr<CDenseFeatures<float64_t>> data, std::shared_ptr<CLabels> lab)
 : CLinearRidgeRegression(0, data, lab)
 {
 }

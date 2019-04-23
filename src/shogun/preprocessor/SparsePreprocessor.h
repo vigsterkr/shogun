@@ -42,7 +42,7 @@ public:
 	 * @param features the sparse input features
 	 * @return the result feature object after applying the preprocessor
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace);
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
@@ -73,9 +73,9 @@ protected:
 };
 
 template <class ST>
-CFeatures* CSparsePreprocessor<ST>::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CSparsePreprocessor<ST>::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
-	SG_REF(features);
+	
 
 	auto feature_matrix =
 		features->as<CSparseFeatures<ST>>()->get_sparse_feature_matrix();
@@ -89,7 +89,7 @@ CFeatures* CSparsePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 	apply_to_sparse_matrix(feature_matrix);
 
 	auto processed = new CSparseFeatures<ST>(feature_matrix);
-	SG_UNREF(features);
+	
 
 	return processed;
 }

@@ -61,7 +61,7 @@ void CVariationalGaussianLikelihood::set_noise_factor(float64_t noise_factor)
 }
 
 bool CVariationalGaussianLikelihood::set_variational_distribution(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, const CLabels* lab)
+	SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab)
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n");
 	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),

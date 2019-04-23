@@ -38,15 +38,14 @@ CDirectLinearSolverComplex::~CDirectLinearSolverComplex()
 }
 
 SGVector<complex128_t> CDirectLinearSolverComplex::solve(
-		CLinearOperator<complex128_t>* A, SGVector<float64_t> b)
+		std::shared_ptr<CLinearOperator<complex128_t>> A, SGVector<float64_t> b)
 {
 	SGVector<complex128_t> x(b.vlen);
 
 	REQUIRE(A, "Operator is NULL!\n");
 	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
 
-	CDenseMatrixOperator<complex128_t> *op=
-		dynamic_cast<CDenseMatrixOperator<complex128_t>*>(A);
+	auto op=A->as<CDenseMatrixOperator<complex128_t>>();
 	REQUIRE(op, "Operator is not CDenseMatrixOperator<complex128_t, float64_t> type!\n");
 
 	SGMatrix<complex128_t> mat_A=op->get_matrix_operator();

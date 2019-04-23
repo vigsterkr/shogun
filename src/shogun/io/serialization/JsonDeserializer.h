@@ -16,8 +16,8 @@ namespace shogun
 		public:
 			CJsonDeserializer();
 			~CJsonDeserializer() override;
-			Some<CSGObject> read_object() override;
-			void read(CSGObject* _this) override;
+			std::shared_ptr<CSGObject> read_object() override;
+			void read(std::shared_ptr<CSGObject> _this) override;
 			virtual const char* get_name() const
 			{
 				return "JsonDeserializer";

@@ -62,7 +62,7 @@ public:
 	 *
 	 * @param method inference method
 	 */
-	CGaussianProcessClassification(CInference* method);
+	CGaussianProcessClassification(std::shared_ptr<CInference> method);
 
 	virtual ~CGaussianProcessClassification();
 
@@ -72,7 +72,7 @@ public:
 	 *
 	 * @return classified labels (label is either -1 or 1)
 	 */
-	virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+	virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
 
 	/** returns a vector of of the posterior predictive means
 	 *
@@ -80,7 +80,7 @@ public:
 	 *
 	 * @return mean vector
 	 */
-	SGVector<float64_t> get_mean_vector(CFeatures* data);
+	SGVector<float64_t> get_mean_vector(std::shared_ptr<CFeatures> data);
 
 	/** returns a vector of the posterior predictive variances
 	 *
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return variance vector
 	 */
-	SGVector<float64_t> get_variance_vector(CFeatures* data);
+	SGVector<float64_t> get_variance_vector(std::shared_ptr<CFeatures> data);
 
 	/** returns probabilities \f$p(y_*=1)\f$ for each (test) feature \f$x_*\f$
 	 *
@@ -96,7 +96,7 @@ public:
 	 *
 	 * @return vector of probabilities
 	 */
-	SGVector<float64_t> get_probabilities(CFeatures* data);
+	SGVector<float64_t> get_probabilities(std::shared_ptr<CFeatures> data);
 
 	/** get classifier type
 	 *
@@ -121,7 +121,7 @@ public:
 	 *
 	 * @return classified labels (label starts from 0)
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
 
 protected:
 	/** train classifier
@@ -130,7 +130,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 };
 }

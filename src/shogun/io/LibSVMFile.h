@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jiaolong Xu, Evgeniy Andreev, Bjoern Esser, Soeren Sonnenburg, 
- *          Heiko Strathmann, Yuyu Zhang, Thoralf Klein, Evan Shelhamer, 
+ * Authors: Jiaolong Xu, Evgeniy Andreev, Bjoern Esser, Soeren Sonnenburg,
+ *          Heiko Strathmann, Yuyu Zhang, Thoralf Klein, Evan Shelhamer,
  *          Abhinav Agarwalla
  */
 
@@ -342,22 +342,22 @@ private:
 	char m_delimiter_label;
 
 	/** object for reading lines from file */
-	CLineReader* m_line_reader;
+	std::shared_ptr<CLineReader> m_line_reader;
 
 	/** parser of lines */
-	CParser* m_parser;
+	std::shared_ptr<CParser> m_parser;
 
 	/** tokenizer for line_reader */
-	CDelimiterTokenizer* m_line_tokenizer;
+	std::shared_ptr<CDelimiterTokenizer> m_line_tokenizer;
 
 	/** delimiter for parsing lines */
-	CDelimiterTokenizer* m_whitespace_tokenizer;
+	std::shared_ptr<CDelimiterTokenizer> m_whitespace_tokenizer;
 
 	/** delimiter for parsing sparse entries */
-	CDelimiterTokenizer* m_delimiter_feat_tokenizer;
+	std::shared_ptr<CDelimiterTokenizer> m_delimiter_feat_tokenizer;
 
 	/** delimiter for parsing multiple labels */
-	CDelimiterTokenizer* m_delimiter_label_tokenizer;
+	std::shared_ptr<CDelimiterTokenizer> m_delimiter_label_tokenizer;
    };
 
 }

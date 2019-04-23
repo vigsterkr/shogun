@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Thoralf Klein, Heiko Strathmann, Yuyu Zhang, 
+ * Authors: Evgeniy Andreev, Thoralf Klein, Heiko Strathmann, Yuyu Zhang,
  *          Fernando Iglesias, Bjoern Esser, Soeren Sonnenburg, Saurabh Goyal
  */
 
@@ -30,7 +30,7 @@ public:
 	 * @param stream readable stream
 	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
-	CLineReader(FILE* stream, CTokenizer* tokenizer);
+	CLineReader(FILE* stream, std::shared_ptr<CTokenizer> tokenizer);
 
 	/** create object associated with the stream to read
 	 * and specify maximum length of a string that can be read
@@ -39,7 +39,7 @@ public:
 	 * @param stream readable stream
 	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
-	CLineReader(int32_t max_string_length, FILE* stream, CTokenizer* tokenizer);
+	CLineReader(int32_t max_string_length, FILE* stream, std::shared_ptr<CTokenizer> tokenizer);
 
 	/** deconstructor */
 	virtual ~CLineReader();
@@ -63,7 +63,7 @@ public:
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(CTokenizer* tokenizer);
+	void set_tokenizer(std::shared_ptr<CTokenizer> tokenizer);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "LineReader"; }
@@ -80,10 +80,10 @@ private:
 
 private:
 	/** internal buffer for searching */
-	CCircularBuffer* m_buffer;
+	std::shared_ptr<CCircularBuffer> m_buffer;
 
 	/** */
-	CTokenizer* m_tokenizer;
+	std::shared_ptr<CTokenizer> m_tokenizer;
 
 	/** readable stream */
 	FILE* m_stream;

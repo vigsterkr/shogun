@@ -182,16 +182,16 @@ private:
 
 protected:
     /** object for reading lines from file */
-    CLineReader* m_line_reader;
+    std::shared_ptr<CLineReader> m_line_reader;
 
     /** parser of lines */
-    CParser* m_parser;
+    std::shared_ptr<CParser> m_parser;
 
     /** tokenizer for line_reader */
-    CDelimiterTokenizer* m_line_tokenizer;
+    std::shared_ptr<CDelimiterTokenizer> m_line_tokenizer;
 
     /** tokenizer for parser */
-    CDelimiterTokenizer* m_tokenizer;
+    std::shared_ptr<CDelimiterTokenizer> m_tokenizer;
 
     /** delimiter */
     char m_delimiter;

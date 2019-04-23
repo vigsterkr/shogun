@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Heiko Strathmann, Jiaolong Xu, Bjoern Esser, 
+ * Authors: Shell Hu, Heiko Strathmann, Jiaolong Xu, Bjoern Esser,
  *          Sergey Lisitsyn
  */
 
@@ -15,7 +15,7 @@ CFactor::CFactor() : CSGObject()
 	init();
 }
 
-CFactor::CFactor(CTableFactorType* ftype,
+CFactor::CFactor(std::shared_ptr<CTableFactorType> ftype,
 	SGVector<int32_t> var_index,
 	SGVector<float64_t> data) : CSGObject()
 {
@@ -34,11 +34,11 @@ CFactor::CFactor(CTableFactorType* ftype,
 	if (ftype->is_table() && m_is_data_dep)
 		m_energies.resize_vector(ftype->get_num_assignments());
 
-	SG_REF(m_factor_type);
-	SG_REF(m_data_source);
+
+
 }
 
-CFactor::CFactor(CTableFactorType* ftype,
+CFactor::CFactor(std::shared_ptr<CTableFactorType> ftype,
 	SGVector<int32_t> var_index,
 	SGSparseVector<float64_t> data_sparse) : CSGObject()
 {
@@ -57,13 +57,13 @@ CFactor::CFactor(CTableFactorType* ftype,
 	if (ftype->is_table() && m_is_data_dep)
 		m_energies.resize_vector(ftype->get_num_assignments());
 
-	SG_REF(m_factor_type);
-	SG_REF(m_data_source);
+
+
 }
 
-CFactor::CFactor(CTableFactorType* ftype,
+CFactor::CFactor(std::shared_ptr<CTableFactorType> ftype,
 	SGVector<int32_t> var_index,
-	CFactorDataSource* data_source) : CSGObject()
+	std::shared_ptr<CFactorDataSource> data_source) : CSGObject()
 {
 	init();
 	m_factor_type = ftype;
@@ -78,26 +78,26 @@ CFactor::CFactor(CTableFactorType* ftype,
 	if (ftype->is_table())
 		m_energies.resize_vector(ftype->get_num_assignments());
 
-	SG_REF(m_factor_type);
-	SG_REF(m_data_source);
+
+
 }
 
 CFactor::~CFactor()
 {
-	SG_UNREF(m_factor_type);
-	SG_UNREF(m_data_source);
+
+
 }
 
-CTableFactorType* CFactor::get_factor_type() const
+std::shared_ptr<CTableFactorType> CFactor::get_factor_type() const
 {
-	SG_REF(m_factor_type);
+
 	return m_factor_type;
 }
 
-void CFactor::set_factor_type(CTableFactorType* ftype)
+void CFactor::set_factor_type(std::shared_ptr<CTableFactorType> ftype)
 {
 	m_factor_type = ftype;
-	SG_REF(m_factor_type);
+
 }
 
 const SGVector<int32_t> CFactor::get_variables() const
@@ -238,10 +238,10 @@ void CFactor::compute_gradients(
 
 void CFactor::init()
 {
-	SG_ADD((CSGObject**)&m_factor_type, "type_name", "Factor type name");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_factor_type, "type_name", "Factor type name");
 	SG_ADD(&m_var_index, "var_index", "Factor variable index");
 	SG_ADD(&m_energies, "energies", "Factor energies");
-	SG_ADD((CSGObject**)&m_data_source, "data_source", "Factor data source");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_data_source, "data_source", "Factor data source");
 	SG_ADD(&m_data, "data", "Factor data");
 	SG_ADD(&m_data_sparse, "data_sparse", "Sparse factor data");
 	SG_ADD(&m_is_data_dep, "is_data_dep", "Factor is data dependent or not");

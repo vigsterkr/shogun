@@ -42,7 +42,7 @@ public:
 	 *
 	 * @param task task to append
 	 */
-	void append_task(CTask* task);
+	void append_task(std::shared_ptr<CTask> task);
 
 	/** get number of tasks in the group
 	 *
@@ -70,7 +70,7 @@ private:
 protected:
 
 	/** tasks of the task group */
-	CDynamicObjectArray* m_tasks;
+	std::shared_ptr<CDynamicObjectArray> m_tasks;
 
 };
 }

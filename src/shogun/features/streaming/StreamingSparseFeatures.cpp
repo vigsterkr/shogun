@@ -19,7 +19,7 @@ CStreamingSparseFeatures<T>::CStreamingSparseFeatures() : CStreamingDotFeatures(
 }
 
 template <class T>
-CStreamingSparseFeatures<T>::CStreamingSparseFeatures(CStreamingFile* file,
+CStreamingSparseFeatures<T>::CStreamingSparseFeatures(std::shared_ptr<CStreamingFile> file,
 			 bool is_labelled,
 			 int32_t size)
 	: CStreamingDotFeatures()
@@ -267,14 +267,14 @@ void CStreamingSparseFeatures<T>::init()
 }
 
 template <class T>
-void CStreamingSparseFeatures<T>::init(CStreamingFile* file,
+void CStreamingSparseFeatures<T>::init(std::shared_ptr<CStreamingFile> file,
 				    bool is_labelled,
 				    int32_t size)
 {
 	init();
 	has_labels = is_labelled;
 	working_file = file;
-	SG_REF(working_file);
+	
 	parser.init(file, is_labelled, size);
 	parser.set_free_vector_after_release(false);
 }
@@ -344,7 +344,7 @@ int32_t CStreamingSparseFeatures<T>::get_dim_feature_space() const
 }
 
 template <class T>
-	float32_t CStreamingSparseFeatures<T>::dot(CStreamingDotFeatures* df)
+	float32_t CStreamingSparseFeatures<T>::dot(std::shared_ptr<CStreamingDotFeatures> df)
 {
 	SG_NOTIMPLEMENTED
 	return -1;

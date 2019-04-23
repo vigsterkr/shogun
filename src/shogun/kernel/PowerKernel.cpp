@@ -14,30 +14,30 @@ CPowerKernel::CPowerKernel(): CKernel(0), distance(NULL), m_degree(1.8)
 	init();
 }
 
-CPowerKernel::CPowerKernel(int32_t cache, float64_t degree, CDistance* dist)
+CPowerKernel::CPowerKernel(int32_t cache, float64_t degree, std::shared_ptr<CDistance> dist)
 : CKernel(cache), distance(dist), m_degree(degree)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 }
 
-CPowerKernel::CPowerKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist)
+CPowerKernel::CPowerKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t degree, std::shared_ptr<CDistance> dist)
 : CKernel(10), distance(dist), m_degree(degree)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init(l, r);
 }
 
 CPowerKernel::~CPowerKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-bool CPowerKernel::init(CFeatures* l, CFeatures* r)
+bool CPowerKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(distance)
 	CKernel::init(l,r);

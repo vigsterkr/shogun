@@ -48,7 +48,7 @@ CNeuralLinearLayer(num_neurons)
 
 void CNeuralRectifiedLinearLayer::compute_activations(
 		SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+		std::shared_ptr<CDynamicObjectArray> layers)
 {
 	CNeuralLinearLayer::compute_activations(parameters, layers);
 

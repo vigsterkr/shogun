@@ -43,7 +43,7 @@ class CHierarchical : public CDistanceMachine
 		 * @param merges the merges
 		 * @param d distance
 		 */
-		CHierarchical(int32_t merges, CDistance* d);
+		CHierarchical(int32_t merges, std::shared_ptr<CDistance> d);
 		virtual ~CHierarchical();
 
 		/** problem type */
@@ -117,7 +117,7 @@ class CHierarchical : public CDistanceMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 		/** TODO: Ensures cluster centers are in lhs of underlying distance
 		 * Currently: does nothing.

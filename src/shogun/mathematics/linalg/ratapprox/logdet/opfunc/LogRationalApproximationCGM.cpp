@@ -25,28 +25,28 @@ namespace shogun
 }
 
 CLogRationalApproximationCGM::CLogRationalApproximationCGM(
-	CLinearOperator<float64_t>* linear_operator, CEigenSolver* eigen_solver,
-	CCGMShiftedFamilySolver* linear_solver, float64_t desired_accuracy)
+	std::shared_ptr<CLinearOperator<float64_t>> linear_operator, std::shared_ptr<CEigenSolver> eigen_solver,
+	std::shared_ptr<CCGMShiftedFamilySolver> linear_solver, float64_t desired_accuracy)
 	: CRationalApproximation(
 	      linear_operator, eigen_solver, desired_accuracy, OF_LOG)
 {
 	init();
 
 	m_linear_solver=linear_solver;
-	SG_REF(m_linear_solver);
+
 }
 
 void CLogRationalApproximationCGM::init()
 {
 	m_linear_solver=NULL;
 
-	SG_ADD((CSGObject**)&m_linear_solver, "linear_solver",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_linear_solver, "linear_solver",
 		"Linear solver for complex systems");
 }
 
 CLogRationalApproximationCGM::~CLogRationalApproximationCGM()
 {
-	SG_UNREF(m_linear_solver);
+
 }
 
 float64_t

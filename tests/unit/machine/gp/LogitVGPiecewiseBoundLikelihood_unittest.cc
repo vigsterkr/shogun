@@ -92,9 +92,9 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_expection)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
+	auto lik = std::make_shared<CLogitVGPiecewiseBoundLikelihood>();
 	lik->set_default_variational_bound();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	SGVector<float64_t> fi = lik->get_variational_expection();
@@ -122,8 +122,8 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_expection)
 	EXPECT_NEAR(fi[9],  -128.0001894653420,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2)
@@ -170,9 +170,9 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
+	auto lik = std::make_shared<CLogitVGPiecewiseBoundLikelihood>();
 	lik->set_default_variational_bound();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
@@ -202,8 +202,8 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_sigma2
 	EXPECT_NEAR(gvi[9],  -0.000000017317396,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
@@ -249,9 +249,9 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	v[8] = 64;
 	v[9] = 625;
 
-	CLogitVGPiecewiseBoundLikelihood *lik = new CLogitVGPiecewiseBoundLikelihood();
+	auto lik = std::make_shared<CLogitVGPiecewiseBoundLikelihood>();
 	lik->set_default_variational_bound();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
@@ -281,7 +281,7 @@ TEST(LogitVGPiecewiseBoundLikelihood,get_variational_first_derivative_wrt_mu)
 	EXPECT_NEAR(gmi[9],  -0.999999835858964,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 

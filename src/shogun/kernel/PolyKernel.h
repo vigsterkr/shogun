@@ -44,7 +44,7 @@ class CPolyKernel: public CDotKernel
 		 * @param c trade-off parameter
 		 * @param size cache size
 		 */
-		CPolyKernel(CDotFeatures* l, CDotFeatures* r,
+		CPolyKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r,
 			int32_t d, float64_t c, float64_t gamma, int32_t size=10);
 
 		/** constructor
@@ -64,7 +64,7 @@ class CPolyKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

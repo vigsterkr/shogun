@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Thoralf Klein, Pan Deng, Evgeniy Andreev,
  *          Viktor Gal, Giovanni De Toni, Heiko Strathmann, Bjoern Esser
  */
 
@@ -33,10 +33,10 @@
 
 namespace shogun
 {
-	Parallel* sg_parallel=NULL;
-	SGIO* sg_io=NULL;
-	Version* sg_version=NULL;
-	CRandom* sg_rand=NULL;
+	std::shared_ptr<Parallel> sg_parallel=NULL;
+	std::shared_ptr<SGIO> sg_io=NULL;
+	std::shared_ptr<Version> sg_version=NULL;
+	std::shared_ptr<CRandom> sg_rand=NULL;
 	std::unique_ptr<CSignal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
@@ -62,22 +62,17 @@ namespace shogun
 	    const std::function<void(FILE*, const char*)> print_error)
 	{
 		if (!sg_io)
-			sg_io = new shogun::SGIO();
+			sg_io = std::make_shared<shogun::SGIO>();
 		if (!sg_parallel)
-			sg_parallel=new shogun::Parallel();
+			sg_parallel=std::make_shared<shogun::Parallel>();
 		if (!sg_version)
-			sg_version = new shogun::Version();
+			sg_version = std::make_shared<shogun::Version>();
 		if (!sg_rand)
-			sg_rand = new shogun::CRandom();
+			sg_rand = std::make_shared<shogun::CRandom>();
 		if (!sg_linalg)
 			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
 		if (!sg_signal)
 			sg_signal = std::unique_ptr<CSignal>(new shogun::CSignal());
-
-		SG_REF(sg_io);
-		SG_REF(sg_parallel);
-		SG_REF(sg_version);
-		SG_REF(sg_rand);
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
@@ -102,10 +97,10 @@ namespace shogun
 
 	void exit_shogun()
 	{
-		SG_UNREF(sg_rand);
-		SG_UNREF(sg_version);
-		SG_UNREF(sg_parallel);
-		SG_UNREF(sg_io);
+		sg_rand.reset();
+		sg_version.reset();
+		sg_parallel.reset();
+		sg_io.reset();
 
 		delete CSignal::m_subscriber;
 		delete CSignal::m_observable;
@@ -116,16 +111,13 @@ namespace shogun
 #endif
 	}
 
-	void set_global_io(SGIO* io)
+	void set_global_io(std::shared_ptr<SGIO> io)
 	{
-		SG_REF(io);
-		SG_UNREF(sg_io);
 		sg_io=io;
 	}
 
-	SGIO* get_global_io()
+	std::shared_ptr<SGIO> get_global_io()
 	{
-		SG_REF(sg_io);
 		return sg_io;
 	}
 
@@ -149,42 +141,33 @@ namespace shogun
 		return sg_fequals_tolerant;
 	}
 
-	void set_global_parallel(Parallel* parallel)
+	void set_global_parallel(std::shared_ptr<Parallel> parallel)
 	{
-		SG_REF(parallel);
-		SG_UNREF(sg_parallel);
 		sg_parallel=parallel;
 	}
 
-	Parallel* get_global_parallel()
+	std::shared_ptr<Parallel> get_global_parallel()
 	{
-		SG_REF(sg_parallel);
 		return sg_parallel;
 	}
 
-	void set_global_version(Version* version)
+	void set_global_version(std::shared_ptr<Version> version)
 	{
-		SG_REF(version);
-		SG_UNREF(sg_version);
 		sg_version=version;
 	}
 
-	Version* get_global_version()
+	std::shared_ptr<Version> get_global_version()
 	{
-		SG_REF(sg_version);
 		return sg_version;
 	}
 
-	void set_global_rand(CRandom* rand)
+	void set_global_rand(std::shared_ptr<CRandom> rand)
 	{
-		SG_REF(rand);
-		SG_UNREF(sg_rand);
 		sg_rand=rand;
 	}
 
-	CRandom* get_global_rand()
+	std::shared_ptr<CRandom> get_global_rand()
 	{
-		SG_REF(sg_rand);
 		return sg_rand;
 	}
 
@@ -203,7 +186,7 @@ namespace shogun
 	void init_from_env()
 	{
 		char* env_log_val = NULL;
-		SGIO* io = get_global_io();
+		auto io = get_global_io();
 		env_log_val = getenv("SHOGUN_LOG_LEVEL");
 		if (env_log_val)
 		{
@@ -214,10 +197,9 @@ namespace shogun
 			else if(strncmp(env_log_val, "ERROR", 5) == 0)
 				io->set_loglevel(MSG_ERROR);
 		}
-		SG_UNREF(io);
 
 		char* env_warnings_val = NULL;
-		SGLinalg* linalg = get_global_linalg();
+		auto linalg = get_global_linalg();
 		env_warnings_val = getenv("SHOGUN_GPU_WARNINGS");
 		if (env_warnings_val)
 		{
@@ -226,7 +208,7 @@ namespace shogun
 		}
 
 		char* env_thread_val = NULL;
-		Parallel* parallel = get_global_parallel();
+		auto parallel = get_global_parallel();
 		env_thread_val = getenv("SHOGUN_NUM_THREADS");
 		if (env_thread_val)
 		{

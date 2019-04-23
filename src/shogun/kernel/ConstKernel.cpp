@@ -27,7 +27,7 @@ CConstKernel::CConstKernel(float64_t c)
 	const_value=c;
 }
 
-CConstKernel::CConstKernel(CFeatures* l, CFeatures* r, float64_t c)
+CConstKernel::CConstKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r, float64_t c)
 : CKernel()
 {
 	init();
@@ -39,7 +39,7 @@ CConstKernel::~CConstKernel()
 {
 }
 
-bool CConstKernel::init(CFeatures* l, CFeatures* r)
+bool CConstKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CKernel::init(l, r);
 	return init_normalizer();

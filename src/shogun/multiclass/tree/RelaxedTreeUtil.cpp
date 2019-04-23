@@ -11,10 +11,10 @@
 
 using namespace shogun;
 
-SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMachine *machine, CFeatures *X, CMulticlassLabels *Y, int32_t num_classes)
+SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(std::shared_ptr<CBaseMulticlassMachine >machine, std::shared_ptr<CFeatures >X, std::shared_ptr<CMulticlassLabels >Y, int32_t num_classes)
 {
 	const int32_t N_splits = 2; // 5
-	CCrossValidationSplitting *split = new CCrossValidationSplitting(Y, N_splits);
+	auto split = std::make_shared<CCrossValidationSplitting>(Y, N_splits);
 	split->build_subsets();
 
 	SGMatrix<float64_t> conf_mat(num_classes, num_classes), tmp_mat(num_classes, num_classes);
@@ -33,7 +33,7 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 		SGVector<index_t> subset_indices = split->generate_subset_indices(i);
 		auto feats_subset = view(X, subset_indices);
 		auto labels_subset = view(Y, subset_indices);
-		CMulticlassLabels* pred = machine->apply_multiclass(feats_subset);
+		auto pred = machine->apply_multiclass(feats_subset);
 
 		get_confusion_matrix(tmp_mat, labels_subset, pred);
 
@@ -45,10 +45,10 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 			}
 		}
 
-		SG_UNREF(pred);
+
 	}
 
-	SG_UNREF(split);
+
 
 	for (index_t j=0; j < tmp_mat.num_rows; ++j)
 	{
@@ -61,7 +61,7 @@ SGMatrix<float64_t> RelaxedTreeUtil::estimate_confusion_matrix(CBaseMulticlassMa
 	return conf_mat;
 }
 
-void RelaxedTreeUtil::get_confusion_matrix(SGMatrix<float64_t> &conf_mat, CMulticlassLabels *gt, CMulticlassLabels *pred)
+void RelaxedTreeUtil::get_confusion_matrix(SGMatrix<float64_t> &conf_mat, std::shared_ptr<CMulticlassLabels >gt, std::shared_ptr<CMulticlassLabels >pred)
 {
 	SGMatrix<int32_t> conf_mat_int = CMulticlassAccuracy::get_confusion_matrix(pred, gt);
 

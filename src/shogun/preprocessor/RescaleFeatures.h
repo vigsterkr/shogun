@@ -38,7 +38,7 @@ namespace shogun
 		 * @param features the features to derive the min and max values
 		 * from.
 		 */
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<CFeatures> features);
 
 		/**
 		 * Cleanup

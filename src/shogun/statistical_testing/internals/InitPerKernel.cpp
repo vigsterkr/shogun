@@ -42,14 +42,14 @@ InitPerKernel::~InitPerKernel()
 {
 }
 
-InitPerKernel& InitPerKernel::operator=(CKernel* kernel)
+InitPerKernel& InitPerKernel::operator=(std::shared_ptr<CKernel> kernel)
 {
-	SG_REF(kernel);
-	m_kernel = std::shared_ptr<CKernel>(kernel, [](CKernel* ptr) { SG_UNREF(ptr); });
+
+	m_kernel = kernel;
 	return *this;
 }
 
-InitPerKernel::operator CKernel*() const
+InitPerKernel::operator std::shared_ptr<CKernel>() const
 {
-	return m_kernel.get();
+	return m_kernel;
 }

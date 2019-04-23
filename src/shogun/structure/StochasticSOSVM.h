@@ -39,7 +39,7 @@ public:
 	 * @param do_weighted_averaging whether mix w with previous average weights
 	 * @param verbose whether compute debug information, such as primal value, duality gap etc.
 	 */
-	CStochasticSOSVM(CStructuredModel* model, CStructuredLabels* labs,
+	CStochasticSOSVM(std::shared_ptr<CStructuredModel> model, std::shared_ptr<CStructuredLabels> labs,
 		bool do_weighted_averaging = true, bool verbose = false);
 
 	/** destructor */
@@ -96,7 +96,7 @@ protected:
 	 * @param data training data
 	 * @return whether the training was successful
 	 */
-	virtual bool train_machine(CFeatures* data = NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 private:
 	/** register and initialize parameters */

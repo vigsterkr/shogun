@@ -15,14 +15,14 @@ CStreamingFileFromFeatures::CStreamingFileFromFeatures()
 	labels=NULL;
 }
 
-CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat)
+CStreamingFileFromFeatures::CStreamingFileFromFeatures(std::shared_ptr<CFeatures> feat)
 	: CStreamingFile()
 {
 	features=feat;
 	labels=NULL;
 }
 
-CStreamingFileFromFeatures::CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab)
+CStreamingFileFromFeatures::CStreamingFileFromFeatures(std::shared_ptr<CFeatures> feat, float64_t* lab)
 	: CStreamingFile()
 {
 	features=feat;

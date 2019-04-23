@@ -27,7 +27,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if init was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r)
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 	{
 		CDenseDistance<float64_t>::init(l,r);
 

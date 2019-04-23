@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer,
  *          Heiko Strathmann
  */
 
@@ -57,10 +57,10 @@ const char* CLaplacianEigenmaps::get_name() const
 	return "LaplacianEigenmaps";
 };
 
-CFeatures* CLaplacianEigenmaps::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CLaplacianEigenmaps::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	// shorthand for simplefeatures
-	SG_REF(features);
+
 
 	// get dimensionality and number of vectors of data
 	int32_t N = features->get_num_vectors();
@@ -70,19 +70,19 @@ CFeatures* CLaplacianEigenmaps::transform(CFeatures* features, bool inplace)
 	// compute distance matrix
 	ASSERT(m_distance)
 	m_distance->init(features,features);
-	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
+	auto embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
-	SG_UNREF(features);
-	return (CFeatures*)embedding;
+
+	return embedding;
 }
 
-CDenseFeatures<float64_t>* CLaplacianEigenmaps::embed_distance(CDistance* distance)
+std::shared_ptr<CDenseFeatures<float64_t>> CLaplacianEigenmaps::embed_distance(std::shared_ptr<CDistance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.gaussian_kernel_width = m_tau;
 	parameters.method = SHOGUN_LAPLACIAN_EIGENMAPS;
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = distance;
+	parameters.distance = distance.get();
 	return tapkee_embed(parameters);
 }

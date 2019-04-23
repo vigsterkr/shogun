@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Viktor Gal, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Viktor Gal,
  *          Vladislav Horbatiuk, Weijie Lin, Sergey Lisitsyn, Sanuj Sharma
  */
 
@@ -22,7 +22,7 @@ CStreamingDenseFeatures<T>::CStreamingDenseFeatures() :
 }
 
 template<class T>
-CStreamingDenseFeatures<T>::CStreamingDenseFeatures(CStreamingFile* file,
+CStreamingDenseFeatures<T>::CStreamingDenseFeatures(std::shared_ptr<CStreamingFile> file,
 		bool is_labelled, int32_t size) :
 		CStreamingDotFeatures()
 {
@@ -32,17 +32,16 @@ CStreamingDenseFeatures<T>::CStreamingDenseFeatures(CStreamingFile* file,
 }
 
 template<class T> CStreamingDenseFeatures<T>::CStreamingDenseFeatures(
-		CDenseFeatures<T>* dense_features, float64_t* lab) :
+		std::shared_ptr<CDenseFeatures<T>> dense_features, float64_t* lab) :
 		CStreamingDotFeatures()
 {
 	REQUIRE(dense_features, "%s::CStreamingDenseFeatures(): Features needed!\n")
 
-	CStreamingFileFromDenseFeatures<T>* file;
 	bool is_labelled;
 	int32_t size=1024;
 
 	is_labelled=lab;
-	file=new CStreamingFileFromDenseFeatures<T>(dense_features, lab);
+	auto file=std::make_shared<CStreamingFileFromDenseFeatures<T>>(dense_features, lab);
 	init(file, is_labelled, size);
 	set_read_functions();
 	parser.set_free_vector_after_release(false);
@@ -63,7 +62,7 @@ template<class T> void CStreamingDenseFeatures<T>::reset_stream()
 {
 	if (seekable)
 	{
-		((CStreamingFileFromDenseFeatures<T>*)working_file)->reset_stream();
+		std::static_pointer_cast<CStreamingFileFromDenseFeatures<T>>(working_file)->reset_stream();
 		if (parser.is_running())
 			parser.end_parser();
 		parser.exit_parser();
@@ -189,13 +188,13 @@ void CStreamingDenseFeatures<T>::init()
 }
 
 template<class T>
-void CStreamingDenseFeatures<T>::init(CStreamingFile* file, bool is_labelled,
+void CStreamingDenseFeatures<T>::init(std::shared_ptr<CStreamingFile> file, bool is_labelled,
 		int32_t size)
 {
 	init();
 	has_labels=is_labelled;
 	working_file=file;
-	SG_REF(working_file);
+
 	parser.init(file, is_labelled, size);
 	seekable=false;
 }
@@ -252,12 +251,12 @@ int32_t CStreamingDenseFeatures<T>::get_dim_feature_space() const
 }
 
 template<class T>
-float32_t CStreamingDenseFeatures<T>::dot(CStreamingDotFeatures* df)
+float32_t CStreamingDenseFeatures<T>::dot(std::shared_ptr<CStreamingDotFeatures> df)
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CStreamingDenseFeatures<T>* sf=(CStreamingDenseFeatures<T>*)df;
+	auto sf=std::dynamic_pointer_cast<CStreamingDenseFeatures<T>>(df);
 
 	SGVector<T> other_vector=sf->get_vector();
 
@@ -290,7 +289,7 @@ EFeatureClass CStreamingDenseFeatures<T>::get_feature_class() const
 }
 
 template<class T>
-CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
+std::shared_ptr<CFeatures> CStreamingDenseFeatures<T>::get_streamed_features(
 		index_t num_elements)
 {
 	SG_DEBUG("entering\n");
@@ -349,13 +348,12 @@ CFeatures* CStreamingDenseFeatures<T>::get_streamed_features(
 
 	}
 
-	/* create new feature object from collected data */
-	CDenseFeatures<T>* result=new CDenseFeatures<T>(matrix);
-
 	SG_DEBUG("leaving returning %dx%d matrix\n", matrix.num_rows,
 			matrix.num_cols);
 
-	return result;
+
+	/* create new feature object from collected data */
+	return std::make_shared<CDenseFeatures<T>>(matrix);
 }
 
 template class CStreamingDenseFeatures<bool> ;

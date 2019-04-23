@@ -66,7 +66,7 @@ struct CKernelSelectionStrategy::Self
 	index_t num_folds;
 	float64_t alpha;
 
-	void init_policy(CMMD* estimator);
+	void init_policy(std::shared_ptr<CMMD> estimator);
 
 	const static EKernelSelectionMethod default_method;
 	const static bool default_weighted;
@@ -86,33 +86,33 @@ CKernelSelectionStrategy::Self::Self() : policy(nullptr), method(default_method)
 {
 }
 
-void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
+void CKernelSelectionStrategy::Self::init_policy(std::shared_ptr<CMMD> estimator)
 {
 	switch (method)
 	{
 	case KSM_MEDIAN_HEURISTIC:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with MEDIAN_HEURISTIC!\n");
-		policy=std::unique_ptr<MedianHeuristic>(new MedianHeuristic(kernel_mgr, estimator));
+		policy=std::make_unique<MedianHeuristic>(kernel_mgr, estimator);
 	}
 	break;
 	case KSM_CROSS_VALIDATION:
 	{
 		REQUIRE(!weighted, "Weighted kernel selection is not possible with CROSS_VALIDATION!\n");
-		policy=std::unique_ptr<MaxCrossValidation>(new MaxCrossValidation(kernel_mgr, estimator,
-			num_runs, num_folds, alpha));
+		policy=std::make_unique<MaxCrossValidation>(kernel_mgr, estimator,
+			num_runs, num_folds, alpha);
 	}
 	break;
 	case KSM_MAXIMIZE_MMD:
 	{
 		if (weighted)
 			#ifdef USE_GPL_SHOGUN
-			policy=std::unique_ptr<WeightedMaxMeasure>(new WeightedMaxMeasure(kernel_mgr, estimator));
+			policy=std::make_unique<WeightedMaxMeasure>(kernel_mgr, estimator);
 			#else
 			SG_SGPL_ONLY
 			#endif // USE_GPL_SHOGUN
 		else
-			policy=std::unique_ptr<MaxMeasure>(new MaxMeasure(kernel_mgr, estimator));
+			policy=std::make_unique<MaxMeasure>(kernel_mgr, estimator);
 	}
 	break;
 	case KSM_MAXIMIZE_POWER:
@@ -120,15 +120,15 @@ void CKernelSelectionStrategy::Self::init_policy(CMMD* estimator)
 		if (weighted)
 		{
 			#ifdef USE_GPL_SHOGUN
-			auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
+			auto casted_estimator=estimator->as<CStreamingMMD>();
 			REQUIRE(casted_estimator, "Weighted kernel selection is not possible with MAXIMIZE_POWER!\n");
-			policy=std::unique_ptr<WeightedMaxTestPower>(new WeightedMaxTestPower(kernel_mgr, estimator));
+			policy=std::make_unique<WeightedMaxTestPower>(kernel_mgr, estimator);
 			#else
 			SG_SGPL_ONLY
 			#endif // USE_GPL_SHOGUN
 		}
 		else
-			policy=std::unique_ptr<MaxTestPower>(new MaxTestPower(kernel_mgr, estimator));
+			policy=std::make_unique<MaxTestPower>(kernel_mgr, estimator);
 	}
 	break;
 	default:
@@ -167,7 +167,7 @@ CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method
 
 void CKernelSelectionStrategy::init()
 {
-	self=std::unique_ptr<Self>(new Self());
+	self=std::make_unique<Self>();
 }
 
 CKernelSelectionStrategy::~CKernelSelectionStrategy()
@@ -230,12 +230,12 @@ bool CKernelSelectionStrategy::get_weighted() const
 	return self->weighted;
 }
 
-void CKernelSelectionStrategy::add_kernel(CKernel* kernel)
+void CKernelSelectionStrategy::add_kernel(std::shared_ptr<CKernel> kernel)
 {
 	self->kernel_mgr.push_back(kernel);
 }
 
-CKernel* CKernelSelectionStrategy::select_kernel(CMMD* estimator)
+std::shared_ptr<CKernel> CKernelSelectionStrategy::select_kernel(std::shared_ptr<CMMD> estimator)
 {
 	auto num_kernels=self->kernel_mgr.num_kernels();
 	REQUIRE(num_kernels>0, "Number of kernels is 0. Please add kernels using add_kernel method!\n");

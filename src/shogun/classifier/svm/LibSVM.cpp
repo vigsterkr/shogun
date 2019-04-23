@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Leon Kuchenbecker, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Leon Kuchenbecker,
  *          Sergey Lisitsyn
  */
 
@@ -24,7 +24,7 @@ CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
 }
 
 
-CLibSVM::CLibSVM(float64_t C, CKernel* k, CLabels* lab, LIBSVM_SOLVER_TYPE st)
+CLibSVM::CLibSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab, LIBSVM_SOLVER_TYPE st)
 : CSVM(C, k, lab), solver_type(st)
 {
 	register_params();
@@ -42,7 +42,7 @@ void CLibSVM::register_params()
 	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 
-bool CLibSVM::train_machine(CFeatures* data)
+bool CLibSVM::train_machine(std::shared_ptr<CFeatures> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -126,7 +126,7 @@ bool CLibSVM::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu();
-	param.kernel=kernel;
+	param.kernel=kernel.get();
 	param.cache_size = kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C1();

@@ -27,7 +27,7 @@ CHashedDocConverter::CHashedDocConverter(int32_t hash_bits, bool normalize,
 	init(NULL, hash_bits, normalize, n_grams, skips);
 }
 
-CHashedDocConverter::CHashedDocConverter(CTokenizer* tzer,
+CHashedDocConverter::CHashedDocConverter(std::shared_ptr<CTokenizer> tzer,
 	int32_t hash_bits, bool normalize, int32_t n_grams, int32_t skips) : CConverter()
 {
 	init(tzer, hash_bits, normalize, n_grams, skips);
@@ -35,10 +35,10 @@ CHashedDocConverter::CHashedDocConverter(CTokenizer* tzer,
 
 CHashedDocConverter::~CHashedDocConverter()
 {
-	SG_UNREF(tokenizer);
+
 }
 
-void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normalize,
+void CHashedDocConverter::init(std::shared_ptr<CTokenizer> tzer, int32_t hash_bits, bool normalize,
 	int32_t n_grams, int32_t skips)
 {
 	num_bits = hash_bits;
@@ -48,7 +48,7 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normali
 
 	if (tzer==NULL)
 	{
-		CDelimiterTokenizer* tk = new CDelimiterTokenizer();
+		auto tk = std::make_shared<CDelimiterTokenizer>();
 		tk->delimiters[(uint8_t) ' '] = 1;
 		tk->delimiters[(uint8_t) '\t'] = 1;
 		tokenizer = tk;
@@ -56,7 +56,7 @@ void CHashedDocConverter::init(CTokenizer* tzer, int32_t hash_bits, bool normali
 	else
 		tokenizer = tzer;
 
-	SG_REF(tokenizer);
+
 	SG_ADD(&num_bits, "num_bits", "Number of bits of the hash");
 	SG_ADD(&ngrams, "ngrams", "Number of consecutive tokens");
 	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip");
@@ -69,7 +69,7 @@ const char* CHashedDocConverter::get_name() const
 	return "HashedDocConverter";
 }
 
-CFeatures* CHashedDocConverter::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CHashedDocConverter::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	ASSERT(features);
 	if (strcmp(features->get_name(), "StringFeatures")!=0)
@@ -77,7 +77,7 @@ CFeatures* CHashedDocConverter::transform(CFeatures* features, bool inplace)
 			"CHashedConverter::transform() : CFeatures object passed is "
 			"not of type CStringFeatures.");
 
-	CStringFeatures<char>* s_features = (CStringFeatures<char>*) features;
+	auto s_features = std::static_pointer_cast<CStringFeatures<char>>(features);
 
 	int32_t dim = CMath::pow(2, num_bits);
 	SGSparseMatrix<float64_t> matrix(dim,features->get_num_vectors());
@@ -88,7 +88,7 @@ CFeatures* CHashedDocConverter::transform(CFeatures* features, bool inplace)
 		s_features->free_feature_vector(doc, vec_idx);
 	}
 
-	return (CFeatures*) new CSparseFeatures<float64_t>(matrix);
+	return std::make_shared<CSparseFeatures<float64_t>>(matrix);
 }
 
 SGSparseVector<float64_t> CHashedDocConverter::apply(SGVector<char> document)

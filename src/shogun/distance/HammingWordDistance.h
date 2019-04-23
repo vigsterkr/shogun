@@ -37,7 +37,7 @@ class CHammingWordDistance: public CStringDistance<uint16_t>
 		 * @param r features of right-hand side
 		 * @param use_sign if sign shall be used
 		 */
-		CHammingWordDistance(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool use_sign);
+		CHammingWordDistance(std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, bool use_sign);
 		virtual ~CHammingWordDistance();
 
 		/** init distance
@@ -46,7 +46,7 @@ class CHammingWordDistance: public CStringDistance<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

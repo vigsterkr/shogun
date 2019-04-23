@@ -26,7 +26,7 @@ public:
 	 *
 	 * @param labels labels to be (possibly) used for splitting
 	 */
-	CLOOCrossValidationSplitting(CLabels* labels);
+	CLOOCrossValidationSplitting(std::shared_ptr<CLabels> labels);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const

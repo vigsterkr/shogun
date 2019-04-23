@@ -53,7 +53,7 @@ class COligoStringKernel : public CStringKernel<char>
 		 * @param width - equivalent to 2*sigma^2
 		 */
 		COligoStringKernel(
-				CStringFeatures<char>* l, CStringFeatures<char>* r,
+				std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 				int32_t k, float64_t width);
 
 		/** Destructor */
@@ -65,7 +65,7 @@ class COligoStringKernel : public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *

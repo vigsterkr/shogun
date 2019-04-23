@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Chiyuan Zhang, Sergey Lisitsyn, Thoralf Klein, 
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Sergey Lisitsyn, Thoralf Klein,
  *          Viktor Gal, Weijie Lin, Evan Shelhamer, Sanuj Sharma
  */
 
@@ -30,7 +30,7 @@ COnlineLibLinear::COnlineLibLinear(float64_t C_reg)
 }
 
 COnlineLibLinear::COnlineLibLinear(
-		float64_t C_reg, CStreamingDotFeatures* traindat)
+		float64_t C_reg, std::shared_ptr<CStreamingDotFeatures> traindat)
 	: COnlineLinearMachine()
 {
 		init();
@@ -41,7 +41,7 @@ COnlineLibLinear::COnlineLibLinear(
 		set_features(traindat);
 }
 
-COnlineLibLinear::COnlineLibLinear(COnlineLibLinear *mch)
+COnlineLibLinear::COnlineLibLinear(std::shared_ptr<COnlineLibLinear >mch)
 	: COnlineLinearMachine()
 {
 	init();
@@ -260,21 +260,21 @@ void COnlineLibLinear::train_one(SGSparseVector<float32_t> ex, float64_t label)
 		nSV++;
 }
 
-void COnlineLibLinear::train_example(CStreamingDotFeatures *feature, float64_t label)
+void COnlineLibLinear::train_example(std::shared_ptr<CStreamingDotFeatures >feature, float64_t label)
 {
 	feature->expand_if_required(m_w.vector, m_w.vlen);
 
 	if (feature->get_feature_class() == C_STREAMING_DENSE) {
-		CStreamingDenseFeatures<float32_t> *feat =
-			dynamic_cast<CStreamingDenseFeatures<float32_t> *>(feature);
+		auto feat =
+			std::dynamic_pointer_cast<CStreamingDenseFeatures<float32_t>>(feature);
 		if (feat == NULL)
 			SG_ERROR("Expected streaming dense feature <float32_t>\n")
 
 		train_one(feat->get_vector(), label);
 	}
 	else if (feature->get_feature_class() == C_STREAMING_SPARSE) {
-		CStreamingSparseFeatures<float32_t> *feat =
-			dynamic_cast<CStreamingSparseFeatures<float32_t> *>(feature);
+		auto feat =
+			std::dynamic_pointer_cast<CStreamingSparseFeatures<float32_t>>(feature);
 		if (feat == NULL)
 			SG_ERROR("Expected streaming sparse feature <float32_t>\n")
 

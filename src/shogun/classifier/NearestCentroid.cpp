@@ -19,7 +19,7 @@ namespace shogun{
 		init();
 	}
 
-	CNearestCentroid::CNearestCentroid(CDistance* d, CLabels* trainlab) : CDistanceMachine()
+	CNearestCentroid::CNearestCentroid(std::shared_ptr<CDistance> d, std::shared_ptr<CLabels> trainlab) : CDistanceMachine()
 	{
 		init();
 		ASSERT(d)
@@ -39,7 +39,7 @@ namespace shogun{
 	}
 
 
-	bool CNearestCentroid::train_machine(CFeatures* data)
+	bool CNearestCentroid::train_machine(std::shared_ptr<CFeatures> data)
 	{
 		ASSERT(m_labels)
 		ASSERT(distance)
@@ -54,8 +54,8 @@ namespace shogun{
 			data = distance->get_lhs();
 		}
 
-		auto* multiclass_labels = m_labels->as<CMulticlassLabels>();
-		auto* dense_data = data->as<CDenseFeatures<float64_t>>();
+		auto multiclass_labels = m_labels->as<CMulticlassLabels>();
+		auto dense_data = data->as<CDenseFeatures<float64_t>>();
 
 		int32_t num_classes = multiclass_labels->get_num_classes();
 		int32_t num_feats = dense_data->get_num_features();
@@ -83,7 +83,7 @@ namespace shogun{
 		}
 		linalg::scale(centroids, centroids, scale);
 
-		auto centroids_feats = some<CDenseFeatures<float64_t>>(centroids);
+		auto centroids_feats = std::make_shared<CDenseFeatures<float64_t>>(centroids);
 
 		m_is_trained=true;
 		distance->init(centroids_feats, distance->get_rhs());

@@ -27,25 +27,25 @@ CLabels::CLabels(const CLabels& orig)
 
 	if (orig.m_subset_stack != NULL)
 	{
-		SG_UNREF(m_subset_stack);
-		m_subset_stack = new CSubsetStack(*orig.m_subset_stack);
-		SG_REF(m_subset_stack);
+
+		m_subset_stack = std::make_shared<CSubsetStack>(*orig.m_subset_stack);
+
 	}
 }
 
 CLabels::~CLabels()
 {
-	SG_UNREF(m_subset_stack);
+
 }
 
 void CLabels::init()
 {
-	SG_ADD((CSGObject **)&m_subset_stack, "subset_stack",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_subset_stack, "subset_stack",
 	       "Current subset stack");
 	SG_ADD(
 	    &m_current_values, "current_values", "current active value vector");
-	m_subset_stack = new CSubsetStack();
-	SG_REF(m_subset_stack);
+	m_subset_stack = std::make_shared<CSubsetStack>();
+
 }
 
 void CLabels::add_subset(SGVector<index_t> subset)
@@ -68,9 +68,9 @@ void CLabels::remove_all_subsets()
 	m_subset_stack->remove_all_subsets();
 }
 
-CSubsetStack* CLabels::get_subset_stack()
+std::shared_ptr<CSubsetStack> CLabels::get_subset_stack()
 {
-	SG_REF(m_subset_stack);
+
 	return m_subset_stack;
 }
 

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Viktor Gal, Soeren Sonnenburg,
  *          Weijie Lin, Bjoern Esser, Saurabh Goyal
  */
 
@@ -53,13 +53,13 @@ CSpectrumRBFKernel::CSpectrumRBFKernel (int32_t size, float64_t *AA_matrix_, int
 	string_list.max_string_length = max_sequence_length;
 
 	//string_features = new CStringFeatures<char>(sequences, nof_sequences, max_sequence_length, PROTEIN);
-	string_features = new CStringFeatures<char>(string_list, IUPAC_AMINO_ACID);
-	SG_REF(string_features)
+	string_features = std::make_shared<CStringFeatures<char>>(string_list, IUPAC_AMINO_ACID);
+
 	init(string_features, string_features);
 }
 
 CSpectrumRBFKernel::CSpectrumRBFKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_, int32_t degree_, float64_t width_)
+	std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r, int32_t size, float64_t* AA_matrix_, int32_t degree_, float64_t width_)
 : CStringKernel<char>(size), alphabet(NULL), degree(degree_), width(width_), sequences(NULL), string_features(NULL), nof_sequences(0), max_sequence_length(0)
 {
 	target_letter_0=-1 ;
@@ -74,7 +74,7 @@ CSpectrumRBFKernel::CSpectrumRBFKernel(
 CSpectrumRBFKernel::~CSpectrumRBFKernel()
 {
 	cleanup();
-	SG_UNREF(string_features);
+
 	SG_FREE(sequences);
 }
 
@@ -266,7 +266,7 @@ void CSpectrumRBFKernel::read_profiles_and_sequences()
 
 }
 
-bool CSpectrumRBFKernel::init(CFeatures* l, CFeatures* r)
+bool CSpectrumRBFKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	// >> profile
 /*
@@ -284,18 +284,18 @@ bool CSpectrumRBFKernel::init(CFeatures* l, CFeatures* r)
 	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
 	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
 
-	CStringFeatures<char>* sf_l=(CStringFeatures<char>*) l;
-	CStringFeatures<char>* sf_r=(CStringFeatures<char>*) r;
+	auto sf_l=std::static_pointer_cast<CStringFeatures<char>>(l);
+	auto sf_r=std::static_pointer_cast<CStringFeatures<char>>(r);
 
-	SG_UNREF(alphabet);
+
 	alphabet=sf_l->get_alphabet();
-	CAlphabet* ralphabet=sf_r->get_alphabet();
+	auto ralphabet=sf_r->get_alphabet();
 
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties &= ((uint64_t) (-1)) ^ (KP_LINADD | KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet())
-	SG_UNREF(ralphabet);
+
 
 
 	return init_normalizer();
@@ -304,7 +304,7 @@ bool CSpectrumRBFKernel::init(CFeatures* l, CFeatures* r)
 void CSpectrumRBFKernel::cleanup()
 {
 
-	SG_UNREF(alphabet);
+
 	alphabet=NULL;
 
 	CKernel::cleanup();
@@ -344,8 +344,8 @@ float64_t CSpectrumRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	char* avec = std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, afree);
+	char* bvec = std::static_pointer_cast<CStringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	float64_t result=0;
 	for (int32_t i=0; i<alen; i++)
@@ -357,8 +357,8 @@ float64_t CSpectrumRBFKernel::compute(int32_t idx_a, int32_t idx_b)
 	      }
 	  }
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, afree);
+	std::static_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, bfree);
 	return result;
 }
 
@@ -383,7 +383,7 @@ void CSpectrumRBFKernel::register_param()
 	SG_ADD(&width, "width", "width of Gaussian", ParameterProperties::HYPER);
 	SG_ADD(&nof_sequences, "nof_sequences", "length of the sequence");
 
-	m_parameters->add_vector(&sequences, &nof_sequences, "sequences", "the sequences as a part of profile");
+	/*m_parameters->add_vector(&sequences, &nof_sequences, "sequences", "the sequences as a part of profile");*/
 	watch_param("sequences", &sequences, &nof_sequences);
 
 	SG_ADD(&max_sequence_length,
@@ -392,7 +392,7 @@ void CSpectrumRBFKernel::register_param()
 
 void CSpectrumRBFKernel::register_alphabet()
 {
-	SG_ADD((CSGObject**)&alphabet, "alphabet", "the alphabet used by kernel");
+	SG_ADD((std::shared_ptr<CSGObject>*)&alphabet, "alphabet", "the alphabet used by kernel");
 }
 
 void CSpectrumRBFKernel::init()

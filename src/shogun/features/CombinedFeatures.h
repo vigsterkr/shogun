@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evangelos Anagnostopoulos,
  *          Vladislav Horbatiuk, Yuyu Zhang, Evgeniy Andreev, Bjoern Esser
  */
 
@@ -42,7 +42,7 @@ class CCombinedFeatures : public CFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** destructor */
 		virtual ~CCombinedFeatures();
@@ -83,26 +83,26 @@ class CCombinedFeatures : public CFeatures
 		 * @param comb_feat feature to check for compatibility
 		 * @return if feature is compatible
 		 */
-		bool check_feature_obj_compatibility(CCombinedFeatures* comb_feat);
+		bool check_feature_obj_compatibility(std::shared_ptr<CCombinedFeatures> comb_feat);
 
 		/** get first feature object
 		 *
 		 * @return first feature object
 		 */
-		CFeatures* get_first_feature_obj() const;
+		std::shared_ptr<CFeatures> get_first_feature_obj() const;
 
 		/** get feature object at index idx
 		*
 		* @param idx index of feature object
 		* @return the feature object at index idx
 		*/
-		CFeatures* get_feature_obj(int32_t idx) const;
+		std::shared_ptr<CFeatures> get_feature_obj(int32_t idx) const;
 
 		/** get last feature object
 		 *
 		 * @return last feature object
 		 */
-		CFeatures* get_last_feature_obj() const;
+		std::shared_ptr<CFeatures> get_last_feature_obj() const;
 
 		/** insert feature object at index idx
 		 *  Important, idx must be < num_feature_obj
@@ -111,14 +111,14 @@ class CCombinedFeatures : public CFeatures
 		 * @param idx the index where to insert the feature object
 		 * @return if inserting was successful
 		 */
-		bool insert_feature_obj(CFeatures* obj, int32_t idx);
+		bool insert_feature_obj(std::shared_ptr<CFeatures> obj, int32_t idx);
 
 		/** append feature object to the end of this CombinedFeatures object array
 		 *
 		 * @param obj feature object to append
 		 * @return if appending was successful
 		 */
-		bool append_feature_obj(CFeatures* obj);
+		bool append_feature_obj(std::shared_ptr<CFeatures> obj);
 
 		/** delete feature object at position idx
 		 *
@@ -143,7 +143,7 @@ class CCombinedFeatures : public CFeatures
 		 * @return new feature object which contains copy of data of this
 		 * instance and of given one
 		 */
-		CFeatures* create_merged_copy(CFeatures* other) const;
+		std::shared_ptr<CFeatures> create_merged_copy(std::shared_ptr<CFeatures> other) const;
 
 		/** adds a subset of indices on top of the current subsets (possibly
 		 * subset o subset. Calls subset_changed_post() afterwards.
@@ -175,7 +175,7 @@ class CCombinedFeatures : public CFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+		virtual std::shared_ptr<CFeatures> copy_subset(SGVector<index_t> indices) const;
 
 		/** @return object name */
 		virtual const char* get_name() const { return "CombinedFeatures"; }
@@ -185,7 +185,7 @@ class CCombinedFeatures : public CFeatures
 
 	protected:
 		/** feature array */
-		CDynamicObjectArray* feature_array;
+		std::vector<std::shared_ptr<CFeatures>> feature_array;
 
 		/** number of vectors
 		 * must match between sub features

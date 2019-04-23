@@ -67,8 +67,8 @@ public:
 	{
 
 		//same as first-element normalizer
-		CFeatures* old_lhs=k->lhs;
-		CFeatures* old_rhs=k->rhs;
+		auto old_lhs=k->lhs;
+		auto old_rhs=k->rhs;
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
@@ -233,9 +233,9 @@ public:
 	 *
 	 * @return converted CMultitaskKernelNormalizer object
 	 */
-	inline CMultitaskKernelNormalizer* KernelNormalizerToMultitaskKernelNormalizer(CKernelNormalizer* n)
+	inline std::shared_ptr<CMultitaskKernelNormalizer> KernelNormalizerToMultitaskKernelNormalizer(std::shared_ptr<CKernelNormalizer> n)
 	{
-		return dynamic_cast<CMultitaskKernelNormalizer*>(n);
+		return n->as<CMultitaskKernelNormalizer>();
 	}
 
 

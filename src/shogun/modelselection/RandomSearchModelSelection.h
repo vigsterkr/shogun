@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Roman Votyakov, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Roman Votyakov,
  *          Heiko Strathmann, Yuyu Zhang
  */
 
@@ -32,8 +32,8 @@ public:
 	 * @param model_parameters model parameters to use
 	 * @param ratio ratio in range [0,1]
 	 */
-	CRandomSearchModelSelection(CMachineEvaluation* machine_eval,
-			CModelSelectionParameters* model_parameters, float64_t ratio);
+	CRandomSearchModelSelection(std::shared_ptr<CMachineEvaluation> machine_eval,
+			std::shared_ptr<CModelSelectionParameters> model_parameters, float64_t ratio);
 
 	/** destructor */
 	virtual ~CRandomSearchModelSelection();
@@ -60,7 +60,7 @@ public:
 	 *
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false);
+	virtual std::shared_ptr<CParameterCombination> select_model(bool print_state=false);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const { return "RandomSearchModelSelection"; }

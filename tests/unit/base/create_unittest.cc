@@ -36,19 +36,17 @@ TEST(CreateObject,create_wrong_type_wrong_name)
 
 TEST(CreateObject,create)
 {
-    auto* obj = create_object<CKernel>("GaussianKernel");
+    auto obj = create_object<CKernel>("GaussianKernel");
     EXPECT_TRUE(obj != nullptr);
-    EXPECT_TRUE(dynamic_cast<CKernel*>(obj) != nullptr);
+    EXPECT_TRUE(obj->as<CKernel>() != nullptr);
 	EXPECT_EQ(obj->get_generic(), PT_NOT_GENERIC);
-	delete obj;
 }
 
 TEST(CreateObject, create_with_ptype)
 {
-	auto* obj =
+	auto obj =
 	    create_object<CDenseFeatures<float64_t>>("DenseFeatures", PT_FLOAT64);
 	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(dynamic_cast<CDenseFeatures<float64_t>*>(obj) != nullptr);
+	EXPECT_TRUE(obj->as<CDenseFeatures<float64_t>>() != nullptr);
 	EXPECT_EQ(obj->get_generic(), PT_FLOAT64);
-	delete obj;
 }

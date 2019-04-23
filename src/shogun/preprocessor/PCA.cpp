@@ -90,7 +90,7 @@ CPCA::~CPCA()
 {
 }
 
-void CPCA::fit(CFeatures* features)
+void CPCA::fit(std::shared_ptr<CFeatures> features)
 {
 	if (m_fitted)
 		cleanup();

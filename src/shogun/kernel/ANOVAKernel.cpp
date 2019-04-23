@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Heiko Strathmann, Saurabh Goyal, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Heiko Strathmann, Saurabh Goyal,
  *          Sergey Lisitsyn
  */
 
@@ -23,7 +23,7 @@ CANOVAKernel::CANOVAKernel(int32_t cache, int32_t d)
 }
 
 CANOVAKernel::CANOVAKernel(
-	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t d, int32_t cache)
+	std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r, int32_t d, int32_t cache)
   : CDotKernel(cache), cardinality(d)
 {
 	register_params();
@@ -35,7 +35,7 @@ CANOVAKernel::~CANOVAKernel()
 	cleanup();
 }
 
-bool CANOVAKernel::init(CFeatures* l, CFeatures* r)
+bool CANOVAKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	cleanup();
 
@@ -56,15 +56,15 @@ float64_t CANOVAKernel::compute_rec1(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result = compute_recursive1(avec, bvec, alen);
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
@@ -75,15 +75,15 @@ float64_t CANOVAKernel::compute_rec2(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result = compute_recursive2(avec, bvec, alen);
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
@@ -173,7 +173,7 @@ float64_t CANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int
 	return result;
 }
 
-CANOVAKernel* CANOVAKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<CANOVAKernel> CANOVAKernel::obtain_from_generic(std::shared_ptr<CKernel> kernel)
 {
 	if (!kernel)
 		return NULL;
@@ -183,6 +183,6 @@ CANOVAKernel* CANOVAKernel::obtain_from_generic(CKernel* kernel)
 				kernel->get_kernel_type())
 
 	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CANOVAKernel*)kernel;
+
+	return std::static_pointer_cast<CANOVAKernel>(kernel);
 }

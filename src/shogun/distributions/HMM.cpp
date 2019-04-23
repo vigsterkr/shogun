@@ -178,7 +178,7 @@ CHMM::CHMM()
 	mem_initialized = false;
 }
 
-CHMM::CHMM(CHMM* h)
+CHMM::CHMM(std::shared_ptr<CHMM> h)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 #ifdef USE_HMMPARALLEL_STRUCTURES
@@ -207,7 +207,7 @@ CHMM::CHMM(int32_t p_N, int32_t p_M, Model* p_model, float64_t p_PSEUDO)
 }
 
 CHMM::CHMM(
-	CStringFeatures<uint16_t>* obs, int32_t p_N, int32_t p_M,
+	std::shared_ptr<CStringFeatures<uint16_t>> obs, int32_t p_N, int32_t p_M,
 	float64_t p_PSEUDO)
 : CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
@@ -395,7 +395,7 @@ CHMM::CHMM(FILE* model_file, float64_t p_PSEUDO)
 
 CHMM::~CHMM()
 {
-	SG_UNREF(p_observations);
+
 
 	if (trans_list_forward_cnt)
 	  SG_FREE(trans_list_forward_cnt);
@@ -483,7 +483,7 @@ CHMM::~CHMM()
 	}
 }
 
-bool CHMM::train(CFeatures* data)
+bool CHMM::train(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
@@ -492,7 +492,7 @@ bool CHMM::train(CFeatures* data)
 		{
 			SG_ERROR("Expected features of class string type word\n")
 		}
-		set_observations((CStringFeatures<uint16_t>*) data);
+		set_observations(std::static_pointer_cast<CStringFeatures<uint16_t>>(data));
 	}
 	return baum_welch_viterbi_train(BW_NORMAL);
 }
@@ -543,7 +543,7 @@ bool CHMM::alloc_state_dependend_arrays()
 			set_observations(p_observations);
 		else
 			set_observation_nocache(p_observations);
-		SG_UNREF(p_observations);
+
 	}
 
 	this->invalidate_model();
@@ -1419,7 +1419,7 @@ void CHMM::ab_buf_comp(
 }
 
 //estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* hmm)
+void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> hmm)
 {
 	int32_t i,j,cpu;
 	float64_t fullmodprob=0;	//for all dims
@@ -1524,7 +1524,7 @@ void CHMM::estimate_model_baum_welch(CHMM* hmm)
 #else // USE_HMMPARALLEL
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* estimate)
+void CHMM::estimate_model_baum_welch(std::shared_ptr<CHMM> estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum, b_sum;	//numerator
@@ -1610,7 +1610,7 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 }
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
+void CHMM::estimate_model_baum_welch_old(std::shared_ptr<CHMM> estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum, b_sum;	//numerator
@@ -1695,7 +1695,7 @@ void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
 // optimize only p, q, a but not b
-void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
+void CHMM::estimate_model_baum_welch_trans(std::shared_ptr<CHMM> estimate)
 {
 	int32_t i,j,t,dim;
 	float64_t a_sum;	//numerator
@@ -1765,7 +1765,7 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 
 
 //estimates new model lambda out of lambda_estimate using baum welch algorithm
-void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
+void CHMM::estimate_model_baum_welch_defined(std::shared_ptr<CHMM> estimate)
 {
 	int32_t i,j,old_i,k,t,dim;
 	float64_t a_sum_num, b_sum_num;		//numerator
@@ -1941,7 +1941,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 }
 
 //estimates new model lambda out of lambda_estimate using viterbi algorithm
-void CHMM::estimate_model_viterbi(CHMM* estimate)
+void CHMM::estimate_model_viterbi(std::shared_ptr<CHMM> estimate)
 {
 	int32_t i,j,t;
 	float64_t sum;
@@ -2068,7 +2068,7 @@ void CHMM::estimate_model_viterbi(CHMM* estimate)
 }
 
 // estimate parameters listed in learn_x
-void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
+void CHMM::estimate_model_viterbi_defined(std::shared_ptr<CHMM> estimate)
 {
 	int32_t i,j,k,t;
 	float64_t sum;
@@ -2695,7 +2695,7 @@ void CHMM::clear_model_defined()
 	}
 }
 
-void CHMM::copy_model(CHMM* l)
+void CHMM::copy_model(std::shared_ptr<CHMM> l)
 {
 	int32_t i,j;
 	for (i=0; i<N; i++)
@@ -4857,7 +4857,7 @@ void CHMM::normalize(bool keep_dead_states)
 	invalidate_model();
 }
 
-bool CHMM::append_model(CHMM* app_model)
+bool CHMM::append_model(std::shared_ptr<CHMM> app_model)
 {
 	bool result=false;
 	const int32_t num_states=app_model->get_N();
@@ -4949,7 +4949,7 @@ bool CHMM::append_model(CHMM* app_model)
 	return result;
 }
 
-bool CHMM::append_model(CHMM* app_model, float64_t* cur_out, float64_t* app_out)
+bool CHMM::append_model(std::shared_ptr<CHMM> app_model, float64_t* cur_out, float64_t* app_out)
 {
 	bool result=false;
 	const int32_t num_states=app_model->get_N()+2;
@@ -5262,11 +5262,11 @@ bool CHMM::linear_train(bool right_align)
 		return false;
 }
 
-void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
+void CHMM::set_observation_nocache(std::shared_ptr<CStringFeatures<uint16_t>> obs)
 {
 	ASSERT(obs)
 	p_observations=obs;
-	SG_REF(obs);
+
 
 	if (obs)
 		if (obs->get_num_symbols() > M)
@@ -5304,16 +5304,16 @@ void CHMM::set_observation_nocache(CStringFeatures<uint16_t>* obs)
 	invalidate_model();
 }
 
-void CHMM::set_observations(CStringFeatures<uint16_t>* obs, CHMM* lambda)
+void CHMM::set_observations(std::shared_ptr<CStringFeatures<uint16_t>> obs, std::shared_ptr<CHMM> lambda)
 {
 	ASSERT(obs)
-	SG_REF(obs);
+
 	p_observations=obs;
 
 	/* from Distribution, necessary for calls to base class methods, like
 	 * get_log_likelihood_sample():
 	 */
-	SG_REF(obs);
+
 	features=obs;
 
 	SG_DEBUG("num symbols alphabet: %ld\n", obs->get_alphabet()->get_num_symbols())
@@ -5576,8 +5576,8 @@ bool CHMM::converged(float64_t x, float64_t y)
 
 bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 {
-	CHMM* estimate=new CHMM(this);
-	CHMM* working=this;
+	auto estimate=std::shared_ptr<CHMM>(this);
+	auto working=std::shared_ptr<CHMM>(this);
 	float64_t prob_max=-CMath::INFTY;
 	float64_t prob=-CMath::INFTY;
 	float64_t prob_train=CMath::ALMOST_NEG_INFTY;
@@ -5587,7 +5587,7 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 	// while (!converged(prob, prob_train) && (!CSignal::cancel_computations()))
 	while (!converged(prob, prob_train))
 	{
-		CMath::swap(working, estimate);
+		working.swap(estimate);
 		prob=prob_train;
 
 		switch (type) {
@@ -5608,13 +5608,10 @@ bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
 			prob_max=prob_train;
 	}
 
-	if (estimate == this)
+	if (estimate.get() == this)
 	{
 		estimate->copy_model(working);
-		delete working;
 	}
-	else
-		delete estimate;
 
 	return true;
 }

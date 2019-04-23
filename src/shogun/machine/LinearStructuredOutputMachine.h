@@ -30,7 +30,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 * @param model structured model with application specific functions
 		 * @param labs structured labels
 		 */
-		CLinearStructuredOutputMachine(CStructuredModel* model, CStructuredLabels* labs);
+		CLinearStructuredOutputMachine(std::shared_ptr<CStructuredModel> model, std::shared_ptr<CStructuredLabels> labs);
 
 		/** destructor */
 		virtual ~CLinearStructuredOutputMachine();
@@ -55,7 +55,7 @@ class CLinearStructuredOutputMachine : public CStructuredOutputMachine
 		 *
 		 * @return classified 'labels'
 		 */
-		virtual CStructuredLabels* apply_structured(CFeatures* data = NULL);
+		virtual std::shared_ptr<CStructuredLabels> apply_structured(std::shared_ptr<CFeatures> data = NULL);
 
 		/** Stores feature data of underlying model. Does nothing because
 		 * Linear machines store the normal vector of the separating hyperplane

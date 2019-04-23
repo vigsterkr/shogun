@@ -130,7 +130,7 @@ class CPCA : public CDensePreprocessor<float64_t>
 		/** destructor */
 		virtual ~CPCA();
 
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<CFeatures> features);
 
 		/** cleanup */
 		virtual void cleanup();

@@ -14,17 +14,17 @@ CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(): CKernel(0), distance(N
 	init();
 }
 
-CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(int32_t cache, float64_t coefficient, CDistance* dist)
+CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(int32_t cache, float64_t coefficient, std::shared_ptr<CDistance> dist)
 : CKernel(cache), distance(dist), coef(coefficient)
 {
-	SG_REF(distance);
+	
 	init();
 }
 
-CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(CFeatures *l, CFeatures *r, float64_t coefficient, CDistance* dist)
+CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t coefficient, std::shared_ptr<CDistance> dist)
 : CKernel(10), distance(dist), coef(coefficient)
 {
-	SG_REF(distance);
+	
 	init();
 	init(l, r);
 }
@@ -32,10 +32,10 @@ CInverseMultiQuadricKernel::CInverseMultiQuadricKernel(CFeatures *l, CFeatures *
 CInverseMultiQuadricKernel::~CInverseMultiQuadricKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-bool CInverseMultiQuadricKernel::init(CFeatures* l, CFeatures* r)
+bool CInverseMultiQuadricKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CKernel::init(l,r);
 	distance->init(l,r);

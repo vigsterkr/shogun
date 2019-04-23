@@ -15,15 +15,15 @@ CTaskGroup::CTaskGroup() : CTaskRelation()
 
 CTaskGroup::~CTaskGroup()
 {
-	SG_UNREF(m_tasks);
+
 }
 
 void CTaskGroup::init()
 {
-	m_tasks = new CDynamicObjectArray(true);
+	m_tasks = std::make_shared<CDynamicObjectArray>(true);
 }
 
-void CTaskGroup::append_task(CTask* task)
+void CTaskGroup::append_task(std::shared_ptr<CTask> task)
 {
 	m_tasks->append_element(task);
 }
@@ -41,9 +41,9 @@ SGVector<index_t>* CTaskGroup::get_tasks_indices() const
 	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);
 	for (int32_t i=0; i<n_tasks; i++)
 	{
-		CTask* task = (CTask*)m_tasks->get_element(i);
+		auto task = m_tasks->get_element<CTask>(i);
 		tasks_indices[i] = task->get_indices();
-		SG_UNREF(task);
+
 	}
 
 	return tasks_indices;

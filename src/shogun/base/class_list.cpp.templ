@@ -51,12 +51,12 @@ static const std::map<std::string, CreateFunction> classes = {
 REPLACE struct THIS
 };
 
-CSGObject* shogun::create(const char* classname, EPrimitiveType generic)
+std::shared_ptr<CSGObject> shogun::create(const char* classname, EPrimitiveType generic)
 {
 	auto entry = classes.find(classname);
 	if (entry != classes.end())
 	{
-		return entry->second(generic);
+		return std::shared_ptr<CSGObject>(entry->second(generic));
 	}
 	return nullptr;
 }

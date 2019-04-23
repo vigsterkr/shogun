@@ -74,8 +74,8 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type)
 }
 
 CWDSVMOcas::CWDSVMOcas(
-	float64_t C, int32_t d, int32_t from_d, CStringFeatures<uint8_t>* traindat,
-	CLabels* trainlab)
+	float64_t C, int32_t d, int32_t from_d, std::shared_ptr<CStringFeatures<uint8_t>> traindat,
+	std::shared_ptr<CLabels> trainlab)
 : CMachine(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3),
 	degree(d), from_degree(from_d)
 {
@@ -94,19 +94,19 @@ CWDSVMOcas::~CWDSVMOcas()
 {
 }
 
-CBinaryLabels* CWDSVMOcas::apply_binary(CFeatures* data)
+std::shared_ptr<CBinaryLabels> CWDSVMOcas::apply_binary(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CBinaryLabels(outputs);
+	return std::make_shared<CBinaryLabels>(outputs);
 }
 
-CRegressionLabels* CWDSVMOcas::apply_regression(CFeatures* data)
+std::shared_ptr<CRegressionLabels> CWDSVMOcas::apply_regression(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<CRegressionLabels>(outputs);
 }
 
-SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
+SGVector<float64_t> CWDSVMOcas::apply_get_outputs(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
@@ -116,7 +116,7 @@ SGVector<float64_t> CWDSVMOcas::apply_get_outputs(CFeatures* data)
 			SG_ERROR("Features not of class string type byte\n")
 		}
 
-		set_features((CStringFeatures<uint8_t>*) data);
+		set_features(std::static_pointer_cast<CStringFeatures<uint8_t>>(data));
 	}
 	ASSERT(features)
 
@@ -156,7 +156,7 @@ int32_t CWDSVMOcas::set_wd_weights()
 	return w_dim_single_c;
 }
 
-bool CWDSVMOcas::train_machine(CFeatures* data)
+bool CWDSVMOcas::train_machine(std::shared_ptr<CFeatures> data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
 
@@ -169,16 +169,16 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 		{
 			SG_ERROR("Features not of class string type byte\n")
 		}
-		set_features((CStringFeatures<uint8_t>*) data);
+		set_features(std::static_pointer_cast<CStringFeatures<uint8_t>>(data));
 	}
 
 	ASSERT(get_features())
-	CAlphabet* alphabet=get_features()->get_alphabet();
+	auto alphabet=get_features()->get_alphabet();
 	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA)
 
 	alphabet_size=alphabet->get_num_symbols();
 	string_length=features->get_num_vectors();
-	SGVector<float64_t> labvec=((CBinaryLabels*) m_labels)->get_labels();
+	SGVector<float64_t> labvec=(std::static_pointer_cast<CBinaryLabels>(m_labels))->get_labels();
 	lab=labvec.vector;
 
 	w_dim_single_char=set_wd_weights();
@@ -249,7 +249,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 	SG_FREE(cuts);
 
 	lab=NULL;
-	SG_UNREF(alphabet);
+
 
 	return true;
 }
@@ -264,7 +264,7 @@ bool CWDSVMOcas::train_machine(CFeatures* data)
 float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
 {
   float64_t sq_norm_W = 0;
-  CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+  auto o = (CWDSVMOcas*)ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
   float32_t* W=o->w;
   float32_t* oldW=o->old_w;
@@ -297,7 +297,7 @@ float64_t CWDSVMOcas::update_W( float64_t t, void* ptr )
 void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 {
 	wdocas_thread_params_add* p = (wdocas_thread_params_add*) ptr;
-	CWDSVMOcas* o = p->wdocas;
+	auto o = p->wdocas;
 	int32_t start = p->start;
 	int32_t end = p->end;
 	int32_t string_length = o->string_length;
@@ -309,7 +309,7 @@ void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 	int32_t alphabet_size = o->alphabet_size;
 	float32_t* wd_weights = o->wd_weights;
 	int32_t degree = o->degree;
-	CStringFeatures<uint8_t>* f = o->features;
+	auto f = o->features;
 	float64_t normalization_const = o->normalization_const;
 
 	// temporary vector
@@ -350,7 +350,7 @@ int CWDSVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	auto o = (CWDSVMOcas*)ptr;
 	uint32_t i;
 	float64_t* c_bias = o->cp_bias;
 	uint32_t nDim=(uint32_t) o->w_dim;
@@ -456,7 +456,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 	float64_t* output = p->output;
 	int32_t* val = p->val;
 
-	CStringFeatures<uint8_t>* f=o->get_features();
+	auto f=o->get_features();
 
 	int32_t degree = o->degree;
 	int32_t string_length = o->string_length;
@@ -541,7 +541,7 @@ void* CWDSVMOcas::compute_output_helper(void* ptr)
 int CWDSVMOcas::compute_output( float64_t *output, void* ptr )
 {
 #ifdef HAVE_PTHREAD
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	auto o = (CWDSVMOcas*)ptr;
 	int32_t nData=o->num_vec;
 	wdocas_thread_params_output* params_output=SG_MALLOC(wdocas_thread_params_output, o->parallel->get_num_threads());
 	pthread_t* threads = SG_MALLOC(pthread_t, o->parallel->get_num_threads());
@@ -612,7 +612,7 @@ void CWDSVMOcas::compute_W(
 	float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha, uint32_t nSel,
 	void* ptr)
 {
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	auto o = (CWDSVMOcas*)ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;
 	CMath::swap(o->w, o->old_w);
 	SGVector<float32_t> W(o->w, nDim, false);

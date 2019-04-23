@@ -23,10 +23,10 @@ TEST(MatrixOperator, cast_dense_double_complex)
 	SGMatrix<float64_t> m(size, size);
 	m.set_const(1.0);
 
-	CDenseMatrixOperator<float64_t>* orig_op
-		=new CDenseMatrixOperator<float64_t>(m);
-	CDenseMatrixOperator<complex128_t>* casted_op
-		=static_cast<CDenseMatrixOperator<complex128_t>*>(*orig_op);
+	auto orig_op
+		=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto casted_op
+		=std::make_shared<CDenseMatrixOperator<complex128_t>>(*static_cast<CDenseMatrixOperator<complex128_t>*>(*orig_op));
 
 	SGMatrix<float64_t> orig_m=orig_op->get_matrix_operator();
 	SGMatrix<complex128_t> casted_m=casted_op->get_matrix_operator();
@@ -35,9 +35,6 @@ TEST(MatrixOperator, cast_dense_double_complex)
 	Map<MatrixXcd> eig_casted(casted_m.matrix, casted_m.num_rows, casted_m.num_cols);
 
 	EXPECT_NEAR((eig_orig.cast<complex128_t>()-eig_casted).norm(), 0.0, 1E-15);
-
-	SG_UNREF(orig_op);
-	SG_UNREF(casted_op);
 }
 
 TEST(MatrixOperator, cast_sparse_double_complex)
@@ -63,8 +60,7 @@ TEST(MatrixOperator, cast_sparse_double_complex)
 
 	Map<MatrixXd> eig_orig(m.matrix, m.num_rows, m.num_cols);
 
-	EXPECT_NEAR((eig_orig*eig_casted).norm(), 2.0, 1E-15);
-
-	SG_UNREF(orig_op);
-	SG_UNREF(casted_op);
+	EXPECT_NEAR(2.0, (eig_orig*eig_casted).norm(), 1E-15);
+	delete orig_op;
+	delete casted_op;
 }

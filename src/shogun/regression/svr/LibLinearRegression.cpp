@@ -24,7 +24,7 @@ CLibLinearRegression::CLibLinearRegression() :
 	init_defaults();
 }
 
-CLibLinearRegression::CLibLinearRegression(float64_t C, CDotFeatures* feats, CLabels* labs) :
+CLibLinearRegression::CLibLinearRegression(float64_t C, std::shared_ptr<CDotFeatures> feats, std::shared_ptr<CLabels> labs) :
 	CLinearMachine()
 {
 	register_parameters();
@@ -66,11 +66,11 @@ CLibLinearRegression::~CLibLinearRegression()
 {
 }
 
-bool CLibLinearRegression::train_machine(CFeatures* data)
+bool CLibLinearRegression::train_machine(std::shared_ptr<CFeatures> data)
 {
 
 	if (data)
-		set_features((CDotFeatures*)data);
+		set_features(data->as<CDotFeatures>());
 
 	ASSERT(features)
 	ASSERT(m_labels && m_labels->get_label_type()==LT_REGRESSION)

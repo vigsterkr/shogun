@@ -76,7 +76,7 @@ public:
 	 * @param k kernel
 	 * @param lab labels
 	 */
-	CKRRNystrom(float64_t tau, int32_t m, CKernel* k, CLabels* lab);
+	CKRRNystrom(float64_t tau, int32_t m, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
 	/** Default destructor */
 	virtual ~CKRRNystrom() {}
@@ -99,7 +99,7 @@ less than number of data points (%d)\n", m_num_rkhs_basis, n);
 
 	};
 
-	bool train_machine(CFeatures *data) override;
+	bool train_machine(std::shared_ptr<CFeatures >data) override;
 
 	/** @return object name */
 	virtual const char* get_name() const override { return "KRRNystrom"; }

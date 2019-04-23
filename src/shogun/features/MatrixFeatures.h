@@ -61,7 +61,7 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** destructor */
 		virtual ~CMatrixFeatures();
@@ -131,7 +131,7 @@ template< class ST > class CMatrixFeatures : public CFeatures
 		/** helper method used to specialize a base class instance
 		 *
 		 */
-		static CMatrixFeatures* obtain_from_generic(CFeatures* const base_features);
+		static std::shared_ptr<CMatrixFeatures<ST>> obtain_from_generic(std::shared_ptr<CFeatures> base_features);
 
 	private:
 		/** internal initialization */

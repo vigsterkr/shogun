@@ -51,6 +51,8 @@
 
 #include <shogun/util/traits.h>
 
+#include <shogun/util/traits.h>
+
 namespace shogun {
 
 	namespace any_detail
@@ -208,7 +210,7 @@ namespace shogun {
 		virtual void on(float64_t*) = 0;
 		virtual void on(floatmax_t*) = 0;
 		virtual void on(complex128_t*) = 0;
-		virtual void on(CSGObject**) = 0;
+		virtual void on(std::shared_ptr<CSGObject>*) = 0;
 		virtual void on(std::string*) = 0;
 		virtual void enter_matrix(index_t* rows, index_t* cols) = 0;
 		virtual void enter_vector(index_t* size) = 0;
@@ -384,9 +386,9 @@ namespace shogun {
 		}
 
 		template<class T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
-		void on(T** v)
+		void on(std::shared_ptr<T>* v)
 		{
-			on((CSGObject**)v);
+			on((std::shared_ptr<CSGObject>*)v);
 		}
 
 		void on(Empty*)
@@ -547,6 +549,16 @@ namespace shogun {
 		}
 
 		template <class T>
+		inline auto clone_impl(maybe_most_important, const std::shared_ptr<T>& value)
+		    -> decltype(static_cast<void*>(value->clone()))
+		{
+			if (!value)
+				return nullptr;
+
+			return static_cast<void*>(value->clone());
+		}
+
+		template <class T>
 		inline auto clone_impl(maybe_most_important, T* value)
 		    -> decltype(static_cast<void*>(value->clone()))
 		{
@@ -590,6 +602,16 @@ namespace shogun {
 						clone_impl(maybe_most_important(), o));
 				});
 			mutable_value_of<decltype(cloned)>(storage) = cloned;
+		}
+
+		template <class T>
+		inline auto clone(void** storage, const std::shared_ptr<T>& value)
+		{
+			if (value)
+			{
+				auto existing = static_cast<std::shared_ptr<T>*>(*storage);
+				existing->operator=(value->clone()->template as<T>());
+			}
 		}
 
 		template <class T, class S>

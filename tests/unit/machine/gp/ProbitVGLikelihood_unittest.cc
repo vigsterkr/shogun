@@ -88,8 +88,8 @@ TEST(ProbitVGLikelihood,get_variational_expection)
 	v[8] = 100;
 	v[9] = 625;
 
-	CProbitVGLikelihood *lik = new CProbitVGLikelihood();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lik = std::make_shared<CProbitVGLikelihood>();
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	SGVector<float64_t> aa= lik->get_variational_expection();
@@ -118,8 +118,8 @@ TEST(ProbitVGLikelihood,get_variational_expection)
 	EXPECT_NEAR(aa[9],  -8510.25069018596332171001,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
@@ -165,11 +165,11 @@ TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	v[8] = 100;
 	v[9] = 625;
 
-	CProbitVGLikelihood *lik = new CProbitVGLikelihood();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lik = std::make_shared<CProbitVGLikelihood>();
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
+	TParameter* s2_param=/*lik->m*/_parameters->get_parameter("sigma2");
 
 	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
 
@@ -198,8 +198,8 @@ TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_mu)
@@ -245,11 +245,11 @@ TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_mu)
 	v[8] = 100;
 	v[9] = 625;
 
-	CProbitVGLikelihood *lik = new CProbitVGLikelihood();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lik = std::make_shared<CProbitVGLikelihood>();
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
+	TParameter* mu_param=/*lik->m*/_parameters->get_parameter("mu");
 
 	SGVector<float64_t> dm = lik->get_variational_first_derivative(mu_param);
 
@@ -277,7 +277,7 @@ TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_mu)
 	EXPECT_NEAR(dm[9],  -128.00815349131755738199,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 #endif //USE_GPL_SHOGUN

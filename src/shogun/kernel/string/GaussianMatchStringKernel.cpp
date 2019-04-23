@@ -16,22 +16,22 @@ using namespace shogun;
 CGaussianMatchStringKernel::CGaussianMatchStringKernel()
 : CStringKernel<char>(0), width(0.0)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	register_params();
 }
 
 CGaussianMatchStringKernel::CGaussianMatchStringKernel(int32_t size, float64_t w)
 : CStringKernel<char>(size), width(w)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	register_params();
 }
 
 CGaussianMatchStringKernel::CGaussianMatchStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r, float64_t w)
+	std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r, float64_t w)
 : CStringKernel<char>(10), width(w)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	init(l, r);
 	register_params();
 }
@@ -41,7 +41,7 @@ CGaussianMatchStringKernel::~CGaussianMatchStringKernel()
 	cleanup();
 }
 
-bool CGaussianMatchStringKernel::init(CFeatures* l, CFeatures* r)
+bool CGaussianMatchStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CStringKernel<char>::init(l, r);
 	return init_normalizer();
@@ -57,8 +57,8 @@ float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t i, alen, blen ;
 	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = lhs->as<CStringFeatures<char>>()->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = rhs->as<CStringFeatures<char>>()->get_feature_vector(idx_b, blen, free_bvec);
 
 	float64_t result=0;
 
@@ -70,8 +70,8 @@ float64_t CGaussianMatchStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	result=exp(-result/width);
 
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	lhs->as<CStringFeatures<char>>()->free_feature_vector(avec, idx_a, free_avec);
+	rhs->as<CStringFeatures<char>>()->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }
 

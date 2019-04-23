@@ -55,17 +55,15 @@ float64_t CTDistributedStochasticNeighborEmbedding::get_perplexity() const
 	return m_perplexity;
 }
 
-CFeatures* CTDistributedStochasticNeighborEmbedding::transform(
-    CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CTDistributedStochasticNeighborEmbedding::transform(
+    std::shared_ptr<CFeatures> features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.sne_theta = m_theta;
 	parameters.sne_perplexity = m_perplexity;
-	parameters.features = (CDotFeatures*)features;
-
+	parameters.features = (CDotFeatures*)features.get();
 	parameters.method = SHOGUN_TDISTRIBUTED_STOCHASTIC_NEIGHBOR_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	return tapkee_embed(parameters);
 }
 

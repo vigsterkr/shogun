@@ -34,14 +34,14 @@ class CKMeansBase : public CDistanceMachine
 		 * @param d distance
 		 * @param kmeanspp Set to true for using KMeans++ (default false)
 		 */
-		CKMeansBase(int32_t k, CDistance* d, bool kmeanspp=false);
+		CKMeansBase(int32_t k, std::shared_ptr<CDistance> d, bool kmeanspp=false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
 		*/
-		CKMeansBase(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
+		CKMeansBase(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i);
 		
 		virtual ~CKMeansBase();
 
@@ -90,7 +90,7 @@ class CKMeansBase : public CDistanceMachine
 
 	protected:
 		/** Initialize training for KMeans algorithms */
-		void initialize_training(CFeatures* data=NULL);
+		void initialize_training(std::shared_ptr<CFeatures> data=NULL);
 
 		/** Ensures cluster centers are in lhs of underlying distance */
 		virtual void store_model_features();

@@ -44,8 +44,8 @@ CFITCInferenceMethod::CFITCInferenceMethod() : CSingleFITCInference()
 	init();
 }
 
-CFITCInferenceMethod::CFITCInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
+CFITCInferenceMethod::CFITCInferenceMethod(std::shared_ptr<CKernel> kern, std::shared_ptr<CFeatures> feat,
+		std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod, std::shared_ptr<CFeatures> lat)
 		: CSingleFITCInference(kern, feat, m, lab, mod, lat)
 {
 	init();
@@ -83,8 +83,8 @@ void CFITCInferenceMethod::update()
 	SG_DEBUG("leaving\n");
 }
 
-CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CFITCInferenceMethod> CFITCInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -92,8 +92,8 @@ CFITCInferenceMethod* CFITCInferenceMethod::obtain_from_generic(
 	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
 		SG_SERROR("Provided inference is not of type CFITCInferenceMethod!\n")
 
-	SG_REF(inference);
-	return (CFITCInferenceMethod*)inference;
+
+	return inference->as<CFITCInferenceMethod>();
 }
 
 void CFITCInferenceMethod::check_members() const
@@ -112,7 +112,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_diagonal_vector()
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// compute diagonal vector: sW=1/sigma
@@ -152,7 +152,7 @@ void CFITCInferenceMethod::update_chol()
 	//time complexits O(m^2*n)
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// eigen3 representation of covariance matrix of inducing features (m_kuu)
@@ -209,7 +209,7 @@ void CFITCInferenceMethod::update_chol()
 	eigen_chol_utr=Lu.matrixU();
 
 	// create eigen representation of labels and mean vectors
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
@@ -279,7 +279,7 @@ void CFITCInferenceMethod::update_deriv()
 	Map<VectorXd> eigen_be(m_be.vector, m_be.vlen);
 
 	// get and create eigen representation of labels
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// get and create eigen representation of mean vector
@@ -343,7 +343,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_posterior_mean()
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	auto lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 	eigen_mu=(eigen_y-eigen_m)-eigen_al*CMath::sq(sigma);
@@ -373,7 +373,7 @@ SGMatrix<float64_t> CFITCInferenceMethod::get_posterior_covariance()
 
 	/*
 	//true posterior mean with equivalent FITC prior
-	CGaussianLikelihood* lik=CGaussianLikelihood::obtain_from_generic(m_model);
+	auto lik=CGaussianLikelihood::obtain_from_generic(m_model);
 	float64_t sigma=lik->get_sigma();
 	SG_UNREF(lik);
 	Map<VectorXd> eigen_t(m_t.vector, m_t.vlen);
@@ -416,7 +416,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 	Map<MatrixXd> eigen_B(m_B.matrix, m_B.num_rows, m_B.num_cols);
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	SGVector<float64_t> result(1);
@@ -429,7 +429,7 @@ SGVector<float64_t> CFITCInferenceMethod::get_derivative_wrt_likelihood_model(
 	return result;
 }
 
-void CFITCInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CFITCInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
 }

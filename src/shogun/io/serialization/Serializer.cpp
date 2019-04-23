@@ -11,7 +11,7 @@
 using namespace shogun;
 using namespace shogun::io;
 
-CSerializer::CSerializer() : CSGObject(), m_stream(empty<COutputStream>())
+CSerializer::CSerializer() : CSGObject()
 {
 }
 
@@ -19,18 +19,18 @@ CSerializer::~CSerializer()
 {
 }
 
-void CSerializer::attach(Some<COutputStream> stream)
+void CSerializer::attach(std::shared_ptr<COutputStream> stream)
 {
     m_stream = stream;
 }
 
-Some<COutputStream> CSerializer::stream() const
+std::shared_ptr<COutputStream> CSerializer::stream() const
 {
 	REQUIRE(m_stream, "Serializer has no stream, attach() it to a stream");
 	return m_stream;
 }
 
-void shogun::io::pre_serialize(CSGObject* obj) noexcept(false)
+void shogun::io::pre_serialize(std::shared_ptr<CSGObject> obj) noexcept(false)
 {
 	obj->save_serializable_pre();
 
@@ -42,7 +42,7 @@ void shogun::io::pre_serialize(CSGObject* obj) noexcept(false)
 	}
 }
 
-void shogun::io::post_serialize(CSGObject* obj) noexcept(false)
+void shogun::io::post_serialize(std::shared_ptr<CSGObject> obj) noexcept(false)
 {
 	obj->save_serializable_post();
 
@@ -54,7 +54,7 @@ void shogun::io::post_serialize(CSGObject* obj) noexcept(false)
 	}
 }
 
-void shogun::io::serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer)
+void shogun::io::serialize(const std::string& _path, std::shared_ptr<CSGObject> _obj, std::shared_ptr<CSerializer> _serializer)
 {
 	auto fs = io::FileSystemRegistry::instance();
 	std::error_condition ec;
@@ -62,7 +62,7 @@ void shogun::io::serialize(const std::string& _path, CSGObject* _obj, CSerialize
 	if ((ec = fs->new_writable_file(_path, &file)))
 		throw to_system_error(ec);
 
-	auto fos = some<io::CFileOutputStream>(file.get());
+	auto fos = std::make_shared<io::CFileOutputStream>(file.get());
 	_serializer->attach(fos);
-	_serializer->write(wrap(_obj));
+	_serializer->write(_obj);
 }

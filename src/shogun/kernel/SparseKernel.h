@@ -33,7 +33,7 @@ template <class ST> class CSparseKernel : public CKernel
 		 * @param l features for left-hand side
 		 * @param r features for right-hand side
 		 */
-		CSparseKernel(CFeatures* l, CFeatures* r) : CKernel(10)
+		CSparseKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r) : CKernel(10)
 		{
 			init(l, r);
 		}
@@ -44,7 +44,7 @@ template <class ST> class CSparseKernel : public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 		{
 			CKernel::init(l,r);
 
@@ -53,10 +53,13 @@ template <class ST> class CSparseKernel : public CKernel
 			ASSERT(l->get_feature_type()==this->get_feature_type())
 			ASSERT(r->get_feature_type()==this->get_feature_type())
 
-			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features())
+			auto sf_lhs = lhs->as<CSparseFeatures<ST>>();
+			auto sf_rhs = rhs->as<CSparseFeatures<ST>>();
+
+			if (sf_lhs->get_num_features() != sf_rhs->get_num_features())
 			{
 				SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
+						sf_lhs->get_num_features(),sf_rhs->get_num_features());
 			}
 			return true;
 		}

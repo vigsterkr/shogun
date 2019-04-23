@@ -21,7 +21,7 @@ CSalzbergWordStringKernel::CSalzbergWordStringKernel()
 	init();
 }
 
-CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels)
+CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, std::shared_ptr<CPluginEstimate> pie, std::shared_ptr<CLabels> labels)
 : CStringKernel<uint16_t>(size)
 {
 	init();
@@ -32,8 +32,8 @@ CSalzbergWordStringKernel::CSalzbergWordStringKernel(int32_t size, CPluginEstima
 }
 
 CSalzbergWordStringKernel::CSalzbergWordStringKernel(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
-	CPluginEstimate* pie, CLabels* labels)
+	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r,
+	std::shared_ptr<CPluginEstimate> pie, std::shared_ptr<CLabels> labels)
 : CStringKernel<uint16_t>(10),estimate(pie)
 {
 	init();
@@ -50,12 +50,12 @@ CSalzbergWordStringKernel::~CSalzbergWordStringKernel()
 	cleanup();
 }
 
-bool CSalzbergWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
+bool CSalzbergWordStringKernel::init(std::shared_ptr<CFeatures> p_l, std::shared_ptr<CFeatures> p_r)
 {
 	CStringKernel<uint16_t>::init(p_l,p_r);
-	CStringFeatures<uint16_t>* l=(CStringFeatures<uint16_t>*) p_l;
+	auto l=std::static_pointer_cast<CStringFeatures<uint16_t>>(p_l);
 	ASSERT(l)
-	CStringFeatures<uint16_t>* r=(CStringFeatures<uint16_t>*) p_r;
+	auto r=std::static_pointer_cast<CStringFeatures<uint16_t>>(p_r);
 	ASSERT(r)
 
 	int32_t i;
@@ -315,8 +315,8 @@ float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	uint16_t* avec=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bvec=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
 
@@ -337,8 +337,8 @@ float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	}
 	result += ld_mean_lhs[idx_a] + ld_mean_rhs[idx_b] ;
 
-	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 
 	if (initialized)
 		result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;
@@ -346,18 +346,19 @@ float64_t CSalzbergWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	return result;
 }
 
-void CSalzbergWordStringKernel::set_prior_probs_from_labels(CLabels* labels)
+void CSalzbergWordStringKernel::set_prior_probs_from_labels(std::shared_ptr<CLabels> labels)
 {
 	ASSERT(labels)
 	ASSERT(labels->get_label_type() == LT_BINARY)
 	labels->ensure_valid();
 
 	int32_t num_pos=0, num_neg=0;
+	auto bl = binary_labels(labels);
 	for (int32_t i=0; i<labels->get_num_labels(); i++)
 	{
-		if (((CBinaryLabels*) labels)->get_int_label(i)==1)
+		if (bl->get_int_label(i)==1)
 			num_pos++;
-		if (((CBinaryLabels*) labels)->get_int_label(i)==-1)
+		if (bl->get_int_label(i)==-1)
 			num_neg++;
 	}
 

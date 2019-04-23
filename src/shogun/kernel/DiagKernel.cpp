@@ -26,7 +26,7 @@ CDiagKernel::CDiagKernel(int32_t size, float64_t d)
 	diag=d;
 }
 
-CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, float64_t d)
+CDiagKernel::CDiagKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r, float64_t d)
 : CKernel()
 {
 	init();
@@ -38,7 +38,7 @@ CDiagKernel::~CDiagKernel()
 {
 }
 
-bool CDiagKernel::init(CFeatures* l, CFeatures* r)
+bool CDiagKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CKernel::init(l, r);
 	return init_normalizer();

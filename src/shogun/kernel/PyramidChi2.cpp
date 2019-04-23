@@ -69,14 +69,14 @@ void CPyramidChi2::cleanup()
 	CKernel::cleanup();
 }
 
-bool CPyramidChi2::init(CFeatures* l, CFeatures* r)
+bool CPyramidChi2::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDotKernel::init(l, r);
 	return init_normalizer();
 }
 
 CPyramidChi2::CPyramidChi2(
-	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+	std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r,
 		int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
@@ -123,9 +123,11 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+	auto df_lhs = std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs);
+	auto df_rhs = std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs);
+	float64_t* avec=df_lhs->get_feature_vector(idx_a,
 					alen, afree);
-	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+	float64_t* bvec=df_rhs->get_feature_vector(idx_b,
 					blen, bfree);
 	if(alen!=blen)
 		SG_ERROR("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim")
@@ -143,18 +145,18 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 			if (num_randfeats_forwidthcomputation >1)
 			{
-				numind=CMath::min( ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors() , num_randfeats_forwidthcomputation);
+				numind=CMath::min(df_lhs->get_num_vectors() , num_randfeats_forwidthcomputation);
 			}
 			else
 			{
-				numind= ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors();
+				numind= df_lhs->get_num_vectors();
 			}
 			float64_t* featindices = SG_MALLOC(float64_t, numind);
 
 			if (num_randfeats_forwidthcomputation >0)
 			{
 				for(int32_t i=0; i< numind;++i)
-					featindices[i]=CMath::random(0, ((CDenseFeatures<float64_t>*) lhs)->get_num_vectors()-1);
+					featindices[i]=CMath::random(0, df_lhs->get_num_vectors()-1);
 			}
 			else
 			{
@@ -168,12 +170,12 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			//get avec, get bvec	only from lhs, do not free
 			for (int32_t li=0; li < numind;++li)
 			{
-				avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(featindices[li],
+				avec=df_lhs->get_feature_vector(featindices[li],
 					alen, afree);
 				for (int32_t ri=0; ri <=li;++ri)
 				{
 					// lhs is right here!!!
-					bvec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(featindices[ri],
+					bvec=df_lhs->get_feature_vector(featindices[ri],
 							blen, bfree);
 
 					float64_t result=0;
@@ -205,9 +207,9 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 
 	//the actual kernel computation
-	avec=((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a,
+	avec=df_lhs->get_feature_vector(idx_a,
 					alen, afree);
-	bvec=((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b,
+	bvec=df_rhs->get_feature_vector(idx_b,
 					blen, bfree);
 
 	float64_t result=0;
@@ -227,8 +229,8 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	}
 	result = std::exp(-result / width);
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	df_lhs->free_feature_vector(avec, idx_a, afree);
+	df_rhs->free_feature_vector(bvec, idx_b, bfree);
 
 	return (result);
 }

@@ -26,11 +26,11 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 		feats[i] = CMath::random(-100, 100);
 	}
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
-	SG_REF(labels);
+
+	auto labels = std::make_shared<CMultilabelSOLabels>(num_samples, 3);
+
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 1;
 	SGVector<int32_t> lab_012(3);
@@ -48,12 +48,12 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
 
-	CHierarchicalMultilabelModel * model = new CHierarchicalMultilabelModel(
+	auto model = std::make_shared<CHierarchicalMultilabelModel>(
 	        features, labels, taxonomy);
-	SG_REF(model);
 
-	CSparseMultilabel * slabel_1 = new CSparseMultilabel(lab_1);
-	SG_REF(slabel_1);
+
+	auto slabel_1 = std::make_shared<CSparseMultilabel>(lab_1);
+
 	SGVector<float64_t> psi_1 = model->get_joint_feature_vector(0,
 	                            slabel_1);
 
@@ -67,10 +67,10 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_1)
 		EXPECT_EQ(psi_1[i], attr_vector[i / dim_features] * feats[i % dim_features]);
 	}
 
-	SG_UNREF(slabel_1);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
 }
 
 TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
@@ -85,11 +85,11 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 		feats[i] = CMath::random(-100, 100);
 	}
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
-	SG_REF(labels);
+
+	auto labels = std::make_shared<CMultilabelSOLabels>(num_samples, 3);
+
 	SGVector<int32_t> lab_1(1);
 	lab_1[0] = 1;
 	SGVector<int32_t> lab_012(3);
@@ -107,12 +107,12 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
 
-	CHierarchicalMultilabelModel * model = new CHierarchicalMultilabelModel(
+	auto model = std::make_shared<CHierarchicalMultilabelModel>(
 	        features, labels, taxonomy);
-	SG_REF(model);
 
-	CSparseMultilabel * slabel_012 = new CSparseMultilabel(lab_012);
-	SG_REF(slabel_012);
+
+	auto slabel_012 = std::make_shared<CSparseMultilabel>(lab_012);
+
 	SGVector<float64_t> psi_2 = model->get_joint_feature_vector(0,
 	                            slabel_012);
 
@@ -126,10 +126,10 @@ TEST(HierarchicalMultilabelModel, get_joint_feature_vector_2)
 		EXPECT_EQ(psi_2[i], attr_vector[i / dim_features] * feats[i % dim_features]);
 	}
 
-	SG_UNREF(slabel_012);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
 }
 
 TEST(HierarchicalMultilabelModel, delta_loss)
@@ -140,11 +140,11 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 	SGMatrix<float64_t> feats(dim_features, num_samples);
 	feats.zero();
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
-	SG_REF(labels);
+
+	auto labels = std::make_shared<CMultilabelSOLabels>(num_samples, 3);
+
 
 	// assuming the hierarchy to be
 	//       0
@@ -154,9 +154,9 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
 
-	CHierarchicalMultilabelModel * model = new CHierarchicalMultilabelModel(
+	auto model = std::make_shared<CHierarchicalMultilabelModel>(
 	        features, labels, taxonomy);
-	SG_REF(model);
+
 
 	SGVector<int32_t> lab_012(3);
 	lab_012[0] = 0;
@@ -169,14 +169,14 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 	lab_0[0] = 0;
 	SGVector<int32_t> lab_nill(0);
 
-	CSparseMultilabel * slabel_012 = new CSparseMultilabel(lab_012);
-	SG_REF(slabel_012);
-	CSparseMultilabel * slabel_01 = new CSparseMultilabel(lab_01);
-	SG_REF(slabel_01);
-	CSparseMultilabel * slabel_0 = new CSparseMultilabel(lab_0);
-	SG_REF(slabel_0);
-	CSparseMultilabel * slabel_nill = new CSparseMultilabel(lab_nill);
-	SG_REF(slabel_nill);
+	auto slabel_012 = std::make_shared<CSparseMultilabel>(lab_012);
+
+	auto slabel_01 = std::make_shared<CSparseMultilabel>(lab_01);
+
+	auto slabel_0 = std::make_shared<CSparseMultilabel>(lab_0);
+
+	auto slabel_nill = std::make_shared<CSparseMultilabel>(lab_nill);
+
 
 	float64_t delta_loss_1 = model->delta_loss(slabel_012, slabel_012);
 	EXPECT_EQ(delta_loss_1, 0);
@@ -190,13 +190,13 @@ TEST(HierarchicalMultilabelModel, delta_loss)
 	float64_t delta_loss_4 = model->delta_loss(slabel_012, slabel_nill);
 	EXPECT_EQ(delta_loss_4, 3);
 
-	SG_UNREF(slabel_012);
-	SG_UNREF(slabel_01);
-	SG_UNREF(slabel_0);
-	SG_UNREF(slabel_nill);
-	SG_UNREF(model);
-	SG_UNREF(features);
-	SG_UNREF(labels);
+
+
+
+
+
+
+
 }
 
 TEST(HierarchicalMultilabelModel, argmax)
@@ -211,11 +211,11 @@ TEST(HierarchicalMultilabelModel, argmax)
 		feats[i] = CMath::random(-100, 100);
 	}
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
-	SG_REF(labels);
+
+	auto labels = std::make_shared<CMultilabelSOLabels>(num_samples, 3);
+
 
 	SGVector<int32_t> lab_2(1);
 	lab_2[0] = 2;
@@ -233,9 +233,9 @@ TEST(HierarchicalMultilabelModel, argmax)
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
 
-	CHierarchicalMultilabelModel * model = new CHierarchicalMultilabelModel(
+	auto model = std::make_shared<CHierarchicalMultilabelModel>(
 	        features, labels, taxonomy);
-	SG_REF(model);
+
 
 	SGVector<float64_t> w(model->get_dim());
 
@@ -244,15 +244,15 @@ TEST(HierarchicalMultilabelModel, argmax)
 		w[i] = CMath::random(-1, 1);
 	}
 
-	CResultSet * ret_1 = model->argmax(w, 0, true);
+	auto ret_1 = model->argmax(w, 0, true);
 
-	CSparseMultilabel * y_1 = ret_1->argmax->as<CSparseMultilabel>();
+	auto y_1 = ret_1->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
 		int32_t label = slabel_1[i];
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
+		float64_t score = features->as<CDotFeatures>()->dense_dot(0,
 		                  w.vector + label * dim_features, dim_features);
 
 		// score for ROOT should be greater than 0
@@ -265,22 +265,22 @@ TEST(HierarchicalMultilabelModel, argmax)
 		// zero
 		else
 		{
-			float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
+			float64_t score_0 = features->as<CDotFeatures>()->dense_dot(0,
 			                    w.vector, dim_features);
 			EXPECT_GE(score_0, 0);
 			EXPECT_GE(score, 0);
 		}
 	}
 
-	CResultSet * ret_2 = model->argmax(w, 0, false);
+	auto ret_2 = model->argmax(w, 0, false);
 
-	CSparseMultilabel * y_2 = ret_2->argmax->as<CSparseMultilabel>();
+	auto y_2 = ret_2->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
 	{
 		int32_t label = slabel_2[i];
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
+		float64_t score = features->as<CDotFeatures>()->dense_dot(0,
 		                  w.vector + label * dim_features, dim_features);
 
 		// score for ROOT should be greater than 0
@@ -293,19 +293,16 @@ TEST(HierarchicalMultilabelModel, argmax)
 		// zero
 		else
 		{
-			float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
+			float64_t score_0 = features->as<CDotFeatures>()->dense_dot(0,
 			                    w.vector, dim_features);
 			EXPECT_GE(score_0, 0);
 			EXPECT_GE(score, 0);
 		}
 	}
 
-	SG_UNREF(ret_1);
-	SG_UNREF(ret_2);
 
-	SG_UNREF(features);
-	SG_UNREF(labels);
-	SG_UNREF(model);
+
+
 }
 
 TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
@@ -320,11 +317,11 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		feats[i] = CMath::random(-100, 100);
 	}
 
-	CSparseFeatures<float64_t> * features = new CSparseFeatures<float64_t>(feats);
-	SG_REF(features);
+	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
 
-	CMultilabelSOLabels * labels = new CMultilabelSOLabels(num_samples, 3);
-	SG_REF(labels);
+
+	auto labels = std::make_shared<CMultilabelSOLabels>(num_samples, 3);
+
 
 	SGVector<int32_t> lab_2(1);
 	lab_2[0] = 2;
@@ -342,9 +339,9 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 	taxonomy[1] = 0;
 	taxonomy[2] = 0;
 
-	CHierarchicalMultilabelModel * model = new CHierarchicalMultilabelModel(
+	auto model = std::make_shared<CHierarchicalMultilabelModel>(
 	        features, labels, taxonomy, true);
-	SG_REF(model);
+
 
 	SGVector<float64_t> w(model->get_dim());
 
@@ -353,9 +350,9 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		w[i] = CMath::random(-1, 1);
 	}
 
-	CResultSet * ret_1 = model->argmax(w, 0, true);
+	auto ret_1 = model->argmax(w, 0, true);
 
-	CSparseMultilabel * y_1 = ret_1->argmax->as<CSparseMultilabel>();
+	auto y_1 = ret_1->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
@@ -368,18 +365,18 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		// if node is not the ROOT, then along with the score
 		// of that node, the score for its parent should also be greater than
 		// zero
-		float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
+		float64_t score_0 = features->as<CDotFeatures>()->dense_dot(0,
 		                    w.vector, dim_features);
 		EXPECT_GE(score_0, 0);
 
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
+		float64_t score = features->as<CDotFeatures>()->dense_dot(0,
 		                  w.vector + label * dim_features, dim_features);
 		EXPECT_GE(score, 0);
 	}
 
-	CResultSet * ret_2 = model->argmax(w, 0, false);
+	auto ret_2 = model->argmax(w, 0, false);
 
-	CSparseMultilabel * y_2 = ret_2->argmax->as<CSparseMultilabel>();
+	auto y_2 = ret_2->argmax->as<CSparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < slabel_2.vlen; i++)
@@ -392,20 +389,17 @@ TEST(HierarchicalMultilabelModel, argmax_leaf_nodes_mandatory)
 		// if node is not the ROOT, then along with the score
 		// of that node, the score for its parent should also be greater than
 		// zero
-		float64_t score_0 = ((CDotFeatures *)features)->dense_dot(0,
+		float64_t score_0 = features->as<CDotFeatures>()->dense_dot(0,
 		                    w.vector, dim_features);
 		EXPECT_GE(score_0, 0);
 
-		float64_t score = ((CDotFeatures *)features)->dense_dot(0,
+		float64_t score = features->as<CDotFeatures>()->dense_dot(0,
 		                  w.vector + label * dim_features, dim_features);
 		EXPECT_GE(score, 0);
 	}
 
-	SG_UNREF(ret_1);
-	SG_UNREF(ret_2);
 
-	SG_UNREF(features);
-	SG_UNREF(labels);
-	SG_UNREF(model);
+
+
 }
 

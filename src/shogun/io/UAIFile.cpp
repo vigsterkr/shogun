@@ -41,10 +41,10 @@ CUAIFile::CUAIFile(const char* fname, char rw, const char* name) :
 
 CUAIFile::~CUAIFile()
 {
-    SG_UNREF(m_tokenizer);
-    SG_UNREF(m_line_tokenizer);
-    SG_UNREF(m_parser);
-    SG_UNREF(m_line_reader);
+
+
+
+
 
     SG_FREE(m_factors_table);
     SG_FREE(m_factors_scope);
@@ -52,10 +52,10 @@ CUAIFile::~CUAIFile()
 
 void CUAIFile::init()
 {
-    SG_ADD((CSGObject**)&m_line_reader, "line_reader", "line reader used to read lines from file");
-    SG_ADD((CSGObject**)&m_parser, "parser", "parser used to parse file");
-    SG_ADD((CSGObject**)&m_line_tokenizer, "line_tokenizer", "line tokenizer used to parse file");
-    SG_ADD((CSGObject**)&m_tokenizer, "tokenizer", "tokenizer used to parse file");
+    SG_ADD((std::shared_ptr<CSGObject>*)&m_line_reader, "line_reader", "line reader used to read lines from file");
+    SG_ADD((std::shared_ptr<CSGObject>*)&m_parser, "parser", "parser used to parse file");
+    SG_ADD((std::shared_ptr<CSGObject>*)&m_line_tokenizer, "line_tokenizer", "line tokenizer used to parse file");
+    SG_ADD((std::shared_ptr<CSGObject>*)&m_tokenizer, "tokenizer", "tokenizer used to parse file");
     SG_ADD(&m_delimiter, "delimiter", "delimiter used in get_vector function");
 
     SG_ADD(&m_num_vars, "num_vars", "number of variables");
@@ -85,20 +85,20 @@ void CUAIFile::init_with_defaults()
 {
     m_delimiter=' ';
 
-    m_tokenizer=new CDelimiterTokenizer(true);
+    m_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
     m_tokenizer->delimiters[m_delimiter]=1;
-    SG_REF(m_tokenizer);
 
-    m_line_tokenizer=new CDelimiterTokenizer(true);
+
+    m_line_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
     m_line_tokenizer->delimiters['\n']=1;
-    SG_REF(m_line_tokenizer);
 
-    m_parser=new CParser();
+
+    m_parser=std::make_shared<CParser>();
     m_parser->set_tokenizer(m_tokenizer);
-    SG_REF(m_parser);
 
-    m_line_reader=new CLineReader(file, m_line_tokenizer);
-    SG_REF(m_line_reader);
+
+    m_line_reader=std::make_shared<CLineReader>(file, m_line_tokenizer);
+
 }
 
 #define GET_VECTOR(read_func, sg_type)                                         \

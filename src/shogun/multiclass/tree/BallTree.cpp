@@ -37,7 +37,7 @@ CBallTree::CBallTree(int32_t leaf_size, EDistanceType d)
 {
 }
 
-float64_t CBallTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
+float64_t CBallTree::min_dist(std::shared_ptr<bnode_t> node,float64_t* feat, int32_t dim)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center=node->data.center;
@@ -48,7 +48,7 @@ float64_t CBallTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 	return CMath::max(0.0,dist-node->data.radius);
 }
 
-float64_t CBallTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t CBallTree::min_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center1=nodeq->data.center;
@@ -60,7 +60,7 @@ float64_t CBallTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	return CMath::max(0.0,dist-nodeq->data.radius-noder->data.radius);
 }
 
-float64_t CBallTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t CBallTree::max_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center1=nodeq->data.center;
@@ -72,7 +72,7 @@ float64_t CBallTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	return (dist+nodeq->data.radius+noder->data.radius);
 }
 
-void CBallTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
+void CBallTree::min_max_dist(float64_t* pt, std::shared_ptr<bnode_t> node, float64_t &lower,float64_t &upper, int32_t dim)
 {
 	float64_t dist=0;
 	SGVector<float64_t> center=node->data.center;
@@ -84,7 +84,7 @@ void CBallTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,floa
 	upper=dist+node->data.radius;
 }
 
-void CBallTree::init_node(bnode_t* node, index_t start, index_t end)
+void CBallTree::init_node(std::shared_ptr<bnode_t> node, index_t start, index_t end)
 {
 	SGVector<float64_t> upper_bounds(m_data.num_rows);
 	SGVector<float64_t> lower_bounds(m_data.num_rows);

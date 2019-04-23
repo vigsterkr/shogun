@@ -57,14 +57,14 @@ void CConstMean::init()
 	SG_ADD(&m_mean, "mean", "const value of mean function", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }
 
-SGVector<float64_t> CConstMean::get_mean_vector(const CFeatures* features) const
+SGVector<float64_t> CConstMean::get_mean_vector(std::shared_ptr<const CFeatures> features) const
 {
 	SGVector<float64_t> result(features->get_num_vectors());
 	result.set_const(m_mean);
 	return result;
 }
 
-SGVector<float64_t> CConstMean::get_parameter_derivative(const CFeatures* features,
+SGVector<float64_t> CConstMean::get_parameter_derivative(std::shared_ptr<const CFeatures> features,
 	const TParameter* param, index_t index)
 {
 	REQUIRE(features,"The features should NOT be NULL\n");

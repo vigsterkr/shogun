@@ -30,7 +30,7 @@ class CMulticlassLibSVM : public CMulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMulticlassLibSVM(float64_t C, CKernel* k, CLabels* lab);
+		CMulticlassLibSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
 		/** destructor */
 		virtual ~CMulticlassLibSVM();
@@ -53,7 +53,7 @@ class CMulticlassLibSVM : public CMulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	private:
 		void register_params();

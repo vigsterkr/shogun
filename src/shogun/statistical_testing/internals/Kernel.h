@@ -45,7 +45,7 @@ namespace internal
 class Kernel
 {
 public:
-	explicit Kernel(CKernel* kernel) : m_kernel(kernel)
+	explicit Kernel(std::shared_ptr<CKernel> kernel) : m_kernel(kernel)
 	{
 	}
 
@@ -54,7 +54,7 @@ public:
 		return m_kernel->kernel(i, j);
 	}
 private:
-	CKernel* m_kernel;
+	std::shared_ptr<CKernel> m_kernel;
 };
 
 class SelfAdjointPrecomputedKernel
@@ -68,7 +68,7 @@ public:
 		REQUIRE(self_adjoint_kernel_matrix.size()>0, "Provided kernel matrix cannot be of size 0!\n");
 		m_self_adjoint_kernel_matrix=self_adjoint_kernel_matrix;
 	}
-	void precompute(CKernel* kernel)
+	void precompute(std::shared_ptr<CKernel> kernel)
 	{
 		REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
 		REQUIRE(kernel->get_num_vec_lhs()==kernel->get_num_vec_rhs(),

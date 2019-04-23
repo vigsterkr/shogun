@@ -19,22 +19,22 @@ CDistanceKernel::CDistanceKernel()
 	register_params();
 }
 
-CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, CDistance* d)
+CDistanceKernel::CDistanceKernel(int32_t size, float64_t w, std::shared_ptr<CDistance> d)
 : CKernel(size), distance(d)
 {
 	ASSERT(distance)
 	set_width(w);
-	SG_REF(distance);
+	
 	register_params();
 }
 
 CDistanceKernel::CDistanceKernel(
-	CFeatures *l, CFeatures *r, float64_t w , CDistance* d)
+	std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t w , std::shared_ptr<CDistance> d)
 : CKernel(10), distance(d)
 {
 	set_width(w);
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init(l, r);
 	register_params();
 }
@@ -44,10 +44,10 @@ CDistanceKernel::~CDistanceKernel()
 	// important to have the cleanup of CKernel first, it calls get_name which
 	// uses the distance
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
+bool CDistanceKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(distance)
 	CKernel::init(l,r);

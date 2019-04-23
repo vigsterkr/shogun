@@ -39,8 +39,8 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_noshift)
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t>* A
-		=new CSparseMatrixOperator<float64_t>(mat);
+	auto A
+		=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
 
 	// Solve with CG_M
 	CCGMShiftedFamilySolver cg_m_linear_solver;
@@ -55,7 +55,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_noshift)
 
 	EXPECT_NEAR((x_sh_map-x_map).norm(), 0.0, 1E-15);
 
-	SG_UNREF(A);
+
 }
 
 TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
@@ -85,8 +85,8 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t>* A
-		=new CSparseMatrixOperator<float64_t>(mat);
+	auto A
+		=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
 
 	// Solve with CG_M
 	CCGMShiftedFamilySolver cg_m_linear_solver;
@@ -99,8 +99,8 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 
 	CSparseFeatures<float64_t> feat2(m);
 	mat=feat2.get_sparse_feature_matrix();
-	SG_UNREF(A);
-	A=new CSparseMatrixOperator<float64_t>(mat);
+
+	A=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
 
 	CConjugateGradientSolver cg_linear_solver;
 	SGVector<float64_t> x=cg_linear_solver.solve(A, b);
@@ -110,7 +110,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 
 	EXPECT_NEAR((x_sh_map-x_map.cast<complex128_t>()).norm(), 0.0, 1E-7);
 
-	SG_UNREF(A);
+
 }
 
 TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
@@ -140,8 +140,8 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	// Creating sparse system to solve with CG_M
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	CSparseMatrixOperator<float64_t>* A
-		=new CSparseMatrixOperator<float64_t>(mat);
+	auto A
+		=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
 
 	// Solve with CG_M
 	CCGMShiftedFamilySolver cg_m_linear_solver;
@@ -154,8 +154,8 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	for (index_t i=0; i<size; ++i)
 		m2(i,i)=m(i,i)+shift;
 
-	CDenseMatrixOperator<complex128_t>* B
-		=new CDenseMatrixOperator<complex128_t>(m2);
+	auto B
+		=std::make_shared<CDenseMatrixOperator<complex128_t>>(m2);
 
 	CDirectLinearSolverComplex direct_solver;
 	SGVector<complex128_t> x=direct_solver.solve(B, b);
@@ -165,6 +165,6 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 
 	EXPECT_NEAR((x_sh_map-x_map).norm(), 0.0, 1E-15);
 
-	SG_UNREF(A);
-	SG_UNREF(B);
+
+
 }

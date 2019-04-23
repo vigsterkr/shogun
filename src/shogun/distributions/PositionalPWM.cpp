@@ -25,7 +25,7 @@ CPositionalPWM::~CPositionalPWM()
 {
 }
 
-bool CPositionalPWM::train(CFeatures* data)
+bool CPositionalPWM::train(std::shared_ptr<CFeatures> data)
 {
 	SG_NOTIMPLEMENTED
 	return true;
@@ -62,7 +62,7 @@ float64_t CPositionalPWM::get_log_likelihood_example(int32_t num_example)
 	ASSERT(features->get_feature_class() == C_STRING)
 	ASSERT(features->get_feature_type()==F_BYTE)
 
-	CStringFeatures<uint8_t>* strs=(CStringFeatures<uint8_t>*) features;
+	auto strs=std::dynamic_pointer_cast<CStringFeatures<uint8_t>>(features);
 
 	float64_t lik=0;
 	int32_t len=0;
@@ -138,8 +138,8 @@ void CPositionalPWM::compute_scoring(int32_t max_degree)
 	int32_t order=m_pwm.num_rows;
 	int32_t num_words=m_pwm.num_cols;
 
-	CAlphabet* alpha=new CAlphabet(DNA);
-	CStringFeatures<uint16_t>* str= new CStringFeatures<uint16_t>(alpha);
+	auto alpha=std::make_shared<CAlphabet>(DNA);
+	auto str= std::make_shared<CStringFeatures<uint16_t>>(alpha);
 	int32_t num_bits=alpha->get_num_bits();
 	str->compute_symbol_mask_table(num_bits);
 

@@ -1853,10 +1853,11 @@ TParameter::delete_cont()
 			{
 				CSGObject** buf = *(CSGObject***) m_parameter;
 
-				for (index_t i=0; i<old_length; i++)
-					SG_UNREF(buf[i]);
+				//FIXME:
+				//for (index_t i=0; i<old_length; i++)
+				//	SG_UNREF(buf[i]);
 
-				SG_FREE(buf);
+				//SG_FREE(buf);
 				break;
 			}
 			case PT_UNDEFINED: default:
@@ -2168,7 +2169,8 @@ TParameter::new_sgserial(CSGObject** param,
 						 const char* sgserializable_name,
 						 const char* prefix)
 {
-	if (*param != NULL)
+	//FIXME
+/*	if (*param != NULL)
 		SG_UNREF(*param);
 
 	*param = create(sgserializable_name, generic);
@@ -2192,6 +2194,7 @@ TParameter::new_sgserial(CSGObject** param,
 	}
 
 	SG_REF(*param);
+	*/
 	return true;
 }
 
@@ -2290,15 +2293,13 @@ TParameter::is_valid()
  */
 Parameter::Parameter() : m_params(1)
 {
-	SG_REF(sg_io);
+
 }
 
 Parameter::~Parameter()
 {
 	for (int32_t i=0; i<get_num_parameters(); i++)
 		delete m_params.get_element(i);
-
-	SG_UNREF(sg_io);
 }
 
 void
@@ -2387,8 +2388,9 @@ void Parameter::set_from_parameters(Parameter* params)
 
 					if ((*to_ref)!=(*to_unref))
 					{
-						SG_REF((*to_ref));
-						SG_UNREF((*to_unref));
+						//FIXME
+						//SG_REF((*to_ref));
+						//SG_UNREF((*to_unref));
 					}
 
 				}
@@ -2402,8 +2404,9 @@ void Parameter::set_from_parameters(Parameter* params)
 					{
 						if ((*to_ref)[j]!=(*to_unref)[j])
 						{
-							SG_REF(((*to_ref)[j]));
-							SG_UNREF(((*to_unref)[j]));
+							//FIXME
+							//SG_REF(((*to_ref)[j]));
+							//SG_UNREF(((*to_unref)[j]));
 						}
 					}
 				}

@@ -159,7 +159,7 @@ public:
 	 *
 	 * @param kernel One of the kernel instances with which learning algorithm will work.
 	 */
-	void add_kernel(CKernel *kernel);
+	void add_kernel(std::shared_ptr<CKernel> kernel);
 
 	/**
 	 * Method that selects/learns the kernel based on the defined kernel selection strategy.
@@ -185,7 +185,7 @@ public:
 	 * @return The internal instance of CKernelSelectionStrategy that holds intermediate
 	 * measures computed at the time of the last kernel selection algorithm invocation.
 	 */
-	CKernelSelectionStrategy const * get_kernel_selection_strategy() const;
+	CKernelSelectionStrategy const* get_kernel_selection_strategy() const;
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

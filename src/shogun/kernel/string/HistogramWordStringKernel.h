@@ -31,7 +31,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param size cache size
 		 * @param pie plugin estimate
 		 */
-		CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie);
+		CHistogramWordStringKernel(int32_t size, std::shared_ptr<CPluginEstimate> pie);
 
 		/** constructor
 		 *
@@ -40,8 +40,8 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param pie plugin estimate
 		 */
 		CHistogramWordStringKernel(
-			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
-			CPluginEstimate* pie);
+			std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r,
+			std::shared_ptr<CPluginEstimate> pie);
 
 		virtual ~CHistogramWordStringKernel();
 
@@ -51,7 +51,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -95,7 +95,7 @@ class CHistogramWordStringKernel: public CStringKernel<uint16_t>
 
 	protected:
 		/** plugin estimate */
-		CPluginEstimate* estimate;
+		std::shared_ptr<CPluginEstimate> estimate;
 
 		/** mean */
 		float64_t* mean;

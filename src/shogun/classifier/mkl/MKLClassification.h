@@ -27,7 +27,7 @@ class CMKLClassification : public CMKL
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLClassification(CSVM* s=NULL);
+		CMKLClassification(std::shared_ptr<CSVM> s=NULL);
 
 		/** Destructor
 		 */
@@ -46,7 +46,7 @@ class CMKLClassification : public CMKL
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static CMKLClassification* obtain_from_generic(CMachine* machine);
+		static std::shared_ptr<CMKLClassification> obtain_from_generic(std::shared_ptr<CMachine> machine);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "MKLClassification"; }

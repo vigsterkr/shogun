@@ -34,13 +34,13 @@ CCircularBuffer::CCircularBuffer(int32_t buffer_size)
 
 CCircularBuffer::~CCircularBuffer()
 {
-	SG_UNREF(m_tokenizer);
+	
 }
 
-void CCircularBuffer::set_tokenizer(CTokenizer* tokenizer)
+void CCircularBuffer::set_tokenizer(std::shared_ptr<CTokenizer> tokenizer)
 {
-	SG_REF(tokenizer);
-	SG_UNREF(m_tokenizer);
+	
+	
 	m_tokenizer=tokenizer;
 }
 

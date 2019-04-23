@@ -21,7 +21,7 @@ void CBalancedConditionalProbabilityTree::set_alpha(float64_t alpha)
 	m_alpha = alpha;
 }
 
-bool CBalancedConditionalProbabilityTree::which_subtree(bnode_t *node, SGVector<float32_t> ex)
+bool CBalancedConditionalProbabilityTree::which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex)
 {
 	float64_t pred = predict_node(ex, node);
 	float64_t depth_left = tree_depth(node->left());
@@ -37,7 +37,7 @@ bool CBalancedConditionalProbabilityTree::which_subtree(bnode_t *node, SGVector<
 	return true; // go left
 }
 
-int32_t CBalancedConditionalProbabilityTree::tree_depth(bnode_t *node)
+int32_t CBalancedConditionalProbabilityTree::tree_depth(std::shared_ptr<bnode_t> node)
 {
 	int32_t depth = 0;
 	while (node != NULL)

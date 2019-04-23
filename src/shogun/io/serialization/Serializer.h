@@ -17,17 +17,17 @@ namespace shogun
 		public:
 			CSerializer();
 			virtual ~CSerializer();
-			virtual void attach(Some<COutputStream> stream);
-			virtual void write(Some<CSGObject> object) noexcept(false) = 0;
-			Some<COutputStream> stream() const;
+			virtual void attach(std::shared_ptr<COutputStream> stream);
+			virtual void write(std::shared_ptr<CSGObject> object) noexcept(false) = 0;
+			std::shared_ptr<COutputStream> stream() const;
 
 		private:
-			Some<COutputStream> m_stream;
+			std::shared_ptr<COutputStream> m_stream;
 		};
 
-		void serialize(const std::string& _path, CSGObject* _obj, CSerializer* _serializer);
-		void pre_serialize(CSGObject* obj) noexcept(false);
-		void post_serialize(CSGObject* obj) noexcept(false);
+		void serialize(const std::string& _path, std::shared_ptr<CSGObject> _obj, std::shared_ptr<CSerializer> _serializer);
+		void pre_serialize(std::shared_ptr<CSGObject> obj) noexcept(false);
+		void post_serialize(std::shared_ptr<CSGObject> obj) noexcept(false);
 	}
 }
 

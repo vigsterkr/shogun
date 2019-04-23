@@ -116,7 +116,7 @@ struct CMMD::Self
 		num_null_samples = DEFAULT_NUM_NULL_SAMPLES;
 		stype = DEFAULT_STYPE;
 		null_approximation_method = DEFAULT_NULL_APPROXIMATION_METHOD;
-		strategy=unique_ptr<CKernelSelectionStrategy>(new CKernelSelectionStrategy());
+		strategy=std::make_unique<CKernelSelectionStrategy>();
 	}
 
 	index_t num_null_samples;
@@ -139,7 +139,7 @@ void CMMD::init()
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::initParallel();
 #endif
-	self=unique_ptr<Self>(new Self());
+	self=std::make_unique<Self>();
 }
 
 CMMD::~CMMD()
@@ -162,12 +162,12 @@ void CMMD::set_kernel_selection_strategy(machine_int_t method, index_t num_runs,
 		.use_alpha(alpha);
 }
 
-CKernelSelectionStrategy const * CMMD::get_kernel_selection_strategy() const
+CKernelSelectionStrategy const* CMMD::get_kernel_selection_strategy() const
 {
 	return self->strategy.get();
 }
 
-void CMMD::add_kernel(CKernel* kernel)
+void CMMD::add_kernel(std::shared_ptr<CKernel> kernel)
 {
 	self->strategy->add_kernel(kernel);
 }
@@ -177,7 +177,7 @@ void CMMD::select_kernel()
 	SG_DEBUG("Entering!\n");
 	auto& data_mgr=get_data_mgr();
 	data_mgr.set_train_mode(true);
-	CMMD::set_kernel(self->strategy->select_kernel(this));
+	CMMD::set_kernel(self->strategy->select_kernel(shared_from_this()->as<CMMD>()));
 	data_mgr.set_train_mode(false);
 	SG_DEBUG("Leaving!\n");
 }

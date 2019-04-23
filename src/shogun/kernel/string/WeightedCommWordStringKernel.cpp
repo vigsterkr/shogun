@@ -26,7 +26,7 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, bool us,
+	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, bool us,
 	int32_t size)
 : CCommWordStringKernel(size, us)
 {
@@ -41,11 +41,12 @@ CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel()
 	SG_FREE(weights);
 }
 
-bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)
+bool CWeightedCommWordStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
-	ASSERT(((CStringFeatures<uint16_t>*) l)->get_order() ==
-			((CStringFeatures<uint16_t>*) r)->get_order());
-	degree=((CStringFeatures<uint16_t>*) l)->get_order();
+	auto sf_l = std::static_pointer_cast<CStringFeatures<uint16_t>>(l);
+	auto sf_r = std::static_pointer_cast<CStringFeatures<uint16_t>>(r);
+	ASSERT(sf_l->get_order() ==	sf_r->get_order());
+	degree=sf_l->get_order();
 	set_wd_weights();
 
 	CCommWordStringKernel::init(l,r);
@@ -95,8 +96,8 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	CStringFeatures<uint16_t>* l = (CStringFeatures<uint16_t>*) lhs;
-	CStringFeatures<uint16_t>* r = (CStringFeatures<uint16_t>*) rhs;
+	auto l = std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs);
+	auto r = std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
 
 	uint16_t* av=l->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bv=r->get_feature_vector(idx_b, blen, free_bvec);
@@ -131,7 +132,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 	for (int32_t d=0; d<degree; d++)
 	{
 		mask = mask | (1 << (degree-d-1));
-		uint16_t masked=((CStringFeatures<uint16_t>*) lhs)->get_masked_symbols(0xffff, mask);
+		uint16_t masked=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_masked_symbols(0xffff, mask);
 
 		int32_t left_idx=0;
 		int32_t right_idx=0;
@@ -179,7 +180,7 @@ void CWeightedCommWordStringKernel::add_to_normal(
 {
 	int32_t len=-1;
 	bool free_vec;
-	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) lhs;
+	auto s=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs);
 	uint16_t* vec=s->get_feature_vector(vec_idx, len, free_vec);
 
 	if (len>0)
@@ -209,7 +210,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 	ASSERT(get_is_initialized())
 	ASSERT(use_sign==false)
 
-	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
+	auto s=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
 	uint32_t num_symbols=(uint32_t) s->get_num_symbols();
 	int32_t dic_size=1<<(sizeof(uint16_t)*8);
 	float64_t* dic=SG_MALLOC(float64_t, dic_size);
@@ -246,7 +247,7 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 	float64_t result=0;
 	bool free_vec;
 	int32_t len=-1;
-	CStringFeatures<uint16_t>* s=(CStringFeatures<uint16_t>*) rhs;
+	auto s=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
 	uint16_t* vec=s->get_feature_vector(i, len, free_vec);
 
 	if (vec && len>0)
@@ -300,7 +301,7 @@ void CWeightedCommWordStringKernel::init()
 
 	init_dictionary(1<<(sizeof(uint16_t)*9));
 
-	m_parameters->add_vector(&weights, &degree, "weights",
-			"weights for each of the subkernels of degree 1...d");
+	/*m_parameters->add_vector(&weights, &degree, "weights",
+			"weights for each of the subkernels of degree 1...d");*/
 	watch_param("weights", &weights, &degree);
 }

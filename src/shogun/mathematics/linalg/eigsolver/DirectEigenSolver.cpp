@@ -23,8 +23,8 @@ CDirectEigenSolver::CDirectEigenSolver()
 }
 
 CDirectEigenSolver::CDirectEigenSolver(
-	CDenseMatrixOperator<float64_t>* linear_operator)
-	: CEigenSolver((CLinearOperator<float64_t>*)linear_operator)
+	std::shared_ptr<CDenseMatrixOperator<float64_t>> linear_operator)
+	: CEigenSolver(linear_operator->as<CLinearOperator<float64_t>>())
 {
 	SG_GCDEBUG("%s created (%p)\n", this->get_name(), this)
 }
@@ -42,8 +42,8 @@ void CDirectEigenSolver::compute()
 		return;
 	}
 
-	CDenseMatrixOperator<float64_t>* op
-		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+	auto op
+		=m_linear_operator->as<CDenseMatrixOperator<float64_t>>();
 	REQUIRE(op, "Linear operator is not of CDenseMatrixOperator type!\n");
 
 	SGMatrix<float64_t> m=op->get_matrix_operator();

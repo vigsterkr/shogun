@@ -14,30 +14,30 @@ CCauchyKernel::CCauchyKernel(): CKernel(0), m_distance(NULL), m_sigma(1.0)
 	init();
 }
 
-CCauchyKernel::CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist)
+CCauchyKernel::CCauchyKernel(int32_t cache, float64_t sigma, std::shared_ptr<CDistance> dist)
 : CKernel(cache), m_distance(dist), m_sigma(sigma)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 }
 
-CCauchyKernel::CCauchyKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist)
+CCauchyKernel::CCauchyKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t sigma, std::shared_ptr<CDistance> dist)
 : CKernel(10), m_distance(dist), m_sigma(sigma)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init(l, r);
 }
 
 CCauchyKernel::~CCauchyKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CCauchyKernel::init(CFeatures* l, CFeatures* r)
+bool CCauchyKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(m_distance)
 	CKernel::init(l,r);

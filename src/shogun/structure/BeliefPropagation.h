@@ -74,7 +74,7 @@ IGNORE_IN_CLASSLIST class CBeliefPropagation : public CMAPInferImpl
 {
 public:
 	CBeliefPropagation();
-	CBeliefPropagation(CFactorGraph* fg);
+	CBeliefPropagation(std::shared_ptr<CFactorGraph> fg);
 
 	virtual ~CBeliefPropagation();
 
@@ -103,7 +103,7 @@ IGNORE_IN_CLASSLIST class CTreeMaxProduct : public CBeliefPropagation
 
 public:
 	CTreeMaxProduct();
-	CTreeMaxProduct(CFactorGraph* fg);
+	CTreeMaxProduct(std::shared_ptr<CFactorGraph> fg);
 
 	virtual ~CTreeMaxProduct();
 

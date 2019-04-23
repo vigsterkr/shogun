@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-CSparsePolyFeatures::CSparsePolyFeatures()
+CSparsePolyFeatures::CSparsePolyFeatures(): CDotFeatures()
 {
 	SG_UNSTABLE("CSparsePolyFeatures::CSparsePolyFeatures()",
 				"\n");
@@ -25,13 +25,13 @@ CSparsePolyFeatures::CSparsePolyFeatures()
 	m_hash_bits = 0;
 }
 
-CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32_t degree, bool normalize, int32_t hash_bits)
+CSparsePolyFeatures::CSparsePolyFeatures(std::shared_ptr<CSparseFeatures<float64_t>> feat, int32_t degree, bool normalize, int32_t hash_bits)
 	: CDotFeatures(), m_normalization_values(NULL)
 {
 	ASSERT(feat)
 
 	m_feat = feat;
-	SG_REF(m_feat);
+
 	m_degree=degree;
 	m_normalize=normalize;
 	m_hash_bits=hash_bits;
@@ -46,7 +46,7 @@ CSparsePolyFeatures::CSparsePolyFeatures(CSparseFeatures<float64_t>* feat, int32
 CSparsePolyFeatures::~CSparsePolyFeatures()
 {
 	SG_FREE(m_normalization_values);
-	SG_UNREF(m_feat);
+
 }
 
 CSparsePolyFeatures::CSparsePolyFeatures(const CSparsePolyFeatures & orig)
@@ -105,13 +105,13 @@ void CSparsePolyFeatures::free_feature_iterator(void* iterator)
 	SG_NOTIMPLEMENTED
 }
 
-float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CSparsePolyFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
 
-	CSparsePolyFeatures* pf=(CSparsePolyFeatures*) df;
+	auto pf=std::static_pointer_cast<CSparsePolyFeatures>(df);
 
 	SGSparseVector<float64_t> vec1=m_feat->get_sparse_feature_vector(vec_idx1);
 	SGSparseVector<float64_t> vec2=pf->m_feat->get_sparse_feature_vector(
@@ -232,7 +232,8 @@ void CSparsePolyFeatures::store_normalization_values()
 	m_normalization_values=SG_MALLOC(float64_t, m_normalization_values_len);
 	for (int i=0; i<m_normalization_values_len; i++)
 	{
-		float64_t val = std::sqrt(dot(i, this, i));
+		float64_t val = std::sqrt(dot(i,
+			std::dynamic_pointer_cast<std::remove_pointer_t<decltype(this)>>(shared_from_this()), i));
 		if (val==0)
 			// trap division by zero
 			m_normalization_values[i]=1.0;
@@ -242,9 +243,9 @@ void CSparsePolyFeatures::store_normalization_values()
 
 }
 
-CFeatures* CSparsePolyFeatures::duplicate() const
+std::shared_ptr<CFeatures> CSparsePolyFeatures::duplicate() const
 {
-	return new CSparsePolyFeatures(*this);
+	return std::make_shared<CSparsePolyFeatures>(*this);
 }
 
 void CSparsePolyFeatures::init()
@@ -262,8 +263,8 @@ void CSparsePolyFeatures::init()
 	    "Dimensions of the feature space of the polynomial kernel.");
 
 	m_normalization_values_len = get_num_vectors();
-	m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
-			"m_normalization_values", "Norm of each training example");
+	/*m_parameters->add_vector(&m_normalization_values, &m_normalization_values_len,
+			"m_normalization_values", "Norm of each training example");*/
 	watch_param(
 	    "m_normalization_values", &m_normalization_values,
 	    &m_normalization_values_len);

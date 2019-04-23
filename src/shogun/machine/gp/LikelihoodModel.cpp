@@ -43,13 +43,13 @@ CLikelihoodModel::~CLikelihoodModel()
 }
 
 SGVector<float64_t> CLikelihoodModel::get_predictive_log_probabilities(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab)
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab)
 {
 	return get_log_zeroth_moments(mu, s2, lab);
 }
 
 SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
-		const CLabels* lab, SGMatrix<float64_t> F) const
+		std::shared_ptr<const CLabels> lab, SGMatrix<float64_t> F) const
 {
 	REQUIRE(lab, "Given labels are NULL!\n");
 	REQUIRE(lab->get_num_labels()==F.num_rows, "Number of labels (%d) does "
@@ -70,7 +70,7 @@ SGVector<float64_t> CLikelihoodModel::get_log_probability_fmatrix(
 }
 
 SGVector<float64_t> CLikelihoodModel::get_first_moments(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),
@@ -87,7 +87,7 @@ SGVector<float64_t> CLikelihoodModel::get_first_moments(SGVector<float64_t> mu,
 }
 
 SGVector<float64_t> CLikelihoodModel::get_second_moments(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE((mu.vlen==s2.vlen) && (mu.vlen==lab->get_num_labels()),

@@ -65,7 +65,7 @@ template <class ST> class CDecompressString : public CStringPreprocessor<ST>
 		virtual void apply_to_string_list(SGStringList<ST> string_list);
 
 		/** compressor used to decompress strings */
-		CCompressor* compressor;
+		std::shared_ptr<CCompressor> compressor;
 };
 }
 #endif

@@ -46,8 +46,8 @@ CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(int32_t size,
 	register_params();
 }
 
-CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_,
+CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(std::shared_ptr<CStringFeatures<char>> l,
+		std::shared_ptr<CStringFeatures<char>> r, int32_t size, float64_t* AA_matrix_,
 		int32_t nr, int32_t nc, int32_t degree_, int32_t max_mismatch_,
 		float64_t width_) :
 		CStringKernel<char>(size), alphabet(NULL), degree(degree_), max_mismatch(
@@ -63,10 +63,10 @@ CSpectrumMismatchRBFKernel::CSpectrumMismatchRBFKernel(CStringFeatures<char>* l,
 CSpectrumMismatchRBFKernel::~CSpectrumMismatchRBFKernel()
 {
 	cleanup();
-	SG_UNREF(kernel_matrix);
+
 }
 
-bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
+bool CSpectrumMismatchRBFKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	int32_t lhs_changed=(lhs!=l);
 	int32_t rhs_changed=(rhs!=r);
@@ -76,18 +76,18 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 	SG_DEBUG("lhs_changed: %i\n", lhs_changed)
 	SG_DEBUG("rhs_changed: %i\n", rhs_changed)
 
-	CStringFeatures<char>* sf_l=(CStringFeatures<char>*)l;
-	CStringFeatures<char>* sf_r=(CStringFeatures<char>*)r;
+	auto sf_l=std::static_pointer_cast<CStringFeatures<char>>(l);
+	auto sf_r=std::static_pointer_cast<CStringFeatures<char>>(r);
 
-	SG_UNREF(alphabet);
+
 	alphabet=sf_l->get_alphabet();
-	CAlphabet* ralphabet=sf_r->get_alphabet();
+	auto ralphabet=sf_r->get_alphabet();
 
 	if (!((alphabet->get_alphabet()==DNA) || (alphabet->get_alphabet()==RNA)))
 		properties&=((uint64_t)(-1))^(KP_LINADD|KP_BATCHEVALUATION);
 
 	ASSERT(ralphabet->get_alphabet()==alphabet->get_alphabet())
-	SG_UNREF(ralphabet);
+
 
 	compute_all();
 
@@ -97,7 +97,7 @@ bool CSpectrumMismatchRBFKernel::init(CFeatures* l, CFeatures* r)
 void CSpectrumMismatchRBFKernel::cleanup()
 {
 
-	SG_UNREF(alphabet);
+
 	alphabet=NULL;
 
 	CKernel::cleanup();
@@ -239,12 +239,12 @@ void CSpectrumMismatchRBFKernel::compute_all()
 		for (int j=0; j<lhs->get_num_vectors(); j++)
 			kernel_matrix->set_element(0, i, j);
 
+	auto sf_lhs = std::static_pointer_cast<CStringFeatures<char>>(lhs);
 	for (int i=0; i<lhs->get_num_vectors(); i++)
 	{
 		int32_t alen;
 		bool free_avec;
-		char* avec=((CStringFeatures<char>*)lhs)->get_feature_vector(i, alen,
-				free_avec);
+		char* avec=sf_lhs->get_feature_vector(i, alen, free_avec);
 
 		for (int apos=0; apos+degree-1<alen; apos++)
 		{
@@ -257,7 +257,7 @@ void CSpectrumMismatchRBFKernel::compute_all()
 		}
 		joint_seq+=std::string(avec, alen);
 
-		((CStringFeatures<char>*)lhs)->free_feature_vector(avec, i, free_avec);
+		sf_lhs->free_feature_vector(avec, i, free_avec);
 	}
 
 	compute_helper_all(joint_seq.c_str(), joint_list, "", 0);
@@ -302,14 +302,14 @@ void CSpectrumMismatchRBFKernel::register_params()
 	SG_ADD(&width, "width", "width of Gaussian", ParameterProperties::HYPER);
 	SG_ADD(&target_letter_0, "target_letter_0", "target letter 0");
 	SG_ADD(&initialized, "initialized", "the mark of initialization status");
-	SG_ADD((CSGObject** )&kernel_matrix, "kernel_matrix",
+	SG_ADD((std::shared_ptr<CSGObject>* )&kernel_matrix, "kernel_matrix",
 			"the kernel matrix with its length "
 					"defined by the number of vectors of the string features");
 }
 
 void CSpectrumMismatchRBFKernel::register_alphabet()
 {
-	SG_ADD((CSGObject** )&alphabet, "alphabet", "the alphabet used by kernel");
+	SG_ADD((std::shared_ptr<CSGObject>* )&alphabet, "alphabet", "the alphabet used by kernel");
 }
 
 void CSpectrumMismatchRBFKernel::init()
@@ -318,8 +318,8 @@ void CSpectrumMismatchRBFKernel::init()
 	degree=0;
 	max_mismatch=0;
 	width=0.0;
-	kernel_matrix=new CDynamicArray<float64_t>();
-	SG_REF(kernel_matrix);
+	kernel_matrix=std::make_shared<CDynamicArray<float64_t>>();
+
 	initialized=false;
 	target_letter_0=0;
 }

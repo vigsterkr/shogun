@@ -56,22 +56,22 @@ CIndependenceTest::~CIndependenceTest()
 {
 }
 
-void CIndependenceTest::set_kernel_p(CKernel* kernel_p)
+void CIndependenceTest::set_kernel_p(std::shared_ptr<CKernel> kernel_p)
 {
 	self->kernel_mgr.kernel_at(0)=kernel_p;
 }
 
-CKernel* CIndependenceTest::get_kernel_p() const
+std::shared_ptr<CKernel> CIndependenceTest::get_kernel_p() const
 {
 	return self->kernel_mgr.kernel_at(0);
 }
 
-void CIndependenceTest::set_kernel_q(CKernel* kernel_q)
+void CIndependenceTest::set_kernel_q(std::shared_ptr<CKernel> kernel_q)
 {
 	self->kernel_mgr.kernel_at(1)=kernel_q;
 }
 
-CKernel* CIndependenceTest::get_kernel_q() const
+std::shared_ptr<CKernel> CIndependenceTest::get_kernel_q() const
 {
 	return self->kernel_mgr.kernel_at(1);
 }

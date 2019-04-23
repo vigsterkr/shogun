@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Giovanni De Toni, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Giovanni De Toni, Heiko Strathmann,
  *          Evan Shelhamer, Sergey Lisitsyn
  */
 
@@ -19,7 +19,7 @@ CMPDSVM::CMPDSVM()
 {
 }
 
-CMPDSVM::CMPDSVM(float64_t C, CKernel* k, CLabels* lab)
+CMPDSVM::CMPDSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
 : CSVM(C, k, lab)
 {
 }
@@ -28,7 +28,7 @@ CMPDSVM::~CMPDSVM()
 {
 }
 
-bool CMPDSVM::train_machine(CFeatures* data)
+bool CMPDSVM::train_machine(std::shared_ptr<CFeatures> data)
 {
 	auto labels = binary_labels(m_labels);
 
@@ -56,7 +56,7 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	const float64_t dualeps=eps*n; //heuristic
 	int64_t niter=0;
 
-	kernel_cache = new CCache<KERNELCACHE_ELEM>(kernel->get_cache_size(), n, n);
+	kernel_cache = std::make_shared<CCache<KERNELCACHE_ELEM>>(kernel->get_cache_size(), n, n);
 	float64_t* alphas=SG_MALLOC(float64_t, n);
 	float64_t* dalphas=SG_MALLOC(float64_t, n);
 	//float64_t* hessres=SG_MALLOC(float64_t, 2*n);
@@ -264,7 +264,6 @@ bool CMPDSVM::train_machine(CFeatures* data)
 	SG_FREE(dalphas);
 	SG_FREE(hessres);
 	SG_FREE(F);
-	delete kernel_cache;
 
 	return true;
 }

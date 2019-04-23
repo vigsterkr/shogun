@@ -15,28 +15,25 @@ CAttributeFeatures::CAttributeFeatures()
 {
 }
 
-CFeatures* CAttributeFeatures::get_attribute(char* attr_name)
+std::shared_ptr<CFeatures> CAttributeFeatures::get_attribute(char* attr_name)
 {
 	int32_t idx=find_attr_index(attr_name);
 	if (idx>=0)
 	{
-		CFeatures* f=features[idx].attr_obj;
-		SG_REF(f);
-		return f;
+		return features[idx].attr_obj;
 	}
 
 	return NULL;
 }
 
-void CAttributeFeatures::get_attribute_by_index(int idx, const char* &attr_name, CFeatures* &attr_obj)
+void CAttributeFeatures::get_attribute_by_index(int idx, const char* &attr_name, std::shared_ptr<CFeatures> &attr_obj)
 {
 		T_ATTRIBUTE a= features.get_element_safe(idx);
 		attr_name= a.attr_name;
 		attr_obj= a.attr_obj;
-		SG_REF(a.attr_obj);
 }
 
-bool CAttributeFeatures::set_attribute(char* attr_name, CFeatures* attr_obj)
+bool CAttributeFeatures::set_attribute(char* attr_name, std::shared_ptr<CFeatures> attr_obj)
 {
 	int32_t idx=find_attr_index(attr_name);
 	if (idx==-1)
@@ -45,8 +42,6 @@ bool CAttributeFeatures::set_attribute(char* attr_name, CFeatures* attr_obj)
 	T_ATTRIBUTE a;
 	a.attr_name=get_strdup(attr_name);
 	a.attr_obj=attr_obj;
-
-	SG_REF(attr_obj);
 
 	return features.set_element(a, idx);
 }
@@ -59,7 +54,7 @@ bool CAttributeFeatures::del_attribute(char* attr_name)
 	{
 		T_ATTRIBUTE a= features[idx];
 		SG_FREE(a.attr_name);
-		SG_UNREF(a.attr_obj);
+		a.attr_obj.reset();
 		return true;
 	}
 	return false;
@@ -86,5 +81,5 @@ CAttributeFeatures::~CAttributeFeatures()
 {
 	int32_t n=features.get_num_elements();
 	for (int32_t i=0; i<n; i++)
-		SG_UNREF_NO_NULL(features[i].attr_obj);
+		features[i].attr_obj.reset();
 }

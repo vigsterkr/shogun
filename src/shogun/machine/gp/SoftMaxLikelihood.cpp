@@ -63,14 +63,14 @@ void CSoftMaxLikelihood::init()
 		"Number of samples to be generated");
 }
 
-SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab,
+SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(std::shared_ptr<const CLabels> lab,
 					 SGVector<float64_t> func) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_MULTICLASS,
 			"Labels must be type of CMulticlassLabels\n")
 
-	SGVector<int32_t> labels=((CMulticlassLabels*) lab)->get_int_labels();
+	SGVector<int32_t> labels=lab->as<CMulticlassLabels>()->get_int_labels();
 	for (int32_t i=0;i<labels.vlen;i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.vlen/labels.vlen)),
 		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
@@ -100,7 +100,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_f(const CLabels* lab
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative_f(
-		const CLabels* lab, SGVector<float64_t> func, index_t i) const
+		std::shared_ptr<const CLabels> lab, SGVector<float64_t> func, index_t i) const
 {
 	int32_t num_rows=lab->get_num_labels();
 	int32_t num_cols=func.vlen/num_rows;
@@ -115,7 +115,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative_f(
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative1_f(
-			const CLabels* lab, SGMatrix<float64_t> func) const
+			std::shared_ptr<const CLabels> lab, SGMatrix<float64_t> func) const
 {
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
 	REQUIRE(lab->get_label_type()==LT_MULTICLASS,
@@ -123,7 +123,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_log_probability_derivative1_f(
 	REQUIRE(lab->get_num_labels()==func.num_rows, "Number of labels must match "
 			"number of vectors in function\n")
 
-	SGVector<int32_t> labels=((CMulticlassLabels*) lab)->get_int_labels();
+	SGVector<int32_t> labels=lab->as<CMulticlassLabels>()->get_int_labels();
 	for (int32_t i=0;i<labels.vlen;i++)
 		REQUIRE(((labels[i]>-1)&&(labels[i]<func.num_cols)),
 		 "Labels must be between 0 and C(ie %d here). Currently labels[%d] is"
@@ -228,7 +228,7 @@ void CSoftMaxLikelihood::set_num_samples(index_t num_samples)
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, const CLabels *lab, EMCSamplerType option) const
+	SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab, EMCSamplerType option) const
 {
 	const index_t C=s2.vlen/mu.vlen;
 	const index_t n=mu.vlen/C;
@@ -250,7 +250,7 @@ SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu
 		REQUIRE(n==n1, "Number of samples (%d) learned from mu and s2 must match "
 			"number of labels(%d) in lab\n",n,n1);
 
-		y=((CMulticlassLabels*) lab)->get_int_labels();
+		y=lab->as<CMulticlassLabels>()->get_int_labels();
 		for (index_t i=0;i<y.vlen;i++)
 			REQUIRE(y[i]<C,"Labels must be between 0 and C(ie %d here). Currently lab[%d] is"
 				"%d\n",C,i,y[i]);
@@ -300,7 +300,7 @@ SGVector<float64_t> CSoftMaxLikelihood::predictive_helper(SGVector<float64_t> mu
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_predictive_log_probabilities(
-	SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels *lab)
+	SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab)
 {
 	return predictive_helper(mu, s2, lab, MC_Probability);
 }
@@ -308,7 +308,7 @@ SGVector<float64_t> CSoftMaxLikelihood::get_predictive_log_probabilities(
 SGVector<float64_t> CSoftMaxLikelihood::mc_sampler(index_t num_samples, SGVector<float64_t> mean,
 	SGMatrix<float64_t> Sigma, SGVector<float64_t> y) const
 {
-	CGaussianDistribution *gen=new CGaussianDistribution (mean, Sigma);
+	auto gen=std::make_shared<CGaussianDistribution> (mean, Sigma);
 
 	//category by samples
 	SGMatrix<float64_t> samples=gen->sample(num_samples);
@@ -326,20 +326,20 @@ SGVector<float64_t> CSoftMaxLikelihood::mc_sampler(index_t num_samples, SGVector
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	eigen_est=(mean_samples.array()*eigen_y.array())+(1-mean_samples.array())*(1-eigen_y.array());
 
-	SG_UNREF(gen);
+
 
 	return est;
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_predictive_means(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 
 	return predictive_helper(mu, s2, lab, MC_Mean);
 }
 
 SGVector<float64_t> CSoftMaxLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	return predictive_helper(mu, s2, lab, MC_Variance);
 }

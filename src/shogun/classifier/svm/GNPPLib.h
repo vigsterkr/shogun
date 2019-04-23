@@ -32,7 +32,7 @@ class CGNPPLib: public CSGObject
    * @param num_data number of data
    * @param reg_const reg const
    */
-  CGNPPLib(float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const);
+  CGNPPLib(float64_t* vector_y, std::shared_ptr<CKernel> kernel, int32_t num_data, float64_t reg_const);
   virtual ~CGNPPLib();
 
   /** --------------------------------------------------------------
@@ -104,7 +104,7 @@ class CGNPPLib: public CSGObject
   /** vector y */
   float64_t* m_vector_y;
   /** kernel */
-  CKernel* m_kernel;
+  std::shared_ptr<CKernel> m_kernel;
 
 };
 }

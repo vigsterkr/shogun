@@ -31,7 +31,7 @@ namespace shogun
 	 *
 	 * This class defines generic interface for transformers, fit() and
 	 * transform().
-	 * Subclasses should override fit(CFeatures*) or fit(CFeatures*, CLabels*)
+	 * Subclasses should override fit(std::shared_ptr<CFeatures>) or fit(std::shared_ptr<CFeatures>, CLabels*)
 	 * if necessary and transform() that transform transformation to features.
 	 *
 	 * Note that a new CFeatures is always created even in in-place mode because
@@ -57,7 +57,7 @@ namespace shogun
 		/** Fit transformer to features
 		 * @param features the training features
 		 */
-		virtual void fit(CFeatures* features)
+		virtual void fit(std::shared_ptr<CFeatures> features)
 		{
 		}
 
@@ -65,7 +65,7 @@ namespace shogun
 		 * @param features the training features
 		 * @param labels the training labels
 		 */
-		virtual void fit(CFeatures* features, CLabels* labels)
+		virtual void fit(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels)
 		{
 			SG_SNOTIMPLEMENTED;
 		}
@@ -76,8 +76,8 @@ namespace shogun
 		 *	@param inplace whether transform in place
 		 *	@return the result feature object after applying the transformer
 		 */
-		virtual CFeatures*
-		transform(CFeatures* features, bool inplace = true) = 0;
+		virtual std::shared_ptr<CFeatures>
+		transform(std::shared_ptr<CFeatures> features, bool inplace = true) = 0;
 
 		/** Apply inverse transformation to features. If transformation is
 		 * performed in place, underlying data of input features will be reused
@@ -87,8 +87,8 @@ namespace shogun
 		 * @return the result feature object after inverse applying the
 		 *transformer
 		 */
-		virtual CFeatures*
-		inverse_transform(CFeatures* features, bool inplace = true)
+		virtual std::shared_ptr<CFeatures>
+		inverse_transform(std::shared_ptr<CFeatures> features, bool inplace = true)
 		{
 			SG_SNOTIMPLEMENTED;
 

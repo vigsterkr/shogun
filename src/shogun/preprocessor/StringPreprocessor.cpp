@@ -88,8 +88,8 @@ namespace shogun
 	}
 
 	template <class ST>
-	CFeatures*
-	CStringPreprocessor<ST>::transform(CFeatures* features, bool inplace)
+	std::shared_ptr<CFeatures>
+	CStringPreprocessor<ST>::transform(std::shared_ptr<CFeatures> features, bool inplace)
 	{
 		REQUIRE(
 		    features->get_feature_class() == C_STRING,
@@ -97,7 +97,7 @@ namespace shogun
 		    "has to be of C_STRING (%d) class!\n",
 		    features->get_feature_class(), C_STRING);
 
-		SG_REF(features);
+
 
 		// We don't support stealing underlying data for StringFeatures yet.
 		// Currently StringPreprocessors modify StringFeatures in place
@@ -107,14 +107,14 @@ namespace shogun
 		if (!inplace)
 		{
 			// this actually creates a deep copy
-			string_features = new CStringFeatures<ST>(*string_features);
+			string_features = std::make_shared<CStringFeatures<ST>>(*string_features);
 		}
 
 		auto string_list = string_features->get_string_list();
 
 		apply_to_string_list(string_list);
 
-		SG_UNREF(features);
+
 		return string_features;
 	}
 

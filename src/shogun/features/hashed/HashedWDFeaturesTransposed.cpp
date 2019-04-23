@@ -59,7 +59,7 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed()
 	normalization_const = 0.0;
 }
 
-CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t>* str,
+CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(std::shared_ptr<CStringFeatures<uint8_t>> str,
 		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : CDotFeatures()
 {
@@ -69,7 +69,7 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 	ASSERT(hash_bits>0)
 	ASSERT(str)
 	ASSERT(str->have_same_length())
-	SG_REF(str);
+
 
 	strings=str;
 	int32_t transposed_num_feat=0;
@@ -81,9 +81,8 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(CStringFeatures<uint8_t
 	ASSERT(transposed_num_feat==num_strings)
 	ASSERT(transposed_num_vec==string_length)
 
-	CAlphabet* alpha=str->get_alphabet();
+	auto alpha=str->get_alphabet();
 	alphabet_size=alpha->get_num_symbols();
-	SG_UNREF(alpha);
 
 	degree=order;
 	start_degree=start_order;
@@ -101,12 +100,11 @@ CHashedWDFeaturesTransposed::CHashedWDFeaturesTransposed(const CHashedWDFeatures
 	from_degree(orig.from_degree), m_hash_bits(orig.m_hash_bits),
 	normalization_const(orig.normalization_const)
 {
-	SG_REF(strings);
+
 	string_length=strings->get_max_vector_length();
 	num_strings=strings->get_num_vectors();
-	CAlphabet* alpha=strings->get_alphabet();
+	auto alpha=strings->get_alphabet();
 	alphabet_size=alpha->get_num_symbols();
-	SG_UNREF(alpha);
 
 	set_wd_weights();
 }
@@ -117,16 +115,16 @@ CHashedWDFeaturesTransposed::~CHashedWDFeaturesTransposed()
 		SG_FREE(transposed_strings[i].string);
 	SG_FREE(transposed_strings);
 
-	SG_UNREF(strings);
+
 	SG_FREE(wd_weights);
 }
 
-float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CHashedWDFeaturesTransposed::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CHashedWDFeaturesTransposed* wdf = (CHashedWDFeaturesTransposed*) df;
+	auto wdf = std::static_pointer_cast<CHashedWDFeaturesTransposed>(df);
 
 	int32_t len1, len2;
 	bool free_vec1, free_vec2;
@@ -587,9 +585,9 @@ void CHashedWDFeaturesTransposed::set_normalization_const(float64_t n)
 	SG_DEBUG("normalization_const:%f\n", normalization_const)
 }
 
-CFeatures* CHashedWDFeaturesTransposed::duplicate() const
+std::shared_ptr<CFeatures> CHashedWDFeaturesTransposed::duplicate() const
 {
-	return new CHashedWDFeaturesTransposed(*this);
+	return std::make_shared<CHashedWDFeaturesTransposed>(*this);
 }
 
 void* CHashedWDFeaturesTransposed::get_feature_iterator(int32_t vector_index)

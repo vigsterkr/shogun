@@ -6,15 +6,15 @@
 
 using namespace shogun;
 
-CMKLClassification::CMKLClassification(CSVM* s) : CMKL(s)
+CMKLClassification::CMKLClassification(std::shared_ptr<CSVM> s) : CMKL(s)
 {
 	if (!s)
 	{
 #ifdef USE_SVMLIGHT
-		s=new CSVMLight();
+		s=std::make_shared<CSVMLight>();
 #endif //USE_SVMLIGHT
 		if (!s)
-			s=new CLibSVM();
+			s=std::make_shared<CLibSVM>();
 		set_svm(s);
 	}
 }
@@ -38,7 +38,7 @@ void CMKLClassification::init_training()
 	REQUIRE(m_labels->get_num_labels(), "Number of labels is zero.\n");
 }
 
-CMKLClassification* CMKLClassification::obtain_from_generic(CMachine* machine)
+std::shared_ptr<CMKLClassification> CMKLClassification::obtain_from_generic(std::shared_ptr<CMachine> machine)
 {
 	if (machine == NULL)
 		return NULL;
@@ -46,7 +46,7 @@ CMKLClassification* CMKLClassification::obtain_from_generic(CMachine* machine)
 	if (machine->get_classifier_type() != CT_MKLCLASSIFICATION)
 		SG_SERROR("Provided machine is not of type CMKLClassification!")
 
-	CMKLClassification* casted = dynamic_cast<CMKLClassification*>(machine);
-	SG_REF(casted)
+	auto casted = std::dynamic_pointer_cast<CMKLClassification>(machine);
+	
 	return casted;
 }

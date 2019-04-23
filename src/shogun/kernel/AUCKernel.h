@@ -43,7 +43,7 @@ namespace shogun
 		 * @param subkernel the subkernel
 		 * @param labels the labels for AUC maximization
 		 */
-		CAUCKernel(int32_t size, CKernel* subkernel, CLabels* labels);
+		CAUCKernel(int32_t size, std::shared_ptr<CKernel> subkernel, std::shared_ptr<CLabels> labels);
 
 		/** destructor */
 		virtual ~CAUCKernel();
@@ -61,7 +61,7 @@ namespace shogun
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *
@@ -112,9 +112,9 @@ namespace shogun
 
 	protected:
 		/** the subkernel */
-		CKernel* subkernel;
+		std::shared_ptr<CKernel> subkernel;
 		/** the labels */
-		CLabels* labels;
+		std::shared_ptr<CLabels> labels;
 	};
 } // namespace shogun
 #endif /* _AUCKERNEL_H__ */

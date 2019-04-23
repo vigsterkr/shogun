@@ -541,7 +541,7 @@ template <class T> class CDynamicArray :public CSGObject
 		inline void shuffle() { m_array.shuffle(); }
 
 		/** shuffles the array with external random state */
-		inline void shuffle(CRandom * rand) { m_array.shuffle(rand); }
+		inline void shuffle(std::shared_ptr<CRandom> rand) { m_array.shuffle(rand); }
 
 		/** display this array */
 		inline void display_array()
@@ -602,9 +602,9 @@ template <class T> class CDynamicArray :public CSGObject
 			m_array.resize_array(m_array.get_num_elements(), true);
 		}
 
-		virtual CSGObject* clone() const
+		virtual std::shared_ptr<CSGObject> clone() const
 		{
-			CDynamicArray * cloned = (CDynamicArray*) CSGObject::clone();
+			auto cloned = std::dynamic_pointer_cast<CDynamicArray>(CSGObject::clone());
 			// Since the array vector is registered with
 			// current_num_elements as size (see parameter
 			// registration) the cloned version has less memory
@@ -619,7 +619,7 @@ template <class T> class CDynamicArray :public CSGObject
 		virtual void init()
 		{
 			set_generic<T>();
-
+/*
 			m_parameters->add_vector(&m_array.array,
 					&m_array.current_num_elements, "array",
 					"Memory for dynamic array.");
@@ -637,6 +637,7 @@ template <class T> class CDynamicArray :public CSGObject
 			SG_ADD(&dim1_size, "dim1_size", "Dimension 1");
 			SG_ADD(&dim2_size, "dim2_size", "Dimension 2");
 			SG_ADD(&dim3_size, "dim3_size", "Dimension 3");
+			*/
 		}
 
 	protected:

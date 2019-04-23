@@ -64,13 +64,6 @@
 %rename(DirectorKernelMachine) CDirectorKernelMachine;
 %rename(BaggingMachine) CBaggingMachine;
 
-/* These functions return new Objects */
-%newobject apply();
-%newobject apply(CFeatures* data);
-%newobject apply_locked(const SGVector<index_t>& indices);
-%newobject classify();
-%newobject classify(CFeatures* data);
-
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/machine/Machine.h>
 %include <shogun/machine/KernelMachine.h>

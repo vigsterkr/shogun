@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann, Viktor Gal, 
- *          Weijie Lin, Evan Shelhamer, Bjoern Esser, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Heiko Strathmann, Viktor Gal,
+ *          Weijie Lin, Evan Shelhamer, Bjoern Esser, Giovanni De Toni,
  *          Leon Kuchenbecker, Saurabh Goyal
  */
 
@@ -114,7 +114,7 @@ CDynProg::CDynProg(int32_t num_svms /*= 8 */)
 	m_num_lin_feat_plifs_cum = SG_MALLOC(int32_t, 100);
 	m_num_lin_feat_plifs_cum[0] = m_num_svms;
 	m_num_raw_data = 0;
-	m_seg_loss_obj = new CSegmentLoss();
+	m_seg_loss_obj = std::make_shared<CSegmentLoss>();
 }
 
 CDynProg::~CDynProg()
@@ -157,14 +157,8 @@ CDynProg::~CDynProg()
 	if (m_num_lin_feat_plifs_cum)
 	  SG_FREE(m_num_lin_feat_plifs_cum);
 
-	delete m_intron_list;
-
-	SG_UNREF(m_seq_sparse1);
-	SG_UNREF(m_seq_sparse2);
-	SG_UNREF(m_plif_matrices);
-	SG_UNREF(m_seg_loss_obj);
 }
-
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 int32_t CDynProg::get_num_svms()
 {
@@ -569,7 +563,7 @@ void CDynProg::init_mod_words_array(SGMatrix<int32_t> mod_words_input)
 	m_mod_words.set_array(mod_words_input.matrix, mod_words_input.num_rows, 2, true, true) ;
 	m_mod_words_array = m_mod_words.get_array() ;
 
-	/*SG_DEBUG("m_mod_words=[")
+	SG_DEBUG("m_mod_words=[")
 	for (int32_t i=0; i<mod_words_input.num_rows; i++)
 		SG_DEBUG("%i, ", p_mod_words_array[i])
 		SG_DEBUG("]\n") */
@@ -705,27 +699,27 @@ void CDynProg::set_orf_info(SGMatrix<int32_t> orf_info)
 	m_orf_info.set_array(orf_info.matrix, orf_info.num_rows, orf_info.num_cols, true, true) ;
 }
 
-void CDynProg::set_sparse_features(CSparseFeatures<float64_t>* seq_sparse1, CSparseFeatures<float64_t>* seq_sparse2)
+void CDynProg::set_sparse_features(std::shared_ptr<CSparseFeatures<float64_t>> seq_sparse1, std::shared_ptr<CSparseFeatures<float64_t>> seq_sparse2)
 {
 	if ((!seq_sparse1 && seq_sparse2) || (seq_sparse1 && !seq_sparse2))
 		SG_ERROR("Sparse features must either both be NULL or both NON-NULL\n")
 
-	SG_UNREF(m_seq_sparse1);
-	SG_UNREF(m_seq_sparse2);
+
+
 
 	m_seq_sparse1=seq_sparse1;
 	m_seq_sparse2=seq_sparse2;
-	SG_REF(m_seq_sparse1);
-	SG_REF(m_seq_sparse2);
+
+
 }
 
-void CDynProg::set_plif_matrices(CPlifMatrix* pm)
+void CDynProg::set_plif_matrices(std::shared_ptr<CPlifMatrix> pm)
 {
-	SG_UNREF(m_plif_matrices);
+
 
 	m_plif_matrices=pm;
 
-	SG_REF(m_plif_matrices);
+
 }
 
 void CDynProg::set_gene_string(SGVector<char> genestr)
@@ -989,9 +983,9 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
       //   SG_PRINT("(%i)%0.2f ",i,seq_array[i])
 
-		CDynamicObjectArray PEN((CSGObject**) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
+		CDynamicObjectArray PEN((std::shared_ptr<CSGObject>*) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
 
-		CDynamicObjectArray PEN_state_signals((CSGObject**) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d,  CPlifBase*
+		CDynamicObjectArray PEN_state_signals((std::shared_ptr<CSGObject>*) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d,  CPlifBase*
 
 		CDynamicArray<float64_t> seq(m_N, m_seq_len) ; // 2d
 		seq.set_const(0) ;
@@ -1020,7 +1014,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 			{
 				//SG_PRINT("using dense seq_array\n")
 
-				seq_input=new CDynamicArray<float64_t>(seq_array, m_N, m_seq_len, max_num_signals) ;
+				seq_input=std::make_shared<CDynamicArray><float64_t>(seq_array, m_N, m_seq_len, max_num_signals) ;
 				//seq_input.display_array() ;
 
 				ASSERT(m_seq_sparse1==NULL)
@@ -1162,7 +1156,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				{
 					T_STATES ii = elem_list[i] ;
 
-					CPlifBase *penij=(CPlifBase*) PEN.element(j, ii) ;
+					auto penij=(CPlifBase*) PEN.element(j, ii) ;
 					if (penij==NULL)
 					{
 						if (long_transitions)
@@ -1843,7 +1837,7 @@ void CDynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									/* then the long transition is better than the short one => replace it */
 									int32_t fromtjk =  fixedtempii_ ;
-									/*SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to m_pos %i better than short transition (%1.5f,%i) to m_pos %i \n",
+									SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to m_pos %i better than short transition (%1.5f,%i) to m_pos %i \n",
 									  m_pos[t], j,
 									  mval, pen_val_3p*0.5, long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii,
 									  m_pos[long_transition_content_position.get_element(ii, j)],
@@ -2008,9 +2002,9 @@ void CDynProg::best_path_trans_deriv(
 
 	bool use_svm = false ;
 
-	CDynamicObjectArray PEN((CSGObject**) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
+	CDynamicObjectArray PEN((std::shared_ptr<CSGObject>*) Plif_matrix, m_N, m_N, false, false) ; // 2d, CPlifBase*
 
-	CDynamicObjectArray PEN_state_signals((CSGObject**) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d, CPlifBase*
+	CDynamicObjectArray PEN_state_signals((std::shared_ptr<CSGObject>*) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d, CPlifBase*
 
 	CDynamicArray<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
 
@@ -2460,9 +2454,9 @@ void CDynProg::lookup_content_svm_values(const int32_t from_state, const int32_t
 	content_svm_values_time += MyTime.time_diff_sec() ;
 #endif
 }
-void CDynProg::set_intron_list(CIntronList* intron_list, int32_t num_plifs)
+void CDynProg::set_intron_list(std::shared_ptr<CIntronList> intron_list, int32_t num_plifs)
 {
 	m_intron_list = intron_list;
 	m_num_intron_plifs = num_plifs;
 }
-
+#endif

@@ -30,8 +30,8 @@ TEST(ConjugateGradientSolver, solve)
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 
-	CSparseMatrixOperator<float64_t>* A
-		=new CSparseMatrixOperator<float64_t>(mat);
+	auto A
+		=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
 
 	CConjugateGradientSolver linear_solver;
 
@@ -46,5 +46,5 @@ TEST(ConjugateGradientSolver, solve)
 
 	EXPECT_NEAR(CMath::abs((map_x-map_m.llt().solve(map_b)).norm()), 0.0, 1E-5);
 
-	SG_UNREF(A);
+
 }

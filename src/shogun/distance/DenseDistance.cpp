@@ -2,7 +2,7 @@
 
 namespace shogun {
 
-template <class ST> bool CDenseDistance<ST>::init(CFeatures* l, CFeatures* r)
+template <class ST> bool CDenseDistance<ST>::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDistance::init(l,r);
 
@@ -12,10 +12,11 @@ template <class ST> bool CDenseDistance<ST>::init(CFeatures* l, CFeatures* r)
 	ASSERT(r->get_feature_type()==this->get_feature_type())
 
 
-	if ( ((CDenseFeatures<ST>*) l)->get_num_features() != ((CDenseFeatures<ST>*) r)->get_num_features() )
+	if ( (std::static_pointer_cast<CDenseFeatures<float64_t>>(l))->get_num_features() != (std::static_pointer_cast<CDenseFeatures<float64_t>>(r))->get_num_features())
 	{
 		SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-				((CDenseFeatures<ST>*) l)->get_num_features(),((CDenseFeatures<ST>*) r)->get_num_features());
+				(std::static_pointer_cast<CDenseFeatures<float64_t>>(l))->get_num_features(),
+				(std::static_pointer_cast<CDenseFeatures<float64_t>>(r))->get_num_features());
 	}
 
 	return true;

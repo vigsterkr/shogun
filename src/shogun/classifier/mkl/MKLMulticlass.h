@@ -42,7 +42,7 @@ public:
     * @param k kernel
     * @param lab labels
     */
-   CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab);
+   CMKLMulticlass(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
    /** Class default Destructor */
    virtual ~CMKLMulticlass();
@@ -155,7 +155,7 @@ protected:
     *
     * @return whether training was successful
     */
-   virtual bool train_machine(CFeatures* data=NULL);
+   virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
    /** @return object name */
     virtual const char* get_name() const { return "MKLMulticlass"; }
@@ -165,10 +165,10 @@ protected:
    *
    *
    */
-   CGMNPSVM* svm;
+   std::shared_ptr<CGMNPSVM> svm;
 
    /** the solver wrapper */
-   MKLMulticlassOptimizationBase* lpw;
+   std::shared_ptr<MKLMulticlassOptimizationBase> lpw;
 
    /** stores the last two mkl iteration weights */
    ::std::vector< std::vector< float64_t> > weightshistory;

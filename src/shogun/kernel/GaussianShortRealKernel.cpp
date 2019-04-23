@@ -24,7 +24,7 @@ CGaussianShortRealKernel::CGaussianShortRealKernel(int32_t size, float64_t w)
 }
 
 CGaussianShortRealKernel::CGaussianShortRealKernel(
-	CDenseFeatures<float32_t>* l, CDenseFeatures<float32_t>* r, float64_t w, int32_t size)
+	std::shared_ptr<CDenseFeatures<float32_t>> l, std::shared_ptr<CDenseFeatures<float32_t>> r, float64_t w, int32_t size)
 : CDotKernel(size), width(w)
 {
 	init(l,r);
@@ -35,7 +35,7 @@ CGaussianShortRealKernel::~CGaussianShortRealKernel()
 {
 }
 
-bool CGaussianShortRealKernel::init(CFeatures* l, CFeatures* r)
+bool CGaussianShortRealKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDotKernel::init(l, r);
 	return init_normalizer();
@@ -46,8 +46,8 @@ float64_t CGaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float32_t* avec=((CDenseFeatures<float32_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	float32_t* bvec=((CDenseFeatures<float32_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float32_t* avec=(std::static_pointer_cast<CDenseFeatures<float32_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
+	float32_t* bvec=(std::static_pointer_cast<CDenseFeatures<float32_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result=0;
@@ -56,8 +56,8 @@ float64_t CGaussianShortRealKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	result=exp(-result/width);
 
-	((CDenseFeatures<float32_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float32_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<CDenseFeatures<float32_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<CDenseFeatures<float32_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

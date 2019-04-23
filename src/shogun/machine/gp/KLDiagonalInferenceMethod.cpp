@@ -56,8 +56,8 @@ CKLDiagonalInferenceMethod::CKLDiagonalInferenceMethod() : CKLLowerTriangularInf
 	init();
 }
 
-CKLDiagonalInferenceMethod::CKLDiagonalInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CKLDiagonalInferenceMethod::CKLDiagonalInferenceMethod(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CKLLowerTriangularInference(kern, feat, m, lab, mod)
 {
 	init();
@@ -69,8 +69,8 @@ void CKLDiagonalInferenceMethod::init()
 		"The K^{-1} matrix");
 }
 
-CKLDiagonalInferenceMethod* CKLDiagonalInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CKLDiagonalInferenceMethod> CKLDiagonalInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -78,8 +78,8 @@ CKLDiagonalInferenceMethod* CKLDiagonalInferenceMethod::obtain_from_generic(
 	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
 		SG_SERROR("Provided inference is not of type CKLDiagonalInferenceMethod!\n")
 
-	SG_REF(inference);
-	return (CKLDiagonalInferenceMethod*)inference;
+
+	return inference->as<CKLDiagonalInferenceMethod>();
 }
 
 SGVector<float64_t> CKLDiagonalInferenceMethod::get_alpha()
@@ -124,7 +124,7 @@ bool CKLDiagonalInferenceMethod::precompute()
 	//s2=sum(C.*C,2);
 	eigen_s2=eigen_log_v.array().exp();
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	bool status=lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	return status;
 }
@@ -142,7 +142,7 @@ void CKLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 	Map<VectorXd> eigen_alpha(m_alpha.vector, len);
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
 	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 	SGVector<float64_t> dv=lik->get_variational_first_derivative(s2_param);
@@ -176,7 +176,7 @@ float64_t CKLDiagonalInferenceMethod::get_negative_log_marginal_likelihood_helpe
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
 	Map<MatrixXd> eigen_InvK(m_InvK.matrix, m_InvK.num_rows, m_InvK.num_cols);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 	float64_t log_det=eigen_log_v.array().sum()-m_log_det_Kernel;
 	float64_t trace=(eigen_s2.array()*eigen_InvK.diagonal().array()).sum();
@@ -207,7 +207,7 @@ void CKLDiagonalInferenceMethod::update_alpha()
 		SGVector<float64_t> s2_tmp(m_s2.vlen);
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
 		eigen_s2.fill(1.0);
-		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+		auto lik=get_variational_likelihood();
 		lik->set_variational_distribution(m_mean_vec, s2_tmp, m_labels);
 		float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 		float64_t trace=eigen_InvK.diagonal().array().sum();

@@ -41,7 +41,7 @@ class CDummyFeatures : public CFeatures
 		virtual int32_t get_num_vectors() const;
 
 		/** duplicate features */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** get feature type (ANY) */
 		inline EFeatureType get_feature_type() const;

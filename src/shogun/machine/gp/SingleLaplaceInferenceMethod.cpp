@@ -36,8 +36,8 @@ public:
 	SGVector<float64_t>* W;
 	SGVector<float64_t>* f;
 	SGVector<float64_t>* m;
-	CLikelihoodModel* lik;
-	CLabels* lab;
+	std::shared_ptr<CLikelihoodModel> lik;
+	std::shared_ptr<CLabels> lab;
 
 	virtual double operator() (double x)
 	{
@@ -65,16 +65,16 @@ public:
 
 class SingleLaplaceInferenceMethodCostFunction: public FirstOrderCostFunction
 {
-public: 
+public:
 	SingleLaplaceInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~SingleLaplaceInferenceMethodCostFunction() { SG_UNREF(m_obj); }
-	void set_target(CSingleLaplaceInferenceMethod *obj)
+	virtual ~SingleLaplaceInferenceMethodCostFunction() {  }
+	void set_target(std::shared_ptr<CSingleLaplaceInferenceMethod >obj)
 	{
 		REQUIRE(obj, "Obj must set\n");
 		if(m_obj != obj)
 		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
+
+
 			m_obj=obj;
 		}
 	}
@@ -82,14 +82,6 @@ public:
 	{
 		REQUIRE(m_obj,"Object not set\n");
 		return m_obj->get_psi_wrt_alpha();
-	}
-	void unset_target(bool is_unref)
-	{
-		if(is_unref)
-		{
-			SG_UNREF(m_obj);
-		}
-		m_obj=NULL;
 	}
 	virtual SGVector<float64_t> obtain_variable_reference()
 	{
@@ -111,24 +103,24 @@ private:
 		m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "SingleLaplaceInferenceMethodCostFunction__m_derivatives",
 			"derivatives in SingleLaplaceInferenceMethodCostFunction");
-		SG_ADD((CSGObject **)&m_obj, "SingleLaplaceInferenceMethodCostFunction__m_obj",
+		SG_ADD((std::shared_ptr<CSGObject>*)&m_obj, "SingleLaplaceInferenceMethodCostFunction__m_obj",
 			"obj in SingleLaplaceInferenceMethodCostFunction");
 
 	}
 
 	SGVector<float64_t> m_derivatives;
-	CSingleLaplaceInferenceMethod *m_obj;
+	std::shared_ptr<CSingleLaplaceInferenceMethod >m_obj;
 };
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 
-void CSingleLaplaceNewtonOptimizer::set_target(CSingleLaplaceInferenceMethod *obj)
+void CSingleLaplaceNewtonOptimizer::set_target(std::shared_ptr<CSingleLaplaceInferenceMethod >obj)
 {
 	REQUIRE(obj, "Obj must set\n");
 	if(m_obj != obj)
 	{
-		SG_REF(obj);
-		SG_UNREF(m_obj);
+
+
 		m_obj=obj;
 	}
 }
@@ -137,7 +129,7 @@ void CSingleLaplaceNewtonOptimizer::unset_target(bool is_unref)
 {
 	if(is_unref)
 	{
-		SG_UNREF(m_obj);
+
 	}
 	m_obj=NULL;
 
@@ -151,7 +143,7 @@ void CSingleLaplaceNewtonOptimizer::init()
 	m_opt_tolerance=1e-6;
 	m_opt_max=10;
 
-	SG_ADD((CSGObject **)&m_obj, "CSingleLaplaceNewtonOptimizer__m_obj",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_obj, "CSingleLaplaceNewtonOptimizer__m_obj",
 		"obj in CSingleLaplaceNewtonOptimizer");
 	SG_ADD(&m_iter, "CSingleLaplaceNewtonOptimizer__m_iter",
 		"iter in CSingleLaplaceNewtonOptimizer");
@@ -209,7 +201,7 @@ float64_t CSingleLaplaceNewtonOptimizer::minimize()
 
 			if (m_obj->m_model->get_model_type()==LT_STUDENTST)
 			{
-				CStudentsTLikelihood* lik = m_obj->m_model->as<CStudentsTLikelihood>();
+				auto lik = m_obj->m_model->as<CStudentsTLikelihood>();
 				df=lik->get_degrees_freedom();
 			}
 			else
@@ -273,8 +265,8 @@ CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod() : CLaplaceInferen
 	init();
 }
 
-CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CSingleLaplaceInferenceMethod::CSingleLaplaceInferenceMethod(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CLaplaceInference(kern, feat, m, lab, mod)
 {
 	init();
@@ -287,7 +279,7 @@ void CSingleLaplaceInferenceMethod::init()
 	SG_ADD(&m_sW, "sW", "square root of W");
 	SG_ADD(&m_d2lp, "d2lp", "second derivative of log likelihood with respect to function location");
 	SG_ADD(&m_d3lp, "d3lp", "third derivative of log likelihood with respect to function location");
-	register_minimizer(new CSingleLaplaceNewtonOptimizer());
+	register_minimizer(std::make_shared<CSingleLaplaceNewtonOptimizer>());
 }
 
 SGVector<float64_t> CSingleLaplaceInferenceMethod::get_diagonal_vector()
@@ -298,8 +290,8 @@ SGVector<float64_t> CSingleLaplaceInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-CSingleLaplaceInferenceMethod* CSingleLaplaceInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CSingleLaplaceInferenceMethod> CSingleLaplaceInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -307,8 +299,8 @@ CSingleLaplaceInferenceMethod* CSingleLaplaceInferenceMethod::obtain_from_generi
 	if (inference->get_inference_type()!=INF_LAPLACE_SINGLE)
 		SG_SERROR("Provided inference is not of type CSingleLaplaceInferenceMethod\n")
 
-	SG_REF(inference);
-	return (CSingleLaplaceInferenceMethod*)inference;
+
+	return inference->as<CSingleLaplaceInferenceMethod>();
 }
 
 CSingleLaplaceInferenceMethod::~CSingleLaplaceInferenceMethod()
@@ -498,12 +490,12 @@ void CSingleLaplaceInferenceMethod::update_init()
 }
 
 
-void CSingleLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CSingleLaplaceInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
-	if (!dynamic_cast<CSingleLaplaceNewtonOptimizer*>(minimizer))
+	if (!std::dynamic_pointer_cast<CSingleLaplaceNewtonOptimizer>(minimizer))
 	{
-		FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
+		auto opt= std::dynamic_pointer_cast<FirstOrderMinimizer>(minimizer);
 		REQUIRE(opt, "The provided minimizer is not supported\n")
 	}
 	CInference::register_minimizer(minimizer);
@@ -511,30 +503,24 @@ void CSingleLaplaceInferenceMethod::register_minimizer(Minimizer* minimizer)
 
 void CSingleLaplaceInferenceMethod::update_alpha()
 {
-	CSingleLaplaceNewtonOptimizer *opt=dynamic_cast<CSingleLaplaceNewtonOptimizer*>(m_minimizer);
+	auto opt=std::dynamic_pointer_cast<CSingleLaplaceNewtonOptimizer>(m_minimizer);
 	bool cleanup=false;
 	if (opt)
 	{
-		opt->set_target(this);
-		if(this->ref_count()>1)
-			cleanup=true;
+		opt->set_target(shared_from_this()->as<CSingleLaplaceInferenceMethod>());
 		opt->minimize();
-		opt->unset_target(cleanup);
 	}
 	else
 	{
-		FirstOrderMinimizer* minimizer= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
+		auto minimizer= std::dynamic_pointer_cast<FirstOrderMinimizer>(m_minimizer);
 		REQUIRE(minimizer, "The provided minimizer is not supported\n");
 #ifdef USE_GPL_SHOGUN
-		SingleLaplaceInferenceMethodCostFunction *cost_fun=new SingleLaplaceInferenceMethodCostFunction();
-		cost_fun->set_target(this);
-		if(this->ref_count()>1)
-			cleanup=true;
+		auto cost_fun=std::make_shared<SingleLaplaceInferenceMethodCostFunction>();
+		cost_fun->set_target(shared_from_this()->as<CSingleLaplaceInferenceMethod>());
 		minimizer->set_cost_function(cost_fun);
 		minimizer->minimize();
 		minimizer->unset_cost_function(false);
-		cost_fun->unset_target(cleanup);
-		SG_UNREF(cost_fun);
+
 #else
 		SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN
@@ -820,7 +806,7 @@ void CSingleLaplaceInferenceMethod::get_gradient_wrt_alpha(SGVector<float64_t> g
 		kernel * ((eigen_alpha)*std::exp(m_log_scale * 2.0)) + eigen_mean_f;
 
 	SGVector<float64_t> dlp_f =
-		m_model->get_log_probability_derivative_f(m_labels, f, 1); 
+		m_model->get_log_probability_derivative_f(m_labels, f, 1);
 
 	Eigen::Map<Eigen::VectorXd> eigen_dlp_f(dlp_f.vector, dlp_f.vlen);
 

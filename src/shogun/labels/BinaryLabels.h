@@ -72,7 +72,7 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CBinaryLabels(CFile * loader);
+	CBinaryLabels(std::shared_ptr<CFile > loader);
 
 	/** Cast constructor
 	 *
@@ -96,7 +96,7 @@ public:
 	 */
 	virtual ELabelType get_label_type() const override;
 
-	virtual CLabels* duplicate() const override;
+	virtual std::shared_ptr<CLabels> duplicate() const override;
 
 	/** Converts all scores to calibrated probabilities by fitting a
 	 * sigmoid function using the method described in
@@ -125,12 +125,12 @@ public:
 	}
 
 #ifndef SWIG // SWIG should skip this part
-	virtual CLabels* shallow_subset_copy() override;
+	virtual std::shared_ptr<CLabels> shallow_subset_copy() override;
 #endif
 };
 
 #ifndef SWIG
-Some<CBinaryLabels> binary_labels(CLabels* orig);
+std::shared_ptr<CBinaryLabels> binary_labels(std::shared_ptr<CLabels> orig);
 #endif // SWIG
 }
 #endif

@@ -56,8 +56,8 @@ CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLLowerTriangularInf
 	init();
 }
 
-CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CKLLowerTriangularInference(kern, feat, m, lab, mod)
 {
 	init();
@@ -71,8 +71,8 @@ void CKLCholeskyInferenceMethod::init()
 		" The K^{-1}C matrix");
 }
 
-CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CKLCholeskyInferenceMethod> CKLCholeskyInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -80,8 +80,8 @@ CKLCholeskyInferenceMethod* CKLCholeskyInferenceMethod::obtain_from_generic(
 	if (inference->get_inference_type()!=INF_KL_CHOLESKY)
 		SG_SERROR("Provided inference is not of type CKLCholeskyInferenceMethod!\n")
 
-	SG_REF(inference);
-	return (CKLCholeskyInferenceMethod*)inference;
+
+	return inference->as<CKLCholeskyInferenceMethod>();
 }
 
 SGVector<float64_t> CKLCholeskyInferenceMethod::get_alpha()
@@ -128,7 +128,7 @@ bool CKLCholeskyInferenceMethod::precompute()
 	//s2=sum(C.*C,2);
 	eigen_s2=(eigen_C.array()*eigen_C.array()).rowwise().sum().matrix();
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	if (status)
 	{
@@ -151,12 +151,12 @@ void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 	Map<VectorXd> eigen_alpha(m_alpha.vector, len);
 	Map<VectorXd> eigen_C_seq(m_alpha.vector+len, m_alpha.vlen-len);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
 	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 	SGVector<float64_t> dv=lik->get_variational_first_derivative(s2_param);
 	Map<VectorXd> eigen_dv(dv.vector, dv.vlen);
-
+	//FIXME
 	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
 	SGVector<float64_t> df=lik->get_variational_first_derivative(mu_param);
 	Map<VectorXd> eigen_df(df.vector, df.vlen);
@@ -208,7 +208,7 @@ float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helpe
 	Map<MatrixXd> eigen_InvK_C(m_InvK_C.matrix, m_InvK_C.num_rows, m_InvK_C.num_cols);
 	Map<MatrixXd> eigen_C(m_C.matrix, m_C.num_rows, m_C.num_cols);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 
 	//float64_t log_det=2.0*log_det(eigen_C)-m_log_det_Kernel;
@@ -237,7 +237,7 @@ void CKLCholeskyInferenceMethod::update_alpha()
 		SGVector<float64_t> s2_tmp(m_s2.vlen);
 		Map<VectorXd> eigen_s2(s2_tmp.vector, s2_tmp.vlen);
 		eigen_s2.fill(1.0);
-		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+		auto lik=get_variational_likelihood();
 		lik->set_variational_distribution(m_mean_vec, s2_tmp, m_labels);
 		float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 		MatrixXd inv_K=solve_inverse(MatrixXd::Identity(m_ktrtr.num_rows, m_ktrtr.num_cols));

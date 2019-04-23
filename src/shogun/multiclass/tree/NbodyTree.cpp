@@ -42,7 +42,7 @@ CNbodyTree::CNbodyTree(int32_t leaf_size, EDistanceType d)
 	m_dist=d;
 }
 
-void CNbodyTree::build_tree(CDenseFeatures<float64_t>* data)
+void CNbodyTree::build_tree(std::shared_ptr<CDenseFeatures<float64_t>> data)
 {
 	REQUIRE(data,"data not set\n");
 	REQUIRE(m_leaf_size>0,"Leaf size should be greater than 0\n");
@@ -56,7 +56,7 @@ void CNbodyTree::build_tree(CDenseFeatures<float64_t>* data)
 	set_root(recursive_build(0,m_data.num_cols-1));
 }
 
-void CNbodyTree::query_knn(CDenseFeatures<float64_t>* data, int32_t k)
+void CNbodyTree::query_knn(std::shared_ptr<CDenseFeatures<float64_t>> data, int32_t k)
 {
 	REQUIRE(data,"Query data not supplied\n")
 	REQUIRE(data->get_num_features()==m_data.num_rows,"query data dimension should be same as training data dimension\n")
@@ -69,17 +69,15 @@ void CNbodyTree::query_knn(CDenseFeatures<float64_t>* data, int32_t k)
 
 	for (int32_t i=0;i<qfeats.num_cols;i++)
 	{
-		CKNNHeap* heap=new CKNNHeap(k);
-		bnode_t* root=NULL;
+		auto heap=std::make_shared<CKNNHeap>(k);
+		std::shared_ptr<bnode_t> root;
 		if (m_root)
-			root=dynamic_cast<bnode_t*>(m_root);
+			root=m_root->as<bnode_t>();
 
 		float64_t mdist=min_dist(root,qfeats.matrix+i*dim,dim);
 		query_knn_single(heap,mdist,root,qfeats.matrix+i*dim,dim);
 		sg_memcpy(m_knn_dists.matrix+i*k,heap->get_dists(),k*sizeof(float64_t));
 		sg_memcpy(m_knn_indices.matrix+i*k,heap->get_indices(),k*sizeof(index_t));
-
-		delete(heap);
 	}
 }
 
@@ -94,9 +92,9 @@ SGVector<float64_t> CNbodyTree::log_kernel_density(SGMatrix<float64_t> test, EKe
 	SGVector<float64_t> log_density(test.num_cols);
 	for (int32_t i=0;i<test.num_cols;i++)
 	{
-		bnode_t* root=NULL;
+		std::shared_ptr<bnode_t> root;
 		if (m_root)
-			root=dynamic_cast<bnode_t*>(m_root);
+			root=m_root->as<bnode_t>();
 
 		float64_t lower_dist=0;
 		float64_t upper_dist=0;
@@ -116,7 +114,7 @@ SGVector<float64_t> CNbodyTree::log_kernel_density(SGMatrix<float64_t> test, EKe
 	return log_density;
 }
 
-SGVector<float64_t> CNbodyTree::log_kernel_density_dual(SGMatrix<float64_t> test, SGVector<index_t> qid, bnode_t* qroot, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol)
+SGVector<float64_t> CNbodyTree::log_kernel_density_dual(SGMatrix<float64_t> test, SGVector<index_t> qid, std::shared_ptr<bnode_t> qroot, EKernelType kernel, float64_t h, float64_t atol, float64_t rtol)
 {
 	int32_t dim=m_data.num_rows;
 	REQUIRE(test.num_rows==dim,"dimensions of training data and test data should be the same\n")
@@ -127,9 +125,9 @@ SGVector<float64_t> CNbodyTree::log_kernel_density_dual(SGMatrix<float64_t> test
 	SGVector<float64_t> log_density(test.num_cols);
 	log_density.fill_vector(log_density.vector,log_density.vlen,-CMath::INFTY);
 
-	bnode_t* rroot=NULL;
+	std::shared_ptr<bnode_t> rroot;
 	if (m_root)
-		rroot=dynamic_cast<bnode_t*>(m_root);
+		rroot=m_root->as<bnode_t>();
 
 	float64_t upper_dist=max_dist_dual(rroot,qroot);
 	float64_t lower_dist=min_dist_dual(rroot,qroot);
@@ -166,7 +164,7 @@ SGMatrix<index_t> CNbodyTree::get_knn_indices()
 	return SGMatrix<index_t>();
 }
 
-void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t mdist, bnode_t* node, float64_t* arr, int32_t dim)
+void CNbodyTree::query_knn_single(std::shared_ptr<CKNNHeap> heap, float64_t mdist, std::shared_ptr<bnode_t> node, float64_t* arr, int32_t dim)
 {
 	if (mdist>heap->get_max_dist())
 		return;
@@ -182,8 +180,8 @@ void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t mdist, bnode_t* node
 		return;
 	}
 
-	bnode_t* cleft=node->left();
-	bnode_t* cright=node->right();
+	auto cleft=node->left();
+	auto cright=node->right();
 
 	float64_t min_dist_left=min_dist(cleft,arr,dim);
 	float64_t min_dist_right=min_dist(cright,arr,dim);
@@ -199,8 +197,8 @@ void CNbodyTree::query_knn_single(CKNNHeap* heap, float64_t mdist, bnode_t* node
 		query_knn_single(heap,min_dist_left,cleft,arr,dim);
 	}
 
-	SG_UNREF(cleft);
-	SG_UNREF(cright);
+
+
 }
 
 float64_t CNbodyTree::distance(index_t vec, float64_t* arr, int32_t dim)
@@ -212,9 +210,9 @@ float64_t CNbodyTree::distance(index_t vec, float64_t* arr, int32_t dim)
 	return actual_dists(ret);
 }
 
-CBinaryTreeMachineNode<NbodyTreeNodeData>* CNbodyTree::recursive_build(index_t start, index_t end)
+std::shared_ptr<CBinaryTreeMachineNode<NbodyTreeNodeData>> CNbodyTree::recursive_build(index_t start, index_t end)
 {
-	bnode_t* node=new bnode_t();
+	auto node=std::make_shared<bnode_t>();
 	init_node(node,start,end);
 
 	// stopping critertia
@@ -229,8 +227,8 @@ CBinaryTreeMachineNode<NbodyTreeNodeData>* CNbodyTree::recursive_build(index_t s
 	index_t mid=(end+start)/2;
 	partition(dim,start,end,mid);
 
-	bnode_t* child_left=recursive_build(start,mid);
-	bnode_t* child_right=recursive_build(mid+1,end);
+	auto child_left=recursive_build(start,mid);
+	auto child_right=recursive_build(mid+1,end);
 
 	node->left(child_left);
 	node->right(child_right);
@@ -238,7 +236,7 @@ CBinaryTreeMachineNode<NbodyTreeNodeData>* CNbodyTree::recursive_build(index_t s
 	return node;
 }
 
-void CNbodyTree::get_kde_single(bnode_t* node,float64_t* data, EKernelType kernel, float64_t h, float64_t log_atol, float64_t log_rtol,
+void CNbodyTree::get_kde_single(std::shared_ptr<bnode_t> node,float64_t* data, EKernelType kernel, float64_t h, float64_t log_atol, float64_t log_rtol,
 	float64_t log_norm, float64_t min_bound_node, float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global)
 {
 	int32_t n_node = std::log(node->data.end_idx - node->data.start_idx + 1);
@@ -267,8 +265,8 @@ void CNbodyTree::get_kde_single(bnode_t* node,float64_t* data, EKernelType kerne
 		return;
 	}
 
-	bnode_t* lchild=node->left();
-	bnode_t* rchild=node->right();
+	auto lchild=node->left();
+	auto rchild=node->right();
 
 	float64_t lower_dist=0;
 	float64_t upper_dist=0;
@@ -297,11 +295,11 @@ void CNbodyTree::get_kde_single(bnode_t* node,float64_t* data, EKernelType kerne
 	get_kde_single(lchild,data,kernel,h,log_atol,log_rtol,log_norm,lower_bound_childl,spread_childl,min_bound_global,spread_global);
 	get_kde_single(rchild,data,kernel,h,log_atol,log_rtol,log_norm,lower_bound_childr,spread_childr,min_bound_global,spread_global);
 
-	SG_UNREF(lchild);
-	SG_UNREF(rchild);
+
+
 }
 
-void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t> qid, SGMatrix<float64_t> qdata, SGVector<float64_t> log_density, EKernelType kernel_type, float64_t h, float64_t log_atol, float64_t log_rtol, float64_t log_norm, float64_t min_bound_node, float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global)
+void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnode_t> querynode, SGVector<index_t> qid, SGMatrix<float64_t> qdata, SGVector<float64_t> log_density, EKernelType kernel_type, float64_t h, float64_t log_atol, float64_t log_rtol, float64_t log_norm, float64_t min_bound_node, float64_t spread_node, float64_t &min_bound_global, float64_t &spread_global)
 {
 	int32_t dim=m_data.num_rows;
 	float64_t n_node =
@@ -351,8 +349,8 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 	// if query node is leaf - just recurse on the reference tree
 	if (querynode->data.is_leaf)
 	{
-		bnode_t* lchild=refnode->left();
-		bnode_t* rchild=refnode->right();
+		auto lchild=refnode->left();
+		auto rchild=refnode->right();
 		int32_t queryn=querynode->data.end_idx-querynode->data.start_idx+1;
 
 		// compute bounds for query node and left child of ref node
@@ -391,8 +389,8 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 		kde_dual(lchild,querynode,qid,qdata,log_density,kernel_type,h,log_atol,log_rtol,log_norm,lower_bound_childl,spread_childl, min_bound_global,spread_global);
 		kde_dual(rchild,querynode,qid,qdata,log_density,kernel_type,h,log_atol,log_rtol,log_norm,lower_bound_childr,spread_childr, min_bound_global,spread_global);
 
-		SG_UNREF(lchild);
-		SG_UNREF(rchild);
+
+
 		return;
 	}
 
@@ -400,8 +398,8 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 	if (refnode->data.is_leaf)
 	{
 		int32_t ref_n=refnode->data.end_idx-refnode->data.start_idx+1;
-		bnode_t* lchild=querynode->left();
-		bnode_t* rchild=querynode->right();
+		auto lchild=querynode->left();
+		auto rchild=querynode->right();
 
 		int32_t query_nl=lchild->data.end_idx-lchild->data.start_idx+1;
 		int32_t query_nr=rchild->data.end_idx-rchild->data.start_idx+1;
@@ -440,16 +438,16 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 		kde_dual(refnode,lchild,qid,qdata,log_density,kernel_type,h,log_atol,log_rtol,log_norm,lower_bound_childl,spread_childl,min_bound_global,spread_global);
 		kde_dual(refnode,rchild,qid,qdata,log_density,kernel_type,h,log_atol,log_rtol,log_norm,lower_bound_childr,spread_childr,min_bound_global,spread_global);
 
-		SG_UNREF(lchild);
-		SG_UNREF(rchild);
+
+
 		return;
 	}
 
 	// if none of above -  apply 4 way recursion in both trees: left-left, left-right, right-left, right-right
-	bnode_t* refchildl=refnode->left();
-	bnode_t* refchildr=refnode->right();
-	bnode_t* querychildl=querynode->left();
-	bnode_t* querychildr=querynode->right();
+	auto refchildl=refnode->left();
+	auto refchildr=refnode->right();
+	auto querychildl=querynode->left();
+	auto querychildr=querynode->right();
 
 	float64_t refn_l=refchildl->data.end_idx-refchildl->data.start_idx+1;
 	float64_t refn_r=refchildr->data.end_idx-refchildr->data.start_idx+1;
@@ -521,10 +519,10 @@ void CNbodyTree::kde_dual(bnode_t* refnode, bnode_t* querynode, SGVector<index_t
 	kde_dual(refchildl,querychildr,qid,qdata,log_density,kernel_type,h,log_atol,log_rtol,log_norm,lower_bound_rl,spread_rl, min_bound_global,spread_global);
 	kde_dual(refchildr,querychildr,qid,qdata,log_density,kernel_type,h,log_atol,log_rtol,log_norm,lower_bound_rr,spread_rr, min_bound_global, spread_global);
 
-	SG_UNREF(refchildl);
-	SG_UNREF(refchildr);
-	SG_UNREF(querychildl);
-	SG_UNREF(querychildr);
+
+
+
+
 }
 
 void CNbodyTree::partition(index_t dim, index_t start, index_t end, index_t mid)
@@ -554,7 +552,7 @@ void CNbodyTree::partition(index_t dim, index_t start, index_t end, index_t mid)
 	}
 }
 
-index_t CNbodyTree::find_split_dim(bnode_t* node)
+index_t CNbodyTree::find_split_dim(std::shared_ptr<bnode_t> node)
 {
 	SGVector<float64_t> upper_bounds=node->data.bbox_upper;
 	SGVector<float64_t> lower_bounds=node->data.bbox_lower;

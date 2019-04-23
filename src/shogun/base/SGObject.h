@@ -15,7 +15,6 @@
 #include <shogun/base/Version.h>
 #include <shogun/base/base_types.h>
 #include <shogun/base/macros.h>
-#include <shogun/base/some.h>
 #include <shogun/base/unique.h>
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/DataType.h>
@@ -37,7 +36,6 @@
  */
 namespace shogun
 {
-class RefCount;
 class SGIO;
 class Parallel;
 class Parameter;
@@ -87,7 +85,6 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 
 #define SG_ADD3(param, name, description)                                      \
 	{                                                                          \
-		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, AnyParameterProperties(description));   \
 	}
 
@@ -99,12 +96,7 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 		    "ParameterProperty::AUTO");                                        \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
-		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, pprop);                                 \
-		if (pprop.has_property(ParameterProperties::HYPER))                    \
-			this->m_model_selection_parameters->add(param, name, description); \
-		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
-			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
 #define SG_ADD5(param, name, description, param_properties, auto_init)         \
@@ -114,12 +106,7 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
 		    "Expected param to have ParameterProperty::AUTO");                 \
 		AnyParameterProperties pprop =                                         \
 		    AnyParameterProperties(description, param_properties);             \
-		this->m_parameters->add(param, name, description);                     \
 		this->watch_param(name, param, auto_init, pprop);                      \
-		if (pprop.has_property(ParameterProperties::HYPER))                    \
-			this->m_model_selection_parameters->add(param, name, description); \
-		if (pprop.has_property(ParameterProperties::GRADIENT))                 \
-			this->m_gradient_parameters->add(param, name, description);        \
 	}
 
 #define SG_ADD(...) VARARG(SG_ADD, __VA_ARGS__)
@@ -140,19 +127,19 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
-class CSGObject
+class CSGObject: public std::enable_shared_from_this<CSGObject>
 {
 public:
 	/** Definition of observed subject */
-	typedef rxcpp::subjects::subject<Some<ObservedValue>> SGSubject;
+	typedef rxcpp::subjects::subject<std::shared_ptr<ObservedValue>> SGSubject;
 	/** Definition of observable */
-	typedef rxcpp::observable<Some<ObservedValue>,
-		                      rxcpp::dynamic_observable<Some<ObservedValue>>>
+	typedef rxcpp::observable<std::shared_ptr<ObservedValue>,
+		                      rxcpp::dynamic_observable<std::shared_ptr<ObservedValue>>>
 		SGObservable;
 	/** Definition of subscriber */
 	typedef rxcpp::subscriber<
-		Some<ObservedValue>,
-		rxcpp::observer<Some<ObservedValue>, void, void, void, void>>
+		std::shared_ptr<ObservedValue>,
+		rxcpp::observer<std::shared_ptr<ObservedValue>, void, void, void, void>>
 		SGSubscriber;
 
 	/** default constructor */
@@ -164,34 +151,15 @@ public:
 	/** destructor */
 	virtual ~CSGObject();
 
-	/** increase reference counter
-	 *
-	 * @return reference count
-	 */
-	int32_t ref();
-
-	/** display reference counter
-	 *
-	 * @return reference count
-	 */
-	int32_t ref_count();
-
-	/** decrement reference counter and deallocate object if refcount is zero
-	 * before or after decrementing it
-	 *
-	 * @return reference count
-	 */
-	int32_t unref();
-
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
 	 */
-	virtual CSGObject *shallow_copy() const;
+	virtual std::shared_ptr<CSGObject> shallow_copy() const;
 
 	/** A deep copy.
 	 * All the instance variables will also be copied.
 	 */
-	virtual CSGObject *deep_copy() const;
+	virtual std::shared_ptr<CSGObject> deep_copy() const;
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
@@ -233,7 +201,7 @@ public:
 	 * @param ser where to save the object;
 	 * @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool serialize(io::CSerializer* ser);
+	virtual bool serialize(std::shared_ptr<io::CSerializer> ser);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -243,43 +211,7 @@ public:
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool deserialize(io::CDeserializer* deser);
-
-	/** set the io object
-	 *
-	 * @param io io object to use
-	 */
-	void set_global_io(SGIO* io);
-
-	/** get the io object
-	 *
-	 * @return io object
-	 */
-	SGIO* get_global_io();
-
-	/** set the parallel object
-	 *
-	 * @param parallel parallel object to use
-	 */
-	void set_global_parallel(Parallel* parallel);
-
-	/** get the parallel object
-	 *
-	 * @return parallel object
-	 */
-	Parallel* get_global_parallel();
-
-	/** set the version object
-	 *
-	 * @param version version object to use
-	 */
-	void set_global_version(Version* version);
-
-	/** get the version object
-	 *
-	 * @return version object
-	 */
-	Version* get_global_version();
+	virtual bool deserialize(std::shared_ptr<io::CDeserializer> deser);
 
 	/**
 	 * Return the description of a registered parameter given its name
@@ -317,7 +249,7 @@ public:
 	 *
 	 * @param dict dictionary of parameters to be built.
 	 */
-	void build_gradient_parameter_dictionary(CMap<TParameter*, CSGObject*>* dict);
+	void build_gradient_parameter_dictionary(std::shared_ptr<CMap<TParameter*, CSGObject*>> dict);
 
 	/** Checks if object has a class parameter identified by a name.
 	 *
@@ -342,7 +274,7 @@ public:
 	 * @param name name of the parameter
 	 * @return true if the parameter exists with the input name and type
 	 */
-	template <typename T, typename U = void>
+	template <typename T, typename std::enable_if_t<!is_sg_base<T>::value>* = nullptr>
 	bool has(const std::string& name) const noexcept(true)
 	{
 		BaseTag tag(name);
@@ -352,6 +284,15 @@ public:
 		return value.has_type<T>();
 	}
 
+	template <typename T, typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
+	bool has(const std::string& name) const noexcept(true)
+	{
+		BaseTag tag(name);
+		if (!has_parameter(tag))
+			return false;
+		const Any value = get_parameter(tag).get_value();
+		return value.has_type<std::shared_ptr<T>>();
+	}
 #ifndef SWIG
 	/** Setter for a class parameter, identified by a Tag.
 	 * Throws an exception if the class does not have such a parameter.
@@ -384,7 +325,6 @@ public:
 					get_name(), _tag.name().c_str(), exc.actual().c_str(),
 					exc.expected().c_str());
 			}
-			ref_value(value);
 			update_parameter(_tag, make_any(value));
 		}
 		else
@@ -439,9 +379,9 @@ public:
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type,
 		      class Z = void>
-	void put(const std::string& name, T* value)
+	void put(const std::string& name, std::shared_ptr<T> value)
 	{
-		put(Tag<T*>(name), value);
+		put(Tag<std::shared_ptr<T>>(name), value);
 	}
 
 	/** Typed appender for an object class parameter of a Shogun base class
@@ -452,7 +392,7 @@ public:
 	*/
 	template <class T,
 		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	void add(const std::string& name, T* value)
+	void add(const std::string& name, std::shared_ptr<T> value)
 	{
 		REQUIRE(
 			value, "Cannot add to %s::%s, no object provided.\n", get_name(),
@@ -482,10 +422,10 @@ public:
 	* @return desired element
 	*/
 	template <class T,
-		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	T* get(const std::string& name, index_t index, std::nothrow_t) const
+		class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	std::shared_ptr<T> get(const std::string& name, index_t index, std::nothrow_t) const
 	{
-		CSGObject* result = nullptr;
+		std::shared_ptr<CSGObject> result;
 
 		auto get_lambda = [&index, &result](auto& array) {
 			result = array.at(index);
@@ -501,8 +441,8 @@ public:
 	}
 
 	template <class T,
-		      class X = typename std::enable_if<is_sg_base<T>::value>::type>
-	T* get(const std::string& name, index_t index) const
+		class X = typename std::enable_if<is_sg_base<T>::value>::type>
+	std::shared_ptr<T> get(const std::string& name, index_t index) const
 	{
 		auto result = this->get<T>(name, index, std::nothrow);
 		if (!result)
@@ -522,7 +462,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name) const noexcept(false);
+	std::shared_ptr<CSGObject> get(const std::string& name) const noexcept(false);
 
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Does not throw an error if class parameter object cannot be casted
@@ -531,7 +471,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name, std::nothrow_t) const noexcept;
+	std::shared_ptr<CSGObject> get(const std::string& name, std::nothrow_t) const noexcept;
 
 	/** Untyped getter for an object array class parameter, identified by a name
 	 * and an index.
@@ -542,34 +482,7 @@ public:
 	 * @index index of the parameter
 	 * @return object parameter
 	 */
-	CSGObject* get(const std::string& name, index_t index) const;
-
-#ifndef SWIG
-	/** Typed setter for an object class parameter of a Shogun base class type,
-	 * identified by a name.
-	 *
-	 * @param name name of the parameter
-	 * @param value value of the parameter
-	 */
-	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
-	void put(const std::string& name, Some<T> value)
-	{
-		put(name, value.get());
-	}
-
-	/** Typed appender for an object class parameter of a Shogun base class
-	* type,
-	* identified by a name.
-	*
-	* @param name name of the parameter
-	* @param value value of the parameter
-	*/
-	template <class T, class = typename std::enable_if_t<is_sg_base<T>::value>>
-	void add(const std::string& name, Some<T> value)
-	{
-		add(name, value.get());
-	}
-#endif // SWIG
+	std::shared_ptr<CSGObject> get(const std::string& name, index_t index) const;
 
 	/** Typed setter for a non-object class parameter, identified by a name.
 	 *
@@ -593,7 +506,7 @@ public:
 	 * @param _tag name and type information of parameter
 	 * @return value of the parameter identified by the input tag
 	 */
-	template <typename T, typename std::enable_if_t<!is_string<T>::value>* = nullptr>
+	template <typename T, typename std::enable_if_t<!is_string<T>::value && !is_sg_base<T>::value>* = nullptr>
 	T get(const Tag<T>& _tag) const noexcept(false)
 	{
 		const Any value = get_parameter(_tag).get_value();
@@ -611,6 +524,26 @@ public:
 		}
 		// we won't be there
 		return any_cast<T>(value);
+	}
+
+	template <typename T, typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
+	std::shared_ptr<T> get(const Tag<T>& _tag) const noexcept(false)
+	{
+		const Any value = get_parameter(_tag).get_value();
+		try
+		{
+			return any_cast<std::shared_ptr<T>>(value);
+		}
+		catch (const TypeMismatchException& exc)
+		{
+			SG_ERROR(
+				"Cannot get parameter %s::%s of type %s, incompatible "
+				"requested type %s.\n",
+				get_name(), _tag.name().c_str(), exc.actual().c_str(),
+				exc.expected().c_str());
+		}
+		// we won't be there
+		return nullptr;
 	}
 
 	template <typename T, typename std::enable_if_t<is_string<T>::value>* = nullptr>
@@ -643,7 +576,7 @@ public:
 	 * @param name name of the parameter
 	 * @return value of the parameter corresponding to the input name and type
 	 */
-	template <typename T, typename U = void>
+	template <typename T, class X = typename std::enable_if<!is_sg_base<T>::value>::type>
 	T get(const std::string& name) const noexcept(false)
 	{
 		Tag<T> tag(name);
@@ -665,6 +598,14 @@ public:
 		}
 	}
 
+#ifndef SWIG
+	template <typename T,  typename std::enable_if_t<is_sg_base<T>::value>* = nullptr>
+	std::shared_ptr<T> get(const std::string& name) const noexcept(false)
+	{
+		Tag<T> tag(name);
+		return get(tag);
+	}
+#endif
 	/** Returns string representation of the object that contains
 	 * its name and parameters.
 	 *
@@ -684,7 +625,7 @@ public:
 	 * @param sgo object of CSGObject base type
 	 * @return The requested type
 	 */
-	template<class T> static T* as(CSGObject* sgo)
+	template<class T> static T* as(std::shared_ptr<CSGObject> sgo)
 	{
 		REQUIRE(sgo, "No object provided!\n");
 		return sgo->as<T>();
@@ -695,9 +636,10 @@ public:
 	 *
 	 * @return The requested type
 	 */
-	template<class T> T* as()
+	template<class T>
+	inline std::shared_ptr<T> as()
 	{
-		auto c = dynamic_cast<T*>(this);
+		auto c = std::dynamic_pointer_cast<T>(shared_from_this());
 		if (c)
 			return c;
 
@@ -707,26 +649,41 @@ public:
 			demangled_type<T>().c_str());
 		return nullptr;
 	}
+
+	template<class T>
+	inline std::shared_ptr<const T> as() const
+	{
+		auto c = std::dynamic_pointer_cast<const T>(shared_from_this());
+		if (c)
+			return c;
+
+		SG_SERROR(
+			"Object of type %s cannot be converted to type %s.\n",
+			this->get_name(),
+			demangled_type<T>().c_str());
+		return nullptr;
+	}
+
 #ifndef SWIG
 	/**
 	  * Get parameters observable
 	  * @return RxCpp observable
 	  */
-	SGObservable* get_parameters_observable()
+	std::shared_ptr<SGObservable> get_parameters_observable()
 	{
 		return m_observable_params;
 	};
 #endif
 
 	/** Subscribe a parameter observer to watch over params */
-	void subscribe(ParameterObserver* obs);
+	void subscribe(std::shared_ptr<ParameterObserver> obs);
 
 	/**
 	 * Detach an observer from the current SGObject.
 	 * @param subscription_index the index obtained by calling the subscribe
 	 * procedure
 	 */
-	void unsubscribe(ParameterObserver* obs);
+	void unsubscribe(std::shared_ptr<ParameterObserver> obs);
 
 	/** Print to stdout a list of observable parameters */
 	std::vector<std::string> observable_names();
@@ -950,6 +907,13 @@ public:
 	 */
 	virtual bool equals(const CSGObject* other) const;
 
+	/** Deep comparison of two objects.
+	 *
+	 * @param other object to compare with
+	 * @return true if all parameters are equal
+	 */
+	virtual bool equals(std::shared_ptr<const CSGObject> other) const;
+
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
 	 * Calling equals on the cloned object always returns true although none
@@ -958,7 +922,7 @@ public:
 	 * @return an identical copy of the given object, which is disjoint in memory.
 	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
 	 */
-	virtual CSGObject* clone() const;
+	virtual std::shared_ptr<CSGObject> clone() const;
 
 	/**
 	 * Looks up the option name of a parameter given the enum value.
@@ -981,32 +945,14 @@ protected:
 	 *
 	 * @return empty instance of own type
 	 */
-	virtual CSGObject* create_empty() const;
+	virtual std::shared_ptr<CSGObject> create_empty() const;
 
 	/** Initialises all parameters with ParameterProperties::AUTO flag */
 	void init_auto_params();
 
 private:
 	void set_global_objects();
-	void unset_global_objects();
 	void init();
-
-	/** Overloaded helper to increase reference counter */
-	static void ref_value(CSGObject* value)
-	{
-		SG_REF(value);
-	}
-
-	/** Overloaded helper to increase reference counter
-	 * Here a no-op for non CSGobject pointer parameters */
-	template <typename T,
-		      std::enable_if_t<
-		          !std::is_base_of<
-		              CSGObject, typename std::remove_pointer<T>::type>::value,
-		          T>* = nullptr>
-	static void ref_value(T value)
-	{
-	}
 
 	/** Checks if object has a parameter identified by a BaseTag.
 	 * This only checks for name and not type information.
@@ -1078,13 +1024,13 @@ protected:
 	 * Observe a parameter value and emit them to observer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(const Some<ObservedValue> value) const;
+//	void observe(const std::shared_ptr<ObservedValue> value) const;
 
 	/**
 	 * Observe a parameter value, given a pointer.
 	 * @param value Observed parameter's value
 	 */
-	void observe(ObservedValue* value) const;
+	void observe(std::shared_ptr<ObservedValue> value) const;
 
 	/**
 	 * Observe a parameter value given custom properties for the Any.
@@ -1105,7 +1051,7 @@ protected:
 		if (get_num_subscriptions() == 0)
 			return;
 
-		auto obs = new ObservedValueTemplated<T>(
+		auto obs = std::make_shared<ObservedValueTemplated<T>>(
 			step, name, static_cast<T>(clone_utils::clone(value)), properties);
 		this->observe(obs);
 	}
@@ -1203,16 +1149,14 @@ protected:
 		bool m_save_pre_called;
 		bool m_save_post_called;
 
-		RefCount* m_refcount;
-
 		/** Subject used to create the params observer */
-		SGSubject* m_subject_params;
+		std::shared_ptr<SGSubject> m_subject_params;
 
 		/** Parameter Observable */
-		SGObservable* m_observable_params;
+		std::shared_ptr<SGObservable> m_observable_params;
 
 		/** Subscriber used to call onNext, onComplete etc.*/
-		SGSubscriber* m_subscriber_params;
+		std::shared_ptr<SGSubscriber> m_subscriber_params;
 
 		/** List of subscription for this SGObject */
 		std::map<int64_t, rxcpp::subscription> m_subscriptions;
@@ -1226,7 +1170,7 @@ namespace sgo_details
 template <typename T1, typename T2>
 bool dispatch_array_type(const CSGObject* obj, const std::string& name, T2&& lambda)
 {
-	Tag<CDynamicObjectArray*> tag_array_sg(name);
+	Tag<std::shared_ptr<CDynamicObjectArray>> tag_array_sg(name);
 	if (obj->has(tag_array_sg))
 	{
 		auto dispatched = obj->get(tag_array_sg);
@@ -1234,7 +1178,7 @@ bool dispatch_array_type(const CSGObject* obj, const std::string& name, T2&& lam
 		return true;
 	}
 
-	Tag<std::vector<T1*>> tag_vector(name);
+	Tag<std::vector<std::shared_ptr<T1>>> tag_vector(name);
 	if (obj->has(tag_vector))
 	{
 		auto dispatched = obj->get(tag_vector);
@@ -1256,39 +1200,39 @@ struct GetByNameIndex
 };
 
 template <typename T>
-CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByName)
+std::shared_ptr<CSGObject> get_if_possible(const std::shared_ptr<const CSGObject>& obj, const std::string& name, GetByName)
 {
-	return obj->has<T*>(name) ? obj->get<T*>(name) : nullptr;
+	return obj->has<T>(name) ? obj->get<T>(name) : nullptr;
 }
 
 template <typename T>
-CSGObject* get_if_possible(const CSGObject* obj, const std::string& name, GetByNameIndex how)
+std::shared_ptr<CSGObject> get_if_possible(const std::shared_ptr<const CSGObject>& obj, const std::string& name, GetByNameIndex how)
 {
-	CSGObject* result = nullptr;
+	std::shared_ptr<CSGObject> result = nullptr;
 	result = obj->get<T>(name, how.m_index, std::nothrow);
 	return result;
 }
 
 template<typename T>
-CSGObject* get_dispatch_all_base_types(const CSGObject* obj, const std::string& name,
+std::shared_ptr<CSGObject> get_dispatch_all_base_types(const std::shared_ptr<const CSGObject>& obj, const std::string& name,
 		T&& how)
 {
-	if (auto* result = get_if_possible<CKernel>(obj, name, how))
+	if (auto result = get_if_possible<CKernel>(obj, name, how))
 		return result;
-	if (auto* result = get_if_possible<CFeatures>(obj, name, how))
+	if (auto result = get_if_possible<CFeatures>(obj, name, how))
 		return result;
-	if (auto* result = get_if_possible<CMachine>(obj, name, how))
+	if (auto result = get_if_possible<CMachine>(obj, name, how))
 		return result;
-	if (auto* result = get_if_possible<CLabels>(obj, name, how))
+	if (auto result = get_if_possible<CLabels>(obj, name, how))
 		return result;
-	if (auto* result = get_if_possible<CEvaluationResult>(obj, name, how))
+	if (auto result = get_if_possible<CEvaluationResult>(obj, name, how))
 		return result;
 
 	return nullptr;
 }
 
 template<class T>
-CSGObject* get_by_tag(const CSGObject* obj, const std::string& name,
+std::shared_ptr<CSGObject> get_by_tag(const std::shared_ptr<const CSGObject>& obj, const std::string& name,
 		T&& how)
 {
 	return get_dispatch_all_base_types(obj, name, how);

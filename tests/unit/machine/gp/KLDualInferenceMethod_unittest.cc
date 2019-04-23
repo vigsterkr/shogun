@@ -73,16 +73,16 @@ TEST(KLDualInferenceMethod,get_cholesky_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	CBinaryLabels* labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	float64_t ell=2.0;
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2*ell*ell);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
+	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
 	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
@@ -163,7 +163,7 @@ TEST(KLDualInferenceMethod,get_cholesky_logit_likelihood)
 	EXPECT_NEAR(L(4,4),  1.166811061103276,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLDualInferenceMethod,get_posterior_mean_logit_likelihood)
@@ -194,15 +194,15 @@ TEST(KLDualInferenceMethod,get_posterior_mean_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	CBinaryLabels* labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
+	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
 	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
@@ -236,7 +236,7 @@ TEST(KLDualInferenceMethod,get_posterior_mean_logit_likelihood)
 	EXPECT_NEAR(posterior_mean[4],  -0.751590461358533,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLDualInferenceMethod,get_posterior_covariance_logit_likelihood)
@@ -267,15 +267,15 @@ TEST(KLDualInferenceMethod,get_posterior_covariance_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	CBinaryLabels* labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
+	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
 	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
@@ -353,7 +353,7 @@ TEST(KLDualInferenceMethod,get_posterior_covariance_logit_likelihood)
 	EXPECT_NEAR(posterior_covariance(4,4),  0.576951507929158,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLDualInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
@@ -384,15 +384,15 @@ TEST(KLDualInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	CBinaryLabels* labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
+	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
 	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
@@ -412,7 +412,7 @@ TEST(KLDualInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
 	EXPECT_NEAR(nml, 3.425144111752701, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+	
 }
 
 TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
@@ -443,16 +443,16 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	CBinaryLabels* labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=2.0;
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2*ell*ell);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitDVGLikelihood* likelihood=new CLogitDVGLikelihood();
+	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
 	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
@@ -462,7 +462,7 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap><TParameter*, CSGObject*>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -493,8 +493,8 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	EXPECT_NEAR(dnlZ_sf2, 0.031118659018803, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+	
+	
+	
 }
 #endif //USE_GPL_SHOGUN

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
  *          Evan Shelhamer, Chiyuan Zhang, Bjoern Esser
  */
 
@@ -73,7 +73,7 @@ const char* CMultidimensionalScaling::get_name() const
 	return "MultidimensionalScaling";
 };
 
-CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* distance)
+std::shared_ptr<CDenseFeatures<float64_t>> CMultidimensionalScaling::embed_distance(std::shared_ptr<CDistance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	if (m_landmark)
@@ -90,22 +90,21 @@ CDenseFeatures<float64_t>* CMultidimensionalScaling::embed_distance(CDistance* d
 		parameters.method = SHOGUN_MULTIDIMENSIONAL_SCALING;
 	}
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = distance;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	parameters.distance = distance.get();
+	return tapkee_embed(parameters);
 }
 
-CFeatures*
-CMultidimensionalScaling::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures>
+CMultidimensionalScaling::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
-	SG_REF(features);
+
 	ASSERT(m_distance)
 
 	m_distance->init(features,features);
-	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
+	auto embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 
-	SG_UNREF(features);
-	return (CFeatures*)embedding;
+
+	return embedding;
 }
 

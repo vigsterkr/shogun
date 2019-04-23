@@ -191,12 +191,10 @@ struct CrossValidationMMD : PermutationMMD
 		SGVector<int64_t> dummy_labels_x(m_n_x);
 		SGVector<int64_t> dummy_labels_y(m_n_y);
 
-		auto instance_x=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_x), m_num_folds);
-		auto instance_y=new CCrossValidationSplitting(new CBinaryLabels(dummy_labels_y), m_num_folds);
-		m_kfold_x=unique_ptr<CCrossValidationSplitting>(instance_x);
-		m_kfold_y=unique_ptr<CCrossValidationSplitting>(instance_y);
+		m_kfold_x=std::make_unique<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_x), m_num_folds);
+		m_kfold_y=std::make_unique<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_y), m_num_folds);
 
-		m_stack=unique_ptr<CSubsetStack>(new CSubsetStack());
+		m_stack=std::make_unique<CSubsetStack>();
 
 		const index_t size=m_n_x+m_n_y;
 		m_inverted_inds=SGVector<index_t>(size);

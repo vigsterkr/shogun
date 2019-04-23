@@ -46,18 +46,18 @@ public:
 	/** constructor
 	 * @param kernel kernel to be used
 	 */
-	CKernelLocallyLinearEmbedding(CKernel* kernel);
+	CKernelLocallyLinearEmbedding(std::shared_ptr<CKernel> kernel);
 
 	/** destructor */
 	virtual ~CKernelLocallyLinearEmbedding();
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 	/** embed kernel (kernel should be inited)
 	 * @param kernel kernel to construct embed
 	 */
-	CDenseFeatures<float64_t>* embed_kernel(CKernel* kernel);
+	std::shared_ptr<CDenseFeatures<float64_t>> embed_kernel(std::shared_ptr<CKernel> kernel);
 
 	/** get name */
 	virtual const char* get_name() const;

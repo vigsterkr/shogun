@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Weijie Lin, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, Weijie Lin,
  *          Evgeniy Andreev, Viktor Gal, Evan Shelhamer, Thoralf Klein
  */
 
@@ -24,7 +24,7 @@ CSVM::CSVM(int32_t num_sv)
 	set_defaults(num_sv);
 }
 
-CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
+CSVM::CSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
 : CKernelMachine()
 {
 	set_defaults();
@@ -35,7 +35,7 @@ CSVM::CSVM(float64_t C, CKernel* k, CLabels* lab)
 
 CSVM::~CSVM()
 {
-	SG_UNREF(mkl);
+
 }
 
 void CSVM::set_defaults(int32_t num_sv)
@@ -50,7 +50,7 @@ void CSVM::set_defaults(int32_t num_sv)
 	SG_ADD(&objective, "objective", "");
 	SG_ADD(&qpsize, "qpsize", "");
 	SG_ADD(&use_shrinking, "use_shrinking", "Shrinking shall be used.");
-	SG_ADD((CSGObject**) &mkl, "mkl", "MKL object that svm optimizers need.");
+	SG_ADD((std::shared_ptr<CSGObject>*) &mkl, "mkl", "MKL object that svm optimizers need.");
 	SG_ADD(&m_linear_term, "linear_term", "Linear term in qp.");
 
 	callback=NULL;
@@ -218,11 +218,11 @@ bool CSVM::save(FILE* modelfl)
 	return true ;
 }
 
-void CSVM::set_callback_function(CMKL* m, bool (*cb)
-		(CMKL* mkl, const float64_t* sumw, const float64_t suma))
+void CSVM::set_callback_function(std::shared_ptr<CMKL> m, bool (*cb)
+		(std::shared_ptr<CMKL> mkl, const float64_t* sumw, const float64_t suma))
 {
-	SG_REF(m);
-	SG_UNREF(mkl);
+
+
 	mkl=m;
 
 	callback=cb;
@@ -234,11 +234,12 @@ float64_t CSVM::compute_svm_dual_objective()
 
 	if (m_labels && kernel)
 	{
+		auto binary_labels = std::static_pointer_cast<CBinaryLabels>(m_labels);
 		objective=0;
 		for (int32_t i=0; i<n; i++)
 		{
 			int32_t ii=get_support_vector(i);
-			objective-=get_alpha(i)*((CBinaryLabels*) m_labels)->get_label(ii);
+			objective-=get_alpha(i)*(binary_labels->get_label(ii));
 
 			for (int32_t j=0; j<n; j++)
 			{
@@ -264,6 +265,7 @@ float64_t CSVM::compute_svm_primal_objective()
 	if (m_labels && kernel)
 	{
 		float64_t C2_tmp=get_C1();
+		auto binary_labels = std::static_pointer_cast<CBinaryLabels>(m_labels);
 		if(C2>0)
 		{
 			C2_tmp=get_C2();
@@ -278,7 +280,7 @@ float64_t CSVM::compute_svm_primal_objective()
 				regularizer-=0.5*get_alpha(i)*get_alpha(j)*kernel->kernel(ii,jj);
 			}
 
-			loss-=(C1*(-((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 + C2_tmp*(((CBinaryLabels*) m_labels)->get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-((CBinaryLabels*) m_labels)->get_label(ii)*apply_one(ii));
+			loss-=(C1*(-(binary_labels->get_label(ii)+1)/2.0 + C2_tmp*(binary_labels->get_label(ii)+1)/2.0 )*CMath::max(0.0, 1.0-binary_labels->get_label(ii)*apply_one(ii)));
 		}
 
 	}

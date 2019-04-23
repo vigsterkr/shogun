@@ -49,10 +49,10 @@ using std::unique_ptr;
 struct CMultiKernelQuadraticTimeMMD::Self
 {
 	Self(CQuadraticTimeMMD* owner);
-	void update_pairwise_distance(CDistance *distance);
+	void update_pairwise_distance(std::shared_ptr<CDistance >distance);
 
-	CQuadraticTimeMMD *m_owner;
-	unique_ptr<CCustomDistance> m_pairwise_distance;
+	CQuadraticTimeMMD* m_owner;
+	std::shared_ptr<CCustomDistance> m_pairwise_distance;
 	EDistanceType m_dtype;
 	KernelManager m_kernel_mgr;
 	ComputeMMD statistic_job;
@@ -60,12 +60,12 @@ struct CMultiKernelQuadraticTimeMMD::Self
 	PermutationMMD permutation_job;
 };
 
-CMultiKernelQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD *owner) : m_owner(owner),
+CMultiKernelQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD* owner) : m_owner(owner),
 	m_pairwise_distance(nullptr), m_dtype(D_UNKNOWN)
 {
 }
 
-void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(CDistance* distance)
+void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(std::shared_ptr<CDistance> distance)
 {
 	ASSERT(distance);
 	if (m_dtype==distance->get_distance_type())
@@ -75,8 +75,7 @@ void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(CDistance* dis
 	}
 	else
 	{
-		auto precomputed_distance=m_owner->compute_joint_distance(distance);
-		m_pairwise_distance=unique_ptr<CCustomDistance>(precomputed_distance);
+		m_pairwise_distance=m_owner->compute_joint_distance(distance);
 		m_dtype=distance->get_distance_type();
 	}
 }
@@ -96,7 +95,7 @@ CMultiKernelQuadraticTimeMMD::~CMultiKernelQuadraticTimeMMD()
 	cleanup();
 }
 
-void CMultiKernelQuadraticTimeMMD::add_kernel(CKernel *kernel)
+void CMultiKernelQuadraticTimeMMD::add_kernel(std::shared_ptr<CKernel >kernel)
 {
 	ASSERT(self->m_owner);
 	REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
@@ -172,10 +171,10 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 	const auto ny=self->m_owner->get_num_samples_q();
 	const auto stype = self->m_owner->get_statistic_type();
 
-	CDistance* distance=kernel_mgr.get_distance_instance();
+	auto distance=kernel_mgr.get_distance_instance();
 	self->update_pairwise_distance(distance);
-	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
-	SG_UNREF(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance);
+
 
 	self->statistic_job.m_n_x=nx;
    	self->statistic_job.m_n_y=ny;
@@ -199,10 +198,10 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManage
 	const auto nx=self->m_owner->get_num_samples_p();
 	const auto ny=self->m_owner->get_num_samples_q();
 
-	CDistance* distance=kernel_mgr.get_distance_instance();
+	auto distance=kernel_mgr.get_distance_instance();
 	self->update_pairwise_distance(distance);
-	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
-	SG_UNREF(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance);
+
 
 	self->variance_h1_job.m_n_x=nx;
    	self->variance_h1_job.m_n_y=ny;
@@ -223,10 +222,10 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager
 	const auto nx=self->m_owner->get_num_samples_p();
 	const auto ny=self->m_owner->get_num_samples_q();
 
-	CDistance* distance=kernel_mgr.get_distance_instance();
+	auto distance=kernel_mgr.get_distance_instance();
 	self->update_pairwise_distance(distance);
-	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
-	SG_UNREF(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance);
+
 
 	self->variance_h1_job.m_n_x=nx;
    	self->variance_h1_job.m_n_y=ny;
@@ -251,10 +250,10 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManage
 	const auto stype = self->m_owner->get_statistic_type();
 	const auto num_null_samples = self->m_owner->get_num_null_samples();
 
-	CDistance* distance=kernel_mgr.get_distance_instance();
+	auto distance=kernel_mgr.get_distance_instance();
 	self->update_pairwise_distance(distance);
-	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
-	SG_UNREF(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance);
+
 
 	self->permutation_job.m_n_x=nx;
 	self->permutation_job.m_n_y=ny;
@@ -284,10 +283,10 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& 
 	const auto stype = self->m_owner->get_statistic_type();
 	const auto num_null_samples = self->m_owner->get_num_null_samples();
 
-	CDistance* distance=kernel_mgr.get_distance_instance();
+	auto distance=kernel_mgr.get_distance_instance();
 	self->update_pairwise_distance(distance);
-	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance.get());
-	SG_UNREF(distance);
+	kernel_mgr.set_precomputed_distance(self->m_pairwise_distance);
+
 
 	self->permutation_job.m_n_x=nx;
 	self->permutation_job.m_n_y=ny;

@@ -13,7 +13,7 @@ using namespace shogun;
 CSubsequenceStringKernel::CSubsequenceStringKernel()
 : CStringKernel<char>(0), m_maxlen(1), m_lambda(1.0)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	register_params();
 }
 
@@ -21,15 +21,15 @@ CSubsequenceStringKernel::CSubsequenceStringKernel(int32_t size, int32_t maxlen,
 		float64_t lambda)
 : CStringKernel<char>(size), m_maxlen(maxlen), m_lambda(lambda)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	register_params();
 }
 
-CSubsequenceStringKernel::CSubsequenceStringKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r, int32_t maxlen, float64_t lambda)
+CSubsequenceStringKernel::CSubsequenceStringKernel(std::shared_ptr<CStringFeatures<char>> l,
+		std::shared_ptr<CStringFeatures<char>> r, int32_t maxlen, float64_t lambda)
 : CStringKernel<char>(10), m_maxlen(maxlen), m_lambda(lambda)
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	init(l, r);
 	register_params();
 }
@@ -39,7 +39,7 @@ CSubsequenceStringKernel::~CSubsequenceStringKernel()
 	cleanup();
 }
 
-bool CSubsequenceStringKernel::init(CFeatures* l, CFeatures* r)
+bool CSubsequenceStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CStringKernel<char>::init(l, r);
 	return init_normalizer();
@@ -59,9 +59,9 @@ float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec=dynamic_cast<CStringFeatures<char>*>(lhs)
+	char* avec=std::dynamic_pointer_cast<CStringFeatures<char>>(lhs)
 		->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec=dynamic_cast<CStringFeatures<char>*>(rhs)
+	char* bvec=std::dynamic_pointer_cast<CStringFeatures<char>>(rhs)
 		->get_feature_vector(idx_b, blen, free_bvec);
 
 	REQUIRE(avec, "Feature vector for lhs is NULL!\n");
@@ -113,9 +113,9 @@ float64_t CSubsequenceStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	}
 
 	// cleanup
-	dynamic_cast<CStringFeatures<char>*>(lhs)->free_feature_vector(avec, idx_a,
+	std::dynamic_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a,
 			free_avec);
-	dynamic_cast<CStringFeatures<char>*>(rhs)->free_feature_vector(bvec, idx_b,
+	std::dynamic_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b,
 			free_bvec);
 
 	for (index_t i=0; i<m_maxlen+1; ++i)

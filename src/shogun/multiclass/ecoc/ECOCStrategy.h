@@ -24,7 +24,7 @@ public:
     CECOCStrategy();
 
     /** constructor */
-    CECOCStrategy(CECOCEncoder *encoder, CECOCDecoder *decoder);
+    CECOCStrategy(std::shared_ptr<CECOCEncoder >encoder, std::shared_ptr<CECOCDecoder >decoder);
 
     /** destructor */
     virtual ~CECOCStrategy();
@@ -36,7 +36,7 @@ public:
     }
 
     /** start training */
-    virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels);
+    virtual void train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels);
 
     /** has more training phase */
     virtual bool train_has_more();
@@ -57,9 +57,9 @@ public:
 
 protected:
     /** ECOC encoder */
-    CECOCEncoder *m_encoder;
+    std::shared_ptr<CECOCEncoder >m_encoder;
     /** ECOC decoder */
-    CECOCDecoder *m_decoder;
+    std::shared_ptr<CECOCDecoder >m_decoder;
 
     /** ECOC codebook */
     SGMatrix<int32_t> m_codebook;

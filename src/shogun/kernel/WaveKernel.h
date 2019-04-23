@@ -39,7 +39,7 @@ public:
 	 * @param theta kernel parameter theta
 	 * @param dist distance to be used
 	 */
-	CWaveKernel(int32_t cache, float64_t theta, CDistance* dist);
+	CWaveKernel(int32_t cache, float64_t theta, std::shared_ptr<CDistance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param theta kernel parameter theta
 	 * @param dist distance to be used
 	 */
-	CWaveKernel(CFeatures *l, CFeatures *r, float64_t theta, CDistance* dist);
+	CWaveKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t theta, std::shared_ptr<CDistance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/**
 	 * @return kernel type
@@ -94,7 +94,7 @@ private:
 protected:
 
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<CDistance> m_distance;
 
 	/// theta parameter of kernel
 	float64_t m_theta;

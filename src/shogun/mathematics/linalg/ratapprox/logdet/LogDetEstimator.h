@@ -55,8 +55,8 @@ public:
 	 * @param operator_log the operator function
 	 */
 	CLogDetEstimator(
-		CTraceSampler* trace_sampler,
-		COperatorFunction<float64_t>* operator_log);
+		std::shared_ptr<CTraceSampler> trace_sampler,
+		std::shared_ptr<COperatorFunction<float64_t>> operator_log);
 
 	/** Destructor */
 	virtual ~CLogDetEstimator();
@@ -86,17 +86,17 @@ public:
 	}
 
 	/** @return trace sampler */
-	CTraceSampler* get_trace_sampler(void) const;
+	std::shared_ptr<CTraceSampler> get_trace_sampler(void) const;
 
 	/** @return operator function */
-	COperatorFunction<float64_t>* get_operator_function(void) const;
+	std::shared_ptr<COperatorFunction<float64_t>> get_operator_function(void) const;
 
 private:
 	/** the trace sampler */
-	CTraceSampler* m_trace_sampler;
+	std::shared_ptr<CTraceSampler> m_trace_sampler;
 
 	/** the linear operator function, which is log in this case */
-	COperatorFunction<float64_t>* m_operator_log;
+	std::shared_ptr<COperatorFunction<float64_t>> m_operator_log;
 
 	/** initialize with default values and register params */
 	void init();

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Pan Deng, Wuwei Lin, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Pan Deng, Wuwei Lin,
  *          Viktor Gal
  */
 #include <gtest/gtest.h>
@@ -30,7 +30,7 @@ TEST(LMNNImpl,find_target_nn)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -40,7 +40,7 @@ TEST(LMNNImpl,find_target_nn)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because LMNN works in general for more than
 	// two classes
-	CMulticlassLabels* labels=new CMulticlassLabels(lab_vec);
+	auto labels=std::make_shared<CMulticlassLabels>(lab_vec);
 
 	// find target neighbors
 	int32_t k=1;	// number of target neighbors per example
@@ -55,8 +55,8 @@ TEST(LMNNImpl,find_target_nn)
 	EXPECT_EQ(target_nn(0,2), 3);
 	EXPECT_EQ(target_nn(0,3), 2);
 
-	SG_UNREF(features)
-	SG_UNREF(labels)
+
+
 }
 
 TEST(LMNNImpl,sum_outer_products)
@@ -80,7 +80,7 @@ TEST(LMNNImpl,sum_outer_products)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
 
 	// matrix of target neighbors
 	SGMatrix<index_t> target_nn(1,n);
@@ -126,7 +126,7 @@ TEST(LMNNImpl,sum_outer_products)
 		for (int32_t j=0; j<d; j++)
 			EXPECT_EQ(sop(i,j), 0);
 
-	SG_UNREF(features);
+
 }
 
 TEST(LMNNImpl,find_impostors_exact)
@@ -146,7 +146,7 @@ TEST(LMNNImpl,find_impostors_exact)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	CDenseFeatures<float64_t>* features=new CDenseFeatures<float64_t>(feat_mat);
+	auto features=std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
 	// shorthand for the number of features
 	int32_t d=features->get_num_features();
 
@@ -158,7 +158,7 @@ TEST(LMNNImpl,find_impostors_exact)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because LMNN works in general for more than
 	// two classes
-	CMulticlassLabels* labels=new CMulticlassLabels(lab_vec);
+	auto labels=std::make_shared<CMulticlassLabels>(lab_vec);
 
 	// find target neighbors
 	int32_t k=1;	// number of target neighbors per example
@@ -186,6 +186,6 @@ TEST(LMNNImpl,find_impostors_exact)
 		EXPECT_EQ(impostors_gt(2,i), it->impostor);
 	}
 
-	SG_UNREF(features)
-	SG_UNREF(labels)
+
+
 }

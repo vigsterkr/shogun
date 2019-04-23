@@ -48,7 +48,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 * @param width
 		 */
 		CSpectrumRBFKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
+			std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r, int32_t size, float64_t* AA_matrix, int32_t degree, float64_t width);
 
 		/** destructor */
 		virtual ~CSpectrumRBFKernel();
@@ -59,7 +59,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -134,7 +134,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 
 	protected:
 		/** alphabet of features */
-		CAlphabet* alphabet;
+		std::shared_ptr<CAlphabet> alphabet;
 		/** degree */
 		int32_t degree;
 		/** maximum mismatch */
@@ -154,7 +154,7 @@ class CSpectrumRBFKernel: public CStringKernel<char>
 		/** sequences */
 		SGString<char>* sequences; // profile
 		/** string features */
-		CStringFeatures<char>* string_features;
+		std::shared_ptr<CStringFeatures<char>> string_features;
 		/** nof sequences */
 		int32_t nof_sequences;
 		/** max sequence length */

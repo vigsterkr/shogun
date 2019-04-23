@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Thoralf Klein, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Evgeniy Andreev, Thoralf Klein, Soeren Sonnenburg, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -29,7 +29,7 @@ public:
 	 * @param string the text to parse
 	 * @param tokenizer tokenizer
 	 */
-	CParser(SGVector<char> string, CTokenizer* tokenizer);
+	CParser(SGVector<char> string, std::shared_ptr<CTokenizer> tokenizer);
 
 	/** destructor */
 	virtual ~CParser();
@@ -69,7 +69,7 @@ public:
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(CTokenizer* tokenizer);
+	void set_tokenizer(std::shared_ptr<CTokenizer> tokenizer);
 
 	/** set the char array that requires tokenization
 	 *
@@ -89,7 +89,7 @@ private:
 	SGVector<char> m_text;
 
 	/** tokenizer */
-	CTokenizer* m_tokenizer;
+	std::shared_ptr<CTokenizer> m_tokenizer;
 };
 
 }

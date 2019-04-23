@@ -97,7 +97,7 @@ public:
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * weights
 	 */
-	CDeepAutoencoder(CDynamicObjectArray* layers, float64_t sigma = 0.01);
+	CDeepAutoencoder(std::shared_ptr<CDynamicObjectArray> layers, float64_t sigma = 0.01);
 
 	virtual ~CDeepAutoencoder() {}
 
@@ -121,7 +121,7 @@ public:
 	 *
 	 * @param data Training examples
 	 */
-	virtual void pre_train(CFeatures* data);
+	virtual void pre_train(std::shared_ptr<CFeatures> data);
 
 	/** Forward propagates the data through the autoencoder and returns the
 	 * activations of the last encoding layer (layer (N-1)/2)
@@ -130,8 +130,8 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> transform(
+		std::shared_ptr<CDenseFeatures<float64_t>> data);
 
 	/** Forward propagates the data through the autoencoder and returns the
 	 * activations of the last layer
@@ -140,8 +140,8 @@ public:
 	 *
 	 * @return Reconstructed features
 	 */
-	virtual CDenseFeatures<float64_t>* reconstruct(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> reconstruct(
+		std::shared_ptr<CDenseFeatures<float64_t>> data);
 
 	/** Converts the autoencoder into a neural network for supervised finetuning.
 	 *
@@ -153,8 +153,8 @@ public:
 	 * @param sigma Standard deviation used to initialize the parameters of the
 	 * output layer
 	 */
-	virtual CNeuralNetwork* convert_to_neural_network(
-		CNeuralLayer* output_layer=NULL, float64_t sigma = 0.01);
+	virtual std::shared_ptr<CNeuralNetwork> convert_to_neural_network(
+		std::shared_ptr<CNeuralLayer> output_layer=NULL, float64_t sigma = 0.01);
 
 	/** Sets the contraction coefficient
 	 *

@@ -77,8 +77,8 @@ public:
 	float64_t get_alpha() const;
 	bool get_weighted() const;
 
-	void add_kernel(CKernel* kernel);
-	CKernel* select_kernel(CMMD* estimator);
+	void add_kernel(std::shared_ptr<CKernel> kernel);
+	std::shared_ptr<CKernel> select_kernel(std::shared_ptr<CMMD> estimator);
 	virtual const char* get_name() const;
 	void erase_intermediate_results();
 

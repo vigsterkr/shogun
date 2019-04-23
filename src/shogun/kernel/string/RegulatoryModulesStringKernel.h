@@ -48,8 +48,8 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param window size of window around motifs to compute wds kernels on
 		 * @param size cache size
 		 */
-		CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
-			CDenseFeatures<uint16_t>* lpos, CDenseFeatures<uint16_t>* rpos,
+		CRegulatoryModulesStringKernel(std::shared_ptr<CStringFeatures<char>> lstr, std::shared_ptr<CStringFeatures<char>> rstr,
+			std::shared_ptr<CDenseFeatures<uint16_t>> lpos, std::shared_ptr<CDenseFeatures<uint16_t>> rpos,
 			float64_t width, int32_t degree, int32_t shift, int32_t window, int32_t size=10);
 
 		/** default destructor */
@@ -61,7 +61,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *
@@ -81,7 +81,7 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		 * @param positions_rhs motif positions on rhs
 		 */
 		void set_motif_positions(
-			CDenseFeatures<uint16_t>* positions_lhs, CDenseFeatures<uint16_t>* positions_rhs);
+			std::shared_ptr<CDenseFeatures<uint16_t>> positions_lhs, std::shared_ptr<CDenseFeatures<uint16_t>> positions_rhs);
 
 	protected:
 		/** compute kernel function for features a and b
@@ -124,10 +124,10 @@ class CRegulatoryModulesStringKernel: public CStringKernel<char>
 		int32_t window;
 
 		/** Matrix of motif positions from sequences left-hand side */
-		CDenseFeatures<uint16_t>* motif_positions_lhs;
+		std::shared_ptr<CDenseFeatures<uint16_t>> motif_positions_lhs;
 
 		/** Matrix of motif positions from sequences right-hand side */
-		CDenseFeatures<uint16_t>* motif_positions_rhs;
+		std::shared_ptr<CDenseFeatures<uint16_t>> motif_positions_rhs;
 
 		/** scaling weights in window */
 		SGVector<float64_t> position_weights;

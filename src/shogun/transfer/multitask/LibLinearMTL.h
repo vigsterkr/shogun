@@ -97,8 +97,8 @@ class CLibLinearMTL : public CLinearMachine
 		 * @param trainlab training labels
 		 */
 		CLibLinearMTL(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
+			float64_t C, std::shared_ptr<CDotFeatures> traindat,
+			std::shared_ptr<CLabels> trainlab);
 
 		/** destructor */
 		virtual ~CLibLinearMTL();
@@ -293,7 +293,7 @@ class CLibLinearMTL : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	private:
 		/** set up parameters */

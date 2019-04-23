@@ -75,22 +75,22 @@ public:
 	}
 
 	/** get rejection strategy */
-	CRejectionStrategy *get_rejection_strategy()
+	std::shared_ptr<CRejectionStrategy >get_rejection_strategy()
 	{
-		SG_REF(m_rejection_strategy);
+		
 		return m_rejection_strategy;
 	}
 
 	/** set rejection strategy */
-	void set_rejection_strategy(CRejectionStrategy *rejection_strategy)
+	void set_rejection_strategy(std::shared_ptr<CRejectionStrategy >rejection_strategy)
 	{
-		SG_REF(rejection_strategy);
-		SG_UNREF(m_rejection_strategy);
+		
+		
 		m_rejection_strategy = rejection_strategy;
 	}
 
 	/** start training */
-	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels);
+	virtual void train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels);
 
 	/** has more training phase */
 	virtual bool train_has_more()=0;
@@ -165,9 +165,9 @@ private:
 
 protected:
 
-	CRejectionStrategy* m_rejection_strategy; ///< rejection strategy
-	CBinaryLabels *m_train_labels;    ///< labels used to train the submachines
-	CMulticlassLabels *m_orig_labels; ///< original multiclass labels
+	std::shared_ptr<CRejectionStrategy> m_rejection_strategy; ///< rejection strategy
+	std::shared_ptr<CBinaryLabels >m_train_labels;    ///< labels used to train the submachines
+	std::shared_ptr<CMulticlassLabels >m_orig_labels; ///< original multiclass labels
 	int32_t m_train_iter;             ///< index of current iterations
     int32_t m_num_classes;            ///< number of classes in this problem
 	EProbHeuristicType m_prob_heuris; ///< prob output heuristic

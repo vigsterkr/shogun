@@ -72,8 +72,8 @@ public:
 	 * @param function_type operator function type
 	 */
 	CRationalApproximation(
-		CLinearOperator<float64_t>* linear_operator,
-		CEigenSolver* eigen_solver,
+		std::shared_ptr<CLinearOperator<float64_t>> linear_operator,
+		std::shared_ptr<CEigenSolver> eigen_solver,
 		float64_t desired_accuracy,
 		EOperatorFunction function_type);
 
@@ -131,7 +131,7 @@ public:
 
 protected:
 	/** the eigen solver for computing extremal eigenvalues */
-	CEigenSolver* m_eigen_solver;
+	std::shared_ptr<CEigenSolver> m_eigen_solver;
 
 	/** complex shifts in the systems coming from rational approximation */
 	SGVector<complex128_t> m_shifts;

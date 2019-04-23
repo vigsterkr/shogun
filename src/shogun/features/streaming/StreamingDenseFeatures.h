@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Vladislav Horbatiuk, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Vladislav Horbatiuk,
  *          Yuyu Zhang, Viktor Gal, Sergey Lisitsyn
  */
 #ifndef _STREAMINGDENSEFEATURES__H__
@@ -45,7 +45,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingDenseFeatures(CStreamingFile* file, bool is_labelled,
+	CStreamingDenseFeatures(std::shared_ptr<CStreamingFile> file, bool is_labelled,
 			int32_t size);
 
 	/**
@@ -55,7 +55,7 @@ public:
 	 * @param dense_features DenseFeatures object of same type
 	 * @param lab labels array, float64_t*
 	 */
-	CStreamingDenseFeatures(CDenseFeatures<T>* dense_features, float64_t* lab=
+	CStreamingDenseFeatures(std::shared_ptr<CDenseFeatures<T>> dense_features, float64_t* lab=
 			NULL);
 
 	/**
@@ -169,7 +169,7 @@ public:
 	 *
 	 * @return Dot product.
 	 */
-	virtual float32_t dot(CStreamingDotFeatures *df);
+	virtual float32_t dot(std::shared_ptr<CStreamingDotFeatures >df);
 
 	/**
 	 * Dot product with another dense vector.
@@ -264,7 +264,7 @@ public:
 	 * @return CFeatures object of underlying type, might contain less data if
 	 * the stream did end (warning is written)
 	 */
-	virtual CFeatures* get_streamed_features(index_t num_elements);
+	virtual std::shared_ptr<CFeatures> get_streamed_features(index_t num_elements);
 
 private:
 	/**
@@ -280,7 +280,7 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	void init(std::shared_ptr<CStreamingFile >file, bool is_labelled, int32_t size);
 
 protected:
 

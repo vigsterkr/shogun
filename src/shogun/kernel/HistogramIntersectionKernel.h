@@ -46,7 +46,7 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 * @param size cache size
 		 */
 		CHistogramIntersectionKernel(
-			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+			std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r,
 			float64_t beta=1.0, int32_t size=10);
 
 		virtual ~CHistogramIntersectionKernel();
@@ -57,7 +57,7 @@ class CHistogramIntersectionKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 		/* register the parameters
 		 */
 		virtual void register_params();

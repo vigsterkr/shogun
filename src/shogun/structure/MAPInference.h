@@ -50,7 +50,7 @@ public:
 	 * @param fg pointer of factor graph, i.e. structured inputs
 	 * @param inference_method name of MAP inference method
 	 */
-	CMAPInference(CFactorGraph* fg, EMAPInferType inference_method);
+	CMAPInference(std::shared_ptr<CFactorGraph> fg, EMAPInferType inference_method);
 
 	/** destructor */
 	virtual ~CMAPInference();
@@ -65,7 +65,7 @@ public:
 	 *
 	 * @return CFactorGraphObservation pointer
 	 */
-	CFactorGraphObservation* get_structured_outputs() const;
+	std::shared_ptr<CFactorGraphObservation> get_structured_outputs() const;
 
 	/** @return minimized energy */
 	float64_t get_energy() const;
@@ -76,16 +76,16 @@ private:
 
 protected:
 	/** pointer of factor graph */
-	CFactorGraph* m_fg;
+	std::shared_ptr<CFactorGraph> m_fg;
 
 	/** structured outputs */
-	CFactorGraphObservation* m_outputs;
+	std::shared_ptr<CFactorGraphObservation> m_outputs;
 
 	/** minimized energy */
 	float64_t m_energy;
 
 	/** opaque pointer to hide implementation */
-	CMAPInferImpl* m_infer_impl;
+	std::shared_ptr<CMAPInferImpl> m_infer_impl;
 };
 
 /** @brief Class CMAPInferImpl abstract class
@@ -101,7 +101,7 @@ public:
 	 *
 	 * @param fg pointer of factor graph, i.e. structured inputs
 	 */
-	CMAPInferImpl(CFactorGraph* fg);
+	CMAPInferImpl(std::shared_ptr<CFactorGraph> fg);
 
 	/** destructor */
 	virtual ~CMAPInferImpl();
@@ -121,7 +121,7 @@ private:
 
 protected:
 	/** pointer of factor graph */
-	CFactorGraph* m_fg;
+	std::shared_ptr<CFactorGraph> m_fg;
 };
 
 }

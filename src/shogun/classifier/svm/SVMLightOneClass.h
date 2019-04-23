@@ -32,7 +32,7 @@ class CSVMLightOneClass: public CSVMLight
 		 * @param C constant C
 		 * @param k kernel
 		 */
-		CSVMLightOneClass(float64_t C, CKernel* k);
+		CSVMLightOneClass(float64_t C, std::shared_ptr<CKernel> k);
 
 		/** default destructor */
 		virtual ~CSVMLightOneClass() { }
@@ -58,7 +58,7 @@ class CSVMLightOneClass: public CSVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 };
 }
 #endif //USE_SVMLIGHT

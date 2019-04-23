@@ -175,7 +175,7 @@ SGMatrix<float32_t> CQuadraticTimeMMD::Self::get_kernel_matrix()
 	}
 
 	ASSERT(owner.get_kernel()->get_kernel_type()==K_CUSTOM);
-	auto precomputed_kernel=static_cast<CCustomKernel*>(owner.get_kernel());
+	auto precomputed_kernel=std::dynamic_pointer_cast<CCustomKernel>(owner.get_kernel());
 	return precomputed_kernel->get_float32_kernel_matrix();
 }
 
@@ -186,9 +186,9 @@ CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
 
 void CQuadraticTimeMMD::init()
 {
-	self=unique_ptr<Self>(new Self(*this));
+	self=std::make_unique<Self>(*this);
 	self->multi_kernel = shared_ptr<CMultiKernelQuadraticTimeMMD>(
-	    new CMultiKernelQuadraticTimeMMD(this));
+		new CMultiKernelQuadraticTimeMMD(this));	
 }
 
 CQuadraticTimeMMD::~CQuadraticTimeMMD()
@@ -196,7 +196,7 @@ CQuadraticTimeMMD::~CQuadraticTimeMMD()
 	CMMD::cleanup();
 }
 
-void CQuadraticTimeMMD::set_p(CFeatures* samples_from_p)
+void CQuadraticTimeMMD::set_p(std::shared_ptr<CFeatures> samples_from_p)
 {
 	if (samples_from_p!=get_p())
 	{
@@ -218,7 +218,7 @@ void CQuadraticTimeMMD::set_p(CFeatures* samples_from_p)
 	}
 }
 
-void CQuadraticTimeMMD::set_q(CFeatures* samples_from_q)
+void CQuadraticTimeMMD::set_q(std::shared_ptr<CFeatures> samples_from_q)
 {
 	if (samples_from_q!=get_q())
 	{
@@ -240,9 +240,9 @@ void CQuadraticTimeMMD::set_q(CFeatures* samples_from_q)
 	}
 }
 
-CFeatures* CQuadraticTimeMMD::get_p_and_q()
+std::shared_ptr<CFeatures> CQuadraticTimeMMD::get_p_and_q()
 {
-	CFeatures* samples_p_and_q=nullptr;
+	std::shared_ptr<CFeatures> samples_p_and_q=nullptr;
 	REQUIRE(get_p(), "Samples from P are not set!\n");
 	REQUIRE(get_q(), "Samples from Q are not set!\n");
 
@@ -251,8 +251,8 @@ CFeatures* CQuadraticTimeMMD::get_p_and_q()
 	auto samples=data_mgr.next();
 	if (!samples.empty())
 	{
-		CFeatures *samples_p=samples[0][0];
-		CFeatures *samples_q=samples[1][0];
+		std::shared_ptr<CFeatures> samples_p=samples[0][0];
+		std::shared_ptr<CFeatures> samples_q=samples[1][0];
 		samples_p_and_q=samples_p->create_merged_copy(samples_q);
 		samples.clear();
 	}
@@ -264,7 +264,7 @@ CFeatures* CQuadraticTimeMMD::get_p_and_q()
 	return samples_p_and_q;
 }
 
-void CQuadraticTimeMMD::set_kernel(CKernel* kernel)
+void CQuadraticTimeMMD::set_kernel(std::shared_ptr<CKernel> kernel)
 {
 	if (kernel!=get_kernel())
 	{
@@ -581,11 +581,9 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	return null_samples;
 }
 
-CMultiKernelQuadraticTimeMMD* CQuadraticTimeMMD::multikernel()
+std::shared_ptr<CMultiKernelQuadraticTimeMMD> CQuadraticTimeMMD::multikernel()
 {
-	CMultiKernelQuadraticTimeMMD* result = self->multi_kernel.get();
-	SG_REF(result);
-	return result;
+	return self->multi_kernel;
 }
 
 void CQuadraticTimeMMD::spectrum_set_num_eigenvalues(index_t num_eigenvalues)

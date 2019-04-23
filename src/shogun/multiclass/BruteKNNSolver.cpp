@@ -16,9 +16,9 @@ CKNNSolver(k, q, num_classes, min_label, train_labels)
 	nn=NN;
 }
 
-CMulticlassLabels* CBruteKNNSolver::classify_objects(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+std::shared_ptr<CMulticlassLabels> CBruteKNNSolver::classify_objects(std::shared_ptr<CDistance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
 {
-	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
+	auto output=std::make_shared<CMulticlassLabels>(num_lab);
 	//get the k nearest neighbors of each example
 	SGMatrix<index_t> NN = this->nn;
 
@@ -40,7 +40,7 @@ CMulticlassLabels* CBruteKNNSolver::classify_objects(CDistance* knn_distance, co
 	return output;
 }
 
-SGVector<int32_t> CBruteKNNSolver::classify_objects_k(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
+SGVector<int32_t> CBruteKNNSolver::classify_objects_k(std::shared_ptr<CDistance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const
 {
 	SGVector<int32_t> output(m_k*num_lab);
 

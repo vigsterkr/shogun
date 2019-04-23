@@ -103,14 +103,14 @@ public:
 	 * @param size cache size
 	 * @param width kernel width
 	 */
-	CGaussianARDKernel(CDotFeatures* l, CDotFeatures* r,
+	CGaussianARDKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r,
 		int32_t size=10);
 
 	/** @param kernel is casted to CGaussianARDKernel, error if not possible
 	 * is SG_REF'ed
 	 * @return casted CGaussianARDKernel object
 	 */
-	static CGaussianARDKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<CGaussianARDKernel> obtain_from_generic(std::shared_ptr<CKernel> kernel);
 
 	/** initialize kernel
 	 *
@@ -118,7 +118,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/** return derivative with respect to specified parameter
 	 *
@@ -154,7 +154,7 @@ protected:
 	 * @param buf buffer to store squared terms (will be allocated)
 	 * @param df dot feature object based on which k(i,i) is computed
 	 * */
-	virtual SGVector<float64_t> precompute_squared_helper(CDotFeatures* df);
+	virtual SGVector<float64_t> precompute_squared_helper(std::shared_ptr<CDotFeatures> df);
 
 	/** squared left-hand side */
 	SGVector<float64_t> m_sq_lhs;

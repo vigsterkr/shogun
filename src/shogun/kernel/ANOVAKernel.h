@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Heiko Strathmann,
  *          Evan Shelhamer, Bjoern Esser
  */
 
@@ -50,7 +50,7 @@ public:
 	 * @param cache cache size
 	 */
 	CANOVAKernel(
-		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, int32_t d, int32_t cache);
+		std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r, int32_t d, int32_t cache);
 
 	virtual ~CANOVAKernel();
 
@@ -59,7 +59,7 @@ public:
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/**
 	 * @return kernel type
@@ -109,7 +109,7 @@ public:
 	 * @param kernel Kernel to cast. Must be CANOVAKernel. Might be NULL
 	 * @return casted CANOVAKernel object, NULL if input was NULL
 	 */
-	static CANOVAKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<CANOVAKernel> obtain_from_generic(std::shared_ptr<CKernel> kernel);
 protected:
 
 	/**

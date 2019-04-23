@@ -63,8 +63,8 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CEPInferenceMethod(CKernel* kernel, CFeatures* features, CMeanFunction* mean,
-			CLabels* labels, CLikelihoodModel* model);
+	CEPInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features, std::shared_ptr<CMeanFunction> mean,
+			std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
 
 	virtual ~CEPInferenceMethod();
 
@@ -85,7 +85,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CEPInferenceMethod object
 	 */
-	static CEPInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CEPInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** returns the negative logarithm of the marginal likelihood function:
 	 *
@@ -249,7 +249,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 
 	/** Specify behavious when EP does not converge: failure or warning
 	 * @param fail_on_non_convergence If True, throws error, otherwise prints warning

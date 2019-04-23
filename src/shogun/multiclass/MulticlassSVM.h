@@ -34,7 +34,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 *
 		 * @param strategy multiclass strategy
 		 */
-		CMulticlassSVM(CMulticlassStrategy *strategy);
+		CMulticlassSVM(std::shared_ptr<CMulticlassStrategy >strategy);
 
 		/** constructor
 		 *
@@ -44,7 +44,7 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 * @param lab labels
 		 */
 		CMulticlassSVM(
-			CMulticlassStrategy *strategy, float64_t C, CKernel* k, CLabels* lab);
+			std::shared_ptr<CMulticlassStrategy >strategy, float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 		virtual ~CMulticlassSVM();
 
 		/** create multiclass SVM. Appends the appropriate number of svm pointer
@@ -62,16 +62,16 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 * @param svm SVM to set
 		 * @return if setting was successful
 		 */
-		bool set_svm(int32_t num, CSVM* svm);
+		bool set_svm(int32_t num, std::shared_ptr<CSVM> svm);
 
 		/** get SVM
 		 *
 		 * @param num which SVM to get
 		 * @return SVM at number num
 		 */
-		CSVM* get_svm(int32_t num) const
+		std::shared_ptr<CSVM> get_svm(int32_t num) const
 		{
-			return m_machines->get_element_safe(num)->as<CSVM>();
+			return std::dynamic_pointer_cast<CSVM>(m_machines->get_element_safe(num));
 		}
 
 		/** load a Multiclass SVM from file
@@ -211,9 +211,9 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 	protected:
 
 		/** casts m_machine to SVM */
-		CSVM *svm_proto()
+		std::shared_ptr<CSVM >svm_proto()
 		{
-			return dynamic_cast<CSVM*>(m_machine);
+			return std::dynamic_pointer_cast<CSVM>(m_machine);
 		}
 		/** returns support vectors */
 		SGVector<int32_t> svm_svs()
@@ -222,12 +222,12 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		}
 
 		/** initializes machines (OvO, OvR) for apply */
-		virtual bool init_machines_for_apply(CFeatures* data);
+		virtual bool init_machines_for_apply(std::shared_ptr<CFeatures> data);
 
 		/** is machine an SVM instance */
-		virtual bool is_acceptable_machine(CMachine *machine)
+		virtual bool is_acceptable_machine(std::shared_ptr<CMachine >machine)
 		{
-			CSVM *svm = dynamic_cast<CSVM*>(machine);
+			auto svm = std::dynamic_pointer_cast<CSVM>(machine);
 			if (svm == NULL)
 				return false;
 			return true;

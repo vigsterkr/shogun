@@ -31,7 +31,7 @@ class CHistogram : public CDistribution
 		 *
 		 * @param f histogram's features
 		 */
-		CHistogram(CStringFeatures<uint16_t>* f);
+		CHistogram(std::shared_ptr<CStringFeatures<uint16_t>> f);
 		virtual ~CHistogram();
 
 		/** learn distribution
@@ -42,7 +42,7 @@ class CHistogram : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** get number of model parameters
 		 *

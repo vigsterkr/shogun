@@ -204,18 +204,18 @@ public:
 	 * @param f f(x)
 	 * @param g g(x)
 	 */
-	CProductFunction(CFunction* f, CFunction* g)
+	CProductFunction(std::shared_ptr<CFunction> f, std::shared_ptr<CFunction> g)
 	{
-		SG_REF(f);
-		SG_REF(g);
+		
+		
 		m_f=f;
 		m_g=g;
 	}
 
 	virtual ~CProductFunction()
 	{
-		SG_UNREF(m_f);
-		SG_UNREF(m_g);
+		
+		
 	}
 
 	/** returns value of the function at given point
@@ -231,9 +231,9 @@ public:
 
 private:
 	/** function f(x) */
-	CFunction* m_f;
+	std::shared_ptr<CFunction> m_f;
 	/**	function g(x) */
-	CFunction* m_g;
+	std::shared_ptr<CFunction> m_g;
 };
 
 /** @brief Class of the transform function
@@ -250,15 +250,15 @@ public:
 	 * @param mu mean
 	 * @param sigma standard deviation
 	 */
-	CTransformFunction(CFunction* f, float64_t mu, float64_t sigma)
+	CTransformFunction(std::shared_ptr<CFunction> f, float64_t mu, float64_t sigma)
 	{
-		SG_REF(f);
+		
 		m_f=f;
 		m_mu=mu;
 		m_sigma=sigma;
 	}
 
-	virtual ~CTransformFunction() { SG_UNREF(m_f); }
+	virtual ~CTransformFunction() {  }
 
 	/** set mean
 	 *
@@ -286,7 +286,7 @@ public:
 
 private:
 	/* function f(x) */
-	CFunction* m_f;
+	std::shared_ptr<CFunction> m_f;
 
 	/* mean */
 	float64_t m_mu;
@@ -299,8 +299,8 @@ private:
 TEST(Integration,integrate_quadgk_simple_function)
 {
 	// create object of the simple function
-	CSimpleFunction* f=new CSimpleFunction();
-	SG_REF(f);
+	auto f=std::make_shared<CSimpleFunction>();
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
@@ -323,14 +323,14 @@ TEST(Integration,integrate_quadgk_simple_function)
 	EXPECT_NEAR(q, 18814.5872620000, 1E-10);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_normal_pdf)
 {
 	// create object of the normal PDF with mean=0 and variance=0.01
-	CNormalPDF* f=new CNormalPDF(0, 0.1);
-	SG_REF(f);
+	auto f=std::make_shared<CNormalPDF>(0, 0.1);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
@@ -362,15 +362,15 @@ TEST(Integration,integrate_quadgk_normal_pdf)
 	EXPECT_NEAR(q, 0.301516908791514, 1E-15);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_students_t_pdf)
 {
 	// create object of the Student's-t PDF (sigma=0.5, mu=1.5,
 	// nu=4.0)
-	CStudentsTPDF* f=new CStudentsTPDF(0.5, 1.5, 4.0);
-	SG_REF(f);
+	auto f=std::make_shared<CStudentsTPDF>(0.5, 1.5, 4.0);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
@@ -399,14 +399,14 @@ TEST(Integration,integrate_quadgk_students_t_pdf)
 	EXPECT_NEAR(q, 0.7994108541947792, 1E-15);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_sigmoid_function)
 {
 	// create object of the sigmoid function
-	CSigmoidFunction* f=new CSigmoidFunction();
-	SG_REF(f);
+	auto f=std::make_shared<CSigmoidFunction>();
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
@@ -429,21 +429,21 @@ TEST(Integration,integrate_quadgk_sigmoid_function)
 	EXPECT_NEAR(q, 0.0783406594692304, 1E-15);
 
 	// clean up
-	SG_UNREF(f);
+	
 }
 
 TEST(Integration,integrate_quadgk_product_sigmoid_normal_pdf)
 {
 	// create object of the sigmoid function
-	CSigmoidFunction* f=new CSigmoidFunction();
+	auto f=std::make_shared<CSigmoidFunction>();
 
 	// create object of the normal PDF function with mean=0.0 and
 	// variance=0.01
-	CNormalPDF* g=new CNormalPDF(0.0, 0.1);
+	auto g=std::make_shared<CNormalPDF>(0.0, 0.1);
 
 	// create object of the product function
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
+	auto h=std::make_shared<CProductFunction>(f, g);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
@@ -466,22 +466,22 @@ TEST(Integration,integrate_quadgk_product_sigmoid_normal_pdf)
 	EXPECT_NEAR(q, 0.240042999495053, 1E-15);
 
 	// clean up
-	SG_UNREF(h);
+	
 }
 
 TEST(Integration,integrate_quadgk_product_students_t_pdf_normal_pdf)
 {
 	// create object of the Student's-t PDF (sigma=1.5, mu=-1.5,
 	// nu=4.0)
-	CStudentsTPDF* f=new CStudentsTPDF(1.5, -1.5, 4.0);
+	auto f=std::make_shared<CStudentsTPDF>(1.5, -1.5, 4.0);
 
 	// create object of the normal PDF function with mean=0.0 and
 	// variance=0.01
-	CNormalPDF* g=new CNormalPDF(0.0, 0.5);
+	auto g=std::make_shared<CNormalPDF>(0.0, 0.5);
 
 	// create object of the product function
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
+	auto h=std::make_shared<CProductFunction>(f, g);
+	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
@@ -504,18 +504,18 @@ TEST(Integration,integrate_quadgk_product_students_t_pdf_normal_pdf)
 	EXPECT_NEAR(q, 0.145255619691797, 1E-14);
 
 	// clean up
-	SG_UNREF(h);
+	
 }
 
 TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 {
 	// create object of the sigmoid function
-	CSigmoidFunction* f=new CSigmoidFunction();
+	auto f=std::make_shared<CSigmoidFunction>();
 
 	// create object of transform function
 	// g(x)=(1/sqrt(pi))*f(sqrt(2)*sigma*x+mu)
-	CTransformFunction* g=new CTransformFunction(f, 0.0, 0.1);
-	SG_REF(g);
+	auto g=std::make_shared<CTransformFunction>(f, 0.0, 0.1);
+	
 
 	// compute integral of sigmoid(x)*N(x, 0.0, 0.01) on (-inf, inf)
 	// using Gauss-Hermite quadrature
@@ -547,19 +547,19 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 	EXPECT_NEAR(q, 0.105362117215756, 1E-15);
 
 	// clean up
-	SG_UNREF(g);
+	
 }
 
 TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 {
 	// create object of the Student's-t PDF (sigma=0.1, mu=0.7,
 	// nu=3.0)
-	CStudentsTPDF* f=new CStudentsTPDF(0.1, 0.7, 3.0);
+	auto f=std::make_shared<CStudentsTPDF>(0.1, 0.7, 3.0);
 
 	// create object of transform function
 	// g(x)=(1/sqrt(pi))*f(sqrt(2)*sigma*x+mu)
-	CTransformFunction* g=new CTransformFunction(f, 0.0, 0.1);
-	SG_REF(g);
+	auto g=std::make_shared<CTransformFunction>(f, 0.0, 0.1);
+	
 
 	// compute integral of t(x, 0.1, 0.7, 0.3)*N(x, 0, 0.01) on (-inf,
 	// inf) using Gauss-Hermite quadrature formula
@@ -591,7 +591,7 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 	EXPECT_NEAR(q, 0.290698368717942, 1E-15);
 
 	// clean up
-	SG_UNREF(g);
+	
 }
 
 TEST(Integration, generate_gauher)

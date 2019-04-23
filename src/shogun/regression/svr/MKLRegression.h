@@ -31,7 +31,7 @@ class CMKLRegression : public CMKL
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLRegression(CSVM* s=NULL);
+		CMKLRegression(std::shared_ptr<CSVM> s=NULL);
 
 		/** Destructor
 		 */

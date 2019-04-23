@@ -34,7 +34,6 @@
 
 #include <shogun/lib/config.h>
 
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/loss/LossFunction.h>
 #include <shogun/machine/Machine.h>
@@ -63,7 +62,7 @@ public:
 	 * @param subset_fraction fraction of trainining vectors to be chosen randomly w/o replacement
 	 * @param learning_rate shrinkage factor
 	 */
-	CStochasticGBMachine(CMachine* machine=NULL, CLossFunction* loss=NULL, int32_t num_iterations=100,
+	CStochasticGBMachine(std::shared_ptr<CMachine> machine=NULL, std::shared_ptr<CLossFunction> loss=NULL, int32_t num_iterations=100,
 						float64_t learning_rate=1.0, float64_t subset_fraction=0.6);
 
 	/** Destructor */
@@ -79,25 +78,25 @@ public:
 	 *
 	 * @param machine machine
 	 */
-	void set_machine(CMachine* machine);
+	void set_machine(std::shared_ptr<CMachine> machine);
 
 	/** get machine
 	 *
 	 * @return machine
 	 */
-	CMachine* get_machine() const;
+	std::shared_ptr<CMachine> get_machine() const;
 
 	/** set loss function
 	 *
 	 * @param f loss function
 	 */
-	virtual void set_loss_function(CLossFunction* f);
+	virtual void set_loss_function(std::shared_ptr<CLossFunction> f);
 
 	/** get loss function
 	 *
 	 * @return loss function
 	 */
-	virtual CLossFunction* get_loss_function() const;
+	virtual std::shared_ptr<CLossFunction> get_loss_function() const;
 
 	/** set number of iterations
 	 *
@@ -140,7 +139,7 @@ public:
 	 * @param data test data
 	 * @return Regression labels
 	 */
-	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+	virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
 
 protected:
 	/** train machine
@@ -148,7 +147,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	/** compute gamma values
 	 *
@@ -159,7 +158,7 @@ protected:
 	 * the ensemble model
 	 */
 	float64_t compute_multiplier(
-		CRegressionLabels* f, CRegressionLabels* hm, CLabels* labs);
+		std::shared_ptr<CRegressionLabels> f, std::shared_ptr<CRegressionLabels> hm, std::shared_ptr<CLabels> labs);
 
 	/** train base model
 	 *
@@ -167,7 +166,7 @@ protected:
 	 * @param labels training labels
 	 * @return trained base model
 	 */
-	CMachine* fit_model(CDenseFeatures<float64_t>* feats, CRegressionLabels* labels);
+	std::shared_ptr<CMachine> fit_model(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<CRegressionLabels> labels);
 
 	/** compute pseudo_residuals
 	 *
@@ -175,17 +174,17 @@ protected:
 	 * @param labs training labels
 	 * @return pseudo_residuals
 	 */
-	CRegressionLabels*
-	compute_pseudo_residuals(CRegressionLabels* inter_f, CLabels* labs);
+	std::shared_ptr<CRegressionLabels>
+	compute_pseudo_residuals(std::shared_ptr<CRegressionLabels> inter_f, std::shared_ptr<CLabels> labs);
 
 	/** add randomized subset to relevant parameters
 	 *
 	 * @param f training data
 	 * @param interf intermediate boosted model labels for training data
 	 */
-	std::tuple<Some<CDenseFeatures<float64_t>>, Some<CRegressionLabels>,
-		       Some<CLabels>>
-	get_subset(CDenseFeatures<float64_t>* f, CRegressionLabels* interf);
+	std::tuple<std::shared_ptr<CDenseFeatures<float64_t>>, std::shared_ptr<CRegressionLabels>,
+		       std::shared_ptr<CLabels>>
+	get_subset(std::shared_ptr<CDenseFeatures<float64_t>> f, std::shared_ptr<CRegressionLabels> interf);
 
 	/** reset arrays of weak learners and gamma values */
 	void initialize_learners();
@@ -212,10 +211,10 @@ protected:
 
 protected:
 	/** machine to be used for  GBoosting */
-	CMachine* m_machine;
+	std::shared_ptr<CMachine> m_machine;
 
 	/** loss function */
-	CLossFunction* m_loss;
+	std::shared_ptr<CLossFunction> m_loss;
 
 	/** num of iterations */
 	int32_t m_num_iter;
@@ -227,10 +226,10 @@ protected:
 	float64_t m_learning_rate;
 
 	/** array of weak learners */
-	CDynamicObjectArray* m_weak_learners;
+	std::shared_ptr<CDynamicObjectArray> m_weak_learners;
 
 	/** gamma - weak learner weights */
-	CDynamicArray<float64_t>* m_gamma;
+	std::shared_ptr<CDynamicArray<float64_t>> m_gamma;
 };
 }/* shogun */
 

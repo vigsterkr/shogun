@@ -118,14 +118,14 @@ class CMulticlassLabels;
 		/** destructor */
 		virtual ~CFisherLDA();
 
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<CFeatures> features);
 
 		/** fits fisher lda transformation using features and corresponding labels
 		 * @param features using which the transformation matrix will be formed
 		 * @param labels of the given features which will be used here to find
 		 * the transformation matrix unlike PCA where it is not needed.
 		 */
-		virtual void fit(CFeatures* features, CLabels* labels);
+		virtual void fit(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels);
 
 		/** cleanup */
 		virtual void cleanup();
@@ -178,7 +178,7 @@ class CMulticlassLabels;
 		 * @param labels multiclass labels.
 		 */
 		void solver_canvar(
-		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
+		    std::shared_ptr<CDenseFeatures<float64_t>> features, std::shared_ptr<CMulticlassLabels> labels);
 
 		/**
 		 * Train the preprocessor with the classic method.
@@ -186,7 +186,7 @@ class CMulticlassLabels;
 		 * @param labels multiclass labels.
 		 */
 		void solver_classic(
-		    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels);
+		    std::shared_ptr<CDenseFeatures<float64_t>> features, std::shared_ptr<CMulticlassLabels> labels);
 
 		/** transformation matrix */
 		SGMatrix<float64_t> m_transformation_matrix;

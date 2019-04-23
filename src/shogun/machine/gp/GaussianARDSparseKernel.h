@@ -84,14 +84,14 @@ public:
 	 * @param r features of right-hand side
 	 * @param size cache size
 	 */
-	CGaussianARDSparseKernel(CDotFeatures* l, CDotFeatures* r,
+	CGaussianARDSparseKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r,
 		int32_t size=10);
 
 	/** @param kernel is casted to CGaussianARDSparseKernel, error if not possible
 	 * is SG_REF'ed
 	 * @return casted CGaussianARDSparseKernel object
 	 */
-	static CGaussianARDSparseKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<CGaussianARDSparseKernel> obtain_from_generic(std::shared_ptr<CKernel> kernel);
 
 	/** return derivative with respect to specified parameter
 	 *

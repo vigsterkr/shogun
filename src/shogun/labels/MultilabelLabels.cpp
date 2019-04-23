@@ -71,7 +71,7 @@ CMultilabelLabels::init(int32_t num_labels, int32_t num_classes)
 	// Can be disabled as
 	SG_ADD(&m_num_labels, "m_num_labels", "number of labels");
 	SG_ADD(&m_num_classes, "m_num_classes", "number of classes");
-	// SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels");
+	// SG_ADD((std::shared_ptr<CSGObject>*) &m_labels, "m_labels", "The labels");
 
 
 	// Can only be enabled after this issue has been solved:

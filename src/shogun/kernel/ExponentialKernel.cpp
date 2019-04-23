@@ -19,19 +19,19 @@ CExponentialKernel::CExponentialKernel()
 }
 
 CExponentialKernel::CExponentialKernel(
-	CDotFeatures* l, CDotFeatures* r, float64_t width, CDistance* distance, int32_t size)
+	std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, float64_t width, std::shared_ptr<CDistance> distance, int32_t size)
 : CDotKernel(size), m_distance(distance), m_width(width)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init(l,r);
 }
 
 CExponentialKernel::~CExponentialKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
 void CExponentialKernel::cleanup()
@@ -39,7 +39,7 @@ void CExponentialKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool CExponentialKernel::init(CFeatures* l, CFeatures* r)
+bool CExponentialKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(m_distance)
 	CDotKernel::init(l, r);

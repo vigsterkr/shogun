@@ -43,7 +43,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 * @param size cache size
 		 * @param subkernel the subkernel
 		 */
-		CTensorProductPairKernel(int32_t size, CKernel* subkernel);
+		CTensorProductPairKernel(int32_t size, std::shared_ptr<CKernel> subkernel);
 
 		/** constructor
 		 *
@@ -51,7 +51,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @param subkernel the subkernel
 		 */
-		CTensorProductPairKernel(CDenseFeatures<int32_t> *l, CDenseFeatures<int32_t> *r, CKernel* subkernel);
+		CTensorProductPairKernel(std::shared_ptr<CDenseFeatures<int32_t>> l, std::shared_ptr<CDenseFeatures<int32_t>> r, std::shared_ptr<CKernel> subkernel);
 
 		virtual ~CTensorProductPairKernel();
 
@@ -61,7 +61,7 @@ class CTensorProductPairKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *
@@ -104,7 +104,7 @@ class CTensorProductPairKernel: public CDotKernel
 
 	protected:
 		/** the subkernel */
-		CKernel* subkernel;
+		std::shared_ptr<CKernel> subkernel;
 };
 }
 #endif /* _TPPKKERNEL_H__ */

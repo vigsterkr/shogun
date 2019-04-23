@@ -75,7 +75,7 @@ public:
 	int32_t get_k() const;
 
 	/** embed distance */
-	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> embed_distance(std::shared_ptr<CDistance> distance);
 
 /// HELPERS
 protected:

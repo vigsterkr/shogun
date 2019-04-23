@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Chiyuan Zhang, Shell Hu, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Shell Hu, Sergey Lisitsyn,
  *          Bjoern Esser, Sanuj Sharma
  */
 
@@ -30,7 +30,7 @@ void CMulticlassOneVsOneStrategy::register_parameters()
 	SG_WARNING("%s::CMulticlassOneVsOneStrategy(): register parameters!\n", get_name());
 }
 
-void CMulticlassOneVsOneStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
+void CMulticlassOneVsOneStrategy::train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels)
 {
 	CMulticlassStrategy::train_start(orig_labels, train_labels);
 	m_num_machines=m_num_classes*(m_num_classes-1)/2;
@@ -52,17 +52,19 @@ SGVector<int32_t> CMulticlassOneVsOneStrategy::train_prepare_next()
 
 	SGVector<int32_t> subset(m_orig_labels->get_num_labels());
 	int32_t tot=0;
+	auto mc_orig = multiclass_labels(m_orig_labels);
+	auto binary_train = binary_labels(m_train_labels);
 	for (int32_t k=0; k < m_orig_labels->get_num_labels(); ++k)
 	{
-		if (((CMulticlassLabels*) m_orig_labels)->get_int_label(k)==m_train_pair_idx_1)
+		if (mc_orig->get_int_label(k)==m_train_pair_idx_1)
 		{
-			((CBinaryLabels*) m_train_labels)->set_label(k, +1.0);
+			binary_train->set_label(k, +1.0);
 			subset[tot]=k;
 			tot++;
 		}
-		else if (((CMulticlassLabels*) m_orig_labels)->get_int_label(k)==m_train_pair_idx_2)
+		else if (mc_orig->get_int_label(k)==m_train_pair_idx_2)
 		{
-			((CBinaryLabels*) m_train_labels)->set_label(k, -1.0);
+			binary_train->set_label(k, -1.0);
 			subset[tot]=k;
 			tot++;
 		}

@@ -29,9 +29,9 @@ int32_t CDummyFeatures::get_num_vectors() const
 	return num_vectors;
 }
 
-CFeatures* CDummyFeatures::duplicate() const
+std::shared_ptr<CFeatures> CDummyFeatures::duplicate() const
 {
-	return new CDummyFeatures(*this);
+	return std::make_shared<CDummyFeatures>(*this);
 }
 
 inline EFeatureType CDummyFeatures::get_feature_type() const

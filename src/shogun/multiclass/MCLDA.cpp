@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Kevin Hughes, Heiko Strathmann, Michele Mazzoni, Soumyajit De, 
+ * Authors: Kevin Hughes, Heiko Strathmann, Michele Mazzoni, Soumyajit De,
  *          Weijie Lin, Bjoern Esser, Soeren Sonnenburg, Sanuj Sharma
  */
 
@@ -29,7 +29,7 @@ CMCLDA::CMCLDA(float64_t tolerance, bool store_cov)
 
 }
 
-CMCLDA::CMCLDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_cov)
+CMCLDA::CMCLDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance, bool store_cov)
 : CNativeMulticlassMachine()
 {
 	init();
@@ -43,7 +43,7 @@ CMCLDA::CMCLDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t
 
 CMCLDA::~CMCLDA()
 {
-	SG_UNREF(m_features);
+
 
 	cleanup();
 }
@@ -52,7 +52,7 @@ void CMCLDA::init()
 {
 	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", ParameterProperties::HYPER);
 	SG_ADD(&m_store_cov, "m_store_cov", "Store covariance member");
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature object.");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_features, "m_features", "Feature object.");
 	SG_ADD(&m_means, "m_means", "Mean vectors list");
 	SG_ADD(&m_cov, "m_cov", "covariance matrix");
 	SG_ADD(&m_xbar, "m_xbar", "total mean");
@@ -75,14 +75,14 @@ void CMCLDA::cleanup()
 	m_num_classes = 0;
 }
 
-CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CMCLDA::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<CDotFeatures>());
 	}
 
 	if (!m_features)
@@ -93,7 +93,7 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 	ASSERT( m_dim == m_features->get_dim_feature_space() );
 
 	// collect features into a matrix
-	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
+	auto rf = m_features->as<CDenseFeatures<float64_t>>();
 
 	MatrixXd X(num_vecs, m_dim);
 
@@ -140,14 +140,14 @@ CMulticlassLabels* CMCLDA::apply_multiclass(CFeatures* data)
 #endif
 
 	// argmax to apply labels
-	CMulticlassLabels* out = new CMulticlassLabels(num_vecs);
+	auto out = std::make_shared<CMulticlassLabels>(num_vecs);
 	for (int i = 0; i < num_vecs; i++)
 		out->set_label(i, CMath::arg_max(d.data()+i, num_vecs, m_num_classes));
 
 	return out;
 }
 
-bool CMCLDA::train_machine(CFeatures* data)
+bool CMCLDA::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (!m_labels)
 		SG_ERROR("No labels allocated in MCLDA training\n")
@@ -157,20 +157,20 @@ bool CMCLDA::train_machine(CFeatures* data)
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Speficied features are not of type CDotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<CDotFeatures>());
 	}
 
 	if (!m_features)
 		SG_ERROR("No features allocated in MCLDA training\n")
 
-	SGVector< int32_t > train_labels = ((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector< int32_t > train_labels = multiclass_labels(m_labels)->get_int_labels();
 
 	if (!train_labels.vector)
 		SG_ERROR("No train_labels allocated in MCLDA training\n")
 
 	cleanup();
 
-	m_num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
+	m_num_classes = multiclass_labels(m_labels)->get_num_classes();
 	m_dim = m_features->get_dim_feature_space();
 	int32_t num_vec  = m_features->get_num_vectors();
 
@@ -208,7 +208,7 @@ bool CMCLDA::train_machine(CFeatures* data)
 		}
 	}
 
-	CDenseFeatures< float64_t >* rf = (CDenseFeatures< float64_t >*) m_features;
+	auto rf = m_features->as<CDenseFeatures<float64_t>>();
 
 	// if ( m_store_cov )
 		index_t * cov_dims = SG_MALLOC(index_t, 3);

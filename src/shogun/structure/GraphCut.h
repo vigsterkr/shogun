@@ -109,7 +109,7 @@ public:
 	 *
 	 * @param fg factor graph
 	 */
-	CGraphCut(CFactorGraph* fg);
+	CGraphCut(std::shared_ptr<CFactorGraph> fg);
 
 	/** Constructor
 	 * This constructor is used for general s-t graph, the next steps to compute the max flow are:
@@ -232,7 +232,7 @@ private:
 	 *
 	 * @param factor the factor to add
 	 */
-	void add_factor(CFactor* factor);
+	void add_factor(std::shared_ptr<CFactor> factor);
 
 	/** Get the triple node id in s-t graph (for factor order = 3)
 	 *

@@ -12,7 +12,6 @@
 #include <shogun/lib/config.h>
 
 #include <shogun/base/SGObject.h>
-#include <shogun/base/some.h>
 #include <shogun/features/SubsetStack.h>
 #include <shogun/labels/LabelTypes.h>
 #include <shogun/lib/SGVector.h>
@@ -110,7 +109,7 @@ namespace shogun
 		/**
 		 * @return subset stack
 		 */
-		virtual CSubsetStack* get_subset_stack();
+		virtual std::shared_ptr<CSubsetStack> get_subset_stack();
 
 		/** set the confidence value for a particular label
 		 *
@@ -143,14 +142,14 @@ namespace shogun
 		 *
 		 * @return labels object
 		 */
-		virtual CLabels* duplicate() const
+		virtual std::shared_ptr<CLabels> duplicate() const
 		{
 			SG_SNOTIMPLEMENTED;
 			return nullptr;
 		}
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CLabels* shallow_subset_copy()
+		virtual std::shared_ptr<CLabels> shallow_subset_copy()
 		{
 			SG_SNOTIMPLEMENTED;
 			return NULL;
@@ -162,7 +161,7 @@ namespace shogun
 
 	protected:
 		/** subset class to enable subset support for this class */
-		CSubsetStack* m_subset_stack;
+		std::shared_ptr<CSubsetStack> m_subset_stack;
 
 		/** current active value vector */
 		SGVector<float64_t> m_current_values;

@@ -56,7 +56,7 @@ public:
 	 * @param width width
 	 * @param size cache size
 	 */
-	CGaussianKernel(CDotFeatures* l, CDotFeatures* r, float64_t width, int32_t size=10);
+	CGaussianKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, float64_t width, int32_t size=10);
 
 	/** destructor */
 	virtual ~CGaussianKernel();
@@ -65,10 +65,10 @@ public:
 	 * is SG_REF'ed
 	 * @return casted CGaussianKernel object
 	 */
-	static CGaussianKernel* obtain_from_generic(CKernel* kernel);
+	static std::shared_ptr<CGaussianKernel> obtain_from_generic(std::shared_ptr<CKernel> kernel);
 
 	/** Make a shallow copy of the kernel */
-	virtual CSGObject* shallow_copy() const;
+	virtual std::shared_ptr<CSGObject> shallow_copy() const;
 
 	/** initialize kernel
 	 *
@@ -76,7 +76,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/** clean up kernel */
 	virtual void cleanup();

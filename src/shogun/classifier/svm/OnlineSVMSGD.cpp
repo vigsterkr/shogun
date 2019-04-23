@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma, 
+ * Authors: Shashwat Lal Das, Soeren Sonnenburg, Giovanni De Toni, Sanuj Sharma,
  *          Thoralf Klein, Viktor Gal, Evan Shelhamer, Bjoern Esser
  */
 
@@ -30,7 +30,7 @@ COnlineSVMSGD::COnlineSVMSGD(float64_t C)
 	C2=C;
 }
 
-COnlineSVMSGD::COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat)
+COnlineSVMSGD::COnlineSVMSGD(float64_t C, std::shared_ptr<CStreamingDotFeatures> traindat)
 : COnlineLinearMachine()
 {
 	init();
@@ -42,23 +42,23 @@ COnlineSVMSGD::COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat)
 
 COnlineSVMSGD::~COnlineSVMSGD()
 {
-	SG_UNREF(loss);
+
 }
 
-void COnlineSVMSGD::set_loss_function(CLossFunction* loss_func)
+void COnlineSVMSGD::set_loss_function(std::shared_ptr<CLossFunction> loss_func)
 {
-	SG_REF(loss_func);
-	SG_UNREF(loss);
+
+
 	loss=loss_func;
 }
 
-bool COnlineSVMSGD::train(CFeatures* data)
+bool COnlineSVMSGD::train(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
 			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
-		set_features((CStreamingDotFeatures*) data);
+		set_features(std::static_pointer_cast<CStreamingDotFeatures>(data));
 	}
 
 	features->start_parser();
@@ -203,8 +203,8 @@ void COnlineSVMSGD::init()
 
 	use_regularized_bias=false;
 
-	loss=new CHingeLoss();
-	SG_REF(loss);
+	loss=std::make_shared<CHingeLoss>();
+
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);

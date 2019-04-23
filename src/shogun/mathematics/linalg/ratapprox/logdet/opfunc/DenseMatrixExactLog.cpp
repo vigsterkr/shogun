@@ -29,8 +29,8 @@ namespace shogun
 	}
 
 	CDenseMatrixExactLog::CDenseMatrixExactLog(
-	    CDenseMatrixOperator<float64_t>* op)
-	    : COperatorFunction<float64_t>((CLinearOperator<float64_t>*)op, OF_LOG)
+	    std::shared_ptr<CDenseMatrixOperator<float64_t>> op)
+	    : COperatorFunction<float64_t>(op->as<CLinearOperator<float64_t>>(), OF_LOG)
 	{
 	}
 
@@ -44,8 +44,8 @@ void CDenseMatrixExactLog::precompute()
 	SG_DEBUG("Entering...\n");
 
 	// check for proper downcast
-	CDenseMatrixOperator<float64_t>* op
-		=dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+	auto op
+		=m_linear_operator->as<CDenseMatrixOperator<float64_t>>();
 	REQUIRE(op, "Operator not an instance of DenseMatrixOperator!\n");
 	SGMatrix<float64_t> m=op->get_matrix_operator();
 
@@ -62,9 +62,9 @@ void CDenseMatrixExactLog::precompute()
 
 	// the log(C) is also a linear operator here
 	// reset the operator of this function with log(C)
-	SG_UNREF(m_linear_operator);
-	m_linear_operator=new CDenseMatrixOperator<float64_t>(log_m);
-	SG_REF(m_linear_operator);
+
+	m_linear_operator=std::make_shared<CDenseMatrixOperator<float64_t>>(log_m);
+
 
 	SG_DEBUG("Leaving...\n");
 }
@@ -79,8 +79,8 @@ float64_t CDenseMatrixExactLog::compute(SGVector<float64_t> sample) const
 {
 	SG_DEBUG("Entering...\n");
 
-	CDenseMatrixOperator<float64_t>* m_log_operator =
-		dynamic_cast<CDenseMatrixOperator<float64_t>*>(m_linear_operator);
+	auto m_log_operator =
+		m_linear_operator->as<CDenseMatrixOperator<float64_t>>();
 
 	SGVector<float64_t> vec = m_log_operator->apply(sample);
 	float64_t result = linalg::dot(sample, vec);

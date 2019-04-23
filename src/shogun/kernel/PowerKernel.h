@@ -39,7 +39,7 @@ public:
 	 * @param degree kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CPowerKernel(int32_t cache, float64_t degree, CDistance* dist);
+	CPowerKernel(int32_t cache, float64_t degree, std::shared_ptr<CDistance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param degree kernel parameter degree
 	 * @param dist distance to be used
 	 */
-	CPowerKernel(CFeatures *l, CFeatures *r, float64_t degree, CDistance* dist);
+	CPowerKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t degree, std::shared_ptr<CDistance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/**
 	 * @return kernel type
@@ -94,7 +94,7 @@ private:
 protected:
 
   /// distance to be used
-	CDistance* distance;
+	std::shared_ptr<CDistance> distance;
 
 	/// degree parameter of kernel
 	float64_t m_degree;

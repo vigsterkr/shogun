@@ -68,7 +68,7 @@ public:
 	 * @param fg factor graph
 	 * @param param parameters
 	 */
-	CGEMPLP(CFactorGraph* fg, Parameter param = Parameter());
+	CGEMPLP(std::shared_ptr<CFactorGraph> fg, Parameter param = Parameter());
 
 	/** Destructor */
 	virtual ~CGEMPLP();
@@ -123,13 +123,13 @@ public:
 	 * @param factor factor which contains energy
 	 * @return potential of the region in MPLP
 	 */
-	SGNDArray<float64_t> convert_energy_to_potential(CFactor* factor);
+	SGNDArray<float64_t> convert_energy_to_potential(std::shared_ptr<CFactor> factor);
 
 public:
 	/** GEMPLP parameter */
 	Parameter m_param;
 	/** all factors in the graph*/
-	CDynamicObjectArray* m_factors;
+	std::shared_ptr<CDynamicObjectArray> m_factors;
 	/** all intersections */
 	std::vector<SGVector<int32_t> > m_all_intersections;
 	/** the intersection indices (node indices) on each region */

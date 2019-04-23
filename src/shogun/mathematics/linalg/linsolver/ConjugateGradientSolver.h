@@ -41,7 +41,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<float64_t> solve(CLinearOperator<float64_t>* A,
+	virtual SGVector<float64_t> solve(std::shared_ptr<CLinearOperator<float64_t>> A,
 		SGVector<float64_t> b);
 
 	/** @return object name */

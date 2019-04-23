@@ -15,7 +15,7 @@ using namespace shogun;
 
 struct mocas_data
 {
-	CDotFeatures* features;
+	std::shared_ptr<CDotFeatures> features;
 	float64_t* W;
 	float64_t* oldW;
 	float64_t* full_A;
@@ -38,8 +38,8 @@ CMulticlassOCAS::CMulticlassOCAS() :
 	set_buf_size(5000);
 }
 
-CMulticlassOCAS::CMulticlassOCAS(float64_t C, CFeatures* train_features, CLabels* train_labels) :
-	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(), train_features->as<CDotFeatures>(), NULL, train_labels), m_C(C)
+CMulticlassOCAS::CMulticlassOCAS(float64_t C, std::shared_ptr<CFeatures> train_features, std::shared_ptr<CLabels> train_labels) :
+	CLinearMulticlassMachine(std::make_shared<CMulticlassOneVsRestStrategy>(), train_features->as<CDotFeatures>(), NULL, train_labels), m_C(C)
 {
 	register_parameters();
 	set_epsilon(1e-2);
@@ -61,10 +61,10 @@ CMulticlassOCAS::~CMulticlassOCAS()
 {
 }
 
-bool CMulticlassOCAS::train_machine(CFeatures* data)
+bool CMulticlassOCAS::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (data)
-		set_features((CDotFeatures*)data);
+		set_features(data->as<CDotFeatures>());
 
 	ASSERT(m_features)
 	ASSERT(m_labels)
@@ -76,7 +76,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	int32_t num_features = m_features->get_dim_feature_space();
 
 	float64_t C = m_C;
-	SGVector<float64_t> labels = ((CMulticlassLabels*) m_labels)->get_labels();
+	SGVector<float64_t> labels = multiclass_labels(m_labels)->get_labels();
 	uint32_t nY = num_classes;
 	uint32_t nData = num_vectors;
 	float64_t TolRel = m_epsilon;
@@ -128,7 +128,7 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 	m_machines->reset_array();
 	for (int32_t i=0; i<num_classes; i++)
 	{
-		CLinearMachine* machine = new CLinearMachine();
+		auto machine = std::make_shared<CLinearMachine>();
 		machine->set_w(SGVector<float64_t>(&user_data.W[i*num_features],num_features,false).clone());
 
 		m_machines->push_back(machine);
@@ -196,7 +196,7 @@ int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_c
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
 	uint32_t nData = ((mocas_data*)user_data)->nData;
 	SGVector<float64_t> new_a(((mocas_data*)user_data)->new_a, nDim*nY, false);
-	CDotFeatures* features = ((mocas_data*)user_data)->features;
+	auto features = ((mocas_data*)user_data)->features;
 
 	float64_t sq_norm_a;
 	uint32_t i, j, y, y2;
@@ -240,7 +240,7 @@ int CMulticlassOCAS::msvm_full_compute_output(float64_t *output, void* user_data
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
 	uint32_t nData = ((mocas_data*)user_data)->nData;
 	float64_t* output_values = ((mocas_data*)user_data)->output_values;
-	CDotFeatures* features = ((mocas_data*)user_data)->features;
+	auto features = ((mocas_data*)user_data)->features;
 
 	uint32_t i, y;
 

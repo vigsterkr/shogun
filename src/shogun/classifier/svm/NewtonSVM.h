@@ -36,7 +36,7 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		 * @param traindat training features
 		 * @param trainlab labels for features
 		 */
-		CNewtonSVM(float64_t C, CDotFeatures* traindat, CLabels* trainlab, int32_t itr=20);
+		CNewtonSVM(float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab, int32_t itr=20);
 
 		virtual ~CNewtonSVM();
 
@@ -93,7 +93,7 @@ class CNewtonSVM : public CIterativeMachine<CLinearMachine>
 		virtual const char* get_name() const { return "NewtonSVM"; }
 
 	protected:
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(std::shared_ptr<CFeatures> data);
 		virtual void iteration();
 
 	private:

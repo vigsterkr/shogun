@@ -16,7 +16,7 @@ CJensenMetric::CJensenMetric() : CDenseDistance<float64_t>()
 {
 }
 
-CJensenMetric::CJensenMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
+CJensenMetric::CJensenMetric(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r)
 : CDenseDistance<float64_t>()
 {
 	init(l, r);
@@ -27,7 +27,7 @@ CJensenMetric::~CJensenMetric()
 	cleanup();
 }
 
-bool CJensenMetric::init(CFeatures* l, CFeatures* r)
+bool CJensenMetric::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	return CDenseDistance<float64_t>::init(l,r);
 }
@@ -42,9 +42,9 @@ float64_t CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen)
 
@@ -65,8 +65,8 @@ float64_t CJensenMetric::compute(int32_t idx_a, int32_t idx_b)
 
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 
 	return result;

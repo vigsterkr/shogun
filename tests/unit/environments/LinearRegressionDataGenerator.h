@@ -70,49 +70,39 @@ public:
 		linalg::add_scalar(label_train_data, bias);
 		linalg::add_scalar(label_test_data, bias);
 
-		features_train = new CDenseFeatures<float64_t>(feat_train_data);
-		features_test = new CDenseFeatures<float64_t>(feat_test_data);
+		features_train = std::make_shared<CDenseFeatures<float64_t>>(feat_train_data);
+		features_test = std::make_shared<CDenseFeatures<float64_t>>(feat_test_data);
 
-		labels_train = new CRegressionLabels(label_train_data);
-		labels_test = new CRegressionLabels(label_test_data);
+		labels_train = std::make_shared<CRegressionLabels>(label_train_data);
+		labels_test = std::make_shared<CRegressionLabels>(label_test_data);
 
-		SG_REF(features_train)
-		SG_REF(labels_train)
-
-		SG_REF(features_test)
-		SG_REF(labels_test)
 	}
 
 	/** destructor */
 	~LinearRegressionDataGenerator()
 	{
-		SG_UNREF(features_train)
-		SG_UNREF(labels_train)
-
-		SG_UNREF(features_test)
-		SG_UNREF(labels_test)
 	}
 
 	/** gets the traning features */
-	CDenseFeatures<float64_t>* get_features_train() const
+	auto get_features_train() const
 	{
 		return features_train;
 	}
 
 	/** gets the test features */
-	CDenseFeatures<float64_t>* get_features_test() const
+	auto get_features_test() const
 	{
 		return features_test;
 	}
 
 	/** get the test labels */
-	CRegressionLabels* get_labels_train() const
+	auto get_labels_train() const
 	{
 		return labels_train;
 	}
 
 	/** gets the traning labels */
-	CRegressionLabels* get_labels_test() const
+	auto get_labels_test() const
 	{
 		return labels_test;
 	}
@@ -151,16 +141,16 @@ public:
 
 protected:
 	// data for training
-	CDenseFeatures<float64_t>* features_train;
+	std::shared_ptr<CDenseFeatures<float64_t>> features_train;
 
 	// data for testing
-	CDenseFeatures<float64_t>* features_test;
+	std::shared_ptr<CDenseFeatures<float64_t>> features_test;
 
 	// training label
-	CRegressionLabels* labels_train;
+	std::shared_ptr<CRegressionLabels> labels_train;
 
 	// testing label
-	CRegressionLabels* labels_test;
+	std::shared_ptr<CRegressionLabels> labels_test;
 
 	// the size of generated of the training set
 	int32_t train_size;

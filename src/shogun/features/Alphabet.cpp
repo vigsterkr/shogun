@@ -89,13 +89,13 @@ CAlphabet::CAlphabet(EAlphabet alpha)
 	set_alphabet(alpha);
 }
 
-CAlphabet::CAlphabet(CAlphabet* a)
+CAlphabet::CAlphabet(std::shared_ptr<CAlphabet> a)
 : CSGObject()
 {
 	init();
 	REQUIRE(a, "No Alphabet specified!\n");
 	set_alphabet(a->get_alphabet());
-	copy_histogram(a);
+	copy_histogram(a.get());
 }
 
 CAlphabet::~CAlphabet()
@@ -826,9 +826,9 @@ void CAlphabet::translate_from_single_order_reversed(ST* obs, int32_t sequence_l
 	}
 }
 
-CSGObject * CAlphabet::clone() const
+std::shared_ptr<CSGObject> CAlphabet::clone() const
 {
-	CAlphabet * alph_clone = (CAlphabet *) CSGObject::clone();
+	auto alph_clone = std::dynamic_pointer_cast<CAlphabet>(CSGObject::clone());
 	alph_clone->init_map_table();
 	alph_clone->copy_histogram(this);
 	return alph_clone;

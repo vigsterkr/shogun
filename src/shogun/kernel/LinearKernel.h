@@ -39,7 +39,7 @@ class CLinearKernel: public CDotKernel
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearKernel(CDotFeatures* l, CDotFeatures* r);
+		CLinearKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r);
 
 		virtual ~CLinearKernel();
 
@@ -49,7 +49,7 @@ class CLinearKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -80,7 +80,7 @@ class CLinearKernel: public CDotKernel
 		/** init optimization
 		 * @param km
 		 */
-		virtual bool init_optimization(CKernelMachine* km);
+		virtual bool init_optimization(std::shared_ptr<CKernelMachine> km);
 
 		/** delete optimization
 		 *
@@ -97,7 +97,7 @@ class CLinearKernel: public CDotKernel
 
 		virtual void clear_normal()
 		{
-			normal = SGVector<float64_t>(((CDotFeatures*)lhs)->get_dim_feature_space());
+			normal = SGVector<float64_t>((std::static_pointer_cast<CDotFeatures>(lhs))->get_dim_feature_space());
 			normal.zero();
 			set_is_initialized(false);
 		}
@@ -125,7 +125,7 @@ class CLinearKernel: public CDotKernel
 		 */
 		void set_w(SGVector<float64_t> w)
 		{
-			ASSERT(lhs && w.size()==((CDotFeatures*) lhs)->get_dim_feature_space())
+			ASSERT(lhs && w.size()==(std::static_pointer_cast<CDotFeatures>(lhs))->get_dim_feature_space())
 			this->normal = w;
 		}
 

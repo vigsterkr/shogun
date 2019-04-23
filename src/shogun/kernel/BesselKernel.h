@@ -43,7 +43,7 @@ class CBesselKernel: public CDistanceKernel
 		 */
 		CBesselKernel(int32_t size, float64_t order,
 				float64_t width, int32_t degree,
-				CDistance* dist);
+				std::shared_ptr<CDistance> dist);
 
 		/** constructor
 		 *
@@ -55,9 +55,9 @@ class CBesselKernel: public CDistanceKernel
 		 * @param dist distance to be used
 		 * @param size cache size
 		 */
-		CBesselKernel(CFeatures* l, CFeatures* r,
+		CBesselKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r,
 				float64_t order, float64_t width, int32_t degree,
-				CDistance* dist, int32_t size=10);
+				std::shared_ptr<CDistance> dist, int32_t size=10);
 
 		/**
 		 * clean up kernel
@@ -70,7 +70,7 @@ class CBesselKernel: public CDistanceKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** cleanup */
 		virtual void cleanup();

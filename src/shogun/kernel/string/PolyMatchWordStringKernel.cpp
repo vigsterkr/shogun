@@ -29,7 +29,7 @@ CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(int32_t size, int32_t d, 
 }
 
 CPolyMatchWordStringKernel::CPolyMatchWordStringKernel(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t d, bool i)
+	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, int32_t d, bool i)
 : CStringKernel<uint16_t>()
 {
 	init();
@@ -45,7 +45,7 @@ CPolyMatchWordStringKernel::~CPolyMatchWordStringKernel()
 	cleanup();
 }
 
-bool CPolyMatchWordStringKernel::init(CFeatures* l, CFeatures* r)
+bool CPolyMatchWordStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CStringKernel<uint16_t>::init(l,r);
 	return init_normalizer();
@@ -61,8 +61,8 @@ float64_t CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	uint16_t* avec=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bvec=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen)
 
@@ -79,8 +79,8 @@ float64_t CPolyMatchWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	for (int32_t j=1; j<degree; j++)
 		result*=sum;
 
-	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }
 
@@ -88,7 +88,7 @@ void CPolyMatchWordStringKernel::init()
 {
 	degree=0;
 	inhomogene=false;
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 
 	SG_ADD(&degree, "degree", "Degree of poly-kernel.", ParameterProperties::HYPER);
 	SG_ADD(&inhomogene, "inhomogene", "True for inhomogene poly-kernel.");

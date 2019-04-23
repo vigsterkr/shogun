@@ -87,7 +87,7 @@ public:
 	 * @return true if variational parameters are valid
 	 *
 	 */
-	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab);
+	virtual bool set_variational_distribution(SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab);
 
 	/** returns the expection of the logarithm of a logit distribution
 	 * wrt the variational distribution using piecewise bound

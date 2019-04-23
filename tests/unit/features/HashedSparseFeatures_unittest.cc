@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Sergey Lisitsyn, 
+ * Authors: Evangelos Anagnostopoulos, Thoralf Klein, Sergey Lisitsyn,
  *          Bjoern Esser
  */
 
@@ -24,8 +24,8 @@ TEST(HashedSparseFeaturesTest, dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* s_feats = new CSparseFeatures<float64_t>(data);
-	CHashedSparseFeatures<float64_t>* h_feats = new CHashedSparseFeatures<float64_t>(s_feats, hashing_dim);
+	auto s_feats = std::make_shared<CSparseFeatures<float64_t>>(data);
+	auto h_feats = std::make_shared<CHashedSparseFeatures<float64_t>>(s_feats, hashing_dim);
 
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
@@ -51,7 +51,7 @@ TEST(HashedSparseFeaturesTest, dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedSparseFeaturesTest, quadratic_dot)
@@ -66,8 +66,8 @@ TEST(HashedSparseFeaturesTest, quadratic_dot)
 			data(j,i) = j + i * dim;
 	}
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* s_feats = new CSparseFeatures<float64_t>(data);
-	CHashedSparseFeatures<float64_t>* h_feats = new CHashedSparseFeatures<float64_t>(s_feats, hashing_dim, true);
+	auto s_feats = std::make_shared<CSparseFeatures<float64_t>>(data);
+	auto h_feats = std::make_shared<CHashedSparseFeatures<float64_t>>(s_feats, hashing_dim, true);
 
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
@@ -116,7 +116,7 @@ TEST(HashedSparseFeaturesTest, quadratic_dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedSparseFeaturesTest, dense_dot)
@@ -132,8 +132,8 @@ TEST(HashedSparseFeaturesTest, dense_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* s_feats = new CSparseFeatures<float64_t>(data);
-	CHashedSparseFeatures<float64_t>* h_feats = new CHashedSparseFeatures<float64_t>(s_feats, hashing_dim);
+	auto s_feats = std::make_shared<CSparseFeatures<float64_t>>(data);
+	auto h_feats = std::make_shared<CHashedSparseFeatures<float64_t>>(s_feats, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -158,7 +158,7 @@ TEST(HashedSparseFeaturesTest, dense_dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedSparseFeaturesTest, quadratic_dense_dot)
@@ -174,8 +174,8 @@ TEST(HashedSparseFeaturesTest, quadratic_dense_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* s_feats = new CSparseFeatures<float64_t>(data);
-	CHashedSparseFeatures<float64_t>* h_feats = new CHashedSparseFeatures<float64_t>(s_feats, hashing_dim, true);
+	auto s_feats = std::make_shared<CSparseFeatures<float64_t>>(data);
+	auto h_feats = std::make_shared<CHashedSparseFeatures<float64_t>>(s_feats, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -223,7 +223,7 @@ TEST(HashedSparseFeaturesTest, quadratic_dense_dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedSparseFeaturesTest, add_to_dense)
@@ -239,8 +239,8 @@ TEST(HashedSparseFeaturesTest, add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* s_feats = new CSparseFeatures<float64_t>(data);
-	CHashedSparseFeatures<float64_t>* h_feats = new CHashedSparseFeatures<float64_t>(s_feats, hashing_dim);
+	auto s_feats = std::make_shared<CSparseFeatures<float64_t>>(data);
+	auto h_feats = std::make_shared<CHashedSparseFeatures<float64_t>>(s_feats, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -266,7 +266,7 @@ TEST(HashedSparseFeaturesTest, add_to_dense)
 			EXPECT_EQ(tmp2[j], tmp[j]);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedSparseFeaturesTest, quadratic_add_to_dense)
@@ -282,8 +282,8 @@ TEST(HashedSparseFeaturesTest, quadratic_add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	CSparseFeatures<float64_t>* s_feats = new CSparseFeatures<float64_t>(data);
-	CHashedSparseFeatures<float64_t>* h_feats = new CHashedSparseFeatures<float64_t>(s_feats, hashing_dim, true);
+	auto s_feats = std::make_shared<CSparseFeatures<float64_t>>(data);
+	auto h_feats = std::make_shared<CHashedSparseFeatures<float64_t>>(s_feats, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<3; i++)
@@ -326,5 +326,5 @@ TEST(HashedSparseFeaturesTest, quadratic_add_to_dense)
 			EXPECT_EQ(tmp2[j], tmp[j]);
 	}
 
-	SG_UNREF(h_feats);
+
 }

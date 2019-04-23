@@ -12,20 +12,19 @@
 using namespace shogun;
 
 CMulticlassSVM::CMulticlassSVM()
-	:CKernelMulticlassMachine(new CMulticlassOneVsRestStrategy(), NULL, new CSVM(0), NULL)
+	:CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>())
 {
-	init();
 }
 
-CMulticlassSVM::CMulticlassSVM(CMulticlassStrategy *strategy)
-	:CKernelMulticlassMachine(strategy, NULL, new CSVM(0), NULL)
+CMulticlassSVM::CMulticlassSVM(std::shared_ptr<CMulticlassStrategy >strategy)
+	:CKernelMulticlassMachine(strategy, NULL, std::make_shared<CSVM>(0), NULL)
 {
 	init();
 }
 
 CMulticlassSVM::CMulticlassSVM(
-	CMulticlassStrategy *strategy, float64_t C, CKernel* k, CLabels* lab)
-	: CKernelMulticlassMachine(strategy, k, new CSVM(C, k, lab), lab)
+	std::shared_ptr<CMulticlassStrategy >strategy, float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
+	: CKernelMulticlassMachine(strategy, k, std::make_shared<CSVM>(C, k, lab), lab)
 {
 	init();
 	m_C=C;
@@ -56,7 +55,7 @@ bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
 	return false;
 }
 
-bool CMulticlassSVM::set_svm(int32_t num, CSVM* svm)
+bool CMulticlassSVM::set_svm(int32_t num, std::shared_ptr<CSVM> svm)
 {
 	if (m_machines->get_num_elements()>0 && m_machines->get_num_elements()>num && num>=0 && svm)
 	{
@@ -66,7 +65,7 @@ bool CMulticlassSVM::set_svm(int32_t num, CSVM* svm)
 	return false;
 }
 
-bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
+bool CMulticlassSVM::init_machines_for_apply(std::shared_ptr<CFeatures> data)
 {
 	if (is_data_locked())
 	{
@@ -77,7 +76,7 @@ bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 	if (!m_kernel)
 		SG_ERROR("No kernel assigned!\n")
 
-	CFeatures* lhs=m_kernel->get_lhs();
+	auto lhs=m_kernel->get_lhs();
 	if (!lhs && m_kernel->get_kernel_type()!=K_COMBINED)
 		SG_ERROR("%s: No left hand side specified\n", get_name())
 
@@ -91,14 +90,13 @@ bool CMulticlassSVM::init_machines_for_apply(CFeatures* data)
 
 	if (data && m_kernel->get_kernel_type()!=K_COMBINED)
 		m_kernel->init(lhs, data);
-	SG_UNREF(lhs);
 
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 	{
-		CSVM *the_svm = (CSVM *)m_machines->get_element(i);
+		auto the_svm = m_machines->get_element<CSVM>(i);
 		ASSERT(the_svm)
 		the_svm->set_kernel(m_kernel);
-		SG_UNREF(the_svm);
+
 	}
 
 	return true;
@@ -188,7 +186,7 @@ bool CMulticlassSVM::load(FILE* modelfl)
 			line_number++;
 
 		SG_INFO("loading %ld support vectors for svm %d\n",int_buffer, svm_idx)
-		CSVM* svm=new CSVM(int_buffer);
+		auto svm=std::make_shared<CSVM>(int_buffer);
 
 		double_buffer=0;
 
@@ -270,7 +268,7 @@ bool CMulticlassSVM::save(FILE* modelfl)
 
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 	{
-		CSVM* svm=get_svm(i);
+		auto svm=get_svm(i);
 		ASSERT(svm)
 		fprintf(modelfl,"\n%%SVM %d of %d\n", i, m_machines->get_num_elements()-1);
 		fprintf(modelfl,"numsv%d=%d;\n", i, svm->get_num_support_vectors());

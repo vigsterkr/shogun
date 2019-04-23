@@ -40,7 +40,7 @@ CDistance::CDistance() : CSGObject()
 }
 
 
-CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs) : CSGObject()
+CDistance::CDistance(std::shared_ptr<CFeatures> p_lhs, std::shared_ptr<CFeatures> p_rhs) : CSGObject()
 {
 	init();
 	init(p_lhs, p_rhs);
@@ -54,13 +54,13 @@ CDistance::~CDistance()
 	remove_lhs_and_rhs();
 }
 
-bool CDistance::init(CFeatures* l, CFeatures* r)
+bool CDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	REQUIRE(check_compatibility(l, r), "Features are not compatible!\n");
 
 	//increase reference counts
-	SG_REF(l);
-	SG_REF(r);
+
+
 
 	//remove references to previous features
 	remove_lhs_and_rhs();
@@ -77,7 +77,7 @@ bool CDistance::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-bool CDistance::check_compatibility(CFeatures* l, CFeatures* r)
+bool CDistance::check_compatibility(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	REQUIRE(l, "Left hand side features must be set!\n");
 	REQUIRE(r, "Right hand side features must be set!\n");
@@ -108,13 +108,13 @@ bool CDistance::check_compatibility(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-void CDistance::load(CFile* loader)
+void CDistance::load(std::shared_ptr<CFile> loader)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 }
 
-void CDistance::save(CFile* writer)
+void CDistance::save(std::shared_ptr<CFile> writer)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -122,18 +122,18 @@ void CDistance::save(CFile* writer)
 
 void CDistance::remove_lhs_and_rhs()
 {
-	SG_UNREF(rhs);
+
 	rhs = NULL;
 	num_rhs=0;
 
-	SG_UNREF(lhs);
+
 	lhs = NULL;
 	num_lhs=0;
 }
 
 void CDistance::remove_lhs()
 {
-	SG_UNREF(lhs);
+
 	lhs = NULL;
 	num_lhs=0;
 }
@@ -141,18 +141,18 @@ void CDistance::remove_lhs()
 /// takes all necessary steps if the rhs is removed from distance
 void CDistance::remove_rhs()
 {
-	SG_UNREF(rhs);
+
 	rhs = NULL;
 	num_rhs=0;
 }
 
-CFeatures* CDistance::replace_rhs(CFeatures* r)
+std::shared_ptr<CFeatures> CDistance::replace_rhs(std::shared_ptr<CFeatures> r)
 {
 	//make sure features are compatible
 	REQUIRE(check_compatibility(lhs, r), "Features are not compatible!\n");
 
 	//remove references to previous rhs features
-	CFeatures* tmp=rhs;
+	auto tmp=rhs;
 
 	rhs=r;
 	num_rhs=r->get_num_vectors();
@@ -164,13 +164,13 @@ CFeatures* CDistance::replace_rhs(CFeatures* r)
 	return tmp;
 }
 
-CFeatures* CDistance::replace_lhs(CFeatures* l)
+std::shared_ptr<CFeatures> CDistance::replace_lhs(std::shared_ptr<CFeatures> l)
 {
 	//make sure features are compatible
 	REQUIRE(check_compatibility(l, rhs), "Features are not compatible!\n");
 
 	//remove references to previous rhs features
-	CFeatures* tmp=lhs;
+	auto tmp=lhs;
 
 	lhs=l;
 	num_lhs=l->get_num_vectors();

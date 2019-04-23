@@ -12,8 +12,8 @@ TEST(GraphCut, graph_cut_st_graph)
 	int32_t num_nodes = 5;
 	int32_t num_edges = 6;
 
-	CGraphCut* g = new CGraphCut(num_nodes, num_edges);
-	SG_REF(g);
+	auto g = std::make_shared<CGraphCut>(num_nodes, num_edges);
+
 
 	g->add_tweights(0, 4, 0);
 	g->add_tweights(1, 2, 0);
@@ -45,16 +45,16 @@ TEST(GraphCut, graph_cut_st_graph)
 		EXPECT_EQ(g->get_assignment(i), expected_assignments[i]);
 	}
 
-	SG_UNREF(g);
+
 }
 
 // Test graph-cuts inference for a simple two nodes chain structure graph
 TEST(GraphCut, graph_cut_chain)
 {
-	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
-	SG_REF(fg_test_data);
+	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
 
-	CFactorGraph* fg = fg_test_data->simple_chain_graph();
+
+	auto fg = fg_test_data->simple_chain_graph();
 
 	EXPECT_TRUE(fg->is_acyclic_graph());
 	EXPECT_TRUE(fg->is_connected_graph());
@@ -64,14 +64,11 @@ TEST(GraphCut, graph_cut_chain)
 	CMAPInference infer_met(fg, GRAPH_CUT);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	auto fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
-	SG_UNREF(fg_observ);
 
 	EXPECT_NEAR(0.4, infer_met.get_energy(), 1E-10);
 
-	SG_UNREF(fg_test_data);
-	SG_UNREF(fg);
 }
 
 // Test graph-cuts inference for a four nodes chain graph
@@ -81,16 +78,15 @@ TEST(GraphCut, graph_cut_random)
 	SGVector<int32_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
-	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
-	SG_REF(fg_test_data);
-	CFactorGraph* fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
+	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+
+	auto fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
 
 	CMAPInference infer_met(fg_random, GRAPH_CUT);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	auto fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
-	SG_UNREF(fg_observ);
 
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
@@ -99,18 +95,16 @@ TEST(GraphCut, graph_cut_random)
 
 	EXPECT_NEAR(min_energy_expected, infer_met.get_energy(), 1E-10);
 
-	SG_UNREF(fg_test_data);
-	SG_UNREF(fg_random);
 }
 
 // Test graph-cuts with SOSVM framework
 // using randomly generated synthetic data
 TEST(GraphCut, graph_cut_sosvm)
 {
-	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
-	SG_REF(fg_test_data);
+	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+
 
 	EXPECT_NEAR(fg_test_data->test_sosvm(GRAPH_CUT), 0, 0.1);
 
-	SG_UNREF(fg_test_data);
+
 }

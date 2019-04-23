@@ -138,7 +138,7 @@ public:
 	 * @param i The data source index, from which the feature object is to be obtained
 	 * @return The underlying CFeatures object at the specified data source.
 	 */
-	CFeatures* samples_at(index_t i) const;
+	std::shared_ptr<CFeatures> samples_at(index_t i) const;
 
 	/**
 	 * Setter for the number of samples. Setting this number is mandatory for

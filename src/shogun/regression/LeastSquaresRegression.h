@@ -36,7 +36,7 @@ namespace shogun
 		 * @param data training data
 		 * @param lab labels
 		 */
-		CLeastSquaresRegression(CDenseFeatures<float64_t>* data, CLabels* lab);
+		CLeastSquaresRegression(std::shared_ptr<CDenseFeatures<float64_t>> data, std::shared_ptr<CLabels> lab);
 		virtual ~CLeastSquaresRegression() {}
 
 		/** get classifier type

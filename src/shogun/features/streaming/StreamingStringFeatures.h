@@ -45,7 +45,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingStringFeatures(CStreamingFile* file,
+	CStreamingStringFeatures(std::shared_ptr<CStreamingFile> file,
 				 bool is_labelled,
 				 int32_t size);
 
@@ -92,7 +92,7 @@ public:
 	 *
 	 * @param alpha alphabet as a pointer to a CAlphabet object.
 	 */
-	void use_alphabet(CAlphabet* alpha);
+	void use_alphabet(std::shared_ptr<CAlphabet> alpha);
 
 	/**
 	 * Set whether remapping to another alphabet is required.
@@ -101,7 +101,7 @@ public:
 	 * @param ascii_alphabet the alphabet to convert from, CAlphabet*
 	 * @param binary_alphabet the alphabet to convert to, CAlphabet*
 	 */
-	void set_remap(CAlphabet* ascii_alphabet, CAlphabet* binary_alphabet);
+	void set_remap(std::shared_ptr<CAlphabet> ascii_alphabet, std::shared_ptr<CAlphabet> binary_alphabet);
 
 	/**
 	 * Set whether remapping to another alphabet is required.
@@ -116,7 +116,7 @@ public:
 	 * Return the alphabet being used as a CAlphabet*
 	 * @return
 	 */
-	CAlphabet* get_alphabet();
+	std::shared_ptr<CAlphabet> get_alphabet();
 
 	/** get number of symbols
 	 *
@@ -231,7 +231,7 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	void init(std::shared_ptr<CStreamingFile >file, bool is_labelled, int32_t size);
 
 protected:
 
@@ -239,13 +239,13 @@ protected:
 	CInputParser<T> parser;
 
 	/// Alphabet to use
-	CAlphabet* alphabet;
+	std::shared_ptr<CAlphabet> alphabet;
 
 	/// If remapping is enabled, this is the source alphabet
-	CAlphabet* alpha_ascii;
+	std::shared_ptr<CAlphabet> alpha_ascii;
 
 	/// If remapping is enabled, this is the target alphabet
-	CAlphabet* alpha_bin;
+	std::shared_ptr<CAlphabet> alpha_bin;
 
 	/// The current example's string as an SGString<T>
 	SGString<T> current_sgstring;

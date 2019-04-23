@@ -14,6 +14,6 @@ CLOOCrossValidationSplitting::CLOOCrossValidationSplitting() :
 {}
 
 CLOOCrossValidationSplitting::CLOOCrossValidationSplitting(
-		CLabels* labels) :
+		std::shared_ptr<CLabels> labels) :
 	CCrossValidationSplitting(labels, labels->get_num_labels())
 {}

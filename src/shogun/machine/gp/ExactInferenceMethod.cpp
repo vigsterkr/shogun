@@ -46,8 +46,8 @@ CExactInferenceMethod::CExactInferenceMethod() : CInference()
 {
 }
 
-CExactInferenceMethod::CExactInferenceMethod(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod) :
+CExactInferenceMethod::CExactInferenceMethod(std::shared_ptr<CKernel> kern, std::shared_ptr<CFeatures> feat,
+		std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod) :
 		CInference(kern, feat, m, lab, mod)
 {
 }
@@ -56,7 +56,7 @@ CExactInferenceMethod::~CExactInferenceMethod()
 {
 }
 
-void CExactInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CExactInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
 }
@@ -104,7 +104,7 @@ SGVector<float64_t> CExactInferenceMethod::get_diagonal_vector()
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// compute diagonal vector: sW=1/sigma
@@ -120,7 +120,7 @@ float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 		update();
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// create eigen representation of alpha and L
@@ -128,7 +128,7 @@ float64_t CExactInferenceMethod::get_negative_log_marginal_likelihood()
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
 	// get labels and mean vectors and create eigen representation
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
@@ -176,7 +176,7 @@ SGMatrix<float64_t> CExactInferenceMethod::get_posterior_covariance()
 void CExactInferenceMethod::update_chol()
 {
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	/* check whether to allocate cholesky memory */
@@ -195,11 +195,11 @@ void CExactInferenceMethod::update_chol()
 void CExactInferenceMethod::update_alpha()
 {
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// get labels and mean vector and create eigen representation
-	SGVector<float64_t> y=((CRegressionLabels*) m_labels)->get_labels();
+	SGVector<float64_t> y=regression_labels(m_labels)->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 	SGVector<float64_t> m=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_m(m.vector, m.vlen);
@@ -248,7 +248,7 @@ void CExactInferenceMethod::update_cov()
 	MatrixXd eigen_V = eigen_L.triangularView<Upper>().adjoint().solve(
 	    eigen_K * std::exp(m_log_scale * 2.0));
 
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 	eigen_V = eigen_V/sigma;
 
@@ -260,7 +260,7 @@ void CExactInferenceMethod::update_cov()
 void CExactInferenceMethod::update_deriv()
 {
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// create eigen representation of derivative matrix and cholesky
@@ -301,8 +301,8 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_inference_method(
 	return result;
 }
 
-CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CExactInferenceMethod> CExactInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -310,8 +310,8 @@ CExactInferenceMethod* CExactInferenceMethod::obtain_from_generic(
 	if (inference->get_inference_type()!=INF_EXACT)
 		SG_SERROR("Provided inference is not of type CExactInferenceMethod!\n")
 
-	SG_REF(inference);
-	return (CExactInferenceMethod*)inference;
+
+	return inference->as<CExactInferenceMethod>();
 }
 
 SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
@@ -322,7 +322,7 @@ SGVector<float64_t> CExactInferenceMethod::get_derivative_wrt_likelihood_model(
 			m_model->get_name(), param->m_name)
 
 	// get the sigma variable from the Gaussian likelihood model
-	CGaussianLikelihood* lik = m_model->as<CGaussianLikelihood>();
+	auto lik = m_model->as<CGaussianLikelihood>();
 	float64_t sigma=lik->get_sigma();
 
 	// create eigen representation of the matrix Q

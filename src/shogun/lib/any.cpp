@@ -83,7 +83,8 @@ namespace shogun
 
 		void free_object(CSGObject* obj)
 		{
-			SG_UNREF(obj);
+			//FIXME
+			//SG_UNREF(obj);
 		}
 	}
 }

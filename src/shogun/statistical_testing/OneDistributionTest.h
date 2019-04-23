@@ -55,10 +55,10 @@ public:
 	 * @param samples The CFeatures instance representing the samples
 	 * from \f$\mathbf{P}\f$.
 	 */
-	void set_samples(CFeatures* samples);
+	void set_samples(std::shared_ptr<CFeatures> samples);
 
 	/** @return The samples from \f$\mathbf{P}\f$. */
-	CFeatures* get_samples() const;
+	std::shared_ptr<CFeatures> get_samples() const;
 
 	/**
 	 * Method that initializes the number of samples to be drawn from distribution

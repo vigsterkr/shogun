@@ -16,7 +16,7 @@ CTOPFeatures::CTOPFeatures()
 }
 
 CTOPFeatures::CTOPFeatures(
-	int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin)
+	int32_t size, std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n, bool neglin, bool poslin)
 : CDenseFeatures<float64_t>(size)
 {
 	init();
@@ -52,15 +52,15 @@ CTOPFeatures::~CTOPFeatures()
 	SG_FREE(neg_relevant_indizes.idx_b_cols);
 	SG_FREE(neg_relevant_indizes.idx_b_rows);
 
-	SG_UNREF(pos);
-	SG_UNREF(neg);
+	
+	
 }
 
-void CTOPFeatures::set_models(CHMM* p, CHMM* n)
+void CTOPFeatures::set_models(std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n)
 {
 	ASSERT(p && n)
-	SG_REF(p);
-	SG_REF(n);
+	
+	
 
 	pos=p;
 	neg=n;
@@ -221,7 +221,7 @@ float64_t* CTOPFeatures::set_feature_matrix()
 	return feature_matrix.matrix;
 }
 
-bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
+bool CTOPFeatures::compute_relevant_indizes(std::shared_ptr<CHMM> hmm, T_HMM_INDIZES* hmm_idx)
 {
 	int32_t i=0;
 	int32_t j=0;
@@ -365,8 +365,8 @@ void CTOPFeatures::init()
 
 	unset_generic();
 	//TODO serialize HMMs
-	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
-	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
+	//m_parameters->add((std::shared_ptr<CSGObject>*) &pos, "pos", "HMM for positive class.");
+	//m_parameters->add((std::shared_ptr<CSGObject>*) &neg, "neg", "HMM for negative class.");
 	SG_ADD(
 	    &neglinear, "neglinear", "If negative HMM is a LinearHMM");
 	SG_ADD(

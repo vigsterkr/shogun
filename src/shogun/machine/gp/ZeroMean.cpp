@@ -41,7 +41,7 @@ CZeroMean::~CZeroMean()
 {
 }
 
-SGVector<float64_t> CZeroMean::get_mean_vector(const CFeatures* features) const
+SGVector<float64_t> CZeroMean::get_mean_vector(std::shared_ptr<const CFeatures> features) const
 {
 	SGVector<float64_t> result(features->get_num_vectors());
 	result.zero();

@@ -56,7 +56,7 @@ public:
 	 * @param kernel_name the name of the kernel to approximate
 	 * @param params kernel parameters (see kernel's description in KernelName to see what each kernel expects)
 	 */
-	CRandomFourierDotFeatures(CDotFeatures* features, int32_t D, KernelName kernel_name,
+	CRandomFourierDotFeatures(std::shared_ptr<CDotFeatures> features, int32_t D, KernelName kernel_name,
 			SGVector<float64_t> params);
 
 	/** constructor that uses the specified random coefficients.
@@ -67,20 +67,20 @@ public:
 	 * @param params kernel parameters (see kernel's description in KernelName to see what each kernel expects)
 	 * @param coeff pre-computed random coefficients to use
 	 */
-	CRandomFourierDotFeatures(CDotFeatures* features, int32_t D, KernelName kernel_name,
+	CRandomFourierDotFeatures(std::shared_ptr<CDotFeatures> features, int32_t D, KernelName kernel_name,
 			SGVector<float64_t> params, SGMatrix<float64_t> coeff);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CRandomFourierDotFeatures(CFile* loader);
+	CRandomFourierDotFeatures(std::shared_ptr<CFile> loader);
 
 	/** copy constructor */
 	CRandomFourierDotFeatures(const CRandomFourierDotFeatures& orig);
 
 	/** duplicate */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<CFeatures> duplicate() const;
 
 	/** destructor */
 	virtual ~CRandomFourierDotFeatures();

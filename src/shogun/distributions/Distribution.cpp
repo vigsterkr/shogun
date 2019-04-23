@@ -17,7 +17,7 @@ CDistribution::CDistribution()
 
 CDistribution::~CDistribution()
 {
-	SG_UNREF(features);
+	
 }
 
 float64_t CDistribution::get_log_likelihood_sample()
@@ -77,12 +77,12 @@ float64_t CDistribution::update_params_em(const SGVector<float64_t> alpha_k)
 	return -1;
 }
 
-CDistribution* CDistribution::obtain_from_generic(CSGObject* object)
+std::shared_ptr<CDistribution> CDistribution::obtain_from_generic(std::shared_ptr<CSGObject> object)
 {
 	if (!object)
 		return NULL;
 
-	CDistribution* casted=dynamic_cast<CDistribution*>(object);
+	auto casted=std::dynamic_pointer_cast<CDistribution>(object);
 	if (!casted)
 		return NULL;
 

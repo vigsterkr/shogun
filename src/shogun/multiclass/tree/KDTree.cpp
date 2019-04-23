@@ -41,7 +41,7 @@ CKDTree::~CKDTree()
 {
 }
 
-float64_t CKDTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
+float64_t CKDTree::min_dist(std::shared_ptr<bnode_t> node,float64_t* feat, int32_t dim)
 {
 	float64_t dist=0;
 	for (int32_t i=0;i<dim;i++)
@@ -54,7 +54,7 @@ float64_t CKDTree::min_dist(bnode_t* node,float64_t* feat, int32_t dim)
 	return actual_dists(dist);
 }
 
-float64_t CKDTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t CKDTree::min_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
 	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
@@ -71,7 +71,7 @@ float64_t CKDTree::min_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	return actual_dists(dist);
 }
 
-float64_t CKDTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
+float64_t CKDTree::max_dist_dual(std::shared_ptr<bnode_t> nodeq, std::shared_ptr<bnode_t> noder)
 {
 	SGVector<float64_t> nodeq_lower=nodeq->data.bbox_lower;
 	SGVector<float64_t> nodeq_upper=nodeq->data.bbox_upper;
@@ -88,7 +88,7 @@ float64_t CKDTree::max_dist_dual(bnode_t* nodeq, bnode_t* noder)
 	return actual_dists(dist);
 }
 
-void CKDTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float64_t &upper, int32_t dim)
+void CKDTree::min_max_dist(float64_t* pt, std::shared_ptr<bnode_t> node, float64_t &lower,float64_t &upper, int32_t dim)
 {
 	lower=0;
 	upper=0;
@@ -104,7 +104,7 @@ void CKDTree::min_max_dist(float64_t* pt, bnode_t* node, float64_t &lower,float6
 	upper=actual_dists(upper);
 }
 
-void CKDTree::init_node(bnode_t* node, index_t start, index_t end)
+void CKDTree::init_node(std::shared_ptr<bnode_t> node, index_t start, index_t end)
 {
 	SGVector<float64_t> upper_bounds(m_data.num_rows);
 	SGVector<float64_t> lower_bounds(m_data.num_rows);

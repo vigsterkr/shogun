@@ -87,23 +87,21 @@ void fill_ind_recursive(tree_node_t* node, vector<block_tree_node_t>* tree_nodes
 	}
 }
 
-void collect_tree_nodes_recursive(CIndexBlock* subtree_root_block, vector<block_tree_node_t>* tree_nodes)
+void collect_tree_nodes_recursive(std::shared_ptr<CIndexBlock> subtree_root_block, vector<block_tree_node_t>* tree_nodes)
 {
-	CList* sub_blocks = subtree_root_block->get_sub_blocks();
+	auto sub_blocks = subtree_root_block->get_sub_blocks();
 	if (sub_blocks->get_num_elements()>0)
 	{
-		CIndexBlock* iterator = (CIndexBlock*)sub_blocks->get_first_element();
+		auto iterator = std::static_pointer_cast<CIndexBlock>(sub_blocks->get_first_element());
 		do
 		{
 			SG_SDEBUG("Block [%d %d] \n",iterator->get_min_index(), iterator->get_max_index())
 			tree_nodes->push_back(block_tree_node_t(iterator->get_min_index(),iterator->get_max_index(),iterator->get_weight()));
 			if (iterator->get_num_sub_blocks()>0)
 				collect_tree_nodes_recursive(iterator, tree_nodes);
-			SG_UNREF(iterator);
 		}
-		while ((iterator = (CIndexBlock*)sub_blocks->get_next_element()) != NULL);
+		while ((iterator = std::static_pointer_cast<CIndexBlock>(sub_blocks->get_next_element())) != NULL);
 	}
-	SG_UNREF(sub_blocks);
 }
 
 CIndexBlockTree::CIndexBlockTree() :
@@ -113,7 +111,7 @@ CIndexBlockTree::CIndexBlockTree() :
 
 }
 
-CIndexBlockTree::CIndexBlockTree(CIndexBlock* root_block) : CIndexBlockRelation(),
+CIndexBlockTree::CIndexBlockTree(std::shared_ptr<CIndexBlock> root_block) : CIndexBlockRelation(),
 	m_root_block(NULL), m_general(false)
 {
 	set_root_block(root_block);
@@ -232,19 +230,19 @@ CIndexBlockTree::CIndexBlockTree(SGVector<float64_t> ind_t) :
 
 CIndexBlockTree::~CIndexBlockTree()
 {
-	SG_UNREF(m_root_block);
+
 }
 
-CIndexBlock* CIndexBlockTree::get_root_block() const
+std::shared_ptr<CIndexBlock> CIndexBlockTree::get_root_block() const
 {
-	SG_REF(m_root_block);
+
 	return m_root_block;
 }
 
-void CIndexBlockTree::set_root_block(CIndexBlock* root_block)
+void CIndexBlockTree::set_root_block(std::shared_ptr<CIndexBlock> root_block)
 {
-	SG_REF(root_block);
-	SG_UNREF(m_root_block);
+
+
 	m_root_block = root_block;
 }
 
@@ -272,7 +270,7 @@ SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t() const
 	else
 	{
 		ASSERT(m_root_block)
-		CList* blocks = new CList(true);
+		auto blocks = std::make_shared<CList>(true);
 
 		vector<block_tree_node_t> tree_nodes = vector<block_tree_node_t>();
 
@@ -291,7 +289,7 @@ SGVector<float64_t> CIndexBlockTree::get_SLEP_ind_t() const
 			ind_t[3+i*3+2] = tree_nodes[i].weight;
 		}
 
-		SG_UNREF(blocks);
+
 
 		return ind_t;
 	}

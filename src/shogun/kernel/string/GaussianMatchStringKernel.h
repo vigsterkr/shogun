@@ -49,7 +49,7 @@ class CGaussianMatchStringKernel: public CStringKernel<char>
 		 * @param width width
 		 */
 		CGaussianMatchStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r,
+			std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 			float64_t width);
 
 		virtual ~CGaussianMatchStringKernel();
@@ -60,7 +60,7 @@ class CGaussianMatchStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

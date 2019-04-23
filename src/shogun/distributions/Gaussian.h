@@ -63,7 +63,7 @@ class CGaussian : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** get number of parameters in model
 		 *
@@ -213,7 +213,7 @@ class CGaussian : public CDistribution
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static CGaussian* obtain_from_generic(CDistribution* distribution);
+		static std::shared_ptr<CGaussian> obtain_from_generic(std::shared_ptr<CDistribution> distribution);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Gaussian"; }

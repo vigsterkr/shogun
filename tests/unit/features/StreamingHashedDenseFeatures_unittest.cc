@@ -24,9 +24,9 @@ TEST(StreamingHashedDenseFeaturesTest, dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats =
-		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<CStreamingHashedDenseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	index_t i;
@@ -53,7 +53,7 @@ TEST(StreamingHashedDenseFeaturesTest, dot)
 
 	EXPECT_EQ(i, n);
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(StreamingHashedDenseFeaturesTest, dense_dot)
@@ -70,9 +70,9 @@ TEST(StreamingHashedDenseFeaturesTest, dense_dot)
 
 	int32_t hashing_dim = 8;
 
-	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats =
-		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<CStreamingHashedDenseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	for (index_t i=0; i<n && h_feats->get_next_example(); i++)
@@ -97,7 +97,7 @@ TEST(StreamingHashedDenseFeaturesTest, dense_dot)
 	}
 	h_feats->end_parser();
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
@@ -113,9 +113,9 @@ TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
-	CStreamingHashedDenseFeatures<float64_t>* h_feats =
-		new CStreamingHashedDenseFeatures<float64_t>(d_feats, hashing_dim);
+	auto d_feats = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto h_feats =
+		std::make_shared<CStreamingHashedDenseFeatures<float64_t>>(d_feats, hashing_dim);
 
 	h_feats->start_parser();
 	for (index_t i=0; i<n && h_feats->get_next_example(); i++)
@@ -141,5 +141,5 @@ TEST(StreamingHashedDenseFeaturesTest, add_to_dense)
 	}
 	h_feats->end_parser();
 
-	SG_UNREF(h_feats);
+
 }

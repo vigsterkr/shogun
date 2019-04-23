@@ -97,7 +97,7 @@ public:
 	 * @param activations Matrix in which the activations are to be stored
 	 */
 	void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers,
+			std::shared_ptr<CDynamicObjectArray> layers,
 			SGVector<int32_t> input_indices,
 			SGMatrix<float64_t> activations);
 
@@ -116,7 +116,7 @@ public:
 	void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> activations,
 			SGMatrix<float64_t> activation_gradients,
-			CDynamicObjectArray* layers,
+			std::shared_ptr<CDynamicObjectArray> layers,
 			SGVector<int32_t> input_indices,
 			SGVector<float64_t> parameter_gradients);
 

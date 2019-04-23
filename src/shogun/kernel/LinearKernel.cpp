@@ -18,7 +18,7 @@ CLinearKernel::CLinearKernel()
 	properties |= KP_LINADD;
 }
 
-CLinearKernel::CLinearKernel(CDotFeatures* l, CDotFeatures* r)
+CLinearKernel::CLinearKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r)
 : CDotKernel(0)
 {
 	properties |= KP_LINADD;
@@ -30,7 +30,7 @@ CLinearKernel::~CLinearKernel()
 	cleanup();
 }
 
-bool CLinearKernel::init(CFeatures* l, CFeatures* r)
+bool CLinearKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDotKernel::init(l, r);
 
@@ -46,7 +46,7 @@ void CLinearKernel::cleanup()
 
 void CLinearKernel::add_to_normal(int32_t idx, float64_t weight)
 {
-	((CDotFeatures*) lhs)->add_to_dense_vec(
+	lhs->as<CDotFeatures>()->add_to_dense_vec(
 		normalizer->normalize_lhs(weight, idx), idx, normal.vector, normal.size());
 	set_is_initialized(true);
 }
@@ -63,7 +63,7 @@ bool CLinearKernel::init_optimization(
 	return true;
 }
 
-bool CLinearKernel::init_optimization(CKernelMachine* km)
+bool CLinearKernel::init_optimization(std::shared_ptr<CKernelMachine> km)
 {
 	clear_normal();
 
@@ -87,7 +87,7 @@ bool CLinearKernel::delete_optimization()
 float64_t CLinearKernel::compute_optimized(int32_t idx)
 {
 	ASSERT(get_is_initialized())
-	float64_t result = ((CDotFeatures*) rhs)->
+	float64_t result = rhs->as<CDotFeatures>()->
 		dense_dot(idx, normal.vector, normal.size());
 	return normalizer->normalize_rhs(result, idx);
 }

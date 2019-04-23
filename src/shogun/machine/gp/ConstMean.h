@@ -79,7 +79,7 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(const CFeatures* features) const;
+	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const CFeatures> features) const;
 
 	/** returns the derivative of the mean function
 	 *
@@ -89,7 +89,7 @@ public:
 	 *
 	 * @return derivative of mean function with respect to parameter
 	 */
-	virtual SGVector<float64_t> get_parameter_derivative(const CFeatures* features,
+	virtual SGVector<float64_t> get_parameter_derivative(std::shared_ptr<const CFeatures> features,
 			const TParameter* param, index_t index=-1);
 private:
 

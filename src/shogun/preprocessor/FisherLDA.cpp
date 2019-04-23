@@ -91,12 +91,12 @@ CFisherLDA::~CFisherLDA()
 {
 }
 
-void CFisherLDA::fit(CFeatures* features)
+void CFisherLDA::fit(std::shared_ptr<CFeatures> features)
 {
 	SG_SERROR("Labels for the given features are not specified!\n");
 }
 
-void CFisherLDA::fit(CFeatures* features, CLabels* labels)
+void CFisherLDA::fit(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels)
 {
 	REQUIRE(features, "Features are not provided!\n")
 
@@ -109,8 +109,8 @@ void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 	    labels->get_name());
 
 	auto dense_features = features->as<CDenseFeatures<float64_t>>();
-	CMulticlassLabels* multiclass_labels =
-	    static_cast<CMulticlassLabels*>(labels);
+	auto mc =
+	    multiclass_labels(labels);
 
 	index_t num_vectors = dense_features->get_num_vectors();
 	index_t num_features = dense_features->get_num_features();
@@ -121,7 +121,7 @@ void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 	    " must be equal to the number of labels provided(%d)\n",
 	    num_vectors, labels->get_num_labels());
 
-	int32_t num_class = multiclass_labels->get_num_classes();
+	int32_t num_class = mc->get_num_classes();
 
 	REQUIRE(num_class > 1, "At least two classes are needed to perform LDA.\n")
 
@@ -133,13 +133,13 @@ void CFisherLDA::fit(CFeatures* features, CLabels* labels)
 	    m_method == AUTO_FLDA && num_vectors < num_features;
 
 	if ((m_method == CANVAR_FLDA) || lda_more_efficient)
-		solver_canvar(dense_features, multiclass_labels);
+		solver_canvar(dense_features, mc);
 	else
-		solver_classic(dense_features, multiclass_labels);
+		solver_classic(dense_features, mc);
 }
 
 void CFisherLDA::solver_canvar(
-    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels)
+    std::shared_ptr<CDenseFeatures<float64_t>> features, std::shared_ptr<CMulticlassLabels> labels)
 {
 	auto solver = std::unique_ptr<LDACanVarSolver<float64_t>>(
 	    new LDACanVarSolver<float64_t>(
@@ -150,7 +150,7 @@ void CFisherLDA::solver_canvar(
 }
 
 void CFisherLDA::solver_classic(
-    CDenseFeatures<float64_t>* features, CMulticlassLabels* labels)
+    std::shared_ptr<CDenseFeatures<float64_t>> features, std::shared_ptr<CMulticlassLabels> labels)
 {
 	SGMatrix<float64_t> data = features->get_feature_matrix();
 	index_t num_features = data.num_rows;

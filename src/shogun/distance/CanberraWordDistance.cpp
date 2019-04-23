@@ -19,7 +19,7 @@ CCanberraWordDistance::CCanberraWordDistance()
 }
 
 CCanberraWordDistance::CCanberraWordDistance(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r)
+	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r)
 : CStringDistance<uint16_t>()
 {
 	SG_DEBUG("CCanberraWordDistance created")
@@ -32,7 +32,7 @@ CCanberraWordDistance::~CCanberraWordDistance()
 	cleanup();
 }
 
-bool CCanberraWordDistance::init(CFeatures* l, CFeatures* r)
+bool CCanberraWordDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	return CStringDistance<uint16_t>::init(l,r);
 }
@@ -46,9 +46,9 @@ float64_t CCanberraWordDistance::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->
+	uint16_t* avec=(std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs))->
 		get_feature_vector(idx_a, alen, free_avec);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->
+	uint16_t* bvec=(std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs))->
 		get_feature_vector(idx_b, blen, free_bvec);
 
 	float64_t result=0;
@@ -110,9 +110,9 @@ float64_t CCanberraWordDistance::compute(int32_t idx_a, int32_t idx_b)
 		while (right_idx< blen && bvec[right_idx]==sym)
 			right_idx++;
 	}
-	((CStringFeatures<uint16_t>*) lhs)->
+	(std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs))->
 		free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint16_t>*) rhs)->
+	(std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs))->
 		free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;

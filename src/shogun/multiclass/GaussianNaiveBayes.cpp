@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Viktor Gal, Giovanni De Toni, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Viktor Gal, Giovanni De Toni, Soeren Sonnenburg,
  *          Thoralf Klein, Bjoern Esser
  */
 
@@ -25,8 +25,8 @@ CGaussianNaiveBayes::CGaussianNaiveBayes() : CNativeMulticlassMachine(), m_featu
 	init();
 };
 
-CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
-	CLabels* train_labels) : CNativeMulticlassMachine(), m_features(NULL),
+CGaussianNaiveBayes::CGaussianNaiveBayes(std::shared_ptr<CFeatures> train_examples,
+	std::shared_ptr<CLabels> train_labels) : CNativeMulticlassMachine(), m_features(NULL),
 	m_min_label(0), m_num_classes(0), m_dim(0), m_means(),
 	m_variances(), m_label_prob(), m_rates()
 {
@@ -37,38 +37,38 @@ CGaussianNaiveBayes::CGaussianNaiveBayes(CFeatures* train_examples,
 	if (!train_examples->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-	set_features((CDotFeatures*)train_examples);
+	set_features(train_examples->as<CDotFeatures>());
 };
 
 CGaussianNaiveBayes::~CGaussianNaiveBayes()
 {
-	SG_UNREF(m_features);
+
 };
 
-CFeatures* CGaussianNaiveBayes::get_features()
+std::shared_ptr<CFeatures> CGaussianNaiveBayes::get_features()
 {
-	SG_REF(m_features);
+
 	return m_features;
 }
 
-void CGaussianNaiveBayes::set_features(CFeatures* features)
+void CGaussianNaiveBayes::set_features(std::shared_ptr<CFeatures> features)
 {
 	if (!features->has_property(FP_DOT))
 		SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-	SG_REF(features);
-	SG_UNREF(m_features);
-	m_features = (CDotFeatures*)features;
+
+
+	m_features = features->as<CDotFeatures>();
 }
 
-bool CGaussianNaiveBayes::train_machine(CFeatures* data)
+bool CGaussianNaiveBayes::train_machine(std::shared_ptr<CFeatures> data)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 				SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
+		set_features(data->as<CDotFeatures>());
 	}
 
 	// get int labels to train_labels and check length equality
@@ -158,7 +158,7 @@ bool CGaussianNaiveBayes::train_machine(CFeatures* data)
 	return true;
 }
 
-CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CGaussianNaiveBayes::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 		set_features(data);
@@ -169,7 +169,7 @@ CMulticlassLabels* CGaussianNaiveBayes::apply_multiclass(CFeatures* data)
 	int32_t num_vectors = m_features->get_num_vectors();
 
 	// init result labels
-	CMulticlassLabels* result = new CMulticlassLabels(num_vectors);
+	auto result = std::make_shared<CMulticlassLabels>(num_vectors);
 
 	// classify each example of data
 	for (auto i : SG_PROGRESS(range(num_vectors)))
@@ -236,5 +236,5 @@ void CGaussianNaiveBayes::init()
 		"a priori probabilities of labels");
 	SG_ADD(&m_rates, "m_rates", "label rates");
 	SG_ADD(
-	    (CFeatures**)&m_features, "features", "Training features");
+	    (std::shared_ptr<CFeatures>*)&m_features, "features", "Training features");
 }

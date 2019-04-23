@@ -366,13 +366,6 @@ namespace shogun
 #endif
         %template(DynamicPlifArray) DynArray<shogun::CPlifBase*>;
 }
-/* Template Class GCArray */
-%include <shogun/lib/GCArray.h>
-namespace shogun
-{
-        %template(PlifGCArray) CGCArray<shogun::CPlifBase*>;
-}
-
 /* Hash */
 %include <shogun/lib/Hash.h>
 

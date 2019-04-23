@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Soeren Sonnenburg, Abinash Panda, Shell Hu, 
+ * Authors: Viktor Gal, Soeren Sonnenburg, Abinash Panda, Shell Hu,
  *          Thoralf Klein, Bjoern Esser, Sanuj Sharma
  */
 
@@ -19,7 +19,7 @@ CCCSOSVM::CCCSOSVM()
 	init();
 }
 
-CCCSOSVM::CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w)
+CCCSOSVM::CCCSOSVM(std::shared_ptr<CStructuredModel> model, SGVector<float64_t> w)
 	: CLinearStructuredOutputMachine(model, model->get_labels())
 {
 	init();
@@ -187,7 +187,7 @@ int32_t CCCSOSVM::mosek_qp_optimize(float64_t** G, float64_t* delta, float64_t* 
 #endif
 }
 
-bool CCCSOSVM::train_machine(CFeatures* data)
+bool CCCSOSVM::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 		set_features(data);
@@ -532,7 +532,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 	new_constraint.zero();
 	for (index_t i = 0; i < num_samples; i++)
 	{
-		CResultSet* result = m_model->argmax(m_w, i);
+		auto result = m_model->argmax(m_w, i);
 		if (result->psi_computed)
 		{
 			new_constraint.add(result->psi_truth);
@@ -557,7 +557,7 @@ SGSparseVector<float64_t> CCCSOSVM::find_cutting_plane(float64_t* margin)
 				CMath::dot(result->psi_pred.vector, result->psi_pred.vector, result->psi_pred.vlen));
 		*/
 		*margin += result->delta;
-		SG_UNREF(result);
+
 	}
 	/* scaling */
 	float64_t scale = 1/(float64_t)num_samples;

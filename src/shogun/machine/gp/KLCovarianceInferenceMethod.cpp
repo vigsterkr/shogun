@@ -56,8 +56,8 @@ CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod() : CKLInference()
 	init();
 }
 
-CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CKLCovarianceInferenceMethod::CKLCovarianceInferenceMethod(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();
@@ -107,8 +107,8 @@ CKLCovarianceInferenceMethod::~CKLCovarianceInferenceMethod()
 {
 }
 
-CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CKLCovarianceInferenceMethod> CKLCovarianceInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -116,8 +116,8 @@ CKLCovarianceInferenceMethod* CKLCovarianceInferenceMethod::obtain_from_generic(
 	if (inference->get_inference_type()!=INF_KL_COVARIANCE)
 		SG_SERROR("Provided inference is not of type CKLCovarianceInferenceMethod!\n")
 
-	SG_REF(inference);
-	return (CKLCovarianceInferenceMethod*)inference;
+
+	return inference->as<CKLCovarianceInferenceMethod>();
 }
 
 bool CKLCovarianceInferenceMethod::precompute()
@@ -160,7 +160,7 @@ bool CKLCovarianceInferenceMethod::precompute()
 		           .abs()
 		           .matrix();
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	return status;
 }
@@ -181,7 +181,7 @@ void CKLCovarianceInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<
 	Map<VectorXd> eigen_alpha(m_alpha.vector, len);
 	Map<VectorXd> eigen_log_neg_lambda(m_alpha.vector+len, len);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
@@ -228,7 +228,7 @@ float64_t CKLCovarianceInferenceMethod::get_negative_log_marginal_likelihood_hel
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 
 	float64_t trace=0;
@@ -301,7 +301,7 @@ void CKLCovarianceInferenceMethod::update_alpha()
 			           .matrix();
 		SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 
-		CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+		auto lik=get_variational_likelihood();
 		lik->set_variational_distribution(mean, s2_tmp, m_labels);
 		float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
 

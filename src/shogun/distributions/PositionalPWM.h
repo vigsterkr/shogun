@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer,
  *          Yuyu Zhang
  */
 
@@ -35,7 +35,7 @@ class CPositionalPWM : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** get number of parameters in model
 		 *

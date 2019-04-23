@@ -15,13 +15,13 @@ using namespace shogun;
 
 void CKernelMulticlassMachine::store_model_features()
 {
-	CKernel *kernel= m_kernel;
+	auto kernel= m_kernel;
 	if (!kernel)
 		SG_ERROR("%s::store_model_features(): kernel is needed to store SV "
 				"features.\n", get_name());
 
-	CFeatures* lhs=kernel->get_lhs();
-	CFeatures* rhs=kernel->get_rhs();
+	auto lhs=kernel->get_lhs();
+	auto rhs=kernel->get_rhs();
 	if (!lhs)
 	{
 		SG_ERROR("%s::store_model_features(): kernel lhs is needed to store "
@@ -36,7 +36,7 @@ void CKernelMulticlassMachine::store_model_features()
 		for (index_t j=0; j<machine->get_num_support_vectors(); ++j)
 			all_sv.add(machine->get_support_vector(j));
 
-		SG_UNREF(machine);
+
 	}
 
 	/* convert map to vector of SV */
@@ -44,13 +44,13 @@ void CKernelMulticlassMachine::store_model_features()
 	for (index_t i=0; i<sv_idx.vlen; ++i)
 		sv_idx[i]=*all_sv.get_element_ptr(i);
 
-	CFeatures* sv_features=lhs->copy_subset(sv_idx);
+	auto sv_features=lhs->copy_subset(sv_idx);
 
 	/* now, features are replaced by concatenated SV features */
 	kernel->init(sv_features, rhs);
 
 	/* was SG_REF'ed by copy_subset */
-	SG_UNREF(sv_features);
+
 
 	/* now the old SV indices have to be mapped to the new features */
 
@@ -72,11 +72,11 @@ void CKernelMulticlassMachine::store_model_features()
 			machine->set_support_vector(j, new_sv_idx);
 		}
 
-		SG_UNREF(machine);
+
 	}
 
-	SG_UNREF(lhs);
-	SG_UNREF(rhs);
+
+
 }
 
 CKernelMulticlassMachine::CKernelMulticlassMachine() : CMulticlassMachine(), m_kernel(NULL)
@@ -90,7 +90,7 @@ CKernelMulticlassMachine::CKernelMulticlassMachine() : CMulticlassMachine(), m_k
  * @param machine kernel machine
  * @param labs labels
  */
-CKernelMulticlassMachine::CKernelMulticlassMachine(CMulticlassStrategy *strategy, CKernel* kernel, CMachine* machine, CLabels* labs) :
+CKernelMulticlassMachine::CKernelMulticlassMachine(std::shared_ptr<CMulticlassStrategy >strategy, std::shared_ptr<CKernel> kernel, std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labs) :
 	CMulticlassMachine(strategy,machine,labs), m_kernel(NULL)
 {
 	set_kernel(kernel);
@@ -100,28 +100,28 @@ CKernelMulticlassMachine::CKernelMulticlassMachine(CMulticlassStrategy *strategy
 /** destructor */
 CKernelMulticlassMachine::~CKernelMulticlassMachine()
 {
-	SG_UNREF(m_kernel);
+
 }
 
 /** set kernel
  *
  * @param k kernel
  */
-void CKernelMulticlassMachine::set_kernel(CKernel* k)
+void CKernelMulticlassMachine::set_kernel(std::shared_ptr<CKernel> k)
 {
 	m_machine->as<CKernelMachine>()->set_kernel(k);
-	SG_REF(k);
-	SG_UNREF(m_kernel);
+
+
 	m_kernel=k;
 }
 
-CKernel* CKernelMulticlassMachine::get_kernel() const
+std::shared_ptr<CKernel> CKernelMulticlassMachine::get_kernel() const
 {
-	SG_REF(m_kernel);
+
 	return m_kernel;
 }
 
-bool CKernelMulticlassMachine::init_machine_for_train(CFeatures* data)
+bool CKernelMulticlassMachine::init_machine_for_train(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 		m_kernel->init(data,data);
@@ -131,22 +131,22 @@ bool CKernelMulticlassMachine::init_machine_for_train(CFeatures* data)
 	return true;
 }
 
-bool CKernelMulticlassMachine::init_machines_for_apply(CFeatures* data)
+bool CKernelMulticlassMachine::init_machines_for_apply(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		/* set data to rhs for this kernel */
-		CFeatures* lhs=m_kernel->get_lhs();
+		auto lhs=m_kernel->get_lhs();
 		m_kernel->init(lhs, data);
-		SG_UNREF(lhs);
+
 	}
 
 	/* set kernel to all sub-machines */
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 	{
-		auto machine=m_machines->get_element(i)->as<CKernelMachine>();
+		auto machine=m_machines->get_element<CKernelMachine>(i);
 		machine->set_kernel(m_kernel);
-		SG_UNREF(machine);
+
 	}
 
 	return true;
@@ -160,9 +160,9 @@ bool CKernelMulticlassMachine::is_ready()
 	return false;
 }
 
-CMachine* CKernelMulticlassMachine::get_machine_from_trained(CMachine* machine) const
+std::shared_ptr<CMachine> CKernelMulticlassMachine::get_machine_from_trained(std::shared_ptr<CMachine> machine) const
 {
-	return new CKernelMachine(machine->as<CKernelMachine>());
+	return std::make_shared<CKernelMachine>(machine->as<CKernelMachine>());
 }
 
 int32_t CKernelMulticlassMachine::get_num_rhs_vectors() const

@@ -50,7 +50,7 @@ struct DataFetcherFactory
 	DataFetcherFactory& operator=(const DataFetcherFactory& other) = delete;
 	~DataFetcherFactory() = delete;
 
-	static DataFetcher* get_instance(CFeatures* feats);
+	static std::unique_ptr<DataFetcher> get_instance(std::shared_ptr<CFeatures> feats);
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }

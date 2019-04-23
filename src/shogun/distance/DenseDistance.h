@@ -29,7 +29,7 @@ template <class ST> class CDenseDistance : public CDistance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** get feature class the distance can deal with
 		 *

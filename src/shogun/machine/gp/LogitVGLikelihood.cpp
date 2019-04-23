@@ -58,7 +58,7 @@ CLogitVGLikelihood::~CLogitVGLikelihood()
 
 void CLogitVGLikelihood::init_likelihood()
 {
-	set_likelihood(new CLogitLikelihood());
+	set_likelihood(std::make_shared<CLogitLikelihood>());
 }
 
 void CLogitVGLikelihood::init()

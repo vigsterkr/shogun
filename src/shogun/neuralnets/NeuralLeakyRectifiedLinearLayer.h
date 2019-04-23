@@ -84,7 +84,7 @@ public:
 	 *
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers);
+		std::shared_ptr<CDynamicObjectArray> layers);
 
 	virtual const char* get_name() const { return "NeuralLeakyRectifiedLinearLayer"; }
 

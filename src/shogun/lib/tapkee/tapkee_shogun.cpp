@@ -66,7 +66,7 @@ struct ShogunFeatureVectorCallback
 };
 
 
-CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
+std::shared_ptr<CDenseFeatures<float64_t>> shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_FOR_SHOGUN& parameters)
 {
 	tapkee::LoggingSingleton::instance().set_logger_impl(new ShogunLoggerImplementation);
 	tapkee::LoggingSingleton::instance().enable_benchmark();
@@ -197,6 +197,6 @@ CDenseFeatures<float64_t>* shogun::tapkee_embed(const shogun::TAPKEE_PARAMETERS_
 			feature_matrix(j,i) = result_embedding(i,j);
 		}
 	}
-	return new CDenseFeatures<float64_t>(feature_matrix);
+	return std::make_shared<CDenseFeatures<float64_t>>(feature_matrix);
 }
 

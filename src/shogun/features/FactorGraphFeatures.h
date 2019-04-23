@@ -36,7 +36,7 @@ class CFactorGraphFeatures : public CFeatures
 		 *
 		 * @return the copy of the given object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** get feature type
 		 *
@@ -67,25 +67,25 @@ class CFactorGraphFeatures : public CFeatures
 		 * @param fg a factor graph instance
 		 * @return whether the sample has been added successfully
 		 */
-		bool add_sample(CFactorGraph* fg);
+		bool add_sample(std::shared_ptr<CFactorGraph> fg);
 
 		/** get a graph instance
 		 *
 		 * @param idx index of the required example
 		 * @return pointer of CFactorGraph
 		 */
-		CFactorGraph* get_sample(index_t idx);
+		std::shared_ptr<CFactorGraph> get_sample(index_t idx);
 
 		/** helper method used to specialize a base class instance
 		 *
 		 * @param base_feats its dynamic type must be CFactorGraphFeatures
 		 * @return pointer to CFactorGraphFeatures
 		 */
-		static CFactorGraphFeatures* obtain_from_generic(CFeatures* base_feats);
+		static std::shared_ptr<CFactorGraphFeatures> obtain_from_generic(std::shared_ptr<CFeatures> base_feats);
 
 	protected:
 		/** array of CFactorGraph */
-		CDynamicObjectArray* m_samples;
+		std::shared_ptr<CDynamicObjectArray> m_samples;
 
 	private:
 		/** init function for the object */

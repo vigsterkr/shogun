@@ -37,7 +37,7 @@ class CDistanceKernel: public CKernel
 		 * @param width width
 		 * @param dist distance
 		 */
-		CDistanceKernel(int32_t cache, float64_t width, CDistance* dist);
+		CDistanceKernel(int32_t cache, float64_t width, std::shared_ptr<CDistance> dist);
 
 		/** constructor
 		 *
@@ -47,7 +47,7 @@ class CDistanceKernel: public CKernel
 		 * @param dist distance
 		 */
 		CDistanceKernel(
-			CFeatures *l, CFeatures *r, float64_t width, CDistance* dist);
+			std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t width, std::shared_ptr<CDistance> dist);
 
 		virtual ~CDistanceKernel();
 
@@ -57,7 +57,7 @@ class CDistanceKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** register the parameters (serialization support)
 		 *
@@ -118,7 +118,7 @@ class CDistanceKernel: public CKernel
 		float64_t compute(int32_t idx_a, int32_t idx_b);
 
 		/** distance */
-		CDistance* distance;
+		std::shared_ptr<CDistance> distance;
 		/** width */
 		float64_t width;
 };

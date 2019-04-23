@@ -36,7 +36,7 @@ class CCustomDistance: public CDistance
 		 * compute custom distance from given distance matrix
 		 * @param d distance matrix
 		 */
-		CCustomDistance(CDistance* d);
+		CCustomDistance(std::shared_ptr<CDistance> d);
 
 		/** constructor
 		 * @param distance_matrix distance matrix
@@ -89,7 +89,7 @@ class CCustomDistance: public CDistance
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up distance */
 		virtual void cleanup();

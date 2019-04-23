@@ -125,7 +125,7 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize_neural_layer(CDynamicObjectArray* layers,
+	virtual void initialize_neural_layer(std::shared_ptr<CDynamicObjectArray> layers,
 			SGVector<int32_t> input_indices);
 
 	/** Initializes the layer's parameters. The layer should fill the given
@@ -156,7 +156,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+			std::shared_ptr<CDynamicObjectArray> layers);
 
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
@@ -185,7 +185,7 @@ public:
 	 */
 	virtual void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> targets,
-			CDynamicObjectArray* layers,
+			std::shared_ptr<CDynamicObjectArray> layers,
 			SGVector<float64_t> parameter_gradients);
 
 	/** Computes the error between the layer's current activations and the given

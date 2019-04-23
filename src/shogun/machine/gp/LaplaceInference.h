@@ -62,8 +62,8 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CLaplaceInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	CLaplaceInference(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
 
 	virtual ~CLaplaceInference();
 

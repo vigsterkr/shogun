@@ -41,7 +41,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr = false,
+	CHashedSparseFeatures(std::shared_ptr<CSparseFeatures<ST>> feats, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
 	/** constructor
@@ -61,14 +61,14 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CHashedSparseFeatures(CFile* loader, int32_t d, bool use_quadr = false,
+	CHashedSparseFeatures(std::shared_ptr<CFile> loader, int32_t d, bool use_quadr = false,
 			bool keep_lin_terms = true);
 
 	/** copy constructor */
 	CHashedSparseFeatures(const CHashedSparseFeatures & orig);
 
 	/** duplicate */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<CFeatures> duplicate() const;
 
 	/** destructor */
 	virtual ~CHashedSparseFeatures();
@@ -91,7 +91,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df,
 			int32_t vec_idx2) const;
 
 	/** compute dot product between vector1 and a dense vector
@@ -211,12 +211,12 @@ public:
 		bool use_quadratic = false, bool keep_linear_terms = true);
 
 private:
-	void init(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr, bool keep_lin_terms);
+	void init(std::shared_ptr<CSparseFeatures<ST>> feats, int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:
 
 	/** sparse features */
-	CSparseFeatures<ST>* sparse_feats;
+	std::shared_ptr<CSparseFeatures<ST>> sparse_feats;
 
 	/** new feature space dimension */
 	int32_t dim;

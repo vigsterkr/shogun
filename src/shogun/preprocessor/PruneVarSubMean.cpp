@@ -27,7 +27,7 @@ CPruneVarSubMean::~CPruneVarSubMean()
 	cleanup();
 }
 
-void CPruneVarSubMean::fit(CFeatures* features)
+void CPruneVarSubMean::fit(std::shared_ptr<CFeatures> features)
 {
 	if (m_fitted)
 		cleanup();

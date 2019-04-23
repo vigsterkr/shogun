@@ -19,7 +19,7 @@ CLinearMachine::CLinearMachine(): CMachine()
 	init();
 }
 
-CLinearMachine::CLinearMachine(CLinearMachine* machine) : CMachine()
+CLinearMachine::CLinearMachine(std::shared_ptr<CLinearMachine> machine) : CMachine()
 {
 	init();
 	REQUIRE(machine, "No machine provided.\n");
@@ -38,13 +38,13 @@ void CLinearMachine::init()
 	SG_ADD(&m_w, "w", "Parameter vector w.", ParameterProperties::MODEL);
 	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
 	SG_ADD(
-	    (CFeatures**)&features, "features", "Feature object.");
+	    (std::shared_ptr<CFeatures>*)&features, "features", "Feature object.");
 }
 
 
 CLinearMachine::~CLinearMachine()
 {
-	SG_UNREF(features);
+
 }
 
 float64_t CLinearMachine::apply_one(int32_t vec_idx)
@@ -52,26 +52,26 @@ float64_t CLinearMachine::apply_one(int32_t vec_idx)
 	return features->dense_dot(vec_idx, m_w.vector, m_w.vlen) + bias;
 }
 
-CRegressionLabels* CLinearMachine::apply_regression(CFeatures* data)
+std::shared_ptr<CRegressionLabels> CLinearMachine::apply_regression(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<CRegressionLabels>(outputs);
 }
 
-CBinaryLabels* CLinearMachine::apply_binary(CFeatures* data)
+std::shared_ptr<CBinaryLabels> CLinearMachine::apply_binary(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CBinaryLabels(outputs);
+	return std::make_shared<CBinaryLabels>(outputs);
 }
 
-SGVector<float64_t> CLinearMachine::apply_get_outputs(CFeatures* data)
+SGVector<float64_t> CLinearMachine::apply_get_outputs(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<CDotFeatures>(data));
 	}
 
 	if (!features)
@@ -106,16 +106,16 @@ float64_t CLinearMachine::get_bias() const
 	return bias;
 }
 
-void CLinearMachine::set_features(CDotFeatures* feat)
+void CLinearMachine::set_features(std::shared_ptr<CDotFeatures> feat)
 {
-	SG_REF(feat);
-	SG_UNREF(features);
+
+
 	features=feat;
 }
 
-CDotFeatures* CLinearMachine::get_features()
+std::shared_ptr<CDotFeatures> CLinearMachine::get_features()
 {
-	SG_REF(features);
+
 	return features;
 }
 

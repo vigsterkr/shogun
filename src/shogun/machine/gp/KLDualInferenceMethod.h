@@ -53,7 +53,7 @@ public:
 	/** Constructor
 	 * @param fun a cost function
 	 */
-	CKLDualInferenceMethodMinimizer(FirstOrderCostFunction *fun): CLBFGSMinimizer(fun) { init(); }
+	CKLDualInferenceMethodMinimizer(std::shared_ptr<FirstOrderCostFunction >fun): CLBFGSMinimizer(fun) { init(); }
   
 	virtual ~CKLDualInferenceMethodMinimizer() {}
 
@@ -120,8 +120,8 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLDualInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	CKLDualInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
 
 	virtual ~CKLDualInferenceMethod();
 
@@ -142,7 +142,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLDualInferenceMethod object
 	 */
-	static CKLDualInferenceMethod * obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CKLDualInferenceMethod > obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** get alpha vector
 	 *
@@ -173,13 +173,13 @@ public:
 	 *
 	 * @param mod model to set
 	 */
-	void set_model(CLikelihoodModel* mod);
+	void set_model(std::shared_ptr<CLikelihoodModel> mod);
 
 	/** Set a minimizer
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 
 	/** compute the gradient wrt variational parameters
@@ -192,14 +192,14 @@ protected:
 	/** this method is used to dynamic-cast the likelihood model, m_model,
 	 * to dual variational likelihood model.
 	 */
-	virtual CDualVariationalGaussianLikelihood* get_dual_variational_likelihood() const;
+	virtual std::shared_ptr<CDualVariationalGaussianLikelihood> get_dual_variational_likelihood() const;
 
 	/** check the provided likelihood model supports dual variational inference or not
 	 * @param mod the provided likelihood model
 	 *
 	 * @return whether the provided likelihood model supports dual variational inference or not
 	 */
-	virtual void check_dual_inference(CLikelihoodModel* mod) const;
+	virtual void check_dual_inference(std::shared_ptr<CLikelihoodModel> mod) const;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov();

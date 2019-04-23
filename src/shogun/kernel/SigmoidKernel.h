@@ -45,7 +45,7 @@ class CSigmoidKernel: public CDotKernel
 		 * @param gamma gamma
 		 * @param coef0 coefficient 0
 		 */
-		CSigmoidKernel(CDotFeatures* l, CDotFeatures* r, int32_t size,
+		CSigmoidKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, int32_t size,
 			float64_t gamma, float64_t coef0);
 
 		virtual ~CSigmoidKernel();
@@ -56,7 +56,7 @@ class CSigmoidKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

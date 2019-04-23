@@ -55,7 +55,7 @@ class CDotFeatures : public CFeatures
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CDotFeatures(CFile* loader);
+		CDotFeatures(std::shared_ptr<CFile> loader);
 
 		virtual ~CDotFeatures() { }
 
@@ -75,7 +75,7 @@ class CDotFeatures : public CFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const = 0;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const = 0;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -201,7 +201,7 @@ class CDotFeatures : public CFeatures
 		 * @return mean returned
 		 */
 		static SGVector<float64_t>
-		compute_mean(CDotFeatures* lhs, CDotFeatures* rhs);
+		compute_mean(std::shared_ptr<CDotFeatures> lhs, std::shared_ptr<CDotFeatures> rhs);
 
 		/** get covariance
 		 *
@@ -223,7 +223,7 @@ class CDotFeatures : public CFeatures
 		 * @return covariance
 		 */
 		static SGMatrix<float64_t> compute_cov(
-		    CDotFeatures* lhs, CDotFeatures* rhs,
+		    std::shared_ptr<CDotFeatures> lhs, std::shared_ptr<CDotFeatures> rhs,
 		    bool copy_data_for_speed = true);
 
 	private:

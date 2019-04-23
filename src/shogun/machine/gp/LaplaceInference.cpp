@@ -47,8 +47,8 @@ CLaplaceInference::CLaplaceInference() : CInference()
 	init();
 }
 
-CLaplaceInference::CLaplaceInference(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CLaplaceInference::CLaplaceInference(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CInference(kern, feat, m, lab, mod)
 {
 	init();

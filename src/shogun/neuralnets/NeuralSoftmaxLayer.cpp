@@ -47,7 +47,7 @@ CNeuralLinearLayer(num_neurons)
 }
 
 void CNeuralSoftmaxLayer::compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+		std::shared_ptr<CDynamicObjectArray> layers)
 {
 	CNeuralLinearLayer::compute_activations(parameters, layers);
 

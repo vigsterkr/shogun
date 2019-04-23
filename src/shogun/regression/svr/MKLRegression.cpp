@@ -6,15 +6,15 @@
 
 using namespace shogun;
 
-CMKLRegression::CMKLRegression(CSVM* s) : CMKL(s)
+CMKLRegression::CMKLRegression(std::shared_ptr<CSVM> s) : CMKL(s)
 {
 	if (!s)
 	{
 #ifdef USE_SVMLIGHT
-		s=new CSVRLight();
+		s=std::make_shared<CSVRLight>();
 #endif //USE_SVMLIGHT
 		if (!s)
-			s=new CLibSVR();
+			s=std::make_shared<CLibSVR>();
 		set_svm(s);
 	}
 }

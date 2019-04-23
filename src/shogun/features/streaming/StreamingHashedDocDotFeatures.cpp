@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser, 
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser,
  *          Sergey Lisitsyn, Viktor Gal
  */
 
@@ -11,8 +11,8 @@
 
 using namespace shogun;
 
-CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(CStreamingFile* file,
-	bool is_labelled, int32_t size,	CTokenizer* tzer, int32_t bits)
+CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(std::shared_ptr<CStreamingFile> file,
+	bool is_labelled, int32_t size,	std::shared_ptr<CTokenizer> tzer, int32_t bits)
 : CStreamingDotFeatures()
 {
 	init(file, is_labelled, size, tzer, bits, true, 1, 0);
@@ -24,11 +24,11 @@ CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures() : CStreamingDot
 }
 
 CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(
-	CStringFeatures<char>* dot_features, CTokenizer* tzer, int32_t bits, float64_t* lab)
+	std::shared_ptr<CStringFeatures<char>> dot_features, std::shared_ptr<CTokenizer> tzer, int32_t bits, float64_t* lab)
 : CStreamingDotFeatures()
 {
-	CStreamingFileFromStringFeatures<char>* file =
-		new CStreamingFileFromStringFeatures<char>(dot_features, lab);
+	auto file =
+		std::make_shared<CStreamingFileFromStringFeatures<char>>(dot_features, lab);
 	bool is_labelled = (lab != NULL);
 	int32_t size=1024;
 
@@ -37,28 +37,28 @@ CStreamingHashedDocDotFeatures::CStreamingHashedDocDotFeatures(
 	parser.set_free_vectors_on_destruct(false);
 	seekable= true;
 }
-void CStreamingHashedDocDotFeatures::init(CStreamingFile* file, bool is_labelled,
-	int32_t size, CTokenizer* tzer, int32_t bits, bool normalize, int32_t n_grams, int32_t skips)
+void CStreamingHashedDocDotFeatures::init(std::shared_ptr<CStreamingFile> file, bool is_labelled,
+	int32_t size, std::shared_ptr<CTokenizer> tzer, int32_t bits, bool normalize, int32_t n_grams, int32_t skips)
 {
 	num_bits = bits;
 	tokenizer = tzer;
 	if (tokenizer)
 	{
-		SG_REF(tokenizer);
-		converter = new CHashedDocConverter(tzer, bits, normalize, n_grams, skips);
+
+		converter = std::make_shared<CHashedDocConverter>(tzer, bits, normalize, n_grams, skips);
 	}
 	else
 		converter=NULL;
 
 	SG_ADD(&num_bits, "num_bits", "Number of bits for hash");
-	SG_ADD((CSGObject** ) &tokenizer, "tokenizer", "The tokenizer used on the documents");
-	SG_ADD((CSGObject** ) &converter, "converter", "Converter");
+	SG_ADD((std::shared_ptr<CSGObject>* ) &tokenizer, "tokenizer", "The tokenizer used on the documents");
+	SG_ADD((std::shared_ptr<CSGObject>* ) &converter, "converter", "Converter");
 
 	has_labels = is_labelled;
 	if (file)
 	{
 		working_file = file;
-		SG_REF(working_file);
+
 		parser.init(file, is_labelled, size);
 		seekable = false;
 	}
@@ -73,17 +73,17 @@ CStreamingHashedDocDotFeatures::~CStreamingHashedDocDotFeatures()
 {
 	if (parser.is_running())
 		parser.end_parser();
-	SG_UNREF(working_file);
-	SG_UNREF(tokenizer);
-	SG_UNREF(converter);
+
+
+
 }
 
-float32_t CStreamingHashedDocDotFeatures::dot(CStreamingDotFeatures* df)
+float32_t CStreamingHashedDocDotFeatures::dot(std::shared_ptr<CStreamingDotFeatures> df)
 {
 	ASSERT(df)
 	ASSERT(df->get_name() == get_name())
 
-	CStreamingHashedDocDotFeatures* cdf = (CStreamingHashedDocDotFeatures* ) df;
+	auto cdf = std::static_pointer_cast<CStreamingHashedDocDotFeatures>(df);
 	float32_t result = current_vector.sparse_dot(cdf->current_vector);
 	return result;
 }

@@ -27,7 +27,7 @@ class CMKLOneClass : public CMKL
 		 *
 		 * @param s SVM to use as constraint generator in MKL SILP
 		 */
-		CMKLOneClass(CSVM* s=NULL);
+		CMKLOneClass(std::shared_ptr<CSVM> s=NULL);
 
 		/** Destructor
 		 */

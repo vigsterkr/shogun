@@ -913,7 +913,7 @@ void SGMatrix<T>::free_data()
 }
 
 template<class T>
-void SGMatrix<T>::load(CFile* loader)
+void SGMatrix<T>::load(std::shared_ptr<CFile> loader)
 {
 	ASSERT(loader)
 	unref();
@@ -929,13 +929,13 @@ void SGMatrix<T>::load(CFile* loader)
 }
 
 template<>
-void SGMatrix<complex128_t>::load(CFile* loader)
+void SGMatrix<complex128_t>::load(std::shared_ptr<CFile> loader)
 {
 	SG_SERROR("SGMatrix::load():: Not supported for complex128_t\n");
 }
 
 template<class T>
-void SGMatrix<T>::save(CFile* writer)
+void SGMatrix<T>::save(std::shared_ptr<CFile> writer)
 {
 	assert_on_cpu();
 	ASSERT(writer)
@@ -945,7 +945,7 @@ void SGMatrix<T>::save(CFile* writer)
 }
 
 template<>
-void SGMatrix<complex128_t>::save(CFile* saver)
+void SGMatrix<complex128_t>::save(std::shared_ptr<CFile> saver)
 {
 	SG_SERROR("SGMatrix::save():: Not supported for complex128_t\n");
 }

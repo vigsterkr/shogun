@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Thoralf Klein, Yuyu Zhang, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Thoralf Klein, Yuyu Zhang,
  *          Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -41,10 +41,10 @@ struct CRealNumber : public CStructuredData
 	 *
 	 * @param base_data its dynamic type must be CRealNumber
 	 */
-	static CRealNumber* obtain_from_generic(CStructuredData* base_data)
+	static std::shared_ptr<CRealNumber> obtain_from_generic(std::shared_ptr<CStructuredData> base_data)
 	{
 		if ( base_data->get_structured_data_type() == SDT_REAL )
-			return (CRealNumber*) base_data;
+			return std::static_pointer_cast<CRealNumber>(base_data);
 		else
 			SG_SERROR("base_data must be of dynamic type CRealNumber\n")
 
@@ -98,7 +98,7 @@ class CMulticlassSOLabels : public CStructuredLabels
 		 *
 		 * @param label label to add
 		 */
-		virtual void add_label(CStructuredData* label);
+		virtual void add_label(std::shared_ptr<CStructuredData> label);
 
 		/** get label object for specified index
 		 *
@@ -106,7 +106,7 @@ class CMulticlassSOLabels : public CStructuredLabels
 		 *
 		 * @return label object
 		 */
-		virtual CStructuredData* get_label(int32_t idx);
+		virtual std::shared_ptr<CStructuredData> get_label(int32_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -118,7 +118,7 @@ class CMulticlassSOLabels : public CStructuredLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, CStructuredData* label);
+		virtual bool set_label(int32_t idx, std::shared_ptr<CStructuredData> label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *

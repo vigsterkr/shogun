@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang,
  *          Evangelos Anagnostopoulos, Sergey Lisitsyn
  */
 #ifndef __STREAMING_FILEFROMDENSE_H__
@@ -38,7 +38,7 @@ public:
 	 * @param feat DenseFeatures object
 	 * @param lab Labels as float64_t*, optional
 	 */
-	CStreamingFileFromDenseFeatures(CDenseFeatures<T>* feat,
+	CStreamingFileFromDenseFeatures(std::shared_ptr<CDenseFeatures<T>> feat,
 			float64_t* lab=NULL);
 
 	/**
@@ -93,7 +93,7 @@ private:
 protected:
 
 	/// DenseFeatures object
-	CDenseFeatures<T>* features;
+	std::shared_ptr<CDenseFeatures<T>> features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
@@ -104,21 +104,18 @@ template<class T>
 CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures() :
 		CStreamingFileFromFeatures()
 {
-	init();
 }
 
 template<class T>
 CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(
-		CDenseFeatures<T>* feat, float64_t* lab) :
-		CStreamingFileFromFeatures()
+		std::shared_ptr<CDenseFeatures<T>> feat, float64_t* lab) :
+		CStreamingFileFromDenseFeatures()
 {
 	init();
 
 	REQUIRE(feat,"%s::CStreamingFileFromDenseFeatures() features required!\n",
 			get_name());
 	features=feat;
-	SG_REF(feat);
-
 	labels=lab;
 
 }
@@ -126,7 +123,6 @@ CStreamingFileFromDenseFeatures<T>::CStreamingFileFromDenseFeatures(
 template<class T>
 CStreamingFileFromDenseFeatures<T>::~CStreamingFileFromDenseFeatures()
 {
-	SG_UNREF(features);
 }
 
 template<class T>

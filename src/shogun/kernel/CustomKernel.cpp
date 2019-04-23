@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Pan Deng, 
- *          Sergey Lisitsyn, Khaled Nasr, Evgeniy Andreev, Evan Shelhamer, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Soumyajit De, Pan Deng,
+ *          Sergey Lisitsyn, Khaled Nasr, Evgeniy Andreev, Evan Shelhamer,
  *          Liang Pang
  */
 
@@ -19,16 +19,16 @@ using namespace linalg;
 
 void CCustomKernel::init()
 {
-	m_row_subset_stack=new CSubsetStack();
-	SG_REF(m_row_subset_stack)
-	m_col_subset_stack=new CSubsetStack();
-	SG_REF(m_col_subset_stack)
+	m_row_subset_stack=std::make_shared<CSubsetStack>();
+
+	m_col_subset_stack=std::make_shared<CSubsetStack>();
+
 	m_is_symmetric=false;
 	m_free_km=true;
 
-	SG_ADD((CSGObject**)&m_row_subset_stack, "row_subset_stack",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_row_subset_stack, "row_subset_stack",
 			"Subset stack of rows");
-	SG_ADD((CSGObject**)&m_col_subset_stack, "col_subset_stack",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_col_subset_stack, "col_subset_stack",
 			"Subset stack of columns");
 	SG_ADD(&m_free_km, "free_km", "Whether kernel matrix should be freed in "
 			"destructor");
@@ -44,7 +44,7 @@ CCustomKernel::CCustomKernel()
 	init();
 }
 
-CCustomKernel::CCustomKernel(CKernel* k)
+CCustomKernel::CCustomKernel(std::shared_ptr<CKernel> k)
 : CKernel(10)
 {
 	SG_DEBUG("created CCustomKernel\n")
@@ -53,7 +53,7 @@ CCustomKernel::CCustomKernel(CKernel* k)
 	/* if constructed from a custom kernel, use same kernel matrix */
 	if (k->get_kernel_type()==K_CUSTOM)
 	{
-		CCustomKernel* casted=(CCustomKernel*)k;
+		auto casted=std::static_pointer_cast<CCustomKernel>(k);
 		m_is_symmetric=casted->m_is_symmetric;
 		set_full_kernel_matrix_from_full(casted->get_float32_kernel_matrix());
 		m_free_km=false;
@@ -87,17 +87,17 @@ CCustomKernel::~CCustomKernel()
 {
 	SG_DEBUG("Entering\n")
 	cleanup();
-	SG_UNREF(m_row_subset_stack);
-	SG_UNREF(m_col_subset_stack);
+
+
 	SG_DEBUG("Leaving\n")
 }
 
 bool CCustomKernel::dummy_init(int32_t rows, int32_t cols)
 {
-	return init(new CDummyFeatures(rows), new CDummyFeatures(cols));
+	return init(std::make_shared<CDummyFeatures>(rows), std::make_shared<CDummyFeatures>(cols));
 }
 
-bool CCustomKernel::init(CFeatures* l, CFeatures* r)
+bool CCustomKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	/* make it possible to call with NULL values since features are useless
 	 * for custom kernel matrix */
@@ -126,8 +126,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r)
 	 */
 	if (l->get_feature_class()==C_INDEX && r->get_feature_class()==C_INDEX)
 	{
-		CIndexFeatures* l_idx = (CIndexFeatures*)l;
-		CIndexFeatures* r_idx = (CIndexFeatures*)r;
+		auto l_idx = std::static_pointer_cast<CIndexFeatures>(l);
+		auto r_idx = std::static_pointer_cast<CIndexFeatures>(r);
 
 		remove_all_col_subsets();
 		remove_all_row_subsets();

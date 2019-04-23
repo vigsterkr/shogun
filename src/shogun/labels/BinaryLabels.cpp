@@ -57,7 +57,7 @@ CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDe
 	set_values(src);
 }
 
-CBinaryLabels::CBinaryLabels(CFile * loader) : CDenseLabels(loader)
+CBinaryLabels::CBinaryLabels(std::shared_ptr<CFile > loader) : CDenseLabels(loader)
 {
 }
 
@@ -115,14 +115,13 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")
 }
 
-CLabels* CBinaryLabels::shallow_subset_copy()
+std::shared_ptr<CLabels> CBinaryLabels::shallow_subset_copy()
 {
-	CLabels* shallow_copy_labels=NULL;
 	SGVector<float64_t> shallow_copy_vector(m_labels);
-	shallow_copy_labels=new CBinaryLabels(m_labels.size());
-	SG_REF(shallow_copy_labels);
+	auto shallow_copy_labels=std::make_shared<CBinaryLabels>(m_labels.size());
 
-	((CDenseLabels*) shallow_copy_labels)->set_labels(shallow_copy_vector);
+
+	shallow_copy_labels->set_labels(shallow_copy_vector);
 	if (m_subset_stack->has_subsets())
 		shallow_copy_labels->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 
@@ -134,14 +133,14 @@ CBinaryLabels::CBinaryLabels(const CDenseLabels& dense) : CDenseLabels(dense)
 	ensure_valid();
 }
 
-CLabels* CBinaryLabels::duplicate() const
+std::shared_ptr<CLabels> CBinaryLabels::duplicate() const
 {
-	return new CBinaryLabels(*this);
+	return std::make_shared<CBinaryLabels>(*this);
 }
 
 namespace shogun
 {
-	Some<CBinaryLabels> binary_labels(CLabels* orig)
+	std::shared_ptr<CBinaryLabels> binary_labels(std::shared_ptr<CLabels> orig)
 	{
 		REQUIRE(orig, "No labels provided.\n");
 		try
@@ -149,7 +148,7 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_BINARY:
-				return Some<CBinaryLabels>::from_raw((CBinaryLabels*)orig);
+				return std::static_pointer_cast<CBinaryLabels>(orig);
 			default:
 				SG_SNOTIMPLEMENTED
 			}
@@ -161,6 +160,6 @@ namespace shogun
 			    e.what());
 		}
 
-		return Some<CBinaryLabels>::from_raw(nullptr);
+		return nullptr;
 	}
 } // namespace shogun

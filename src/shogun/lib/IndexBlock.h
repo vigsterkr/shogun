@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang, Thoralf Klein, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Yuyu Zhang, Thoralf Klein,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -56,7 +56,7 @@ public:
 	virtual const char* get_name() const { return "IndexBlock"; };
 
 	/** get subtasks */
-	CList* get_sub_blocks();
+	std::shared_ptr<CList> get_sub_blocks();
 
 	/** get num subtasks */
 	int32_t get_num_sub_blocks();
@@ -64,7 +64,7 @@ public:
 	/** adds sub-block
 	 * @param sub_block subtask to add
 	 */
-	void add_sub_block(CIndexBlock* sub_block);
+	void add_sub_block(std::shared_ptr<CIndexBlock> sub_block);
 
 private:
 	/** min index */
@@ -77,7 +77,7 @@ private:
 	float64_t m_weight;
 
 	/** subtasks */
-	CList* m_sub_blocks;
+	std::shared_ptr<CList> m_sub_blocks;
 
 };
 

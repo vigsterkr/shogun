@@ -48,8 +48,8 @@ class RegressionTestEnvironment : public ::testing::Environment
 {
 private:
 	const index_t n_train = 20, n_test = 15, n_dim = 4;
-	CDenseFeatures<float64_t> *features_train, *features_test;
-	CRegressionLabels *labels_train, *labels_test;
+	std::shared_ptr<CDenseFeatures<float64_t>> features_train, features_test;
+	std::shared_ptr<CRegressionLabels> labels_train, labels_test;
 
 public:
 	virtual void SetUp()
@@ -71,44 +71,34 @@ public:
 		SGVector<float64_t> label_test_data =
 		    linalg::matrix_prod(feat_test_data, w, true);
 
-		features_train = new CDenseFeatures<float64_t>(feat_train_data);
-		labels_train = new CRegressionLabels(label_train_data);
+		features_train = std::make_shared<CDenseFeatures<float64_t>>(feat_train_data);
+		labels_train = std::make_shared<CRegressionLabels>(label_train_data);
 
-		features_test = new CDenseFeatures<float64_t>(feat_test_data);
-		labels_test = new CRegressionLabels(label_test_data);
+		features_test = std::make_shared<CDenseFeatures<float64_t>>(feat_test_data);
+		labels_test = std::make_shared<CRegressionLabels>(label_test_data);
 
-		SG_REF(features_train);
-		SG_REF(labels_train);
-
-		SG_REF(features_test);
-		SG_REF(labels_test);
 	}
 
 	virtual void TearDown()
 	{
-		SG_UNREF(features_train);
-		SG_UNREF(labels_train);
-
-		SG_UNREF(features_test);
-		SG_UNREF(labels_test);
 	}
 
-	CDenseFeatures<float64_t>* get_features_train() const
+	auto get_features_train() const
 	{
 		return features_train;
 	}
 
-	CDenseFeatures<float64_t>* get_features_test() const
+	auto get_features_test() const
 	{
 		return features_test;
 	}
 
-	CRegressionLabels* get_labels_train() const
+	auto get_labels_train() const
 	{
 		return labels_train;
 	}
 
-	CRegressionLabels* get_labels_test() const
+	auto get_labels_test() const
 	{
 		return labels_test;
 	}

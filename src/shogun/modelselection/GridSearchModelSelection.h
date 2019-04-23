@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Jacob Walker, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Jacob Walker,
  *          Yuyu Zhang, Roman Votyakov
  */
 
@@ -31,8 +31,8 @@ public:
 	 * @param machine_eval machine evaluation object
 	 * @param model_parameters parameters
 	 */
-	CGridSearchModelSelection(CMachineEvaluation* machine_eval,
-			CModelSelectionParameters* model_parameters);
+	CGridSearchModelSelection(std::shared_ptr<CMachineEvaluation> machine_eval,
+			std::shared_ptr<CModelSelectionParameters> model_parameters);
 
 	/** destructor */
 	virtual ~CGridSearchModelSelection();
@@ -43,7 +43,7 @@ public:
 	 *
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false);
+	virtual std::shared_ptr<CParameterCombination> select_model(bool print_state=false);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const { return "GridSearchModelSelection"; }

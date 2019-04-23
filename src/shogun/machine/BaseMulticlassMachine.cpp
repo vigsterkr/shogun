@@ -10,15 +10,15 @@ using namespace shogun;
 
 CBaseMulticlassMachine::CBaseMulticlassMachine()
 {
-	m_machines = new CDynamicObjectArray();
-	SG_REF(m_machines);
+	m_machines = std::make_shared<CDynamicObjectArray>();
+	
 
-	SG_ADD((CSGObject**)&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
 }
 
 CBaseMulticlassMachine::~CBaseMulticlassMachine()
 {
-	SG_UNREF(m_machines);
+	
 }
 
 int32_t CBaseMulticlassMachine::get_num_machines() const
@@ -31,7 +31,7 @@ EProblemType CBaseMulticlassMachine::get_machine_problem_type() const
 	return PT_MULTICLASS;
 }
 
-bool CBaseMulticlassMachine::is_label_valid(CLabels *lab) const
+bool CBaseMulticlassMachine::is_label_valid(std::shared_ptr<CLabels >lab) const
 {
 	return lab->get_label_type() == LT_MULTICLASS;
 }

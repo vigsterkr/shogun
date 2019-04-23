@@ -41,17 +41,17 @@ CTask::CTask(SGVector<index_t> indices,
 
 void CTask::init()
 {
-	m_subtasks = new CList(true);
-	SG_REF(m_subtasks);
+	m_subtasks = std::make_shared<CList>(true);
 
-	SG_ADD((CSGObject**)&m_subtasks,"subtasks","subtasks of given task");
+
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_subtasks,"subtasks","subtasks of given task");
 	SG_ADD(&m_indices,"indices","indices of task");
 	SG_ADD(&m_weight,"weight","weight of task");
 }
 
 CTask::~CTask()
 {
-	SG_UNREF(m_subtasks);
+
 }
 
 bool CTask::is_contiguous()
@@ -70,7 +70,7 @@ bool CTask::is_contiguous()
 	return result;
 }
 
-void CTask::add_subtask(CTask* subtask)
+void CTask::add_subtask(std::shared_ptr<CTask> subtask)
 {
 	SGVector<index_t> subtask_indices = subtask->get_indices();
 	for (int32_t i=0; i<subtask_indices.vlen; i++)
@@ -90,9 +90,9 @@ void CTask::add_subtask(CTask* subtask)
 	m_subtasks->append_element(subtask);
 }
 
-CList* CTask::get_subtasks()
+std::shared_ptr<CList> CTask::get_subtasks()
 {
-	SG_REF(m_subtasks);
+
 	return m_subtasks;
 }
 

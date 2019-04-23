@@ -62,7 +62,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of example objects to be stored in the parser at a time.
 	 */
-	CStreamingSparseFeatures(CStreamingFile* file,
+	CStreamingSparseFeatures(std::shared_ptr<CStreamingFile> file,
 				 bool is_labelled,
 				 int32_t size);
 
@@ -189,7 +189,7 @@ public:
 	 *
 	 * @return Dot product.
 	 */
-	virtual float32_t dot(CStreamingDotFeatures *df);
+	virtual float32_t dot(std::shared_ptr<CStreamingDotFeatures >df);
 
 	/** compute the dot product between two sparse feature vectors
 	 * alpha * vec^T * vec
@@ -333,7 +333,7 @@ private:
 	 * @param is_labelled whether labelled or not
 	 * @param size number of examples in the parser's ring
 	 */
-	virtual void init(CStreamingFile *file, bool is_labelled, int32_t size);
+	virtual void init(std::shared_ptr<CStreamingFile >file, bool is_labelled, int32_t size);
 
 protected:
 	/// The parser object, which reads from input and returns parsed example objects.

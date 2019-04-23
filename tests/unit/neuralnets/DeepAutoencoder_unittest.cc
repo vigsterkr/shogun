@@ -53,22 +53,22 @@ TEST(DeepAutoencoder, pre_train)
 	for (int32_t i=0; i<num_features*num_examples; i++)
 		data[i] = CMath::random(-1.0,1.0);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(num_features));
-	layers->append_element(new CNeuralLogisticLayer(12));
-	layers->append_element(new CNeuralLogisticLayer(15));
-	layers->append_element(new CNeuralLogisticLayer(12));
-	layers->append_element(new CNeuralLinearLayer(num_features));
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(num_features));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(15));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(num_features));
 
 	CDeepAutoencoder ae(layers);
 
-	CDenseFeatures<float64_t>* features = new CDenseFeatures<float64_t>(data);
+	auto features = std::make_shared<CDenseFeatures<float64_t>>(data);
 
 	ae.pt_epsilon.set_const(1e-6);
 	ae.pre_train(features);
 
 
-	CDenseFeatures<float64_t>* reconstructed = ae.reconstruct(features);
+	auto reconstructed = ae.reconstruct(features);
 	SGMatrix<float64_t> reconstructed_data = reconstructed->get_feature_matrix();
 
 	float64_t avg_diff = 0;
@@ -77,33 +77,33 @@ TEST(DeepAutoencoder, pre_train)
 
 	EXPECT_NEAR(0.0, avg_diff, 0.01);
 
-	SG_UNREF(features);
-	SG_UNREF(reconstructed);
+
+
 }
 
 TEST(DeepAutoencoder, convert_to_neural_network)
 {
 	CMath::init_random(100);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(10));
-	layers->append_element(new CNeuralLogisticLayer(12));
-	layers->append_element(new CNeuralLogisticLayer(15));
-	layers->append_element(new CNeuralLogisticLayer(12));
-	layers->append_element(new CNeuralLinearLayer(10));
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(10));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(15));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(10));
 
 	CDeepAutoencoder ae(layers);
 
-	CNeuralNetwork* nn = ae.convert_to_neural_network();
+	auto nn = ae.convert_to_neural_network();
 
 	SGMatrix<float64_t> x(10, 3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
 		x[i] = CMath::random(0.0,1.0);
 
-	CDenseFeatures<float64_t> f(x);
+	auto f = std::make_shared<CDenseFeatures<float64_t>>(x);
 
-	CDenseFeatures<float64_t>* f_transformed_nn = nn->transform(&f);
-	CDenseFeatures<float64_t>* f_transformed_ae = ae.transform(&f);
+	auto f_transformed_nn = nn->transform(f);
+	auto f_transformed_ae = ae.transform(f);
 
 
 	SGMatrix<float64_t> x_transformed_ae =
@@ -116,7 +116,7 @@ TEST(DeepAutoencoder, convert_to_neural_network)
 	for (int32_t i=0; i< x_transformed_ae.num_rows*x_transformed_ae.num_cols; i++)
 		EXPECT_NEAR(x_transformed_ae[i], x_transformed_nn[i], 1e-15);
 
-	SG_UNREF(nn);
-	SG_UNREF(f_transformed_ae);
-	SG_UNREF(f_transformed_nn);
+
+
+
 }

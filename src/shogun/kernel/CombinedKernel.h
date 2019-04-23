@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evangelos Anagnostopoulos, Jacob Walker, 
- *          Sergey Lisitsyn, Roman Votyakov, Michele Mazzoni, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Evangelos Anagnostopoulos, Jacob Walker,
+ *          Sergey Lisitsyn, Roman Votyakov, Michele Mazzoni, Heiko Strathmann,
  *          Yuyu Zhang, Evgeniy Andreev, Evan Shelhamer, Wu Lin
  */
 
@@ -67,7 +67,7 @@ class CCombinedKernel : public CKernel
 		 * @param rhs features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs);
+		virtual bool init(std::shared_ptr<CFeatures> lhs, std::shared_ptr<CFeatures> rhs);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -112,7 +112,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return first kernel
 		 */
-		inline CKernel* get_first_kernel()
+		inline std::shared_ptr<CKernel> get_first_kernel()
 		{
 			return get_kernel(0);
 		}
@@ -122,11 +122,11 @@ class CCombinedKernel : public CKernel
 		 * @param idx index of kernel
 		 * @return kernel at index idx
 		 */
-		inline CKernel* get_kernel(int32_t idx)
+		inline std::shared_ptr<CKernel> get_kernel(int32_t idx)
 		{
 			if (idx < get_num_kernels())
 			{
-				return (CKernel*)kernel_array->get_element(idx);
+				return std::static_pointer_cast<CKernel>(kernel_array->get_element(idx));
 			}
 			else
 			{
@@ -138,7 +138,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return last kernel
 		 */
-		inline CKernel* get_last_kernel()
+		inline std::shared_ptr<CKernel> get_last_kernel()
 		{
 			return get_kernel(get_num_kernels()-1);
 		}
@@ -150,7 +150,7 @@ class CCombinedKernel : public CKernel
 		 * @param idx the index of the position where the kernel should be added
 		 * @return if inserting was successful
 		 */
-		inline bool insert_kernel(CKernel* k, int32_t idx)
+		inline bool insert_kernel(std::shared_ptr<CKernel> k, int32_t idx)
 		{
 			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
@@ -178,8 +178,8 @@ class CCombinedKernel : public CKernel
 			for (auto i : range(kernel_array->get_num_elements()))
 			{
 				auto cur = kernel_array->get_element(i);
-				all_linadd &= ((CKernel*)cur)->has_property(p);
-				SG_UNREF(cur);
+				all_linadd &= (std::static_pointer_cast<CKernel>(cur))->has_property(p);
+
 				if (!all_linadd)
 					break;
 			}
@@ -192,7 +192,7 @@ class CCombinedKernel : public CKernel
 		 * @param k kernel
 		 * @return if appending was successful
 		 */
-		inline bool append_kernel(CKernel* k)
+		inline bool append_kernel(std::shared_ptr<CKernel> k)
 		{
 			ASSERT(k)
 			adjust_num_lhs_rhs_initialized(k);
@@ -252,9 +252,9 @@ class CCombinedKernel : public CKernel
 
 				for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 				{
-					CKernel* k = get_kernel(k_idx);
+					auto k = get_kernel(k_idx);
 					num_subkernels += k->get_num_subkernels();
-					SG_UNREF(k);
+
 				}
 				return num_subkernels;
 			}
@@ -337,7 +337,7 @@ class CCombinedKernel : public CKernel
 		 * @param weights weights
 		 */
 		void emulate_compute_batch(
-			CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* target,
+			std::shared_ptr<CKernel> k, int32_t num_vec, int32_t* vec_idx, float64_t* target,
 			int32_t num_suppvec, int32_t* IDX, float64_t* weights);
 
 		/** add to normal vector
@@ -393,7 +393,7 @@ class CCombinedKernel : public CKernel
 		 * @param kernel kernel to cast to CombinedKernel
 		 * @return casted version of kernel.
 		 */
-		static CCombinedKernel* obtain_from_generic(CKernel* kernel);
+		static std::shared_ptr<CCombinedKernel> obtain_from_generic(std::shared_ptr<CKernel> kernel);
 
 		/** return derivative with respect to specified parameter
 		 *
@@ -409,9 +409,9 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @return kernel array
 		 */
-		inline CDynamicObjectArray* get_array()
+		inline std::shared_ptr<CDynamicObjectArray> get_array()
 		{
-			SG_REF(kernel_array);
+
 			return kernel_array;
 		}
 
@@ -424,7 +424,7 @@ class CCombinedKernel : public CKernel
 		*
 		* @return a list of CombinedKernels.
 		*/
-		static CList* combine_kernels(CList* kernel_list);
+		static std::shared_ptr<CList> combine_kernels(std::shared_ptr<CList> kernel_list);
 
 		/** Enable to find weight for subkernels during model selection
 		 */
@@ -432,7 +432,7 @@ class CCombinedKernel : public CKernel
 
 	protected:
 		virtual void init_subkernel_weights();
-		
+
 		/** compute kernel function
 		 *
 		 * @param x x
@@ -446,7 +446,7 @@ class CCombinedKernel : public CKernel
 		 *
 		 * @param k kernel
 		 */
-		inline void adjust_num_lhs_rhs_initialized(CKernel* k)
+		inline void adjust_num_lhs_rhs_initialized(std::shared_ptr<CKernel> k)
 		{
 			ASSERT(k)
 
@@ -500,12 +500,12 @@ class CCombinedKernel : public CKernel
 		 * @return init succesful
 		 */
 		bool init_with_extracted_subsets(
-		    CFeatures* lhs, CFeatures* rhs, SGVector<index_t> lhs_subset,
+		    std::shared_ptr<CFeatures> lhs, std::shared_ptr<CFeatures> rhs, SGVector<index_t> lhs_subset,
 		    SGVector<index_t> rhs_subset);
 
 	protected:
 		/** list of kernels */
-		CDynamicObjectArray* kernel_array;
+		std::shared_ptr<CDynamicObjectArray> kernel_array;
 		/** support vector count */
 		int32_t   sv_count;
 		/** support vector index */

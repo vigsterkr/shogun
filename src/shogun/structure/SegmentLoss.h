@@ -56,7 +56,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_ids segment ids
 		 */
-		void set_segment_ids(CDynamicArray<int32_t>* segment_ids);
+		void set_segment_ids(std::shared_ptr<CDynamicArray<int32_t>> segment_ids);
 
 		/** mask parts of the sequence such that there is no
 		 *  loss incured there; this is used if there is uncertainty
@@ -64,7 +64,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_mask mask
 		 */
-		void set_segment_mask(CDynamicArray<float64_t>* segment_mask);
+		void set_segment_mask(std::shared_ptr<CDynamicArray<float64_t>> segment_mask);
 
 		/** set num segment types
 		 *
@@ -98,10 +98,10 @@ class CSegmentLoss : public CSGObject
 		CDynamicArray<float64_t> m_segment_loss; // 3d
 
 		/** segment IDs */
-		CDynamicArray<int32_t>* m_segment_ids;
+		std::shared_ptr<CDynamicArray<int32_t>> m_segment_ids;
 
 		/** segment mask */
-		CDynamicArray<float64_t>* m_segment_mask;
+		std::shared_ptr<CDynamicArray<float64_t>> m_segment_mask;
 
 		/** number of different segment types (former: max_a_id)*/
 		int32_t m_num_segment_types;

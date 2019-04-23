@@ -40,21 +40,21 @@ TEST(KernelPCA, transform)
 	SGMatrix<float64_t> test_matrix(num_features, num_test_vectors);
 	load_data(train_matrix, test_matrix);
 
-	CDenseFeatures<float64_t>* train_feats =
-	    new CDenseFeatures<float64_t>(train_matrix);
+	auto train_feats =
+	    std::make_shared<CDenseFeatures<float64_t>>(train_matrix);
 
-	CDenseFeatures<float64_t>* test_feats =
-	    new CDenseFeatures<float64_t>(test_matrix);
+	auto test_feats =
+	    std::make_shared<CDenseFeatures<float64_t>>(test_matrix);
 
-	SG_REF(train_feats)
-	SG_REF(test_feats)
 
-	CGaussianKernel* kernel = new CGaussianKernel();
-	SG_REF(kernel)
+
+
+	auto kernel = std::make_shared<CGaussianKernel>();
+
 	kernel->set_width(1);
 
-	CKernelPCA* kpca = new CKernelPCA(kernel);
-	SG_REF(kpca)
+	auto kpca = std::make_shared<CKernelPCA>(kernel);
+
 	kpca->set_target_dim(target_dim);
 	kpca->fit(train_feats);
 
@@ -66,10 +66,10 @@ TEST(KernelPCA, transform)
 	for (index_t i = 0; i < num_test_vectors * target_dim; ++i)
 		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
 
-	SG_UNREF(train_feats)
-	SG_UNREF(test_feats)
-	SG_UNREF(kpca);
-	SG_UNREF(kernel);
+
+
+
+
 }
 
 TEST(KernelPCA, apply_to_feature_vector)
@@ -78,16 +78,16 @@ TEST(KernelPCA, apply_to_feature_vector)
 	SGVector<float64_t> test_vector(num_features);
 	load_data(train_matrix, test_vector);
 
-	CDenseFeatures<float64_t>* train_feats =
-	    new CDenseFeatures<float64_t>(train_matrix);
-	SG_REF(train_feats)
+	auto train_feats =
+	    std::make_shared<CDenseFeatures<float64_t>>(train_matrix);
 
-	CGaussianKernel* kernel = new CGaussianKernel();
-	SG_REF(kernel)
+
+	auto kernel = std::make_shared<CGaussianKernel>();
+
 	kernel->set_width(1);
 
-	CKernelPCA* kpca = new CKernelPCA(kernel);
-	SG_REF(kpca)
+	auto kpca = std::make_shared<CKernelPCA>(kernel);
+
 	kpca->set_target_dim(target_dim);
 	kpca->fit(train_feats);
 
@@ -97,7 +97,7 @@ TEST(KernelPCA, apply_to_feature_vector)
 	for (index_t i = 0; i < target_dim; ++i)
 		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
 
-	SG_UNREF(train_feats)
-	SG_UNREF(kpca);
-	SG_UNREF(kernel);
+
+
+
 }

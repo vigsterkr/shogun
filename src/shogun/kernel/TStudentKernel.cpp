@@ -21,30 +21,30 @@ CTStudentKernel::CTStudentKernel(): CKernel(0), distance(NULL), degree(1.0)
 	init();
 }
 
-CTStudentKernel::CTStudentKernel(int32_t cache, float64_t d, CDistance* dist)
+CTStudentKernel::CTStudentKernel(int32_t cache, float64_t d, std::shared_ptr<CDistance> dist)
 : CKernel(cache), distance(dist), degree(d)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 }
 
-CTStudentKernel::CTStudentKernel(CFeatures *l, CFeatures *r, float64_t d, CDistance* dist)
+CTStudentKernel::CTStudentKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t d, std::shared_ptr<CDistance> dist)
 : CKernel(10), distance(dist), degree(d)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init(l, r);
 }
 
 CTStudentKernel::~CTStudentKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-bool CTStudentKernel::init(CFeatures* l, CFeatures* r)
+bool CTStudentKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(distance)
 	CKernel::init(l,r);

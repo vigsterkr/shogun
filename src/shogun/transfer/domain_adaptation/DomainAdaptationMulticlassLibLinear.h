@@ -29,14 +29,14 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 		 * @param source_machine source domain machine to regularize against
 		 */
 		CDomainAdaptationMulticlassLibLinear(float64_t target_C,
-				CDotFeatures* target_features, CLabels* target_labels,
-				CLinearMulticlassMachine* source_machine);
+				std::shared_ptr<CDotFeatures> target_features, std::shared_ptr<CLabels> target_labels,
+				std::shared_ptr<CLinearMulticlassMachine> source_machine);
 
 		/** destructor */
 		virtual ~CDomainAdaptationMulticlassLibLinear();
 
 		/** get submachine outputs */
-		virtual CBinaryLabels* get_submachine_outputs(int32_t);
+		virtual std::shared_ptr<CBinaryLabels> get_submachine_outputs(int32_t);
 
 		/** get name */
 		virtual const char* get_name() const
@@ -65,11 +65,11 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 		/** getter for source machine
 		 * @return source machine
 		 */
-		CLinearMulticlassMachine* get_source_machine() const;
+		std::shared_ptr<CLinearMulticlassMachine> get_source_machine() const;
 		/** setter for source machine
 		 * @param source_machine source machine
 		 */
-		void set_source_machine(CLinearMulticlassMachine* source_machine);
+		void set_source_machine(std::shared_ptr<CLinearMulticlassMachine> source_machine);
 
 protected:
 
@@ -93,7 +93,7 @@ protected:
 		float64_t m_source_bias;
 
 		/** source domain machine */
-		CLinearMulticlassMachine* m_source_machine;
+		std::shared_ptr<CLinearMulticlassMachine> m_source_machine;
 };
 }
 #endif /* HAVE_LAPACK */

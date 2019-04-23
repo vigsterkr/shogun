@@ -80,7 +80,7 @@ EProblemType CCHAIDTree::get_machine_problem_type() const
 	return PT_MULTICLASS;
 }
 
-bool CCHAIDTree::is_label_valid(CLabels* lab) const
+bool CCHAIDTree::is_label_valid(std::shared_ptr<CLabels> lab) const
 {
 	switch (m_dependent_vartype)
 	{
@@ -97,14 +97,14 @@ bool CCHAIDTree::is_label_valid(CLabels* lab) const
 	return false;
 }
 
-CMulticlassLabels* CCHAIDTree::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CCHAIDTree::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
 	return apply_tree(data)->as<CMulticlassLabels>();
 }
 
-CRegressionLabels* CCHAIDTree::apply_regression(CFeatures* data)
+std::shared_ptr<CRegressionLabels> CCHAIDTree::apply_regression(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data, "Data required for regression in apply_regression\n")
 
@@ -152,11 +152,11 @@ void CCHAIDTree::set_dependent_vartype(int32_t var)
 	m_dependent_vartype=var;
 }
 
-bool CCHAIDTree::train_machine(CFeatures* data)
+bool CCHAIDTree::train_machine(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data, "Data required for training\n")
 
-	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
+	auto feats=data->as<CDenseFeatures<float64_t>>();
 
 	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified"
 	" (%d here) is not the same as the number of features in data matrix (%d here)\n",m_feature_types.vlen,feats->get_num_features())
@@ -197,13 +197,13 @@ bool CCHAIDTree::train_machine(CFeatures* data)
 	return true;
 }
 
-CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGVector<float64_t> weights, CLabels* labels, int32_t level)
+std::shared_ptr<CTreeMachineNode<CHAIDTreeNodeData>> CCHAIDTree::CHAIDtrain(std::shared_ptr<CFeatures> data, SGVector<float64_t> weights, std::shared_ptr<CLabels> labels, int32_t level)
 {
 	REQUIRE(data,"data matrix cannot be empty\n");
 	REQUIRE(labels,"labels cannot be NULL\n");
 
-	node_t* node=new node_t();
-	SGVector<float64_t> labels_vec=(dynamic_cast<CDenseLabels*>(labels))->get_labels();
+	auto node=std::make_shared<node_t>();
+	SGVector<float64_t> labels_vec=labels->as<CDenseLabels>()->get_labels();
 	SGMatrix<float64_t> mat=data->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	int32_t num_feats=mat.num_rows;
 	int32_t num_vecs=mat.num_cols;
@@ -343,7 +343,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 		if (cat_min[i]!=i)
 			continue;
 
-		CDynamicArray<int32_t>* feat_index=new CDynamicArray<int32_t>();
+		auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
 		for (int32_t j=0;j<num_vecs;j++)
 		{
 			for (int32_t k=0;k<unum;k++)
@@ -366,7 +366,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 
 		auto feats_train = view(data, subset);
 		auto labels_train = view(labels, subset);
-		node_t* child =
+		auto child =
 		    CHAIDtrain(feats_train, subweights, labels_train, level + 1);
 		node->add_child(child);
 
@@ -399,7 +399,7 @@ CTreeMachineNode<CHAIDTreeNodeData>* CCHAIDTree::CHAIDtrain(CFeatures* data, SGV
 		for (int32_t j=0;j<unum;j++)
 			node->data.distinct_features[j]=ufeats_best[j];
 
-		SG_UNREF(feat_index);
+
 	}
 
 	return node;
@@ -451,8 +451,8 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 			int32_t cat_index=i;
 
 			// compute p-value
-			CDynamicArray<int32_t>* feat_index=new CDynamicArray<int32_t>();
-			CDynamicArray<int32_t>* feat_cat=new CDynamicArray<int32_t>();
+			auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
+			auto feat_cat=std::make_shared<CDynamicArray<int32_t>>();
 			for (int32_t j=0;j<feats.vlen;j++)
 			{
 				for (int32_t k=0;k<inum_cat;k++)
@@ -490,8 +490,8 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 				cat_index_max=cat_index;
 			}
 
-			SG_UNREF(feat_index);
-			SG_UNREF(feat_cat);
+
+
 		}
 
 		if (max_merge_pv>m_alpha_merge)
@@ -569,7 +569,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 			break;
 
 		// assimilate all category labels left
-		CDynamicArray<int32_t>* leftcat=new CDynamicArray<int32_t>();
+		auto leftcat=std::make_shared<CDynamicArray<int32_t>>();
 		for (int32_t i=0;i<cat.vlen;i++)
 		{
 			if (cat[i]==i)
@@ -584,8 +584,8 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 		{
 			for (int32_t j=i+1;j<leftcat->get_num_elements();j++)
 			{
-				CDynamicArray<int32_t>* feat_index=new CDynamicArray<int32_t>();
-				CDynamicArray<int32_t>* feat_cat=new CDynamicArray<int32_t>();
+				auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
+				auto feat_cat=std::make_shared<CDynamicArray<int32_t>>();
 				for (int32_t k=0;k<feats.vlen;k++)
 				{
 					for (int32_t l=0;l<inum_cat;l++)
@@ -624,12 +624,12 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 					cat2_max=leftcat->get_element(j);
 				}
 
-				SG_UNREF(feat_index);
-				SG_UNREF(feat_cat);
+
+
 			}
 		}
 
-		SG_UNREF(leftcat);
+
 
 		if (max_merge_pv>m_alpha_merge)
 		{
@@ -662,9 +662,9 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 	return cat;
 }
 
-CLabels* CCHAIDTree::apply_tree(CFeatures* data)
+std::shared_ptr<CLabels> CCHAIDTree::apply_tree(std::shared_ptr<CFeatures> data)
 {
-	CDenseFeatures<float64_t>* feats=data->as<CDenseFeatures<float64_t>>();
+	auto feats=data->as<CDenseFeatures<float64_t>>();
 
 	// modify test data matrix (continuous to ordinal)
 	if (m_cont_breakpoints.num_cols>0)
@@ -674,7 +674,7 @@ CLabels* CCHAIDTree::apply_tree(CFeatures* data)
 	return apply_from_current_node(fmat, m_root);
 }
 
-CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* current)
+std::shared_ptr<CLabels> CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, std::shared_ptr<node_t> current)
 {
 	REQUIRE(current != NULL, "The tree cannot be empty.\n");
 	int32_t num_vecs=fmat.num_cols;
@@ -682,9 +682,9 @@ CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* c
 	SGVector<float64_t> labels(num_vecs);
 	for (int32_t i=0;i<num_vecs;i++)
 	{
-		node_t* node=current;
-		SG_REF(node);
-		CDynamicObjectArray* children=node->get_children();
+		auto node=current;
+
+		auto children=node->get_children();
 		// while leaf node not reached
 		while(children->get_num_elements()>0)
 		{
@@ -702,35 +702,27 @@ CLabels* CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, node_t* c
 			if (index==-1)
 				break;
 
-			CSGObject* el=children->get_element(node->data.feature_class[index]);
-			if (el!=NULL)
-			{
-				SG_UNREF(node);
-				node=dynamic_cast<node_t*>(el);
-			}
-			else
-				SG_ERROR("%d child is expected to be present. But it is NULL\n",index)
+			node=children->get_element<node_t>(node->data.feature_class[index]);
 
-			SG_UNREF(children);
 			children=node->get_children();
 		}
 
 		labels[i]=node->data.node_label;
-		SG_UNREF(node);
-		SG_UNREF(children);
+
+
 	}
 
 	switch (get_machine_problem_type())
 	{
 		case PT_MULTICLASS:
-			return new CMulticlassLabels(labels);
+			return std::make_shared<CMulticlassLabels>(labels);
 		case PT_REGRESSION:
-			return new CRegressionLabels(labels);
+			return std::make_shared<CRegressionLabels>(labels);
 		default:
 			SG_ERROR("Undefined problem type\n")
 	}
 
-	return new CMulticlassLabels();
+	return std::make_shared<CMulticlassLabels>();
 }
 
 bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t> feats, SGVector<float64_t> labels,
@@ -739,7 +731,7 @@ bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_
 	// assimilate category indices other than missing (last cell of cat vector stores category index for missing)
 	// sanity check
 	REQUIRE(cat[cat.vlen-1]==cat.vlen-1,"last category is expected to be stored for MISSING. Hence it is expected to be un-merged\n")
-	CDynamicArray<int32_t>* cat_ind=new CDynamicArray<int32_t>();
+	auto cat_ind=std::make_shared<CDynamicArray<int32_t>>();
 	for (int32_t i=0;i<cat.vlen-1;i++)
 	{
 		if (cat[i]==i)
@@ -751,7 +743,7 @@ bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_
 	int32_t cindex_max=-1;
 	for (int32_t i=0;i<cat_ind->get_num_elements();i++)
 	{
-		CDynamicArray<int32_t>* feat_index=new CDynamicArray<int32_t>();
+		auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
 		for (int32_t j=0;j<feats.vlen;j++)
 		{
 			if ((feats[j]==cat_ind->get_element(i)) || feats[j]==MISSING)
@@ -775,7 +767,7 @@ bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_
 			cindex_max=cat_ind->get_element(i);
 		}
 
-		SG_UNREF(feat_index);
+
 	}
 
 	// compare if MISSING being merged is better than not being merged
@@ -1303,7 +1295,7 @@ float64_t CCHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector
 	return dev;
 }
 
-bool CCHAIDTree::continuous_to_ordinal(CDenseFeatures<float64_t>* feats)
+bool CCHAIDTree::continuous_to_ordinal(std::shared_ptr<CDenseFeatures<float64_t>> feats)
 {
 	// assimilate continuous breakpoints
 	int32_t count_cont=0;
@@ -1362,7 +1354,7 @@ bool CCHAIDTree::continuous_to_ordinal(CDenseFeatures<float64_t>* feats)
 	return true;
 }
 
-void CCHAIDTree::modify_data_matrix(CDenseFeatures<float64_t>* feats)
+void CCHAIDTree::modify_data_matrix(std::shared_ptr<CDenseFeatures<float64_t>> feats)
 {
 	int32_t c=0;
 	for (int32_t i=0;i<feats->get_num_features();i++)

@@ -31,8 +31,8 @@ protected:
 		data_a(0, 4) = -0.60848342;
 		data_a(1, 4) = -1.45115708;
 		data_a(2, 4) = 1.15711328;
-		feats_a = new CDenseFeatures<float64_t>(data_a);
-		SG_REF(feats_a);
+		feats_a = std::make_shared<CDenseFeatures<float64_t>>(data_a);
+
 
 		SGMatrix<float64_t> data_b(dims, num_b);
 		data_b(0, 0) = 0.14210129;
@@ -47,8 +47,8 @@ protected:
 		data_b(0, 3) = 0.04932024;
 		data_b(1, 3) = -1.0330936;
 		data_b(2, 3) = -0.87217125;
-		feats_b = new CDenseFeatures<float64_t>(data_b);
-		SG_REF(feats_b);
+		feats_b = std::make_shared<CDenseFeatures<float64_t>>(data_b);
+
 
 		ref_cov_a = SGMatrix<float64_t>(dims, dims);
 		ref_cov_a(0, 0) = 0.353214;
@@ -75,8 +75,8 @@ protected:
 
 	virtual void TearDown()
 	{
-		SG_UNREF(feats_a);
-		SG_UNREF(feats_b);
+
+
 	}
 
 	const index_t num_a = 5;
@@ -84,8 +84,8 @@ protected:
 	const index_t dims = 3;
 	const float64_t eps = 1e-8;
 
-	CDenseFeatures<float64_t>* feats_a;
-	CDenseFeatures<float64_t>* feats_b;
+	std::shared_ptr<CDenseFeatures<float64_t>> feats_a;
+	std::shared_ptr<CDenseFeatures<float64_t>> feats_b;
 	SGMatrix<float64_t> ref_cov_a;
 	SGMatrix<float64_t> ref_cov_ab;
 };

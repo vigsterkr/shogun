@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Soeren Sonnenburg, Thoralf Klein, Viktor Gal, 
+ * Authors: Evgeniy Andreev, Soeren Sonnenburg, Thoralf Klein, Viktor Gal,
  *          Fernando Iglesias, Sergey Lisitsyn, Bjoern Esser
  */
 
@@ -45,10 +45,6 @@ CCSVFile::CCSVFile(const char* fname, char rw, const char* name) :
 
 CCSVFile::~CCSVFile()
 {
-	SG_UNREF(m_tokenizer);
-	SG_UNREF(m_line_tokenizer);
-	SG_UNREF(m_parser);
-	SG_UNREF(m_line_reader);
 }
 
 void CCSVFile::set_transpose(bool value)
@@ -105,11 +101,6 @@ void CCSVFile::init()
 	is_data_transposed=false;
 	m_delimiter=0;
 	m_num_to_skip=0;
-
-	m_tokenizer=NULL;
-	m_line_tokenizer=NULL;
-	m_parser=NULL;
-	m_line_reader=NULL;
 }
 
 void CCSVFile::init_with_defaults()
@@ -117,19 +108,19 @@ void CCSVFile::init_with_defaults()
 	is_data_transposed=false;
 	m_delimiter=',';
 
-	m_tokenizer=new CDelimiterTokenizer(true);
+	m_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
 	m_tokenizer->delimiters[m_delimiter]=1;
 	m_tokenizer->delimiters[' ']=1;
-	SG_REF(m_tokenizer);
 
-	m_line_tokenizer=new CDelimiterTokenizer(true);
+
+	m_line_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
 	m_line_tokenizer->delimiters['\n']=1;
-	SG_REF(m_line_tokenizer);
 
-	m_parser=new CParser();
+
+	m_parser=std::make_shared<CParser>();
 	m_parser->set_tokenizer(m_tokenizer);
 
-	m_line_reader=new CLineReader(file, m_line_tokenizer);
+	m_line_reader=std::make_shared<CLineReader>(file, m_line_tokenizer);
 }
 
 void CCSVFile::skip_lines(int32_t num_lines)

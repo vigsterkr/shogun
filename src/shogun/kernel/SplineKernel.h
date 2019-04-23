@@ -42,7 +42,7 @@ class CSplineKernel: public CDotKernel
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CSplineKernel(CDotFeatures* l, CDotFeatures* r);
+		CSplineKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r);
 
 		virtual ~CSplineKernel();
 
@@ -52,7 +52,7 @@ class CSplineKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

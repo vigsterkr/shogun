@@ -86,12 +86,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_cholesky)
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a lower triangular matrix
@@ -106,12 +106,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_cholesky)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -148,8 +148,8 @@ TEST(SingleFITCLaplaceInferenceMethod,get_cholesky)
 	abs_tolorance = CMath::get_abs_tolerance(-0.006876868793106, rel_tolorance);
 	EXPECT_NEAR(L(2,2),  -0.006876868793106,  abs_tolorance);
 
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
 }
 
 TEST(SingleFITCLaplaceInferenceMethod,get_alpha)
@@ -194,12 +194,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_alpha)
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a lower triangular matrix
@@ -214,12 +214,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_alpha)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -242,8 +242,8 @@ TEST(SingleFITCLaplaceInferenceMethod,get_alpha)
 	abs_tolorance = CMath::get_abs_tolerance(0.028021450045659, rel_tolorance);
 	EXPECT_NEAR(alpha[2],  0.028021450045659,  abs_tolorance);
 
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
 }
 
 
@@ -289,12 +289,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_negative_log_marginal_likelihood)
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -309,12 +309,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_negative_log_marginal_likelihood)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -332,8 +332,8 @@ TEST(SingleFITCLaplaceInferenceMethod,get_negative_log_marginal_likelihood)
 	abs_tolorance = CMath::get_abs_tolerance(3.617413494305376, rel_tolorance);
 	EXPECT_NEAR(nml, 3.617413494305376,  abs_tolorance);
 
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
 }
 
 TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
@@ -378,12 +378,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -398,12 +398,12 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -413,11 +413,11 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, CSGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -467,9 +467,9 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	//SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(latent_features_train);
-	SG_UNREF(inf);
+
+
+
+
 }
 #endif //USE_GPL_SHOGUN

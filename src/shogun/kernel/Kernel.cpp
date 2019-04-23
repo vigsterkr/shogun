@@ -51,7 +51,7 @@ CKernel::CKernel(int32_t size) : CSGObject()
 }
 
 
-CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
+CKernel::CKernel(std::shared_ptr<CFeatures> p_lhs, std::shared_ptr<CFeatures> p_rhs, int32_t size) : CSGObject()
 {
 	init();
 
@@ -60,7 +60,7 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, int32_t size) : CSGObject()
 
 	cache_size=size;
 
-	set_normalizer(new CIdentityKernelNormalizer());
+	set_normalizer(std::make_shared<CIdentityKernelNormalizer>());
 	init(p_lhs, p_rhs);
 	register_params();
 }
@@ -71,7 +71,7 @@ CKernel::~CKernel()
 		SG_ERROR("Kernel still initialized on destruction.\n")
 
 	remove_lhs_and_rhs();
-	SG_UNREF(normalizer);
+
 }
 
 #ifdef USE_SVMLIGHT
@@ -88,11 +88,11 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 }
 #endif //USE_SVMLIGHT
 
-bool CKernel::init(CFeatures* l, CFeatures* r)
+bool CKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	//make sure features were indeed supplied
-	REQUIRE(l, "CKernel::init(%p, %p): Left hand side features required!\n", l, r)
-	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", l, r)
+	REQUIRE(l, "CKernel::init(%p, %p): Left hand side features required!\n", l.get(), r.get())
+	REQUIRE(r, "CKernel::init(%p, %p): Right hand side features required!\n", l.get(), r.get())
 
 	//make sure features are compatible
 	if (l->support_compatible_class())
@@ -112,11 +112,10 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	//remove references to previous features
 	remove_lhs_and_rhs();
 
-	SG_REF(l);
+
 	if (l==r)
 		lhs_equals_rhs=true;
-	else // l!=r
-		SG_REF(r);
+
 
 	lhs=l;
 	rhs=r;
@@ -127,25 +126,25 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	num_lhs=l->get_num_vectors();
 	num_rhs=r->get_num_vectors();
 
-	SG_DEBUG("leaving CKernel::init(%p, %p)\n", l, r)
+	SG_DEBUG("leaving CKernel::init(%p, %p)\n", l.get(), r.get());
 	return true;
 }
 
-bool CKernel::set_normalizer(CKernelNormalizer* n)
+bool CKernel::set_normalizer(std::shared_ptr<CKernelNormalizer> n)
 {
-	SG_REF(n);
+
 	if (lhs && rhs)
 		n->init(this);
 
-	SG_UNREF(normalizer);
+
 	normalizer=n;
 
 	return (normalizer!=NULL);
 }
 
-CKernelNormalizer* CKernel::get_normalizer() const
+std::shared_ptr<CKernelNormalizer> CKernel::get_normalizer() const
 {
-	SG_REF(normalizer)
+
 	return normalizer;
 }
 
@@ -604,13 +603,13 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(int32_t cacheidx)
 }
 #endif //USE_SVMLIGHT
 
-void CKernel::load(CFile* loader)
+void CKernel::load(std::shared_ptr<CFile> loader)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 }
 
-void CKernel::save(CFile* writer)
+void CKernel::save(std::shared_ptr<CFile> writer)
 {
 	SGMatrix<float64_t> k_matrix=get_kernel_matrix<float64_t>();
 	SG_SET_LOCALE_C;
@@ -621,11 +620,11 @@ void CKernel::save(CFile* writer)
 void CKernel::remove_lhs_and_rhs()
 {
 	if (rhs!=lhs)
-		SG_UNREF(rhs);
+
 	rhs = NULL;
 	num_rhs=0;
 
-	SG_UNREF(lhs);
+
 	lhs = NULL;
 	num_lhs=0;
 	lhs_equals_rhs=false;
@@ -639,7 +638,7 @@ void CKernel::remove_lhs()
 {
 	if (rhs==lhs)
 		rhs=NULL;
-	SG_UNREF(lhs);
+
 	lhs = NULL;
 	num_lhs=0;
 	lhs_equals_rhs=false;
@@ -652,7 +651,7 @@ void CKernel::remove_lhs()
 void CKernel::remove_rhs()
 {
 	if (rhs!=lhs)
-		SG_UNREF(rhs);
+
 	rhs = NULL;
 	num_rhs=0;
 	lhs_equals_rhs=false;
@@ -853,11 +852,11 @@ void CKernel::set_subkernel_weights(const SGVector<float64_t> weights)
 	combined_kernel_weight = weights.vector[0] ;
 }
 
-CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
+std::shared_ptr<CKernel> CKernel::obtain_from_generic(std::shared_ptr<CSGObject> kernel)
 {
 	if (kernel)
 	{
-		CKernel* casted=dynamic_cast<CKernel*>(kernel);
+		auto casted=std::dynamic_pointer_cast<CKernel>(kernel);
 		REQUIRE(casted, "CKernel::obtain_from_generic(): Error, provided object"
 				" of class \"%s\" is not a subclass of CKernel!\n",
 				kernel->get_name());
@@ -867,7 +866,7 @@ CKernel* CKernel::obtain_from_generic(CSGObject* kernel)
 		return NULL;
 }
 
-bool CKernel::init_optimization_svm(CSVM * svm)
+bool CKernel::init_optimization_svm(std::shared_ptr<CSVM > svm)
 {
 	int32_t num_suppvec=svm->get_num_support_vectors();
 	int32_t* sv_idx=SG_MALLOC(int32_t, num_suppvec);
@@ -959,7 +958,7 @@ void CKernel::init()
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
 
-	set_normalizer(new CIdentityKernelNormalizer());
+	set_normalizer(std::make_shared<CIdentityKernelNormalizer>());
 }
 
 namespace shogun

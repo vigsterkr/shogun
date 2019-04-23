@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Abinash Panda, Sanuj Sharma, Shell Hu, 
+ * Authors: Fernando Iglesias, Abinash Panda, Sanuj Sharma, Shell Hu,
  *          Sergey Lisitsyn, Soeren Sonnenburg, Viktor Gal
  */
 
@@ -21,7 +21,7 @@ CHMSVMModel::CHMSVMModel()
 	init();
 }
 
-CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs, bool use_plifs)
+CHMSVMModel::CHMSVMModel(std::shared_ptr<CFeatures> features, std::shared_ptr<CStructuredLabels> labels, EStateModelType smt, int32_t num_obs, bool use_plifs)
 : CStructuredModel(features, labels)
 {
 	init();
@@ -32,7 +32,7 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 	switch (smt)
 	{
 		case SMT_TWO_STATE:
-			m_state_model = new CTwoStateModel();
+			m_state_model = std::make_shared<CTwoStateModel>();
 			break;
 		case SMT_UNKNOWN:
 		default:
@@ -42,15 +42,15 @@ CHMSVMModel::CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateM
 
 CHMSVMModel::~CHMSVMModel()
 {
-	SG_UNREF(m_state_model);
-	SG_UNREF(m_plif_matrix);
+
+
 }
 
 int32_t CHMSVMModel::get_dim() const
 {
 	// Shorthand for the number of free states
-	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	int32_t free_states = m_labels->as<CSequenceLabels>()->get_num_states();
+	auto mf = m_features->as<CMatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 
 	if ( m_use_plifs )
@@ -61,14 +61,14 @@ int32_t CHMSVMModel::get_dim() const
 
 SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		std::shared_ptr<CStructuredData> y)
 {
 	// Shorthand for the number of features of the feature vector
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	auto mf = m_features->as<CMatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 
 	// Get the sequence of labels
-	CSequence* label_seq = y->as<CSequence>();
+	auto label_seq = y->as<CSequence>();
 
 	// Initialize psi
 	SGVector< float64_t > psi(get_dim());
@@ -114,7 +114,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 
 			for ( int32_t j = 0 ; j < state_seq.vlen ; ++j )
 			{
-				CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + state_seq[j]);
+				auto plif = m_plif_matrix->get_element<CPlif>(S*f + state_seq[j]);
 				SGVector<float64_t> limits = plif->get_plif_limits();
 				// The number of supporting points smaller or equal than value
 				int32_t count = 0;
@@ -144,7 +144,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 						(limits[count]-value) / (limits[count]-limits[count-1]);
 				}
 
-				SG_UNREF(plif);
+
 			}
 		}
 
@@ -155,7 +155,7 @@ SGVector< float64_t > CHMSVMModel::get_joint_feature_vector(
 	return psi;
 }
 
-CResultSet* CHMSVMModel::argmax(
+std::shared_ptr<CResultSet> CHMSVMModel::argmax(
 		SGVector< float64_t > w,
 		int32_t feat_idx,
 		bool const training)
@@ -163,7 +163,7 @@ CResultSet* CHMSVMModel::argmax(
 	ASSERT(w.vlen == get_dim())
 
 	// Shorthand for the number of features of the feature vector
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	auto mf = m_features->as<CMatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 	// Shorthand for the number of states
 	int32_t S = m_state_model->get_num_states();
@@ -217,9 +217,9 @@ CResultSet* CHMSVMModel::argmax(
 			{
 				for ( int32_t s = 0 ; s < S ; ++s )
 				{
-					CPlif* plif = (CPlif*) m_plif_matrix->get_element(S*f + s);
+					auto plif = m_plif_matrix->get_element<CPlif>(S*f + s);
 					E(s,i) += plif->lookup( x(f,i) );
-					SG_UNREF(plif);
+
 				}
 			}
 		}
@@ -228,7 +228,7 @@ CResultSet* CHMSVMModel::argmax(
 	// If argmax used while training, add to E the loss matrix (loss-augmented inference)
 	if ( training )
 	{
-		CSequence* ytrue = m_labels->get_label(feat_idx)->as<CSequence>();
+		auto ytrue = m_labels->get_label(feat_idx)->as<CSequence>();
 
 		REQUIRE(ytrue->get_data().size() == T, "T, the length of the feature "
 			"x^i (%d) and the length of its corresponding label y^i "
@@ -243,7 +243,7 @@ CResultSet* CHMSVMModel::argmax(
 				1.0, loss_matrix.matrix, E.num_rows*E.num_cols);
 
 		// Decrement the reference count corresponding to get_label above
-		SG_UNREF(ytrue);
+
 	}
 
 	// Initialize the dynamic programming table and the traceback matrix
@@ -302,8 +302,8 @@ CResultSet* CHMSVMModel::argmax(
 
 	// Trace back the most likely sequence of states
 	SGVector< int32_t > opt_path(T);
-	CResultSet* ret = new CResultSet();
-	SG_REF(ret);
+	auto ret = std::make_shared<CResultSet>();
+
 	ret->psi_computed = true;
 	ret->score = -CMath::INFTY;
 	opt_path[T-1] = -1;
@@ -327,7 +327,7 @@ CResultSet* CHMSVMModel::argmax(
 		opt_path[i-1] = trb[opt_path[i]*T + i];
 
 	// Populate the CResultSet object to return
-	CSequence* ypred = m_state_model->states_to_labels(opt_path);
+	auto ypred = m_state_model->states_to_labels(opt_path);
 
 	ret->psi_pred = get_joint_feature_vector(feat_idx, ypred);
 	ret->argmax   = ypred;
@@ -341,10 +341,10 @@ CResultSet* CHMSVMModel::argmax(
 	return ret;
 }
 
-float64_t CHMSVMModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CHMSVMModel::delta_loss(std::shared_ptr<CStructuredData> y1, std::shared_ptr<CStructuredData> y2)
 {
-	CSequence* seq1 = y1->as<CSequence>();
-	CSequence* seq2 = y2->as<CSequence>();
+	auto seq1 = y1->as<CSequence>();
+	auto seq2 = y2->as<CSequence>();
 
 	// Compute the Hamming loss, number of distinct elements in the sequences
 	return m_state_model->loss(seq1, seq2);
@@ -361,9 +361,9 @@ void CHMSVMModel::init_primal_opt(
 		SGMatrix< float64_t > & C)
 {
 	// Shorthand for the number of free states (i.e. states for which parameters are learnt)
-	int32_t S = ((CSequenceLabels*) m_labels)->get_num_states();
+	int32_t S = m_labels->as<CSequenceLabels>()->get_num_states();
 	// Shorthand for the number of features of the feature vector
-	int32_t D = ((CMatrixFeatures< float64_t >*) m_features)->get_num_features();
+	int32_t D = m_features->as<CMatrixFeatures<float64_t>>()->get_num_features();
 
 	// Monotonicity constraints for feature scoring functions
 	SGVector< int32_t > monotonicity = m_state_model->get_monotonicity(S,D);
@@ -438,12 +438,12 @@ void CHMSVMModel::init_primal_opt(
 bool CHMSVMModel::check_training_setup() const
 {
 	// Shorthand for the labels in the correct type
-	CSequenceLabels* hmsvm_labels = (CSequenceLabels*) m_labels;
+	auto hmsvm_labels = m_labels->as<CSequenceLabels>();
 	// Frequency of each state
 	SGVector< int32_t > state_freq( hmsvm_labels->get_num_states() );
 	state_freq.zero();
 
-	CSequence* seq;
+	std::shared_ptr<CSequence> seq;
 	int32_t state;
 	for ( int32_t i = 0 ; i < hmsvm_labels->get_num_labels() ; ++i )
 	{
@@ -467,7 +467,7 @@ bool CHMSVMModel::check_training_setup() const
 		}
 
 		// Decrement the reference count increased by get_label
-		SG_UNREF(seq);
+
 	}
 
 	for ( int32_t i = 0 ; i < hmsvm_labels->get_num_states() ; ++i )
@@ -484,7 +484,7 @@ bool CHMSVMModel::check_training_setup() const
 
 void CHMSVMModel::init()
 {
-	SG_ADD((CSGObject**) &m_state_model, "m_state_model", "The state model");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_state_model, "m_state_model", "The state model");
 	SG_ADD(&m_transmission_weights, "m_transmission_weights",
 			"Transmission weights used in Viterbi");
 	SG_ADD(&m_emission_weights, "m_emission_weights",
@@ -519,7 +519,7 @@ void CHMSVMModel::init_training()
 {
 	// Shorthands for the number of states, the matrix features and their dimension
 	int32_t S = m_state_model->get_num_states();
-	CMatrixFeatures< float64_t >* mf = (CMatrixFeatures< float64_t >*) m_features;
+	auto mf = m_features->as<CMatrixFeatures<float64_t>>();
 	int32_t D = mf->get_num_features();
 
 	// Transmission and emission weights allocation
@@ -532,7 +532,7 @@ void CHMSVMModel::init_training()
 	// Auxiliary variables
 
 	// Shorthand for the number of free states
-	int32_t free_states = ((CSequenceLabels*) m_labels)->get_num_states();
+	int32_t free_states = m_labels->as<CSequenceLabels>()->get_num_states();
 	if ( m_use_plifs )
 		m_num_aux = free_states*D*(m_num_plif_nodes-1);
 	else
@@ -541,8 +541,8 @@ void CHMSVMModel::init_training()
 	if ( m_use_plifs )
 	{
 		// Initialize PLiF matrix
-		m_plif_matrix = new CDynamicObjectArray(S*D);
-		SG_REF(m_plif_matrix);
+		m_plif_matrix = std::make_shared<CDynamicObjectArray>(S*D);
+
 
 		// Determine the x values for the supporting points of the PLiFs
 
@@ -581,7 +581,7 @@ void CHMSVMModel::init_training()
 			// Set the PLiFs' supporting points
 			for ( int32_t s = 0 ; s < S ; ++s )
 			{
-				CPlif* plif = new CPlif(m_num_plif_nodes);
+				auto plif = std::make_shared<CPlif>(m_num_plif_nodes);
 				plif->set_plif_limits(limits);
 				plif->set_min_value(-CMath::INFTY);
 				plif->set_max_value(CMath::INFTY);
@@ -601,8 +601,8 @@ SGVector< float64_t > CHMSVMModel::get_emission_weights() const
 	return m_emission_weights;
 }
 
-CStateModel* CHMSVMModel::get_state_model() const
+std::shared_ptr<CStateModel> CHMSVMModel::get_state_model() const
 {
-	SG_REF(m_state_model);
+
 	return m_state_model;
 }

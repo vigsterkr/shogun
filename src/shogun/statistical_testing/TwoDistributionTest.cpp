@@ -46,27 +46,27 @@ CTwoDistributionTest::~CTwoDistributionTest()
 {
 }
 
-void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
+void CTwoDistributionTest::set_p(std::shared_ptr<CFeatures> samples_from_p)
 {
 	REQUIRE(samples_from_p, "Samples from P cannot be NULL!\n");
 	auto& dm=get_data_mgr();
 	dm.samples_at(0)=samples_from_p;
 }
 
-CFeatures* CTwoDistributionTest::get_p() const
+std::shared_ptr<CFeatures> CTwoDistributionTest::get_p() const
 {
 	const auto& dm=get_data_mgr();
 	return dm.samples_at(0);
 }
 
-void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
+void CTwoDistributionTest::set_q(std::shared_ptr<CFeatures> samples_from_q)
 {
 	REQUIRE(samples_from_q, "Samples from Q cannot be NULL!\n");
 	auto& dm=get_data_mgr();
 	dm.samples_at(1)=samples_from_q;
 }
 
-CFeatures* CTwoDistributionTest::get_q() const
+std::shared_ptr<CFeatures> CTwoDistributionTest::get_q() const
 {
 	const auto& dm=get_data_mgr();
 	return dm.samples_at(1);
@@ -96,7 +96,7 @@ const index_t CTwoDistributionTest::get_num_samples_q() const
 	return dm.num_samples_at(1);
 }
 
-CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
+std::shared_ptr<CCustomDistance> CTwoDistributionTest::compute_distance(std::shared_ptr<CDistance> distance)
 {
 	auto& data_mgr=get_data_mgr();
 	bool is_blockwise=data_mgr.is_blockwise();
@@ -106,8 +106,8 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 	auto samples=data_mgr.next();
 	REQUIRE(!samples.empty(), "Could not fetch samples!\n");
 
-	CFeatures *samples_p=samples[0][0];
-	CFeatures *samples_q=samples[1][0];
+	std::shared_ptr<CFeatures> samples_p=samples[0][0];
+	std::shared_ptr<CFeatures> samples_q=samples[1][0];
 
 	distance->cleanup();
 	distance->remove_lhs_and_rhs();
@@ -120,12 +120,12 @@ CCustomDistance* CTwoDistributionTest::compute_distance(CDistance* distance)
 	data_mgr.end();
 	data_mgr.set_blockwise(is_blockwise);
 
-	auto precomputed_distance=new CCustomDistance();
+	auto precomputed_distance=std::make_shared<CCustomDistance>();
 	precomputed_distance->set_full_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
 	return precomputed_distance;
 }
 
-CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distance)
+std::shared_ptr<CCustomDistance> CTwoDistributionTest::compute_joint_distance(std::shared_ptr<CDistance> distance)
 {
 	REQUIRE(distance!=nullptr, "Distance instance cannot be NULL!\n");
 	auto& data_mgr=get_data_mgr();
@@ -136,8 +136,8 @@ CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distanc
 	auto samples=data_mgr.next();
 	REQUIRE(!samples.empty(), "Could not fetch samples!\n");
 
-	CFeatures *samples_p=samples[0][0];
-	CFeatures *samples_q=samples[1][0];
+	std::shared_ptr<CFeatures> samples_p=samples[0][0];
+	std::shared_ptr<CFeatures> samples_q=samples[1][0];
 	auto p_and_q=samples_p->create_merged_copy(samples_q);
 
 	samples.clear();
@@ -151,7 +151,7 @@ CCustomDistance* CTwoDistributionTest::compute_joint_distance(CDistance* distanc
 	distance->remove_lhs_and_rhs();
 	distance->cleanup();
 
-	auto precomputed_distance=new CCustomDistance();
+	auto precomputed_distance=std::make_shared<CCustomDistance>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(dist_mat.data(), dist_mat.num_rows, dist_mat.num_cols);
 	return precomputed_distance;
 }

@@ -54,14 +54,14 @@ CGaussianARDSparseKernel::CGaussianARDSparseKernel(int32_t size)
 	initialize_sparse_kernel();
 }
 
-CGaussianARDSparseKernel::CGaussianARDSparseKernel(CDotFeatures* l,
-		CDotFeatures* r, int32_t size)
+CGaussianARDSparseKernel::CGaussianARDSparseKernel(std::shared_ptr<CDotFeatures> l,
+		std::shared_ptr<CDotFeatures> r, int32_t size)
 		: CGaussianARDKernel(l, r, size)
 {
 	initialize_sparse_kernel();
 }
 
-CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<CGaussianARDSparseKernel> CGaussianARDSparseKernel::obtain_from_generic(std::shared_ptr<CKernel> kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
 	{
@@ -69,8 +69,8 @@ CGaussianARDSparseKernel* CGaussianARDSparseKernel::obtain_from_generic(CKernel*
 	}
 
 	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CGaussianARDSparseKernel*)kernel;
+
+	return kernel->as<CGaussianARDSparseKernel>();
 }
 
 SGVector<float64_t> CGaussianARDSparseKernel::get_parameter_gradient_diagonal(

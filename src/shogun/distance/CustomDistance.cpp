@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Fernando Iglesias, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Fernando Iglesias, Sergey Lisitsyn,
  *          Evan Shelhamer
  */
 
@@ -19,7 +19,7 @@ CCustomDistance::CCustomDistance() : CDistance()
 	init();
 }
 
-CCustomDistance::CCustomDistance(CDistance* d) : CDistance()
+CCustomDistance::CCustomDistance(std::shared_ptr<CDistance> d) : CDistance()
 {
 	init();
 
@@ -90,10 +90,10 @@ CCustomDistance::~CCustomDistance()
 
 bool CCustomDistance::dummy_init(int32_t rows, int32_t cols)
 {
-	return init(new CDummyFeatures(rows), new CDummyFeatures(cols));
+	return init(std::make_shared<CDummyFeatures>(rows), std::make_shared<CDummyFeatures>(cols));
 }
 
-bool CCustomDistance::init(CFeatures* l, CFeatures* r)
+bool CCustomDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDistance::init(l, r);
 
@@ -122,7 +122,7 @@ void CCustomDistance::init()
 	num_cols=0;
 	upper_diagonal=false;
 
-	m_parameters->add_matrix(&dmatrix, &num_rows, &num_cols, "dmatrix", "Distance Matrix");
+	/*m_parameters->add_matrix(&dmatrix, &num_rows, &num_cols, "dmatrix", "Distance Matrix")*/;
 	watch_param(
 	    "dmatrix", &dmatrix, &num_rows, &num_cols,
 	    AnyParameterProperties("Distance Matrix"));

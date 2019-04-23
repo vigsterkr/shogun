@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Giovanni De Toni, Jacob Walker, Saurabh Mahindre, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Jacob Walker, Saurabh Mahindre, Yuyu Zhang,
  *          Roman Votyakov
  */
 
@@ -148,9 +148,9 @@ namespace shogun
 		 * evaluation
 		 */
 		CCrossValidation(
-		    CMachine* machine, CFeatures* features, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+			std::shared_ptr<CMachine> machine, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CLabels> labels, std::shared_ptr<CSplittingStrategy> splitting_strategy,
+			std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock = true);
 
 		/** constructor, for use with custom kernels (no features)
 		 * @param machine learning machine to use
@@ -160,9 +160,9 @@ namespace shogun
 		 * @param autolock autolock
 		 */
 		CCrossValidation(
-		    CMachine* machine, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+		    std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labels,
+		    std::shared_ptr<CSplittingStrategy> splitting_strategy,
+		    std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock = true);
 
 		/** destructor */
 		virtual ~CCrossValidation();
@@ -184,7 +184,7 @@ namespace shogun
 		 * Does the actual evaluation.
 		 * @return the cross-validation result
 		 */
-		virtual CEvaluationResult* evaluate_impl();
+		virtual std::shared_ptr<CEvaluationResult> evaluate_impl();
 
 	protected:
 	protected:
@@ -198,7 +198,7 @@ namespace shogun
 		 * @return evaluation result of one cross-validation run
 		 */
 		virtual float64_t
-		evaluate_one_run(int64_t index, CrossValidationStorage* storage);
+		evaluate_one_run(int64_t index, std::shared_ptr<CrossValidationStorage> storage);
 
 		/** number of evaluation runs for one fold */
 		int32_t m_num_runs;

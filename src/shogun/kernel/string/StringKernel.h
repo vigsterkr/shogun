@@ -33,7 +33,7 @@ template <class ST> class CStringKernel : public CKernel
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CStringKernel(CFeatures *l, CFeatures *r) : CKernel(10)
+		CStringKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r) : CKernel(10)
 		{
 			init(l, r);
 		}
@@ -48,7 +48,7 @@ template <class ST> class CStringKernel : public CKernel
 		 *  @param r features for right-hand side
 		 *  @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 		{
 			CKernel::init(l,r);
 

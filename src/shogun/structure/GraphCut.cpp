@@ -17,7 +17,7 @@ CGraphCut::CGraphCut()
 	init();
 }
 
-CGraphCut::CGraphCut(CFactorGraph* fg)
+CGraphCut::CGraphCut(std::shared_ptr<CFactorGraph> fg)
 	: CMAPInferImpl(fg)
 {
 	ASSERT(m_fg != NULL);
@@ -66,7 +66,7 @@ void CGraphCut::init()
 	if (m_fg == NULL)
 		return;
 
-	CDynamicObjectArray* facs = m_fg->get_factors();
+	auto facs = m_fg->get_factors();
 
 	SGVector<int32_t> cards = m_fg->get_cardinalities();
 
@@ -83,11 +83,11 @@ void CGraphCut::init()
 
 	for (int32_t i = 0; i < facs->get_num_elements(); i++)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(i));
+		auto fac = facs->get_element<CFactor>(i);
 
 		int32_t num_vars = fac->get_num_vars();
 
-		SG_UNREF(fac);
+
 
 		if (num_vars > 3)
 		{
@@ -107,12 +107,12 @@ void CGraphCut::init()
 
 	for (int32_t j = 0; j < m_fg->get_num_factors(); j++)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(j));
+		auto fac = facs->get_element<CFactor>(j);
 		add_factor(fac);
-		SG_UNREF(fac);
+
 	}
 
-	SG_UNREF(facs);
+
 }
 
 void CGraphCut::build_st_graph(int32_t num_nodes, int32_t num_edges)
@@ -208,7 +208,7 @@ float64_t CGraphCut::inference(SGVector<int32_t> assignment)
 	return m_map_energy;
 }
 
-void CGraphCut::add_factor(CFactor* factor)
+void CGraphCut::add_factor(std::shared_ptr<CFactor> factor)
 {
 	SGVector<int32_t> fcards = factor->get_cardinalities();
 

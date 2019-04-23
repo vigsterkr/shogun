@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Michele Mazzoni, Viktor Gal, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Michele Mazzoni, Viktor Gal,
  *          Evan Shelhamer, Sergey Lisitsyn
  */
 
@@ -21,7 +21,7 @@ CMahalanobisDistance::CMahalanobisDistance() : CRealDistance()
 	init();
 }
 
-CMahalanobisDistance::CMahalanobisDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
+CMahalanobisDistance::CMahalanobisDistance(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r)
 : CRealDistance()
 {
 	init();
@@ -33,7 +33,7 @@ CMahalanobisDistance::~CMahalanobisDistance()
 	cleanup();
 }
 
-bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
+bool CMahalanobisDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	// FIXME: See comments in
 	// https://github.com/shogun-toolbox/shogun/pull/4085#discussion_r166254024
@@ -41,8 +41,8 @@ bool CMahalanobisDistance::init(CFeatures* l, CFeatures* r)
 
 	SGMatrix<float64_t> cov;
 
-	auto feat_l = static_cast<CDenseFeatures<float64_t>*>(l);
-	auto feat_r = static_cast<CDenseFeatures<float64_t>*>(r);
+	auto feat_l = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(l);
+	auto feat_r = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(r);
 
 	if ( l == r)
 	{
@@ -70,8 +70,8 @@ void CMahalanobisDistance::cleanup()
 
 float64_t CMahalanobisDistance::compute(int32_t idx_a, int32_t idx_b)
 {
-	auto feat_l = static_cast<CDenseFeatures<float64_t>*>(lhs);
-	auto feat_r = static_cast<CDenseFeatures<float64_t>*>(rhs);
+	auto feat_l = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(lhs);
+	auto feat_r = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(rhs);
 
 	SGVector<float64_t> bvec = feat_r->get_feature_vector(idx_b);
 

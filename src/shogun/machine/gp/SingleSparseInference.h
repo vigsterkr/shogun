@@ -62,9 +62,9 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleSparseInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	CSingleSparseInference(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
+			std::shared_ptr<CFeatures> inducing_features);
 
 	virtual ~CSingleSparseInference();
 
@@ -78,7 +78,7 @@ public:
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual void set_kernel(CKernel* kern);
+	virtual void set_kernel(std::shared_ptr<CKernel> kern);
 
 	/** opitmize inducing features
 	 *
@@ -126,7 +126,7 @@ public:
 	 * @param is_optmization enable optimization
 	 * @param minimizer minimizer used in optimization
 	 */
-	virtual void enable_optimizing_inducing_features(bool is_optmization, FirstOrderMinimizer* minimizer=NULL);
+	virtual void enable_optimizing_inducing_features(bool is_optmization, std::shared_ptr<FirstOrderMinimizer> minimizer=NULL);
 
 protected:
 
@@ -227,7 +227,7 @@ protected:
 	CLock* m_lock;
 
 	/** minimizer used in finding optimal inducing features*/
-	FirstOrderMinimizer* m_inducing_minimizer;
+	std::shared_ptr<FirstOrderMinimizer> m_inducing_minimizer;
 private:
 	/* init */
 	void init();

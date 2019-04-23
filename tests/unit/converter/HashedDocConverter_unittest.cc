@@ -37,7 +37,7 @@ TEST(HashedDocConverterTest, apply_single_vector)
 		hashed_rep[hash]++;
 	}
 
-	CHashedDocConverter* converter = new CHashedDocConverter(hash_bits, false);
+	auto converter = std::make_shared<CHashedDocConverter>(hash_bits, false);
 
 	SGVector<char> doc(const_cast<char* >(text), 40, false);
 
@@ -49,7 +49,7 @@ TEST(HashedDocConverterTest, apply_single_vector)
 				hashed_rep[c_doc.features[i].feat_index]);
 	}
 
-	SG_UNREF(converter);
+
 }
 
 TEST(HashedDocConverterTest, compare_dot_features)
@@ -77,14 +77,14 @@ TEST(HashedDocConverterTest, compare_dot_features)
 
 	int32_t hash_bits = 3;
 
-	CDelimiterTokenizer* tokenizer = new CDelimiterTokenizer();
+	auto tokenizer = std::make_shared<CDelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	CStringFeatures<char>* s_feats = new CStringFeatures<char>(list, RAWBYTE);
-	CHashedDocDotFeatures* d_feats = new CHashedDocDotFeatures(hash_bits, s_feats, tokenizer);
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, hash_bits, true);
+	auto s_feats = std::make_shared<CStringFeatures<char>>(list, RAWBYTE);
+	auto d_feats = std::make_shared<CHashedDocDotFeatures>(hash_bits, s_feats, tokenizer);
+	auto converter = std::make_shared<CHashedDocConverter>(tokenizer, hash_bits, true);
 
 	float64_t e = 0.1e-14;
 	for (index_t i=0; i<3; i++)
@@ -95,8 +95,8 @@ TEST(HashedDocConverterTest, compare_dot_features)
 			EXPECT_TRUE(e > c_vec.features[j].entry - d_vec[c_vec.features[j].feat_index]);
 	}
 
-	SG_UNREF(converter);
-	SG_UNREF(d_feats);
+
+
 }
 
 TEST(HashedDocConverterTest, apply_quadratic_test)
@@ -155,8 +155,8 @@ TEST(HashedDocConverterTest, apply_quadratic_test)
 	val = hashes[3];
 	vec[val % dimension]++;
 
-	CNGramTokenizer* tzer = new CNGramTokenizer(3);
-	CHashedDocConverter* converter = new CHashedDocConverter(tzer, hash_bits, false, 3, 2);
+	auto tzer = std::make_shared<CNGramTokenizer>(3);
+	auto converter = std::make_shared<CHashedDocConverter>(tzer, hash_bits, false, 3, 2);
 
 	SGVector<char> doc(const_cast<char* >(doc_1), 6, false);
 
@@ -167,5 +167,5 @@ TEST(HashedDocConverterTest, apply_quadratic_test)
 					vec[c_doc.features[i].feat_index]);
 
 	SG_FREE(hashes);
-	SG_UNREF(converter);
+
 }

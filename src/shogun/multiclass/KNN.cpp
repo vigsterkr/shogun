@@ -26,7 +26,7 @@ CKNN::CKNN()
 	init();
 }
 
-CKNN::CKNN(int32_t k, CDistance* d, CLabels* trainlab, KNN_SOLVER knn_solver)
+CKNN::CKNN(int32_t k, std::shared_ptr<CDistance> d, std::shared_ptr<CLabels> trainlab, KNN_SOLVER knn_solver)
 : CDistanceMachine()
 {
 	init();
@@ -73,7 +73,7 @@ CKNN::~CKNN()
 {
 }
 
-bool CKNN::train_machine(CFeatures* data)
+bool CKNN::train_machine(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(m_labels, "No training labels provided.\n");
 	REQUIRE(distance, "No training distance provided.\n");
@@ -88,7 +88,7 @@ bool CKNN::train_machine(CFeatures* data)
 		distance->init(data, data);
 	}
 
-	SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
+	SGVector<int32_t> lab=multiclass_labels(m_labels)->get_int_labels();
 	m_train_labels=lab.clone();
 	REQUIRE(m_train_labels.vlen > 0, "Provided training labels are empty\n");
 
@@ -157,7 +157,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	return NN;
 }
 
-CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CKNN::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 		init_distance(data);
@@ -183,14 +183,10 @@ CMulticlassLabels* CKNN::apply_multiclass(CFeatures* data)
 
 	init_solver(m_knn_solver);
 
-	CMulticlassLabels* output = solver->classify_objects(distance, num_lab, train_lab, classes);
-
-	SG_UNREF(solver);
-
-	return output;
+	return solver->classify_objects(distance, num_lab, train_lab, classes);
 }
 
-CMulticlassLabels* CKNN::classify_NN()
+std::shared_ptr<CMulticlassLabels> CKNN::classify_NN()
 {
 	REQUIRE(distance, "Distance not set.\n");
 	REQUIRE(m_num_classes > 0, "Machine not trained.\n");
@@ -198,7 +194,7 @@ CMulticlassLabels* CKNN::classify_NN()
 	int32_t num_lab = distance->get_num_vec_rhs();
 	REQUIRE(num_lab, "No vectors on right hand side\n");
 
-	CMulticlassLabels* output = new CMulticlassLabels(num_lab);
+	auto output = std::make_shared<CMulticlassLabels>(num_lab);
 	SGVector<float64_t> distances(m_train_labels.vlen);
 
 	SG_INFO("%d test examples\n", num_lab)
@@ -260,22 +256,20 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 
 	SGVector<int32_t> output = solver->classify_objects_k(distance, num_lab, train_lab, classes);
 
-	SG_UNREF(solver);
+
 
 	return SGMatrix<int32_t>(output,num_lab,m_k);
 }
 
-void CKNN::init_distance(CFeatures* data)
+void CKNN::init_distance(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(distance, "Distance not set.\n");
-	CFeatures* lhs=distance->get_lhs();
+	auto lhs=distance->get_lhs();
 	if (!lhs || !lhs->get_num_vectors())
 	{
-		SG_UNREF(lhs);
 		SG_ERROR("No vectors on left hand side\n")
 	}
 	distance->init(lhs, data);
-	SG_UNREF(lhs);
 }
 
 bool CKNN::load(FILE* srcfile)
@@ -294,14 +288,11 @@ bool CKNN::save(FILE* dstfile)
 
 void CKNN::store_model_features()
 {
-	CFeatures* d_lhs=distance->get_lhs();
-	CFeatures* d_rhs=distance->get_rhs();
+	auto d_lhs=distance->get_lhs();
+	auto d_rhs=distance->get_rhs();
 
 	/* copy lhs of underlying distance */
 	distance->init(d_lhs->duplicate(), d_rhs);
-
-	SG_UNREF(d_lhs);
-	SG_UNREF(d_rhs);
 }
 
 void CKNN::init_solver(KNN_SOLVER knn_solver)
@@ -311,21 +302,21 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 	case KNN_BRUTE:
 	{
 		SGMatrix<index_t> NN = nearest_neighbors();
-		solver = new CBruteKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels, NN);
-		SG_REF(solver);
+		solver = std::make_shared<CBruteKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, NN);
+
 		break;
 	}
 	case KNN_KDTREE:
 	{
-		solver = new CKDTREEKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_leaf_size);
-		SG_REF(solver);
+		solver = std::make_shared<CKDTREEKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_leaf_size);
+
 		break;
 	}
 	case KNN_COVER_TREE:
 	{
 #ifdef USE_GPL_SHOGUN
-		solver = new CCoverTreeKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
-		SG_REF(solver);
+		solver = std::make_shared<CCoverTreeKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
+
 		break;
 #else
 		SG_GPL_ONLY
@@ -333,8 +324,8 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 	}
 	case KNN_LSH:
 	{
-		solver = new CLSHKNNSolver(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
-		SG_REF(solver);
+		solver = std::make_shared<CLSHKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
+
 		break;
 	}
 	}

@@ -188,7 +188,7 @@ class CKernel : public CSGObject
 		 * @param r features for right-hand side
 		 * @param size cache size
 		 */
-		CKernel(CFeatures* l, CFeatures* r, int32_t size);
+		CKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r, int32_t size);
 
 		virtual ~CKernel();
 
@@ -454,19 +454,19 @@ class CKernel : public CSGObject
 		 *  @param rhs features for right-hand side
 		 *  @return if init was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs);
+		virtual bool init(std::shared_ptr<CFeatures> lhs, std::shared_ptr<CFeatures> rhs);
 
 		/** set the current kernel normalizer
 		 *
 		 * @return if successful
 		 */
-		virtual bool set_normalizer(CKernelNormalizer* normalizer);
+		virtual bool set_normalizer(std::shared_ptr<CKernelNormalizer> normalizer);
 
 		/** obtain the current kernel normalizer
 		 *
 		 * @return the kernel normalizer
 		 */
-		virtual CKernelNormalizer* get_normalizer() const;
+		virtual std::shared_ptr<CKernelNormalizer> get_normalizer() const;
 
 		/** initialize the current kernel normalizer
 		 *  @return if init was successful
@@ -485,25 +485,25 @@ class CKernel : public CSGObject
 		 *
 		 * @param loader File object via which to load data
 		 */
-		void load(CFile* loader);
+		void load(std::shared_ptr<CFile> loader);
 
 		/** save kernel matrix
 		 *
 		 * @param writer File object via which to save data
 		 */
-		void save(CFile* writer);
+		void save(std::shared_ptr<CFile> writer);
 
 		/** get left-hand side of features used in kernel
 		 *
 		 * @return features of left-hand side
 		 */
-		inline CFeatures* get_lhs() { SG_REF(lhs); return lhs; }
+		inline std::shared_ptr<CFeatures> get_lhs() {  return lhs; }
 
 		/** get right-hand side of features used in kernel
 		 *
 		 * @return features of right-hand side
 		 */
-		inline CFeatures* get_rhs() { SG_REF(rhs); return rhs; }
+		inline std::shared_ptr<CFeatures> get_rhs() {  return rhs; }
 
 		/** get number of vectors of lhs features
 		 *
@@ -772,7 +772,7 @@ class CKernel : public CSGObject
 		 * @param svm svm model
 		 * @return if initializing was successful
 		 */
-		bool init_optimization_svm(CSVM * svm) ;
+		bool init_optimization_svm(std::shared_ptr<CSVM> svm) ;
 
 		/** compute optimized
 		 *
@@ -871,8 +871,7 @@ class CKernel : public CSGObject
 		 * @param kernel Object to cast to CKernel, is *not* SG_REFed
 		 * @return object casted to CKernel, NULL if not possible
 		 */
-		static CKernel* obtain_from_generic(CSGObject* kernel);
-
+		static std::shared_ptr<CKernel> obtain_from_generic(std::shared_ptr<CSGObject> kernel);
 	protected:
 		/** set property
 		 *
@@ -1057,9 +1056,9 @@ class CKernel : public CSGObject
 		KERNELCACHE_ELEM* kernel_matrix;
 
 		/// feature vectors to occur on left hand side
-		CFeatures* lhs;
+		std::shared_ptr<CFeatures> lhs;
 		/// feature vectors to occur on right hand side
-		CFeatures* rhs;
+		std::shared_ptr<CFeatures> rhs;
 
 		/// lhs
 		bool lhs_equals_rhs;
@@ -1084,7 +1083,7 @@ class CKernel : public CSGObject
 
 		/** normalize the kernel(i,j) function based on this normalization
 		 * function */
-		CKernelNormalizer* normalizer;
+		std::shared_ptr<CKernelNormalizer> normalizer;
 };
 
 }

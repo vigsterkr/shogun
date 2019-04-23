@@ -33,7 +33,7 @@ public:
 	 * @param labels labels to be (possibly) used for splitting
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
-	CStratifiedCrossValidationSplitting(CLabels* labels, index_t num_subsets);
+	CStratifiedCrossValidationSplitting(std::shared_ptr<CLabels> labels, index_t num_subsets);
 
 	/** @return name of the SGSerializable */
 	virtual const char* get_name() const
@@ -45,7 +45,7 @@ public:
 	virtual void build_subsets();
 
 	/** custom rng if using cross validation across different threads */
-	CRandom * m_rng;
+	std::shared_ptr<CRandom > m_rng;
 
 protected:
 	/* check for "stupid" combinations of label numbers and num_subsets.

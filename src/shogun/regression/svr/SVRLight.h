@@ -72,7 +72,7 @@ class CSVRLight: public CSVMLight
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CSVRLight(float64_t C, float64_t epsilon, CKernel* k, CLabels* lab);
+		CSVRLight(float64_t C, float64_t epsilon, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
 		/** default destructor */
 		virtual ~CSVRLight();
@@ -228,7 +228,7 @@ class CSVRLight: public CSVMLight
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 		/** number of train elements */
 		int32_t num_vectors;

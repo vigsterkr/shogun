@@ -68,13 +68,13 @@ public:
 	SGVector<float64_t>* dlp;
 	SGVector<float64_t>* f;
 	SGVector<float64_t>* m;
-	CLikelihoodModel* lik;
-	CLabels* lab;
+	std::shared_ptr<CLikelihoodModel> lik;
+	std::shared_ptr<CLabels> lab;
 
 	virtual double operator() (double x)
 	{
-		const index_t C=((CMulticlassLabels*)lab)->get_num_classes();
-		const index_t n=((CMulticlassLabels*)lab)->get_num_labels();
+		const index_t C=multiclass_labels(lab)->get_num_classes();
+		const index_t n=multiclass_labels(lab)->get_num_labels();
 		Map<VectorXd> eigen_f(f->vector, f->vlen);
 		Map<VectorXd> eigen_m(m->vector, m->vlen);
 
@@ -107,8 +107,8 @@ CMultiLaplaceInferenceMethod::CMultiLaplaceInferenceMethod() : CLaplaceInference
 	init();
 }
 
-CMultiLaplaceInferenceMethod::CMultiLaplaceInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CMultiLaplaceInferenceMethod::CMultiLaplaceInferenceMethod(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CLaplaceInference(kern, feat, m, lab, mod)
 {
 	init();
@@ -171,8 +171,8 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_
 	return SGVector<float64_t> ();
 }
 
-CMultiLaplaceInferenceMethod* CMultiLaplaceInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CMultiLaplaceInferenceMethod> CMultiLaplaceInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -180,15 +180,15 @@ CMultiLaplaceInferenceMethod* CMultiLaplaceInferenceMethod::obtain_from_generic(
 	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
 		SG_SERROR("Provided inference is not of type CMultiLaplaceInferenceMethod!\n")
 
-	SG_REF(inference);
-	return (CMultiLaplaceInferenceMethod*)inference;
+
+	return inference->as<CMultiLaplaceInferenceMethod>();
 }
 
 
 void CMultiLaplaceInferenceMethod::update_approx_cov()
 {
 	//Sigma=K-K*(E-E*R(M*M')^{-1}*R'*E)*K
-	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 	Map<MatrixXd> eigen_M(m_L.matrix, m_L.num_rows, m_L.num_cols);
 	Map<MatrixXd> eigen_E(m_E.matrix, m_E.num_rows, m_E.num_cols);
@@ -217,7 +217,7 @@ void CMultiLaplaceInferenceMethod::update_chol()
 
 void CMultiLaplaceInferenceMethod::get_dpi_helper()
 {
-	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 	Map<VectorXd> eigen_dpi(m_W.vector, m_W.vlen);
 	Map<MatrixXd> eigen_dpi_matrix(eigen_dpi.data(),n,C);
@@ -241,7 +241,7 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 	float64_t Psi_Old = CMath::INFTY;
 	float64_t Psi_New;
 	float64_t Psi_Def;
-	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 
 	// get mean vector and create eigen representation of it
@@ -396,7 +396,7 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 
 void CMultiLaplaceInferenceMethod::update_deriv()
 {
-	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 	m_U=SGMatrix<float64_t>(n, n*C);
 	Map<MatrixXd> eigen_U(m_U.matrix, m_U.num_rows, m_U.num_cols);
@@ -409,7 +409,7 @@ float64_t CMultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t
 {
 	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	//currently only explicit term is computed
-	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 	Map<MatrixXd> eigen_U(m_U.matrix, m_U.num_rows, m_U.num_cols);
 	Map<MatrixXd> eigen_E(m_E.matrix, m_E.num_rows, m_E.num_cols);
@@ -478,7 +478,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 	// create eigen representation of K, Z, dfhat and alpha
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
-	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
 
 	REQUIRE(param, "Param not set\n");
@@ -512,7 +512,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_posterior_mean()
 
 	SGVector<float64_t> res(m_mu.vlen);
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
-	const index_t C=((CMulticlassLabels*)m_labels)->get_num_classes();
+	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);
 	Map<VectorXd> eigen_mean_bl(mean.vector, mean.vlen);

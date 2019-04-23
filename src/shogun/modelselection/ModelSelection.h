@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Jacob Walker, Sergey Lisitsyn, Roman Votyakov, 
+ * Authors: Heiko Strathmann, Jacob Walker, Sergey Lisitsyn, Roman Votyakov,
  *          Soeren Sonnenburg, Yuyu Zhang
  */
 
@@ -36,8 +36,8 @@ public:
 	 * @param machine_eval object that computes the actual evaluation
 	 * @param model_parameters parameter tree with model parameters to optimize
 	 */
-	CModelSelection(CMachineEvaluation* machine_eval,
-			CModelSelectionParameters* model_parameters);
+	CModelSelection(std::shared_ptr<CMachineEvaluation> machine_eval,
+			std::shared_ptr<CModelSelectionParameters> model_parameters);
 
 	/** destructor */
 	virtual ~CModelSelection();
@@ -48,7 +48,7 @@ public:
 	 *
 	 * @return best combination of model parameters
 	 */
-	virtual CParameterCombination* select_model(bool print_state=false)=0;
+	virtual std::shared_ptr<CParameterCombination> select_model(bool print_state=false)=0;
 
 private:
 	/** initializer */
@@ -56,9 +56,9 @@ private:
 
 protected:
 	/** model parameters */
-	CModelSelectionParameters* m_model_parameters;
+	std::shared_ptr<CModelSelectionParameters> m_model_parameters;
 	/** cross validation */
-	CMachineEvaluation* m_machine_eval;
+	std::shared_ptr<CMachineEvaluation> m_machine_eval;
 };
 }
 #endif /* __MODELSELECTION_H_ */

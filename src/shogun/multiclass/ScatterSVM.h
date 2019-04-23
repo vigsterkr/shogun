@@ -60,7 +60,7 @@ class CScatterSVM : public CMulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CScatterSVM(float64_t C, CKernel* k, CLabels* lab);
+		CScatterSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
 		/** default destructor */
 		virtual ~CScatterSVM();
@@ -82,7 +82,7 @@ class CScatterSVM : public CMulticlassSVM
 		 *
 		 * @return resulting labels
 		 */
-		virtual CLabels* classify_one_vs_rest();
+		virtual std::shared_ptr<CLabels> classify_one_vs_rest();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "ScatterSVM"; }
@@ -96,7 +96,7 @@ class CScatterSVM : public CMulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	private:
 		void compute_norm_wc();

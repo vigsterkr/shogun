@@ -30,9 +30,9 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		CVarianceKernelNormalizer()
 			: CKernelNormalizer(), meandiff(1.0), sqrt_meandiff(1.0)
 		{
-			SG_ADD(&meandiff, "meandiff", "Scaling constant.", ParameterProperties::HYPER);
-			SG_ADD(&sqrt_meandiff, "sqrt_meandiff",
-					"Square root of scaling constant.", ParameterProperties::HYPER);
+			/*SG_ADD(&meandiff, "meandiff", "Scaling constant.", ParameterProperties::HYPER)*/;
+			/*SG_ADD(&sqrt_meandiff, "sqrt_meandiff",
+					"Square root of scaling constant.", ParameterProperties::HYPER)*/;
 		}
 
 		/** default destructor */
@@ -48,8 +48,8 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 			int32_t n=k->get_num_vec_lhs();
 			ASSERT(n>0)
 
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
 

@@ -27,12 +27,11 @@ CDirectSparseLinearSolver::~CDirectSparseLinearSolver()
 }
 
 SGVector<float64_t> CDirectSparseLinearSolver::solve(
-		CLinearOperator<float64_t>* A, SGVector<float64_t> b)
+		std::shared_ptr<CLinearOperator<float64_t>> A, SGVector<float64_t> b)
 {
 	REQUIRE(A, "Operator is NULL!\n");
 	REQUIRE(A->get_dimension()==b.vlen, "Dimension mismatch!\n");
-	CSparseMatrixOperator<float64_t>* op
-		=dynamic_cast<CSparseMatrixOperator<float64_t>*>(A);
+	auto op=A->as<CSparseMatrixOperator<float64_t>>();
 	REQUIRE(op, "Operator is not SparseMatrixOperator type!\n");
 
 	// creating eigen3 Sparse Matrix

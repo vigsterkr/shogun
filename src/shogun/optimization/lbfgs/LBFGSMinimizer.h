@@ -46,7 +46,7 @@ public:
 	/** Constructor
 	 * @param fun cost function (user have to manully delete the pointer)
 	 */
-	CLBFGSMinimizer(FirstOrderCostFunction *fun);
+	CLBFGSMinimizer(std::shared_ptr<FirstOrderCostFunction >fun);
 
 	/*  Destructor */
 	virtual ~CLBFGSMinimizer();

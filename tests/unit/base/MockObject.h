@@ -1,7 +1,6 @@
 #include <shogun/base/Parameter.h>
 #include <shogun/base/SGObject.h>
 #include <shogun/base/range.h>
-#include <shogun/base/some.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGSparseMatrix.h>
 #include <shogun/lib/SGSparseVector.h>
@@ -31,14 +30,12 @@ namespace shogun
 			return "CloneEqualsMockParameter";
 		}
 
-		virtual CSGObject* create_empty() const override
+		virtual std::shared_ptr<CSGObject> create_empty() const override
 		{
-			CSGObject* empty = new CCloneEqualsMockParameter();
-			SG_REF(empty);
-			return empty;
+			return std::make_shared<CCloneEqualsMockParameter>();
 		}
 
-		virtual CSGObject* clone() const override
+		virtual std::shared_ptr<CSGObject> clone() const override
 		{
 			auto clone = CSGObject::clone();
 			auto casted = clone->template as<CCloneEqualsMockParameter>();
@@ -79,7 +76,7 @@ namespace shogun
 			watch_param("basic", &m_basic);
 			m_parameters->add(&m_basic, "basic", "The basic guy");
 
-			m_object = new CCloneEqualsMockParameter<T>();
+			m_object = std::make_shared<CCloneEqualsMockParameter<T>>();
 			watch_param("object", &m_object);
 			m_parameters->add(
 			    (CSGObject**)&m_object, "object", "The object (tm)");
@@ -90,7 +87,7 @@ namespace shogun
 
 		void free_single()
 		{
-			delete m_object;
+			m_object.reset();
 		}
 
 		void init_sg_vector_matrix()
@@ -172,7 +169,7 @@ namespace shogun
 			m_raw_vector_object =
 			    new CCloneEqualsMockParameter<T>*[m_raw_vector_object_len];
 			for (auto i : range(m_raw_vector_object_len))
-				m_raw_vector_object[i] = new CCloneEqualsMockParameter<T>();
+				m_raw_vector_object[i] = std::make_shared<CCloneEqualsMockParameter<T>>();
 			watch_param(
 			    "raw_vector_object", &m_raw_vector_object,
 			    &m_raw_vector_object_len);
@@ -186,7 +183,7 @@ namespace shogun
 			delete[] m_raw_vector_basic;
 
 			for (auto i : range(m_raw_vector_object_len))
-				delete m_raw_vector_object[i];
+				m_raw_vector_object[i].reset();
 			delete[] m_raw_vector_object;
 
 			for (auto i : range(m_raw_vector_sg_string_len))
@@ -221,15 +218,13 @@ namespace shogun
 			return "CloneEqualsMock";
 		}
 
-		virtual CSGObject* create_empty() const override
+		virtual std::shared_ptr<CSGObject> create_empty() const override
 		{
-			CSGObject* empty = new CCloneEqualsMock();
-			SG_REF(empty);
-			return empty;
+			return std::make_shared<CCloneEqualsMock>();
 		}
 
 		T m_basic;
-		CCloneEqualsMockParameter<T>* m_object;
+		std::shared_ptr<CCloneEqualsMockParameter<T>> m_object;
 
 		SGVector<T> m_sg_vector;
 		SGMatrix<T> m_sg_matrix;
@@ -267,7 +262,6 @@ namespace shogun
 
 		virtual ~CMockObject()
 		{
-			SG_UNREF(m_object);
 		}
 
 		const char* get_name() const override
@@ -285,7 +279,7 @@ namespace shogun
 			return m_watched;
 		}
 
-		CSGObject* get_object() const
+		auto get_object() const
 		{
 			return m_object;
 		}
@@ -316,17 +310,15 @@ namespace shogun
 			watch_method("some_method", &CMockObject::some_method);
 		}
 
-		virtual CSGObject* create_empty() const
+		virtual std::shared_ptr<CSGObject> create_empty() const
 		{
-			auto new_instance = new CMockObject();
-			SG_REF(new_instance)
-			return new_instance;
+			return std::make_shared<CMockObject>();
 		};
 
 	private:
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;
 
-		CMockObject* m_object = nullptr;
+		std::shared_ptr<CMockObject> m_object = nullptr;
 	};
 }

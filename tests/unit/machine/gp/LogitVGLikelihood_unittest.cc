@@ -88,8 +88,8 @@ TEST(LogitVGLikelihood,get_variational_expection)
 	v[8] = 100;
 	v[9] = 625;
 
-	CLogitVGLikelihood *lik = new CLogitVGLikelihood();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lik = std::make_shared<CLogitVGLikelihood>();
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	SGVector<float64_t> aa= lik->get_variational_expection();
@@ -118,8 +118,8 @@ TEST(LogitVGLikelihood,get_variational_expection)
 	EXPECT_NEAR(aa[9],  -128.00000071165447934618,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
@@ -165,8 +165,8 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	v[8] = 100;
 	v[9] = 625;
 
-	CLogitVGLikelihood *lik = new CLogitVGLikelihood();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lik = std::make_shared<CLogitVGLikelihood>();
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
@@ -197,8 +197,8 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	EXPECT_NEAR(dv[9],  -0.00000000689624744111,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 
 TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_mu)
@@ -244,8 +244,8 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_mu)
 	v[8] = 100;
 	v[9] = 625;
 
-	CLogitVGLikelihood *lik = new CLogitVGLikelihood();
-	CBinaryLabels* lab = new CBinaryLabels(y);
+	auto lik = std::make_shared<CLogitVGLikelihood>();
+	auto lab = std::make_shared<CBinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
@@ -277,7 +277,7 @@ TEST(LogitVGLikelihood,get_variational_first_derivative_wrt_mu)
 
 
 	// clean up
-	SG_UNREF(lab);
-	SG_UNREF(lik);
+
+
 }
 #endif //USE_GPL_SHOGUN

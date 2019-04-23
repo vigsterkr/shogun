@@ -58,7 +58,7 @@ CNeuralLayer::~CNeuralLayer()
 {
 }
 
-void CNeuralLayer::initialize_neural_layer(CDynamicObjectArray* layers,
+void CNeuralLayer::initialize_neural_layer(std::shared_ptr<CDynamicObjectArray> layers,
 		SGVector< int32_t > input_indices)
 {
 	m_input_indices = input_indices;
@@ -66,9 +66,8 @@ void CNeuralLayer::initialize_neural_layer(CDynamicObjectArray* layers,
 
 	for (int32_t i=0; i<m_input_sizes.vlen; i++)
 	{
-		CNeuralLayer* layer = (CNeuralLayer*)layers->get_element(m_input_indices[i]);
+		auto layer = layers->get_element<CNeuralLayer>(m_input_indices[i]);
 		m_input_sizes[i] = layer->get_num_neurons();
-		SG_UNREF(layer);
 	}
 }
 

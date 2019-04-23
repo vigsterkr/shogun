@@ -53,13 +53,13 @@ void CMultitaskROCEvaluation::set_indices(SGVector<index_t> indices)
 	SG_FREE(tasks_indices);
 }
 
-float64_t CMultitaskROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t CMultitaskROCEvaluation::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
 {
 	REQUIRE(predicted->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
 	REQUIRE(ground_truth->get_label_type()==LT_BINARY, "ROC evalution requires binary labels.");
 
-        CBinaryLabels* predicted_binary = (CBinaryLabels*)predicted;
-        CBinaryLabels* ground_truth_binary = (CBinaryLabels*)ground_truth;
+        auto predicted_binary = binary_labels(predicted);
+        auto ground_truth_binary = binary_labels(ground_truth);
 
 	//SG_SPRINT("Evaluate\n")
 	predicted->remove_all_subsets();

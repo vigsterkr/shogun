@@ -107,12 +107,12 @@ SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparame
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
 
 	//ll  = ll  + w(i)*lp;
-	CLabels* lab=NULL;
+	std::shared_ptr<CLabels> lab=NULL;
 
 	if (supports_binary())
-		lab=new CBinaryLabels(m_lab);
+		lab=std::make_shared<CBinaryLabels>(m_lab);
 	else if (supports_regression())
-		lab=new CRegressionLabels(m_lab);
+		lab=std::make_shared<CRegressionLabels>(m_lab);
 
 	for (index_t cidx = 0; cidx < m_log_lam.num_cols; cidx++)
 	{
@@ -122,7 +122,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_first_derivative_wrt_hyperparame
 		eigen_res+=eigen_lp*m_wgh[cidx];
 	}
 
-	SG_UNREF(lab);
+
 
 	return res;
 }
@@ -134,12 +134,12 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()
 	Map<VectorXd> eigen_res(res.vector, res.vlen);
 
 	//ll  = ll  + w(i)*lp;
-	CLabels* lab=NULL;
+	std::shared_ptr<CLabels> lab=NULL;
 
 	if (supports_binary())
-		lab=new CBinaryLabels(m_lab);
+		lab=std::make_shared<CBinaryLabels>(m_lab);
 	else if (supports_regression())
-		lab=new CRegressionLabels(m_lab);
+		lab=std::make_shared<CRegressionLabels>(m_lab);
 
 	for (index_t cidx = 0; cidx < m_log_lam.num_cols; cidx++)
 	{
@@ -149,7 +149,7 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_expection()
 		eigen_res+=eigen_lp*m_wgh[cidx];
 	}
 
-	SG_UNREF(lab);
+
 
 	return res;
 }
@@ -175,12 +175,12 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 
 	Map<VectorXd> eigen_v(m_s2.vector, m_s2.vlen);
 
-	CLabels* lab=NULL;
+	std::shared_ptr<CLabels> lab=NULL;
 
 	if (supports_binary())
-		lab=new CBinaryLabels(m_lab);
+		lab=std::make_shared<CBinaryLabels>(m_lab);
 	else if (supports_regression())
-		lab=new CRegressionLabels(m_lab);
+		lab=std::make_shared<CRegressionLabels>(m_lab);
 
 	if (strcmp(param->m_name, "mu")==0)
 	{
@@ -212,14 +212,14 @@ SGVector<float64_t> CNumericalVGLikelihood::get_variational_first_derivative(
 		}
 	}
 
-	SG_UNREF(lab);
+
 
 	return res;
 }
 
 
 bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, const CLabels* lab)
+	SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab)
 {
 	bool status = true;
 	status = CVariationalGaussianLikelihood::set_variational_distribution(mu, s2, lab);
@@ -243,9 +243,9 @@ bool CNumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu
 		}
 
 		if (supports_binary())
-			m_lab=((CBinaryLabels*)lab)->get_labels();
+			m_lab=lab->as<CBinaryLabels>()->get_labels();
 		else
-			m_lab=((CRegressionLabels*)lab)->get_labels();
+			m_lab=lab->as<CRegressionLabels>()->get_labels();
 
 		if (!m_is_init_GHQ)
 		{

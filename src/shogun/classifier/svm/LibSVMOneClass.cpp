@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
  *          Leon Kuchenbecker
  */
 
@@ -15,7 +15,7 @@ CLibSVMOneClass::CLibSVMOneClass()
 {
 }
 
-CLibSVMOneClass::CLibSVMOneClass(float64_t C, CKernel* k)
+CLibSVMOneClass::CLibSVMOneClass(float64_t C, std::shared_ptr<CKernel> k)
 : CSVM(C, k, NULL)
 {
 }
@@ -24,7 +24,7 @@ CLibSVMOneClass::~CLibSVMOneClass()
 {
 }
 
-bool CLibSVMOneClass::train_machine(CFeatures* data)
+bool CLibSVMOneClass::train_machine(std::shared_ptr<CFeatures> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -59,7 +59,7 @@ bool CLibSVMOneClass::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = get_nu();
-	param.kernel=kernel;
+	param.kernel=kernel.get();
 	param.cache_size = kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C1();
@@ -70,12 +70,12 @@ bool CLibSVMOneClass::train_machine(CFeatures* data)
 	param.weight_label = weights_label;
 	param.weight = weights;
 	param.use_bias = get_bias_enabled();
-	
+
 	const char* error_msg = svm_check_parameter(&problem,&param);
 
 	if(error_msg)
 		SG_ERROR("Error: %s\n",error_msg)
-	
+
 	model = svm_train(&problem, &param);
 
 	if (model)

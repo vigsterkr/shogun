@@ -52,7 +52,7 @@ SGNDArray<float64_t> CUWedgeSep::get_covs() const
 	return m_covs;
 }
 
-void CUWedgeSep::fit_dense(CDenseFeatures<float64_t>* features)
+void CUWedgeSep::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 

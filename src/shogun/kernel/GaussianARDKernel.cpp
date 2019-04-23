@@ -58,14 +58,14 @@ CGaussianARDKernel::CGaussianARDKernel(int32_t size)
 	init();
 }
 
-CGaussianARDKernel::CGaussianARDKernel(CDotFeatures* l,
-		CDotFeatures* r, int32_t size)
+CGaussianARDKernel::CGaussianARDKernel(std::shared_ptr<CDotFeatures> l,
+		std::shared_ptr<CDotFeatures> r, int32_t size)
 		: CExponentialARDKernel(size)
 {
 	init();
 }
 
-bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
+bool CGaussianARDKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	bool status=CExponentialARDKernel::init(l,r);
 
@@ -75,7 +75,7 @@ bool CGaussianARDKernel::init(CFeatures* l, CFeatures* r)
 	return status;
 }
 
-SGVector<float64_t> CGaussianARDKernel::precompute_squared_helper(CDotFeatures* df)
+SGVector<float64_t> CGaussianARDKernel::precompute_squared_helper(std::shared_ptr<CDotFeatures> df)
 {
 	REQUIRE(df, "Features not set\n")
 	int32_t num_vec=df->get_num_vectors();
@@ -89,16 +89,16 @@ void CGaussianARDKernel::precompute_squared()
 {
 	if (!lhs || !rhs)
 		return;
-	m_sq_lhs=precompute_squared_helper((CDotFeatures*) lhs);
+	m_sq_lhs=precompute_squared_helper(std::static_pointer_cast<CDotFeatures>(lhs));
 
 	if (lhs==rhs)
 		m_sq_rhs=m_sq_lhs;
 	else
-		m_sq_rhs=precompute_squared_helper((CDotFeatures*) rhs);
+		m_sq_rhs=precompute_squared_helper(std::static_pointer_cast<CDotFeatures>(rhs));
 }
 
 
-CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<CGaussianARDKernel> CGaussianARDKernel::obtain_from_generic(std::shared_ptr<CKernel> kernel)
 {
 	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
 	{
@@ -106,8 +106,8 @@ CGaussianARDKernel* CGaussianARDKernel::obtain_from_generic(CKernel* kernel)
 	}
 
 	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CGaussianARDKernel*)kernel;
+
+	return std::static_pointer_cast<CGaussianARDKernel>(kernel);
 }
 
 float64_t CGaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<float64_t>bvec)

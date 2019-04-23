@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Viktor Gal, Soeren Sonnenburg, Soumyajit De, 
+ * Authors: Heiko Strathmann, Viktor Gal, Soeren Sonnenburg, Soumyajit De,
  *          Yuyu Zhang, Thoralf Klein, Sergey Lisitsyn, Wu Lin
  */
 
@@ -106,7 +106,7 @@ public:
      * @param is_labelled Whether example is labelled or not (bool), optional
      * @param size Size of the buffer in number of examples
      */
-    void init(CStreamingFile* input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE);
+    void init(std::shared_ptr<CStreamingFile> input_file, bool is_labelled = true, int32_t size = PARSER_DEFAULT_BUFFSIZE);
 
     /**
      * Test if parser is running.
@@ -312,13 +312,13 @@ protected:
     void (CStreamingFile::*read_vector_and_label) (T* &vec, int32_t &len, float64_t &label);
 
     /// Input source, CStreamingFile object
-    CStreamingFile* input_source;
+    std::shared_ptr<CStreamingFile> input_source;
 
     /// Thread in which the parser runs
 	std::thread parse_thread;
 
     /// The ring of examples, stored as they are parsed
-    CParseBuffer<T>* examples_ring;
+    std::shared_ptr<CParseBuffer<T>> examples_ring;
 
     /// Number of features in dataset (max of 'seen' features upto point of access)
     int32_t number_of_features;
@@ -384,22 +384,14 @@ template <class T>
 template <class T>
     CInputParser<T>::~CInputParser()
 {
-	SG_UNREF(examples_ring);
 }
 
 template <class T>
-    void CInputParser<T>::init(CStreamingFile* input_file, bool is_labelled, int32_t size)
+    void CInputParser<T>::init(std::shared_ptr<CStreamingFile> input_file, bool is_labelled, int32_t size)
 {
     input_source = input_file;
-
-    if (is_labelled == true)
-        example_type = E_LABELLED;
-    else
-        example_type = E_UNLABELLED;
-
-	SG_UNREF(examples_ring);
-    examples_ring = new CParseBuffer<T>(size);
-    SG_REF(examples_ring);
+    example_type = is_labelled ? E_LABELLED : E_UNLABELLED;
+    examples_ring = std::make_shared<CParseBuffer<T>>(size);
 
     parsing_done = false;
     reading_done = false;
@@ -476,7 +468,7 @@ template <class T>
                               int32_t &length,
                               float64_t &label)
 {
-    (input_source->*read_vector_and_label)(feature_vector, length, label);
+    (input_source.get()->*read_vector_and_label)(feature_vector, length, label);
 
     if (length < 1)
     {
@@ -491,7 +483,7 @@ template <class T>
     int32_t CInputParser<T>::get_vector_only(T* &feature_vector,
                          int32_t &length)
 {
-    (input_source->*read_vector)(feature_vector, length);
+    (input_source.get()->*read_vector)(feature_vector, length);
 
     if (length < 1)
     {

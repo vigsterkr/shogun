@@ -39,7 +39,7 @@ public:
 	 * @param coef kernel parameter coefficient
 	 * @param dist distance to be used
 	 */
-	CRationalQuadraticKernel(int32_t cache, float64_t coef, CDistance* dist);
+	CRationalQuadraticKernel(int32_t cache, float64_t coef, std::shared_ptr<CDistance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param c kernel parameter coefficient
 	 * @param dist distance to be used
 	 */
-	CRationalQuadraticKernel(CFeatures *l, CFeatures *r, float64_t c, CDistance* dist);
+	CRationalQuadraticKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t c, std::shared_ptr<CDistance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/**
 	 * @return kernel type
@@ -103,7 +103,7 @@ private:
 
 protected:
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<CDistance> m_distance;
 
 	/// coefficient parameter of kernel
 	float64_t m_coef;

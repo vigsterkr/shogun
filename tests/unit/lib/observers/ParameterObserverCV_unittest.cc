@@ -63,52 +63,47 @@ index_t num_features = 1;
 
 /* training label data */
 SGVector<float64_t> lab(num_vectors);
-CDenseFeatures<float64_t>* features = NULL;
-CRegressionLabels* labels = NULL;
+std::shared_ptr<CDenseFeatures<float64_t>> features = NULL;
+std::shared_ptr<CRegressionLabels> labels = NULL;
 
-CParameterObserverCV* generate(bool locked = true)
+std::shared_ptr<CParameterObserverCV> generate(bool locked = true)
 {
 	/* training features */
 	features = regression_test_env->get_features_train();
-	SG_REF(features);
+
 
 	/* training labels */
 	labels = regression_test_env->get_labels_train();
 
 	/* kernel */
-	CLinearKernel* kernel = new CLinearKernel();
+	auto kernel = std::make_shared<CLinearKernel>();
 	kernel->init(features, features);
 
 	/* kernel ridge regression*/
 	float64_t tau = 0.0001;
-	CKernelRidgeRegression* krr =
-	    new CKernelRidgeRegression(tau, kernel, labels);
+	auto krr =
+	    std::make_shared<CKernelRidgeRegression>(tau, kernel, labels);
 
 	/* evaluation criterion */
-	CMeanSquaredError* eval_crit = new CMeanSquaredError();
+	auto eval_crit = std::make_shared<CMeanSquaredError>();
 
 	/* splitting strategy */
 	index_t n_folds = 5;
-	CCrossValidationSplitting* splitting =
-	    new CCrossValidationSplitting(labels, n_folds);
+	auto splitting =
+	    std::make_shared<CCrossValidationSplitting>(labels, n_folds);
 
 	/* cross validation instance, 100 runs, 95% confidence interval */
-	CCrossValidation* cross =
-	    new CCrossValidation(krr, features, labels, splitting, eval_crit);
+	auto cross =
+	    std::make_shared<CCrossValidation>(krr, features, labels, splitting, eval_crit);
 	cross->set_num_runs(10);
 	cross->set_autolock(locked);
 
 	/* Create the parameter observer */
-	CParameterObserverCV* par = new CParameterObserverCV();
+	auto par = std::make_shared<CParameterObserverCV>();
 	cross->subscribe(par);
 
 	/* actual evaluation */
-	CCrossValidationResult* result = (CCrossValidationResult*)cross->evaluate();
-
-	/* clean up */
-	SG_UNREF(result);
-	SG_UNREF(cross);
-	SG_UNREF(features);
+	auto result = cross->evaluate()->as<CCrossValidationResult>();
 
 	return par;
 }
@@ -122,30 +117,27 @@ TEST(ParameterObserverCV, get_observations_locked)
 		auto name = par->get_observation(i)->get<std::string>("name");
 		auto run = par->get_observation(i)->get(name);
 		ASSERT(run)
-		SG_REF(run)
 		EXPECT_EQ(run->get<index_t>("num_runs"), 10);
 		EXPECT_EQ(run->get<index_t>("num_folds"), 5);
 		EXPECT_TRUE(run->get("labels")->equals(labels));
 		for (int j = 0; j < 5; j++)
 		{
 			auto fold = run->get("folds", j);
-			SG_REF(fold)
 			EXPECT_EQ(fold->get<index_t>("run_index"), i);
 			EXPECT_EQ(fold->get<index_t>("fold_index"), j);
 			EXPECT_TRUE(
 			    fold->get<SGVector<index_t>>("train_indices").size() != 0);
 			EXPECT_TRUE(
 			    fold->get<SGVector<index_t>>("test_indices").size() != 0);
-			EXPECT_TRUE(fold->get<CMachine*>("trained_machine") != NULL);
+			EXPECT_TRUE(fold->get<CMachine>("trained_machine") != NULL);
 			EXPECT_TRUE(
-			    fold->get<CLabels*>("predicted_labels")->get_num_labels() != 0);
+			    fold->get<CLabels>("predicted_labels")->get_num_labels() != 0);
 			EXPECT_TRUE(
-			    fold->get<CLabels*>("ground_truth_labels")->get_num_labels() !=
+			    fold->get<CLabels>("ground_truth_labels")->get_num_labels() !=
 			    0);
 			EXPECT_TRUE(fold->get<float64_t>("evaluation_result") != 0);
-			SG_UNREF(fold)
 		}
-		SG_UNREF(run)
+
 	}
 }
 
@@ -158,29 +150,26 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 		auto name = par->get_observation(i)->get<std::string>("name");
 		auto run = par->get_observation(i)->get(name);
 		ASSERT(run)
-		SG_REF(run)
 		EXPECT_EQ(run->get<index_t>("num_runs"), 10);
 		EXPECT_EQ(run->get<index_t>("num_folds"), 5);
 		EXPECT_TRUE(run->get("labels")->equals(labels));
 		for (int j = 0; j < run->get<index_t>("num_folds"); j++)
 		{
 			auto fold = run->get("folds", j);
-			SG_REF(fold)
 			EXPECT_EQ(fold->get<index_t>("run_index"), i);
 			EXPECT_EQ(fold->get<index_t>("fold_index"), j);
 			EXPECT_TRUE(
 			    fold->get<SGVector<index_t>>("train_indices").size() != 0);
 			EXPECT_TRUE(
 			    fold->get<SGVector<index_t>>("test_indices").size() != 0);
-			EXPECT_TRUE(fold->get<CMachine*>("trained_machine") != NULL);
+			EXPECT_TRUE(fold->get<CMachine>("trained_machine") != NULL);
 			EXPECT_TRUE(
-			    fold->get<CLabels*>("predicted_labels")->get_num_labels() != 0);
+			    fold->get<CLabels>("predicted_labels")->get_num_labels() != 0);
 			EXPECT_TRUE(
-			    fold->get<CLabels*>("ground_truth_labels")->get_num_labels() !=
+			    fold->get<CLabels>("ground_truth_labels")->get_num_labels() !=
 			    0);
 			EXPECT_TRUE(fold->get<float64_t>("evaluation_result") != 0);
-			SG_UNREF(fold)
 		}
-		SG_UNREF(run)
+
 	}
 }

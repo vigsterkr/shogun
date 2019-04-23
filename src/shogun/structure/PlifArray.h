@@ -29,7 +29,7 @@ class CPlifArray: public CPlifBase
 		 *
 		 * @param new_plif the new plif to be added
 		 */
-		void add_plif(CPlifBase* new_plif);
+		void add_plif(std::shared_ptr<CPlifBase> new_plif);
 
 		/** clear */
 		void clear();
@@ -122,7 +122,7 @@ class CPlifArray: public CPlifBase
 
 	protected:
 		/** plif array */
-		DynArray<CPlifBase*> m_array;
+		DynArray<std::shared_ptr<CPlifBase>> m_array;
 		/** maximum value */
 		float64_t max_value;
 		/** minimum value */

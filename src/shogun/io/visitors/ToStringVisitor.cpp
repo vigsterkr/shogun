@@ -33,7 +33,7 @@ void ToStringVisitor::on(std::string *v) {
 	stream() << *v << " ";
 }
 
-void ToStringVisitor::on(CSGObject **v) {
+void ToStringVisitor::on(std::shared_ptr<CSGObject>* v) {
 	if (*v) {
 		stream() << (*v)->get_name() << "(...) ";
 	} else {

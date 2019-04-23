@@ -44,10 +44,10 @@ public:
 	 *
 	 * @param base_data its dynamic type must be CFactorGraphObservation
 	 */
-	static CFactorGraphObservation* obtain_from_generic(CStructuredData* base_data)
+	static std::shared_ptr<CFactorGraphObservation> obtain_from_generic(std::shared_ptr<CStructuredData> base_data)
 	{
 		if ( base_data->get_structured_data_type() == SDT_FACTOR_GRAPH )
-			return (CFactorGraphObservation*) base_data;
+			return std::static_pointer_cast<CFactorGraphObservation>(base_data);
 		else
 			SG_SERROR("base_data must be of dynamic type CFactorGraphObservation\n")
 

@@ -50,7 +50,7 @@ public:
 	 *
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth)=0;
+	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)=0;
 
 	/** set absolute indices of labels to be evaluated next used by multitask
 	 * evaluations

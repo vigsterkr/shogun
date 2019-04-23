@@ -36,7 +36,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CLinearStringKernel(CStringFeatures<char>* l, CStringFeatures<char>* r);
+		CLinearStringKernel(std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r);
 
 		virtual ~CLinearStringKernel();
 
@@ -46,7 +46,7 @@ class CLinearStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

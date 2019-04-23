@@ -5,37 +5,29 @@
 
 using namespace shogun;
 
-CPlifMatrix::CPlifMatrix() : m_PEN(NULL), m_num_plifs(0), m_num_limits(0),
-	m_num_states(0), m_feat_dim3(0), m_plif_matrix(NULL), m_state_signals(NULL)
+CPlifMatrix::CPlifMatrix() : m_PEN(0), m_num_plifs(0), m_num_limits(0),
+	m_num_states(0), m_feat_dim3(0), m_plif_matrix(0), m_state_signals(0)
 {
 }
 
 CPlifMatrix::~CPlifMatrix()
 {
-	for (int32_t i=0; i<m_num_plifs; i++)
-		delete m_PEN[i];
-	SG_FREE(m_PEN);
+	m_PEN.clear();
 
-	for (int32_t i=0; i<m_num_states*m_num_states; i++)
-		delete m_plif_matrix[i];
+	m_plif_matrix.clear();
 
-	SG_FREE(m_plif_matrix);
-
-	SG_FREE(m_state_signals);
+	m_state_signals.clear();
 }
 
 void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 {
-	for (int32_t i=0; i<m_num_plifs; i++)
-		delete m_PEN[i];
-	SG_FREE(m_PEN);
-	m_PEN=NULL;
+	m_PEN.clear();
 
 	m_num_plifs=num_plifs;
 	m_num_limits=num_limits;
-	m_PEN = SG_MALLOC(CPlif*, num_plifs);
+	m_PEN.resize(num_plifs);
 	for (int32_t i=0; i<num_plifs; i++)
-		m_PEN[i]=new CPlif(num_limits) ;
+		m_PEN[i]=std::make_shared<CPlif>(num_limits) ;
 }
 
 void CPlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
@@ -166,8 +158,7 @@ void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_
 
 		if (!m_PEN[id]->set_transform_type(transform_str))
 		{
-			SG_FREE(m_PEN);
-			m_PEN=NULL;
+			m_PEN.clear();
 			m_num_plifs=0;
 			m_num_limits=0;
 			SG_ERROR("transform type not recognized ('%s')\n", transform_str)
@@ -179,16 +170,14 @@ void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_
 
 bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 {
-	CPlif** PEN = get_PEN();
+	auto PEN = get_PEN();
 	int32_t num_states = penalties_array.dims[0];
 	int32_t num_plifs = get_num_plifs();
 
-	for (int32_t i=0; i<m_num_states*m_num_states; i++)
-		delete  m_plif_matrix[i];
-	SG_FREE(m_plif_matrix);
+	m_plif_matrix.clear();
 
 	m_num_states = num_states;
-	m_plif_matrix = SG_MALLOC(CPlifBase*, num_states*num_states);
+	m_plif_matrix.resize(num_states*num_states);
 
 	CDynamicArray<float64_t> penalties(penalties_array.array, num_states, num_states, penalties_array.dims[2], true, true) ;
 
@@ -196,8 +185,8 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 	{
 		for (int32_t j=0; j<num_states; j++)
 		{
-			CPlifArray * plif_array = NULL;
-			CPlif * plif = NULL ;
+			std::shared_ptr<CPlifArray> plif_array = NULL;
+			std::shared_ptr<CPlif> plif = NULL ;
 			for (int32_t k=0; k<penalties_array.dims[2]; k++)
 			{
 				if (penalties.element(i,j,k)==0)
@@ -205,7 +194,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 
 				if (!plif_array)
 				{
-					plif_array = new CPlifArray() ;
+					plif_array = std::make_shared<CPlifArray>() ;
 					plif_array->clear() ;
 				}
 
@@ -214,6 +203,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 				if ((id<0 || id>=num_plifs) && (id!=-1))
 				{
 					SG_ERROR("id out of range\n")
+
 					CPlif::delete_penalty_struct(PEN, num_plifs) ;
 					return false ;
 				}
@@ -228,7 +218,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 			}
 			else if (plif_array->get_num_plifs()==1)
 			{
-				SG_UNREF(plif_array);
+
 				ASSERT(plif!=NULL)
 				m_plif_matrix[i+j*num_states] = plif ;
 			}
@@ -243,12 +233,12 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 bool  CPlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
 {
 	int32_t Nplif = get_num_plifs();
-	CPlif** PEN = get_PEN();
+	auto PEN = get_PEN();
 
-	SG_FREE(m_state_signals);
+	m_state_signals.clear();
 	m_feat_dim3 = state_signals.num_rows;
 
-	CPlifBase **PEN_state_signal = SG_MALLOC(CPlifBase*, state_signals.num_rows*state_signals.num_cols);
+	PlifVector PEN_state_signal(state_signals.num_rows*state_signals.num_cols);
 	for (int32_t i=0; i<state_signals.num_cols*state_signals.num_rows; i++)
 	{
 		int32_t id = (int32_t) state_signals.matrix[i]-1 ;
@@ -259,9 +249,9 @@ bool  CPlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
 			return false ;
 		}
 		if (id==-1)
-			PEN_state_signal[i]=NULL ;
+			PEN_state_signal[i]=NULL;
 		else
-			PEN_state_signal[i]=PEN[id] ;
+			PEN_state_signal[i]=PEN[id];
 	}
 	m_state_signals=PEN_state_signal;
 	return true;

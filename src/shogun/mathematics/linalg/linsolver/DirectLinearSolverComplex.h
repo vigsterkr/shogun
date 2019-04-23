@@ -50,7 +50,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<complex128_t> solve(CLinearOperator<complex128_t>* A,
+	virtual SGVector<complex128_t> solve(std::shared_ptr<CLinearOperator<complex128_t>> A,
 			SGVector<float64_t> b);
 
 	/** @return object name */

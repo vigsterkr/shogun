@@ -40,8 +40,8 @@ public:
 	{
 
 		//same as first-element normalizer
-		CFeatures* old_lhs=k->lhs;
-		CFeatures* old_rhs=k->rhs;
+		auto old_lhs=k->lhs;
+		auto old_rhs=k->rhs;
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 

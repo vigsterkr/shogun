@@ -81,7 +81,7 @@ class CLibSVR : public CSVM
 		 * @param lab labels
 		 * @param st solver type to use, EPSILON-SVR or NU-SVR
 		 */
-		CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
+		CLibSVR(float64_t C, float64_t svr_param, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab,
 				LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR);
 
 		virtual ~CLibSVR();
@@ -107,7 +107,7 @@ class CLibSVR : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 	protected:
 		/** solver type */
 		LIBSVR_SOLVER_TYPE solver_type;

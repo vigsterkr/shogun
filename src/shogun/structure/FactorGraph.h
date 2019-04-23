@@ -48,19 +48,19 @@ public:
 	 *
 	 * @param factor a factor pointer
 	 */
-	void add_factor(CFactor* factor);
+	void add_factor(std::shared_ptr<CFactor> factor);
 
 	/** add a data source
 	 *
 	 * @param datasource a factor data source
 	 */
-	void add_data_source(CFactorDataSource* datasource);
+	void add_data_source(std::shared_ptr<CFactorDataSource> datasource);
 
 	/** @return all the factors */
-	CDynamicObjectArray* get_factors() const;
+	std::shared_ptr<CDynamicObjectArray> get_factors() const;
 
 	/** @return all the shared data */
-	CDynamicObjectArray* get_factor_data_sources() const;
+	std::shared_ptr<CDynamicObjectArray> get_factor_data_sources() const;
 
 	/** @return number of factors */
 	int32_t get_num_factors() const;
@@ -87,13 +87,13 @@ public:
 	 *
 	 * @param obs factor graph observation
 	 */
-	float64_t evaluate_energy(const CFactorGraphObservation* obs) const;
+	float64_t evaluate_energy(std::shared_ptr<const CFactorGraphObservation> obs) const;
 
 	/** @return energy table for the graph */
 	SGVector<float64_t> evaluate_energies() const;
 
 	/** @return disjoint set */
-	CDisjointSet* get_disjoint_set() const;
+	std::shared_ptr<CDisjointSet> get_disjoint_set() const;
 
 	/** @return number of edges */
 	int32_t get_num_edges() const;
@@ -120,7 +120,7 @@ public:
 	 *
 	 * @param gt an observation (states and loss weights are stored in it)
 	 */
-	virtual void loss_augmentation(CFactorGraphObservation* gt);
+	virtual void loss_augmentation(std::shared_ptr<CFactorGraphObservation> gt);
 
 	/** perform loss-augmentation
 	 *
@@ -144,13 +144,13 @@ protected:
 	SGVector<int32_t> m_cardinalities;
 
 	/** added factors */
-	CDynamicObjectArray* m_factors;
+	std::shared_ptr<CDynamicObjectArray> m_factors;
 
 	/** added data sources */
-	CDynamicObjectArray* m_datasources;
+	std::shared_ptr<CDynamicObjectArray> m_datasources;
 
 	/** disjoint set */
-	CDisjointSet* m_dset;
+	std::shared_ptr<CDisjointSet> m_dset;
 
 	/** if has circle in the graph */
 	bool m_has_cycle;

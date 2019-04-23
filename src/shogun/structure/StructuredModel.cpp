@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Sergey Lisitsyn, Thoralf Klein, Shell Hu, 
+ * Authors: Fernando Iglesias, Sergey Lisitsyn, Thoralf Klein, Shell Hu,
  *          Soeren Sonnenburg, Viktor Gal, Abinash Panda, Michal Uricar
  */
 
@@ -24,12 +24,12 @@ CResultSet::CResultSet()
 
 CResultSet::~CResultSet()
 {
-	SG_UNREF(argmax)
+
 }
 
-CStructuredLabels* CStructuredModel::structured_labels_factory(int32_t num_labels)
+std::shared_ptr<CStructuredLabels> CStructuredModel::structured_labels_factory(int32_t num_labels)
 {
-	return new CStructuredLabels(num_labels);
+	return std::make_shared<CStructuredLabels>(num_labels);
 }
 
 const char* CResultSet::get_name() const
@@ -43,8 +43,8 @@ CStructuredModel::CStructuredModel() : CSGObject()
 }
 
 CStructuredModel::CStructuredModel(
-		CFeatures*         features,
-		CStructuredLabels* labels)
+		std::shared_ptr<CFeatures>         features,
+		std::shared_ptr<CStructuredLabels> labels)
 : CSGObject()
 {
 	init();
@@ -55,8 +55,8 @@ CStructuredModel::CStructuredModel(
 
 CStructuredModel::~CStructuredModel()
 {
-	SG_UNREF(m_labels);
-	SG_UNREF(m_features);
+
+
 }
 
 void CStructuredModel::init_primal_opt(
@@ -72,29 +72,29 @@ void CStructuredModel::init_primal_opt(
 	SG_ERROR("init_primal_opt is not implemented for %s!\n", get_name())
 }
 
-void CStructuredModel::set_labels(CStructuredLabels* labels)
+void CStructuredModel::set_labels(std::shared_ptr<CStructuredLabels> labels)
 {
-	SG_REF(labels);
-	SG_UNREF(m_labels);
+
+
 	m_labels = labels;
 }
 
-CStructuredLabels* CStructuredModel::get_labels()
+std::shared_ptr<CStructuredLabels> CStructuredModel::get_labels()
 {
-	SG_REF(m_labels);
+
 	return m_labels;
 }
 
-void CStructuredModel::set_features(CFeatures* features)
+void CStructuredModel::set_features(std::shared_ptr<CFeatures> features)
 {
-	SG_REF(features);
-	SG_UNREF(m_features);
+
+
 	m_features = features;
 }
 
-CFeatures* CStructuredModel::get_features()
+std::shared_ptr<CFeatures> CStructuredModel::get_features()
 {
-	SG_REF(m_features);
+
 	return m_features;
 }
 
@@ -102,16 +102,15 @@ SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx,
 		int32_t lab_idx)
 {
-	CStructuredData* label = m_labels->get_label(lab_idx);
+	auto label = m_labels->get_label(lab_idx);
 	SGVector< float64_t > ret = get_joint_feature_vector(feat_idx, label);
-	SG_UNREF(label);
 
 	return ret;
 }
 
 SGVector< float64_t > CStructuredModel::get_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		std::shared_ptr<CStructuredData> y)
 {
 	SG_ERROR("compute_joint_feature(int32_t, CStructuredData*) is not "
 			"implemented for %s!\n", get_name());
@@ -123,16 +122,15 @@ SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
 		int32_t feat_idx,
 		int32_t lab_idx)
 {
-	CStructuredData* label = m_labels->get_label(lab_idx);
+	auto label = m_labels->get_label(lab_idx);
 	SGSparseVector< float64_t > ret = get_sparse_joint_feature_vector(feat_idx, label);
-	SG_UNREF(label);
 
 	return ret;
 }
 
 SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
 		int32_t feat_idx,
-		CStructuredData* y)
+		std::shared_ptr<CStructuredData> y)
 {
 	SG_ERROR("compute_sparse_joint_feature(int32_t, CStructuredData*) is not "
 			"implemented for %s!\n", get_name());
@@ -140,19 +138,18 @@ SGSparseVector< float64_t > CStructuredModel::get_sparse_joint_feature_vector(
 	return SGSparseVector< float64_t >();
 }
 
-float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, CStructuredData* ypred)
+float64_t CStructuredModel::delta_loss(int32_t ytrue_idx, std::shared_ptr<CStructuredData> ypred)
 {
 	REQUIRE(ytrue_idx >= 0 || ytrue_idx < m_labels->get_num_labels(),
 			"The label index must be inside [0, num_labels-1]\n");
 
-	CStructuredData* ytrue = m_labels->get_label(ytrue_idx);
+	auto ytrue = m_labels->get_label(ytrue_idx);
 	float64_t ret = delta_loss(ytrue, ypred);
-	SG_UNREF(ytrue);
 
 	return ret;
 }
 
-float64_t CStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CStructuredModel::delta_loss(std::shared_ptr<CStructuredData> y1, std::shared_ptr<CStructuredData> y2)
 {
 	SG_ERROR("delta_loss(CStructuredData*, CStructuredData*) is not "
 			"implemented for %s!\n", get_name());
@@ -162,8 +159,8 @@ float64_t CStructuredModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
 
 void CStructuredModel::init()
 {
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "Structured labels");
-	SG_ADD((CSGObject**) &m_features, "m_features", "Feature vectors");
+	SG_ADD((std::shared_ptr<CLabels>*) &m_labels, "m_labels", "Structured labels");
+	SG_ADD((std::shared_ptr<CFeatures>*) &m_features, "m_features", "Feature vectors");
 
 	m_features = NULL;
 	m_labels   = NULL;

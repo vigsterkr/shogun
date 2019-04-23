@@ -37,7 +37,7 @@ namespace shogun
 		 * @param features the training features, should be an instance of
 		 * CDenseFeatures<float64_t>
 		 */
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<CFeatures> features);
 
 		/** Apply the ICA converter to features by multiplying the feature
 		 * matrix by the unmixing matirx.
@@ -46,7 +46,7 @@ namespace shogun
 		 * @param inplace transform in place
 		 * @return the result feature object after applying the ICA converter
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 		/** Inverse apply the ICA converter to features by multiplying the
 		 * feature matrix by the mixing matirx.
@@ -56,8 +56,8 @@ namespace shogun
 		 * @return the result feature object after inverse applying the ICA
 		 * converter
 		 */
-		virtual CFeatures*
-		inverse_transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<CFeatures>
+		inverse_transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 		/** setter for mixing matrix, if the mixing matrix is set it will be
 		 * used as an initial guess if supported by the algorithm
@@ -98,7 +98,7 @@ namespace shogun
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features) = 0;
+		virtual void fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features) = 0;
 
 		/** mixing_matrix */
 		SGMatrix<float64_t> m_mixing_matrix;

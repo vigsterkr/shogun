@@ -40,7 +40,7 @@ template<class ST> CDenseSubSamplesFeatures<ST>::CDenseSubSamplesFeatures()
 }
 
 template<class ST> CDenseSubSamplesFeatures<ST>::CDenseSubSamplesFeatures(
-	CDenseFeatures<ST> *fea, SGVector<int32_t> idx)
+	std::shared_ptr<CDenseFeatures<ST>> fea, SGVector<int32_t> idx)
 	:CDotFeatures()
 {
 	init();
@@ -50,15 +50,13 @@ template<class ST> CDenseSubSamplesFeatures<ST>::CDenseSubSamplesFeatures(
 
 template<class ST> CDenseSubSamplesFeatures<ST>::~CDenseSubSamplesFeatures()
 {
-	SG_UNREF(m_fea);
+
 }
 
-template<class ST> void CDenseSubSamplesFeatures<ST>::set_features(CDenseFeatures<ST> *fea)
+template<class ST> void CDenseSubSamplesFeatures<ST>::set_features(std::shared_ptr<CDenseFeatures<ST>> fea)
 {
-	if (m_fea!=fea)
+	if (m_fea.get()!=fea.get())
 	{
-		SG_REF(fea);
-		SG_UNREF(m_fea);
 		m_fea = fea;
 	}
 }
@@ -69,12 +67,12 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::init()
 	m_fea=NULL;
 	m_idx=SGVector<int32_t>();
 	SG_ADD(&m_idx, "idx", "idx");
-	SG_ADD((CSGObject **)&m_fea, "fea", "fea");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_fea, "fea", "fea");
 }
 
-template<class ST> CFeatures* CDenseSubSamplesFeatures<ST>::duplicate() const
+template<class ST> std::shared_ptr<CFeatures> CDenseSubSamplesFeatures<ST>::duplicate() const
 {
-	return new CDenseSubSamplesFeatures(m_fea, m_idx);
+	return std::make_shared<CDenseSubSamplesFeatures>(m_fea, m_idx);
 }
 
 template<class ST> bool CDenseSubSamplesFeatures<ST>::get_feature_class_compatibility (EFeatureClass rhs) const
@@ -120,10 +118,10 @@ template<class ST> void CDenseSubSamplesFeatures<ST>::set_subset_idx(SGVector<in
 }
 
 template<class ST> float64_t CDenseSubSamplesFeatures<ST>::dot(
-	int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+	int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	check_bound(vec_idx1);
-	CDenseSubSamplesFeatures<ST>* df_f= dynamic_cast<CDenseSubSamplesFeatures<ST>* >(df);
+	auto df_f= std::dynamic_pointer_cast<CDenseSubSamplesFeatures<ST>>(df);
 	float64_t res=0.0;
 	if (df_f)
 	{

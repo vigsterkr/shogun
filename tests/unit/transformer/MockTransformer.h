@@ -7,11 +7,11 @@ namespace shogun
 	class MockCTransformer : public CTransformer
 	{
 	public:
-		MOCK_METHOD1(fit, void(CFeatures*));
+		MOCK_METHOD1(fit, void(std::shared_ptr<CFeatures>));
 
-		MOCK_METHOD2(fit, void(CFeatures*, CLabels*));
+		MOCK_METHOD2(fit, void(std::shared_ptr<CFeatures>, std::shared_ptr<CLabels>));
 
-		MOCK_METHOD2(transform, CFeatures*(CFeatures*, bool));
+		MOCK_METHOD2(transform, std::shared_ptr<CFeatures>(std::shared_ptr<CFeatures>, bool));
 
 		MOCK_CONST_METHOD0(train_require_labels, bool());
 

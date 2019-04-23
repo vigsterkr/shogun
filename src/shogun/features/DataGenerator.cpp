@@ -147,14 +147,14 @@ SGMatrix<float64_t> CDataGenerator::generate_gaussians(index_t m, index_t n, ind
 			if (k % (i+1) == 0)
 				mean[k] *= -1;
 		}
-		CGaussian* g = new CGaussian(mean, cov, DIAG);
+		auto g = std::make_shared<CGaussian>(mean, cov, DIAG);
 		for (index_t j = 0; j < m; ++j)
 		{
 			SGVector<float64_t> v = g->sample();
 			sg_memcpy((result.matrix+j*result.num_rows+i*m*dim), v.vector, dim*sizeof(float64_t));
 		}
 
-		SG_UNREF(g);
+
 	}
 
 	return result;

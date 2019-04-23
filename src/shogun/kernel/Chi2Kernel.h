@@ -49,7 +49,7 @@ class CChi2Kernel: public CDotKernel
 		 * @param width width
 		 * @param size cache size
 		 */
-		CChi2Kernel( CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+		CChi2Kernel(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r,
 				float64_t width, int32_t size=10);
 
 		virtual ~CChi2Kernel();
@@ -60,7 +60,7 @@ class CChi2Kernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** @return width of the kernel */
 		virtual float64_t get_width();
@@ -69,7 +69,7 @@ class CChi2Kernel: public CDotKernel
 		 * is SG_REF'ed
 		 * @return casted CGaussianKernel object
 		 */
-		static CChi2Kernel* obtain_from_generic(CKernel* kernel);
+		static std::shared_ptr<CChi2Kernel> obtain_from_generic(std::shared_ptr<CKernel> kernel);
 
 		/** return what type of kernel we are
 		 *

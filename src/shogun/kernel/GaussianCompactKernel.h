@@ -39,7 +39,7 @@ class CGaussianCompactKernel: public CGaussianKernel
          * @param width width
          * @param size cache size
          */
-        CGaussianCompactKernel(CDotFeatures* l, CDotFeatures* r,
+        CGaussianCompactKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r,
                                float64_t width, int32_t size=10);
 
         /* destructor */

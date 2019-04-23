@@ -69,7 +69,7 @@ namespace shogun
 		/** registers and initializes parameters */
 		void init();
 
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(std::shared_ptr<CFeatures> data);
 		virtual void iteration();
 
 	protected:

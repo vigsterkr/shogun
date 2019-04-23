@@ -57,7 +57,7 @@ struct liblinear_problem
 	/** y */
 	float64_t* y;
 	/** sparse features x */
-	CDotFeatures* x;
+	std::shared_ptr<CDotFeatures> x;
 	/** if bias shall be used */
 	bool use_bias;
 };

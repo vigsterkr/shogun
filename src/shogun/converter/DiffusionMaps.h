@@ -45,13 +45,13 @@ public:
 	/** apply preprocessor to features
 	 * @param features
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 	/** embed distance
 	 * @param distance to use for embedding
 	 * @return embedding simple features
 	 */
-	virtual CDenseFeatures<float64_t>* embed_distance(CDistance* distance);
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> embed_distance(std::shared_ptr<CDistance> distance);
 
 	/** setter for t parameter
 	 * @param t t value

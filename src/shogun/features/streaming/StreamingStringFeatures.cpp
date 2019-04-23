@@ -13,7 +13,7 @@ CStreamingStringFeatures<T>::CStreamingStringFeatures() : CStreamingFeatures()
 }
 
 template <class T>
-CStreamingStringFeatures<T>::CStreamingStringFeatures(CStreamingFile* file,
+CStreamingStringFeatures<T>::CStreamingStringFeatures(std::shared_ptr<CStreamingFile> file,
 			 bool is_labelled,
 			 int32_t size)
 	: CStreamingFeatures()
@@ -28,49 +28,49 @@ CStreamingStringFeatures<T>::~CStreamingStringFeatures()
 {
 	if (parser.is_running())
 		parser.end_parser();
-	SG_UNREF(alphabet);
+
 }
 
 template <class T>
 void CStreamingStringFeatures<T>::use_alphabet(EAlphabet alpha)
 {
-	SG_UNREF(alphabet);
 
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
+
+	alphabet=std::make_shared<CAlphabet>(alpha);
+
 	num_symbols=alphabet->get_num_symbols();
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::use_alphabet(CAlphabet* alpha)
+void CStreamingStringFeatures<T>::use_alphabet(std::shared_ptr<CAlphabet> alpha)
 {
-	SG_UNREF(alphabet);
 
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
+
+	alphabet=std::make_shared<CAlphabet>(alpha);
+
 	num_symbols=alphabet->get_num_symbols();
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::set_remap(CAlphabet* ascii_alphabet, CAlphabet* binary_alphabet)
+void CStreamingStringFeatures<T>::set_remap(std::shared_ptr<CAlphabet> ascii_alphabet, std::shared_ptr<CAlphabet> binary_alphabet)
 {
 	remap_to_bin=true;
-	alpha_ascii=new CAlphabet(ascii_alphabet);
-	alpha_bin=new CAlphabet(binary_alphabet);
+	alpha_ascii=std::make_shared<CAlphabet>(ascii_alphabet);
+	alpha_bin=std::make_shared<CAlphabet>(binary_alphabet);
 }
 
 template <class T>
 void CStreamingStringFeatures<T>::set_remap(EAlphabet ascii_alphabet, EAlphabet binary_alphabet)
 {
 	remap_to_bin=true;
-	alpha_ascii=new CAlphabet(ascii_alphabet);
-	alpha_bin=new CAlphabet(binary_alphabet);
+	alpha_ascii=std::make_shared<CAlphabet>(ascii_alphabet);
+	alpha_bin=std::make_shared<CAlphabet>(binary_alphabet);
 }
 
 template <class T>
-CAlphabet* CStreamingStringFeatures<T>::get_alphabet()
+std::shared_ptr<CAlphabet> CStreamingStringFeatures<T>::get_alphabet()
 {
-	SG_REF(alphabet);
+
 	return alphabet;
 }
 
@@ -131,7 +131,7 @@ template <class T>
 void CStreamingStringFeatures<T>::init()
 {
 	working_file=NULL;
-	alphabet=new CAlphabet();
+	alphabet=std::make_shared<CAlphabet>();
 
 	current_string=NULL;
 	current_length=-1;
@@ -142,7 +142,7 @@ void CStreamingStringFeatures<T>::init()
 }
 
 template <class T>
-void CStreamingStringFeatures<T>::init(CStreamingFile* file,
+void CStreamingStringFeatures<T>::init(std::shared_ptr<CStreamingFile> file,
 				       bool is_labelled,
 				       int32_t size)
 {

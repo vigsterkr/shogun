@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, Liang Pang, 
- *          Heiko Strathmann, Weijie Lin, Youssef Emad El-Din, Thoralf Klein, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Giovanni De Toni, Liang Pang,
+ *          Heiko Strathmann, Weijie Lin, Youssef Emad El-Din, Thoralf Klein,
  *          Bjoern Esser
  */
 #include <shogun/lib/config.h>
@@ -30,7 +30,7 @@ CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l) : CLinearMachine()
 	set_liblinear_solver_type(l);
 }
 
-CLibLinear::CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+CLibLinear::CLibLinear(float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab)
     : CLinearMachine()
 {
 	init();
@@ -61,14 +61,14 @@ void CLibLinear::init()
 	    "Type of LibLinear solver.", ParameterProperties::NONE,
 	    SG_OPTIONS(
 	        L2R_LR, L2R_L2LOSS_SVC_DUAL, L2R_L2LOSS_SVC, L2R_L1LOSS_SVC_DUAL,
-	        L1R_L2LOSS_SVC, L1R_LR, L2R_LR_DUAL))
+	        L1R_L2LOSS_SVC, L1R_LR, L2R_LR_DUAL));
 }
 
 CLibLinear::~CLibLinear()
 {
 }
 
-bool CLibLinear::train_machine(CFeatures* data)
+bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 {
 
 	ASSERT(m_labels)
@@ -79,7 +79,7 @@ bool CLibLinear::train_machine(CFeatures* data)
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-		set_features((CDotFeatures*)data);
+		set_features(std::static_pointer_cast<CDotFeatures>(data));
 	}
 	ASSERT(features)
 
@@ -496,7 +496,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	double* b = SG_MALLOC(double, l); // b = 1-ywTx
 	double* xj_sq = SG_MALLOC(double, w_size);
 
-	CDotFeatures* x = (CDotFeatures*)prob_col->x;
+	auto x = std::static_pointer_cast<CDotFeatures>(prob_col->x);
 	void* iterator;
 	int32_t ind;
 	float64_t val;
@@ -853,7 +853,7 @@ void CLibLinear::solve_l1r_lr(
 	double* xjneg_sum = SG_MALLOC(double, w_size);
 	double* xjpos_sum = SG_MALLOC(double, w_size);
 
-	CDotFeatures* x = prob_col->x;
+	auto x = prob_col->x;
 	void* iterator;
 	int ind;
 	double val;

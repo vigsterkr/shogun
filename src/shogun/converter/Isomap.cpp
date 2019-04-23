@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer,
  *          Heiko Strathmann, Bjoern Esser
  */
 
@@ -44,7 +44,7 @@ const char* CIsomap::get_name() const
 	return "Isomap";
 }
 
-CDenseFeatures<float64_t>* CIsomap::embed_distance(CDistance* distance)
+std::shared_ptr<CDenseFeatures<float64_t>> CIsomap::embed_distance(std::shared_ptr<CDistance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	if (m_landmark)
@@ -58,8 +58,7 @@ CDenseFeatures<float64_t>* CIsomap::embed_distance(CDistance* distance)
 	}
 	parameters.n_neighbors = m_k;
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = distance;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	parameters.distance = distance.get();
+	return tapkee_embed(parameters);
 }
 

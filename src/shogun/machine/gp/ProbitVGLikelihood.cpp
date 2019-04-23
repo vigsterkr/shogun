@@ -58,7 +58,7 @@ CProbitVGLikelihood::~CProbitVGLikelihood()
 
 void CProbitVGLikelihood::init_likelihood()
 {
-	set_likelihood(new CProbitLikelihood());
+	set_likelihood(std::make_shared<CProbitLikelihood>());
 }
 
 void CProbitVGLikelihood::init()

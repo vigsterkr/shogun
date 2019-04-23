@@ -49,8 +49,8 @@ private:
 	explicit InitPerKernel(std::shared_ptr<CKernel>& kernel);
 public:
 	~InitPerKernel();
-	InitPerKernel& operator=(CKernel* kernel);
-	operator CKernel*() const;
+	InitPerKernel& operator=(std::shared_ptr<CKernel> kernel);
+	operator std::shared_ptr<CKernel>() const;
 private:
 	std::shared_ptr<CKernel>& m_kernel;
 };

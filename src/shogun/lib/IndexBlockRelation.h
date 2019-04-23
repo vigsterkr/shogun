@@ -50,7 +50,7 @@ public:
 protected:
 
 	/** check list of blocks */
-	bool check_blocks_list(CList* blocks);
+	bool check_blocks_list(std::shared_ptr<CList> blocks);
 
 };
 

@@ -16,7 +16,7 @@ namespace shogun
 		public:
 			CJsonSerializer();
 			~CJsonSerializer() override;
-			virtual void write(Some<CSGObject> object) noexcept(false);
+			virtual void write(std::shared_ptr<CSGObject> object) noexcept(false);
 
 			virtual const char* get_name() const
 			{

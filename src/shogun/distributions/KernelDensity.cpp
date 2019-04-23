@@ -51,35 +51,35 @@ CKernelDensity::CKernelDensity(float64_t bandwidth, EKernelType kernel, EDistanc
 
 CKernelDensity::~CKernelDensity()
 {
-	SG_UNREF(tree);
+
 }
 
-bool CKernelDensity::train(CFeatures* data)
+bool CKernelDensity::train(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data,"Data not supplied\n")
-	CDenseFeatures<float64_t>* dense_data=data->as<CDenseFeatures<float64_t>>();
+	auto dense_data=std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(data);
 
-	SG_UNREF(tree);
+
 	switch (m_eval)
 	{
 		case EM_KDTREE_SINGLE:
 		{
-			tree=new CKDTree(m_leaf_size,m_dist);
+			tree=std::make_shared<CKDTree>(m_leaf_size,m_dist);
 			break;
 		}
 		case EM_BALLTREE_SINGLE:
 		{
-			tree=new CBallTree(m_leaf_size,m_dist);
+			tree=std::make_shared<CBallTree>(m_leaf_size,m_dist);
 			break;
 		}
 		case EM_KDTREE_DUAL:
 		{
-			tree=new CKDTree(m_leaf_size,m_dist);
+			tree=std::make_shared<CKDTree>(m_leaf_size,m_dist);
 			break;
 		}
 		case EM_BALLTREE_DUAL:
 		{
-			tree=new CBallTree(m_leaf_size,m_dist);
+			tree=std::make_shared<CBallTree>(m_leaf_size,m_dist);
 			break;
 		}
 		default:
@@ -92,34 +92,34 @@ bool CKernelDensity::train(CFeatures* data)
 	return true;
 }
 
-SGVector<float64_t> CKernelDensity::get_log_density(CDenseFeatures<float64_t>* test, int32_t leaf_size)
+SGVector<float64_t> CKernelDensity::get_log_density(std::shared_ptr<CDenseFeatures<float64_t>> test, int32_t leaf_size)
 {
 	REQUIRE(test,"data not supplied\n")
 
 	if ((m_eval==EM_KDTREE_SINGLE) || (m_eval==EM_BALLTREE_SINGLE))
 		return tree->log_kernel_density(test->get_feature_matrix(),m_kernel_type,m_bandwidth,m_atol,m_rtol);
 
-	CNbodyTree* query_tree=NULL;
+	std::shared_ptr<CNbodyTree> query_tree=NULL;
 	if (m_eval==EM_KDTREE_DUAL)
-		query_tree=new CKDTree(leaf_size,m_dist);
+		query_tree=std::make_shared<CKDTree>(leaf_size,m_dist);
 	else if (m_eval==EM_BALLTREE_DUAL)
-		query_tree=new CBallTree(leaf_size,m_dist);
+		query_tree=std::make_shared<CBallTree>(leaf_size,m_dist);
 	else
 		SG_ERROR("Evaluation mode not identified\n");
 
 	query_tree->build_tree(test);
-	CBinaryTreeMachineNode<NbodyTreeNodeData>* qroot=NULL;
-	CTreeMachineNode<NbodyTreeNodeData>* root=query_tree->get_root();
+	std::shared_ptr<CBinaryTreeMachineNode<NbodyTreeNodeData>> qroot=NULL;
+	auto root=query_tree->get_root();
 	if (root)
-		qroot=dynamic_cast<CBinaryTreeMachineNode<NbodyTreeNodeData>*>(root);
+		qroot=std::dynamic_pointer_cast<CBinaryTreeMachineNode<NbodyTreeNodeData>>(root);
 	else
 		SG_ERROR("Query tree root not found!\n")
 
 	SGVector<index_t> qid=query_tree->get_rearranged_vector_ids();
 	SGVector<float64_t> ret=tree->log_kernel_density_dual(test->get_feature_matrix(),qid,qroot,m_kernel_type,m_bandwidth,m_atol,m_rtol);
 
-	SG_UNREF(root);
-	SG_UNREF(query_tree);
+
+
 
 	return ret;
 }
@@ -163,5 +163,5 @@ void CKernelDensity::init()
 	SG_ADD(&m_leaf_size,"m_leaf_size","leaf size");
 	SG_ADD(&m_atol,"m_atol","absolute tolerance");
 	SG_ADD(&m_rtol,"m_rtol","relative tolerance");
-	SG_ADD((CSGObject**) &tree,"tree","tree");
+	SG_ADD((std::shared_ptr<CSGObject>*) &tree,"tree","tree");
 }

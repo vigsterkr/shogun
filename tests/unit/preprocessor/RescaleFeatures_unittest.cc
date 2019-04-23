@@ -21,8 +21,8 @@ TEST(RescaleFeatures, transform)
 
 	SGMatrix<float64_t> m(v.vector, num_features, num_vectors, false);
 	SGMatrix<float64_t> em(ev.vector, num_features, num_vectors, false);
-	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
-	CRescaleFeatures* rescaler = new CRescaleFeatures();
+	auto feats = std::make_shared<CDenseFeatures<float64_t>>(m);
+	auto rescaler = std::make_shared<CRescaleFeatures>();
 	rescaler->fit(feats);
 
 	/* find the min and range for each feature among all the vectors */
@@ -45,5 +45,5 @@ TEST(RescaleFeatures, transform)
 		}
 	}
 
-	SG_UNREF(feats);
+
 }

@@ -43,13 +43,13 @@ COneDistributionTest::~COneDistributionTest()
 {
 }
 
-void COneDistributionTest::set_samples(CFeatures* samples)
+void COneDistributionTest::set_samples(std::shared_ptr<CFeatures> samples)
 {
 	auto& data_mgr=get_data_mgr();
 	data_mgr.samples_at(0)=samples;
 }
 
-CFeatures* COneDistributionTest::get_samples() const
+std::shared_ptr<CFeatures> COneDistributionTest::get_samples() const
 {
 	const auto& data_mgr=get_data_mgr();
 	return data_mgr.samples_at(0);

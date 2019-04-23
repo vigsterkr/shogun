@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Fernando Iglesias, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Fernando Iglesias,
  *          Sergey Lisitsyn
  */
 
@@ -19,7 +19,7 @@ CSNPStringKernel::CSNPStringKernel()
   m_degree(0), m_win_len(0), m_inhomogene(false)
 {
 	init();
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	register_params();
 }
 
@@ -29,18 +29,18 @@ CSNPStringKernel::CSNPStringKernel(int32_t size,
 	m_degree(degree), m_win_len(2*win_len), m_inhomogene(inhomogene)
 {
 	init();
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	register_params();
 }
 
 CSNPStringKernel::CSNPStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r,
+	std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 	int32_t degree, int32_t win_len, bool inhomogene)
 : CStringKernel<char>(10), m_degree(degree), m_win_len(2*win_len),
 	m_inhomogene(inhomogene)
 {
 	init();
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	if (l==r)
 		obtain_base_strings();
 	init(l, r);
@@ -52,7 +52,7 @@ CSNPStringKernel::~CSNPStringKernel()
 	cleanup();
 }
 
-bool CSNPStringKernel::init(CFeatures* l, CFeatures* r)
+bool CSNPStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CStringKernel<char>::init(l, r);
 	return init_normalizer();
@@ -72,11 +72,12 @@ void CSNPStringKernel::obtain_base_strings()
 
 	m_str_len=0;
 
+	auto sf = std::static_pointer_cast<CStringFeatures<char>>(lhs);
 	for (int32_t i=0; i<num_lhs; i++)
 	{
 		int32_t len;
 		bool free_vec;
-		char* vec = ((CStringFeatures<char>*) lhs)->get_feature_vector(i, len, free_vec);
+		char* vec = sf->get_feature_vector(i, len, free_vec);
 
 		if (m_str_len==0)
 		{
@@ -101,7 +102,7 @@ void CSNPStringKernel::obtain_base_strings()
 				m_str_maj[j]=vec[j];
 		}
 
-		((CStringFeatures<char>*) lhs)->free_feature_vector(vec, i, free_vec);
+		sf->free_feature_vector(vec, i, free_vec);
 	}
 
 	for (int32_t j=0; j<m_str_len; j++)
@@ -122,8 +123,8 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = std::static_pointer_cast<CStringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen)
 	if (alen!=m_str_len)
@@ -170,8 +171,8 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 				(int32_t) m_degree);
 	}
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return total;
 }
 
@@ -182,10 +183,10 @@ void CSNPStringKernel::register_params()
 	SG_ADD(&m_inhomogene, "m_inhomogene",
 	  "the mark of whether it's an inhomogeneous poly kernel");
 
-	m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");
+	/*m_parameters->add_vector(&m_str_min, &m_str_len, "m_str_min", "allele A");*/
 	watch_param("m_str_min", &m_str_min, &m_str_len);
 
-	m_parameters->add_vector(&m_str_maj, &m_str_len, "m_str_maj", "allele B");
+	/*m_parameters->add_vector(&m_str_maj, &m_str_len, "m_str_maj", "allele B");*/
 	watch_param("m_str_maj", &m_str_maj, &m_str_len);
 }
 

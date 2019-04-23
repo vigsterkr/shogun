@@ -48,30 +48,30 @@ CRandomForest::CRandomForest(int32_t rand_numfeats, int32_t num_bags)
 	set_num_bags(num_bags);
 
 	if (rand_numfeats>0)
-		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
+		m_machine->as<CRandomCARTree>()->set_feature_subset_size(rand_numfeats);
 }
 
-CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, int32_t num_bags, int32_t rand_numfeats)
+CRandomForest::CRandomForest(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels, int32_t num_bags, int32_t rand_numfeats)
 : CBaggingMachine()
 {
 	init();
 
-	SG_REF(features);
+
 	m_features=features;
 	set_labels(labels);
 
 	set_num_bags(num_bags);
 
 	if (rand_numfeats>0)
-		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
+		m_machine->as<CRandomCARTree>()->set_feature_subset_size(rand_numfeats);
 }
 
-CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t num_bags, int32_t rand_numfeats)
+CRandomForest::CRandomForest(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels, SGVector<float64_t> weights, int32_t num_bags, int32_t rand_numfeats)
 : CBaggingMachine()
 {
 	init();
 
-	SG_REF(features);
+
 	m_features=features;
 	set_labels(labels);
 	m_weights=weights;
@@ -79,14 +79,14 @@ CRandomForest::CRandomForest(CFeatures* features, CLabels* labels, SGVector<floa
 	set_num_bags(num_bags);
 
 	if (rand_numfeats>0)
-		dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_numfeats);
+		m_machine->as<CRandomCARTree>()->set_feature_subset_size(rand_numfeats);
 }
 
 CRandomForest::~CRandomForest()
 {
 }
 
-void CRandomForest::set_machine(CMachine* machine)
+void CRandomForest::set_machine(std::shared_ptr<CMachine> machine)
 {
 	SG_ERROR("Machine is set as CRandomCART and cannot be changed\n")
 }
@@ -104,25 +104,25 @@ SGVector<float64_t> CRandomForest::get_weights() const
 void CRandomForest::set_feature_types(SGVector<bool> ft)
 {
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
-	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_types(ft);
+	m_machine->as<CRandomCARTree>()->set_feature_types(ft);
 }
 
 SGVector<bool> CRandomForest::get_feature_types() const
 {
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
-	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_types();
+	return m_machine->as<CRandomCARTree>()->get_feature_types();
 }
 
 EProblemType CRandomForest::get_machine_problem_type() const
 {
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
-	return dynamic_cast<CRandomCARTree*>(m_machine)->get_machine_problem_type();
+	return m_machine->as<CRandomCARTree>()->get_machine_problem_type();
 }
 
 void CRandomForest::set_machine_problem_type(EProblemType mode)
 {
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
-	dynamic_cast<CRandomCARTree*>(m_machine)->set_machine_problem_type(mode);
+	m_machine->as<CRandomCARTree>()->set_machine_problem_type(mode);
 }
 
 void CRandomForest::set_num_random_features(int32_t rand_featsize)
@@ -130,21 +130,21 @@ void CRandomForest::set_num_random_features(int32_t rand_featsize)
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
 	REQUIRE(rand_featsize>0,"feature subset size should be greater than 0\n")
 
-	dynamic_cast<CRandomCARTree*>(m_machine)->set_feature_subset_size(rand_featsize);
+	m_machine->as<CRandomCARTree>()->set_feature_subset_size(rand_featsize);
 }
 
 int32_t CRandomForest::get_num_random_features() const
 {
 	REQUIRE(m_machine,"m_machine is NULL. It is expected to be RandomCARTree\n")
-	return dynamic_cast<CRandomCARTree*>(m_machine)->get_feature_subset_size();
+	return m_machine->as<CRandomCARTree>()->get_feature_subset_size();
 }
 
-void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
+void CRandomForest::set_machine_parameters(std::shared_ptr<CMachine> m, SGVector<index_t> idx)
 {
 	REQUIRE(m,"Machine supplied is NULL\n")
 	REQUIRE(m_machine,"Reference Machine is NULL\n")
 
-	CRandomCARTree* tree=dynamic_cast<CRandomCARTree*>(m);
+	auto tree=m->as<CRandomCARTree>();
 
 	SGVector<float64_t> weights(idx.vlen);
 
@@ -161,28 +161,28 @@ void CRandomForest::set_machine_parameters(CMachine* m, SGVector<index_t> idx)
 	tree->set_weights(weights);
 	tree->set_sorted_features(m_sorted_transposed_feats, m_sorted_indices);
 	// equate the machine problem types - cloning does not do this
-	tree->set_machine_problem_type(dynamic_cast<CRandomCARTree*>(m_machine)->get_machine_problem_type());
+	tree->set_machine_problem_type(m_machine->as<CRandomCARTree>()->get_machine_problem_type());
 }
 
-bool CRandomForest::train_machine(CFeatures* data)
+bool CRandomForest::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
-		SG_REF(data);
-		SG_UNREF(m_features);
+
+
 		m_features = data;
 	}
-	
+
 	REQUIRE(m_features, "Training features not set!\n");
-	
-	dynamic_cast<CRandomCARTree*>(m_machine)->pre_sort_features(m_features, m_sorted_transposed_feats, m_sorted_indices);
+
+	m_machine->as<CRandomCARTree>()->pre_sort_features(m_features, m_sorted_transposed_feats, m_sorted_indices);
 
 	return CBaggingMachine::train_machine();
 }
 
 void CRandomForest::init()
 {
-	m_machine=new CRandomCARTree();
+	m_machine=std::make_shared<CRandomCARTree>();
 	m_weights=SGVector<float64_t>();
 
 	SG_ADD(&m_weights,"m_weights","weights");

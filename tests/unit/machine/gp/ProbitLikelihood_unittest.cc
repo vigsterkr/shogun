@@ -45,7 +45,7 @@ TEST(ProbitLikelihood,get_predictive_log_probabilities)
 	mu[9]=0.106952;
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2);
 
@@ -62,7 +62,7 @@ TEST(ProbitLikelihood,get_predictive_log_probabilities)
 	EXPECT_NEAR(lp[9], -0.623599250, 1E-9);
 
 	// clean up
-	SG_UNREF(likelihood);
+
 }
 
 TEST(ProbitLikelihood,get_predictive_means)
@@ -97,7 +97,7 @@ TEST(ProbitLikelihood,get_predictive_means)
 	mu[9]=0.106952;
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	mu=likelihood->get_predictive_means(mu, s2);
 
@@ -114,7 +114,7 @@ TEST(ProbitLikelihood,get_predictive_means)
 	EXPECT_NEAR(mu[9], 0.072023442, 1E-9);
 
 	// clean up
-	SG_UNREF(likelihood);
+
 }
 
 TEST(ProbitLikelihood,get_predictive_variances)
@@ -149,7 +149,7 @@ TEST(ProbitLikelihood,get_predictive_variances)
 	mu[9]=0.106952;
 
 	// logit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	s2=likelihood->get_predictive_variances(mu, s2);
 
@@ -166,7 +166,7 @@ TEST(ProbitLikelihood,get_predictive_variances)
 	EXPECT_NEAR(s2[9], 0.994812623, 1E-9);
 
 	// clean up
-	SG_UNREF(likelihood);
+
 }
 
 TEST(ProbitLikelihood,get_log_probability_f)
@@ -201,10 +201,10 @@ TEST(ProbitLikelihood,get_log_probability_f)
 	func[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<CBinaryLabels>(lab);
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	SGVector<float64_t> lp=likelihood->get_log_probability_f(labels, func);
 
@@ -221,8 +221,8 @@ TEST(ProbitLikelihood,get_log_probability_f)
 	EXPECT_NEAR(lp[9], -0.6114078142, 1E-9);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(ProbitLikelihood,get_log_probability_derivative_f)
@@ -257,10 +257,10 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	func[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<CBinaryLabels>(lab);
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	SGVector<float64_t> dlp=likelihood->get_log_probability_derivative_f(labels, func, 1);
 	SGVector<float64_t> d2lp=likelihood->get_log_probability_derivative_f(labels, func, 2);
@@ -300,7 +300,7 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	EXPECT_NEAR(d3lp[8], -0.235025555, 1E-9);
 	EXPECT_NEAR(d3lp[9], 0.230230621, 1E-9);
 	// clean up
-	SG_UNREF(labels);
+
 
 	lab[0]=1.0;
 	lab[1]=1.0;
@@ -325,7 +325,7 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	func[8]=140.1904854167975713608029764145612716674805;
 	func[9]=176.1904854167975713608029764145612716674805;
 
-	labels=new CBinaryLabels(lab);
+	labels=std::make_shared<CBinaryLabels>(lab);
 	dlp=likelihood->get_log_probability_derivative_f(labels, func, 1);
 	d2lp=likelihood->get_log_probability_derivative_f(labels, func, 2);
 	d3lp=likelihood->get_log_probability_derivative_f(labels, func, 3);
@@ -397,8 +397,8 @@ TEST(ProbitLikelihood,get_log_probability_derivative_f)
 	EXPECT_NEAR(d3lp[9],  -0.0000003646392769951489754021167755126953,  abs_tolerance);
 
 
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(ProbitLikelihood,get_first_moments)
@@ -436,10 +436,10 @@ TEST(ProbitLikelihood,get_first_moments)
 	mu[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<CBinaryLabels>(lab);
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	mu=likelihood->get_first_moments(mu, s2, labels);
 
@@ -456,8 +456,8 @@ TEST(ProbitLikelihood,get_first_moments)
 	EXPECT_NEAR(mu[9], 0.357538428547672, 1E-10);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }
 
 TEST(ProbitLikelihood,get_second_moments)
@@ -495,10 +495,10 @@ TEST(ProbitLikelihood,get_second_moments)
 	mu[9]=0.106952;
 
 	// shogun representation of labels
-	CBinaryLabels* labels=new CBinaryLabels(lab);
+	auto labels=std::make_shared<CBinaryLabels>(lab);
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	s2=likelihood->get_second_moments(mu, s2, labels);
 
@@ -515,6 +515,6 @@ TEST(ProbitLikelihood,get_second_moments)
 	EXPECT_NEAR(s2[9], 0.3295490933402853, 1E-10);
 
 	// clean up
-	SG_UNREF(likelihood);
-	SG_UNREF(labels);
+
+
 }

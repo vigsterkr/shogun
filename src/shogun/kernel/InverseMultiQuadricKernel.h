@@ -35,7 +35,7 @@ public:
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(int32_t cache, float64_t coef, CDistance* dist);
+	CInverseMultiQuadricKernel(int32_t cache, float64_t coef, std::shared_ptr<CDistance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -43,14 +43,14 @@ public:
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist);
+	CInverseMultiQuadricKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t coef, std::shared_ptr<CDistance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/**
 	 * @return kernel type
@@ -98,7 +98,7 @@ protected:
 
 	/** distance to be used
 	 */
-	CDistance* distance;
+	std::shared_ptr<CDistance> distance;
 
 	/** theta parameter of kernel - coefficient
 	 */

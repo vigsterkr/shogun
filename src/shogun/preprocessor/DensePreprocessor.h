@@ -38,7 +38,7 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 * @param inplace whether transform in place
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 		/** Apply inverse transformation to dense features.
 		 *
@@ -47,8 +47,8 @@ template <class ST> class CDensePreprocessor : public CPreprocessor
 		 * @return the result feature object after inverse applying the
 		 * preprocessor
 		 */
-		virtual CFeatures*
-		inverse_transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<CFeatures>
+		inverse_transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 		/// apply preproc on single feature vector
 		/// result in feature matrix

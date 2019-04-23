@@ -42,7 +42,7 @@ IGNORE_IN_CLASSLIST class CDirectorLatentModel : public CLatentModel
 		 *
 		 * @return PSI vectors
 		 */
-		virtual CDotFeatures* get_psi_feature_vectors();
+		virtual std::shared_ptr<CDotFeatures> get_psi_feature_vectors();
 
 		/** User defined \f$h^{*} = argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 		 * This function has to be defined the user as it is applications specific, since
@@ -52,7 +52,7 @@ IGNORE_IN_CLASSLIST class CDirectorLatentModel : public CLatentModel
 		 * @param idx index of the example
 		 * @return returns \f$h^{*}\f$ for the given example
 		 */
-		virtual CData* infer_latent_variable(const SGVector<float64_t>& w, index_t idx);
+		virtual std::shared_ptr<CData> infer_latent_variable(const SGVector<float64_t>& w, index_t idx);
 
 		/** Calculates \f$argmax_{h} \langle \bold{w},\Psi(\bold{x},\bold{h}) \rangle\f$
 		 * The default implementaiton calculates the argmax_h only on the positive examples.

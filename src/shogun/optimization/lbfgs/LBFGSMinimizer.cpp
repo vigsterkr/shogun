@@ -44,11 +44,11 @@ CLBFGSMinimizer::~CLBFGSMinimizer()
 {
 }
 
-CLBFGSMinimizer::CLBFGSMinimizer(FirstOrderCostFunction *fun)
+CLBFGSMinimizer::CLBFGSMinimizer(std::shared_ptr<FirstOrderCostFunction >fun)
 	:FirstOrderMinimizer(fun)
 {
-	FirstOrderBoundConstraintsCostFunction* bound_constraints_fun
-		=dynamic_cast<FirstOrderBoundConstraintsCostFunction *>(m_fun);
+	auto bound_constraints_fun
+		=std::dynamic_pointer_cast<FirstOrderBoundConstraintsCostFunction>(m_fun);
 	if(m_fun && bound_constraints_fun)
 	{
 		SG_SWARNING("The minimizer does not support constrained minimization. All constraints will be ignored.\n")
@@ -180,8 +180,8 @@ float64_t CLBFGSMinimizer::evaluate(void *obj, const float64_t *variable,
 	float64_t *gradient, const int32_t dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CLBFGSMinimizer * obj_prt
-		= static_cast<CLBFGSMinimizer *>(obj);
+	auto obj_prt =
+		(CLBFGSMinimizer*)(obj);
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 

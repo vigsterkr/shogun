@@ -81,7 +81,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param degree degree
 		 */
 		CWeightedDegreePositionStringKernel(
-			CStringFeatures<char>* l, CStringFeatures<char>* r, int32_t degree);
+			std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r, int32_t degree);
 
 		virtual ~CWeightedDegreePositionStringKernel();
 
@@ -91,7 +91,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -585,7 +585,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		 * @param svm SVM
 		 */
 
-		void compute_POIM2(int32_t max_degree, CSVM* svm);
+		void compute_POIM2(int32_t max_degree, std::shared_ptr<CSVM> svm);
 
 		/** get POIM2
 		 *
@@ -771,7 +771,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<char>
 		int32_t m_poim_result_len;
 
 		/** alphabet of features */
-		CAlphabet* alphabet;
+		std::shared_ptr<CAlphabet> alphabet;
 };
 }
 #endif /* _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H__ */

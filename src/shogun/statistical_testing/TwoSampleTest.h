@@ -71,11 +71,11 @@ public:
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	virtual void set_kernel(CKernel* kernel);
+	virtual void set_kernel(std::shared_ptr<CKernel> kernel);
 
 #ifndef SWIG
 	/** @return The kernel instance that is presently being used for performing the test */
-	CKernel* get_kernel() const;
+	std::shared_ptr<CKernel> get_kernel() const;
 #endif //SWIG
 
 	/**

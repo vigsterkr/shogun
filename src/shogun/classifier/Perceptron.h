@@ -59,7 +59,7 @@ class CPerceptron : public CIterativeMachine<CLinearMachine>
 		virtual const char* get_name() const { return "Perceptron"; }
 
 	protected:
-		virtual void init_model(CFeatures* data);
+		virtual void init_model(std::shared_ptr<CFeatures> data);
 		virtual void iteration();
 
 	protected:

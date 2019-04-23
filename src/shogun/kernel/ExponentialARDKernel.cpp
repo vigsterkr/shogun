@@ -44,14 +44,14 @@ void CExponentialARDKernel::init()
 
 }
 
-SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, CFeatures* hs)
+SGVector<float64_t> CExponentialARDKernel::get_feature_vector(int32_t idx, std::shared_ptr<CFeatures> hs)
 {
 	REQUIRE(hs, "Features not set!\n");
-	CDenseFeatures<float64_t> * dense_hs=dynamic_cast<CDenseFeatures<float64_t> *>(hs);
+	auto dense_hs=std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(hs);
 	if (dense_hs)
 		return dense_hs->get_feature_vector(idx);
 
-	CDotFeatures * dot_hs=dynamic_cast<CDotFeatures *>(hs);
+	auto dot_hs=std::dynamic_pointer_cast<CDotFeatures>(hs);
 	REQUIRE(dot_hs, "Kernel only supports DotFeatures\n");
 	return dot_hs->get_computed_dot_feature_vector(idx);
 
@@ -172,18 +172,18 @@ CExponentialARDKernel::CExponentialARDKernel(int32_t size) : CDotKernel(size)
 	init();
 }
 
-CExponentialARDKernel::CExponentialARDKernel(CDotFeatures* l,
-		CDotFeatures* r, int32_t size)	: CDotKernel(size)
+CExponentialARDKernel::CExponentialARDKernel(std::shared_ptr<CDotFeatures> l,
+		std::shared_ptr<CDotFeatures> r, int32_t size)	: CDotKernel(size)
 {
 	init();
 	init(l,r);
 }
 
-bool CExponentialARDKernel::init(CFeatures* l, CFeatures* r)
+bool CExponentialARDKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	cleanup();
 	CDotKernel::init(l, r);
-	int32_t dim=((CDotFeatures*) l)->get_dim_feature_space();
+	int32_t dim=(std::static_pointer_cast<CDotFeatures>(l))->get_dim_feature_space();
 	if (m_ARD_type==KT_FULL)
 	{
 		REQUIRE(m_weights_rows==dim, "Dimension mismatch between features (%d) and weights (%d)\n",

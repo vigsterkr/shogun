@@ -13,7 +13,7 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 	int32_t max_num_entries = 512;
 	int32_t max_label_value = 1;
 	int32_t max_entry_value = 1024;
-	CRandom * rand = new CRandom();
+	auto rand = std::make_shared<CRandom>();
 
 	int32_t num_vec = 10;
 	int32_t num_feat = 0;
@@ -57,11 +57,11 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 	SGSparseVector<int32_t>* data_from_file;
 	SGVector<float64_t>* labels_from_file;
 
-	CLibSVMFile * fout = new CLibSVMFile("LibSVMFileTest_sparse_matrix_int32_output.txt", 'w', NULL);
+	auto fout = std::make_shared<CLibSVMFile>("LibSVMFileTest_sparse_matrix_int32_output.txt", 'w');
 	fout->set_sparse_matrix(data, num_feat, num_vec, labels);
-	SG_UNREF(fout);
+	fout.reset();
 
-	CLibSVMFile * fin = new CLibSVMFile("LibSVMFileTest_sparse_matrix_int32_output.txt", 'r', NULL);
+	auto fin = std::make_shared<CLibSVMFile>("LibSVMFileTest_sparse_matrix_int32_output.txt", 'r');
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file,
 	                       labels_from_file, num_classes_from_file);
 
@@ -83,9 +83,9 @@ TEST(LibSVMFileTest, sparse_matrix_int32)
 			          data_from_file[i].features[j].entry);
 		}
 	}
-	SG_UNREF(fin);
 
-	SG_UNREF(rand);
+
+
 	SG_FREE(data);
 	SG_FREE(labels);
 	SG_FREE(data_from_file);
@@ -98,7 +98,7 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 {
 	int32_t max_num_entries = 512;
 	int32_t max_label_value = 1;
-	CRandom * rand = new CRandom();
+	auto rand = std::make_shared<CRandom>();
 
 	int32_t num_vec = 1024;
 	int32_t num_feat = 0;
@@ -143,11 +143,11 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 	SGSparseVector<float64_t>* data_from_file;
 	SGVector<float64_t>* labels_from_file;
 
-	CLibSVMFile * fout = new CLibSVMFile("LibSVMFileTest_sparse_matrix_float64_output.txt", 'w', NULL);
+	auto fout = std::make_shared<CLibSVMFile>("LibSVMFileTest_sparse_matrix_float64_output.txt", 'w');
 	fout->set_sparse_matrix(data, num_feat, num_vec, labels);
-	SG_UNREF(fout);
+	fout.reset();
 
-	CLibSVMFile * fin = new CLibSVMFile("LibSVMFileTest_sparse_matrix_float64_output.txt", 'r', NULL);
+	auto fin = std::make_shared<CLibSVMFile>("LibSVMFileTest_sparse_matrix_float64_output.txt", 'r');
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file,
 	                       labels_from_file, num_classes_from_file);
 
@@ -169,9 +169,9 @@ TEST(LibSVMFileTest, sparse_matrix_float64)
 			            data_from_file[i].features[j].entry, 1E-14);
 		}
 	}
-	SG_UNREF(fin);
 
-	SG_UNREF(rand);
+
+
 	SG_FREE(data);
 	SG_FREE(labels);
 	SG_FREE(data_from_file);

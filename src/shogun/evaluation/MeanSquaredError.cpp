@@ -11,7 +11,7 @@
 
 using namespace shogun;
 
-float64_t CMeanSquaredError::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t CMeanSquaredError::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
 {
 	REQUIRE(predicted, "Predicted labels must be not null.\n")
 	REQUIRE(ground_truth, "Ground truth labels must be not null.\n")

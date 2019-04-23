@@ -26,7 +26,7 @@ CKernelPCA::CKernelPCA() : CPreprocessor()
 	init();
 }
 
-CKernelPCA::CKernelPCA(CKernel* k) : CPreprocessor()
+CKernelPCA::CKernelPCA(std::shared_ptr<CKernel> k) : CPreprocessor()
 {
 	init();
 	set_kernel(k);
@@ -56,26 +56,22 @@ void CKernelPCA::cleanup()
 	m_transformation_matrix = SGMatrix<float64_t>();
 	m_bias_vector = SGVector<float64_t>();
 
-	if (m_init_features)
-		SG_UNREF(m_init_features);
-
 	m_fitted = false;
 }
 
 CKernelPCA::~CKernelPCA()
 {
-	if (m_init_features)
-		SG_UNREF(m_init_features);
+
 }
 
-void CKernelPCA::fit(CFeatures* features)
+void CKernelPCA::fit(std::shared_ptr<CFeatures> features)
 {
 	REQUIRE(m_kernel, "Kernel not set\n");
 
 	if (m_fitted)
 		cleanup();
 
-	SG_REF(features);
+
 	m_init_features = features;
 
 	m_kernel->init(features, features);
@@ -126,14 +122,14 @@ void CKernelPCA::fit(CFeatures* features)
 	SG_INFO("Done\n")
 }
 
-CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CKernelPCA::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	assert_fitted();
 
-	if (dynamic_cast<CDenseFeatures<float64_t>*>(features))
+	if (std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(features))
 	{
 		auto feature_matrix = apply_to_feature_matrix(features);
-		return new CDenseFeatures<float64_t>(feature_matrix);
+		return std::make_shared<CDenseFeatures<float64_t>>(feature_matrix);
 	}
 
 	if (features->get_feature_class() == C_STRING)
@@ -145,7 +141,7 @@ CFeatures* CKernelPCA::transform(CFeatures* features, bool inplace)
 	return NULL;
 }
 
-SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(CFeatures* features)
+SGMatrix<float64_t> CKernelPCA::apply_to_feature_matrix(std::shared_ptr<CFeatures> features)
 {
 	assert_fitted();
 	int32_t n = m_init_features->get_num_vectors();
@@ -169,17 +165,17 @@ SGVector<float64_t> CKernelPCA::apply_to_feature_vector(SGVector<float64_t> vect
 {
 	assert_fitted();
 
-	CFeatures* features =
-	    new CDenseFeatures<float64_t>(SGMatrix<float64_t>(vector));
-	SG_REF(features)
+	auto features =
+	    std::make_shared<CDenseFeatures<float64_t>>(SGMatrix<float64_t>(vector));
+
 
 	SGMatrix<float64_t> result_matrix = apply_to_feature_matrix(features);
 
-	SG_UNREF(features)
+
 	return SGVector<float64_t>(result_matrix);
 }
 
-CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* features)
+std::shared_ptr<CDenseFeatures<float64_t>> CKernelPCA::apply_to_string_features(std::shared_ptr<CFeatures> features)
 {
 	assert_fitted();
 
@@ -207,7 +203,7 @@ CDenseFeatures<float64_t>* CKernelPCA::apply_to_string_features(CFeatures* featu
 
 	m_kernel->cleanup();
 
-	return new CDenseFeatures<float64_t>(SGMatrix<float64_t>(new_feature_matrix,m_target_dim,num_vectors));
+	return std::make_shared<CDenseFeatures<float64_t>>(SGMatrix<float64_t>(new_feature_matrix,m_target_dim,num_vectors));
 }
 
 EFeatureClass CKernelPCA::get_feature_class()
@@ -231,15 +227,15 @@ int32_t CKernelPCA::get_target_dim() const
 	return m_target_dim;
 }
 
-void CKernelPCA::set_kernel(CKernel* kernel)
+void CKernelPCA::set_kernel(std::shared_ptr<CKernel> kernel)
 {
-	SG_REF(kernel);
-	SG_UNREF(m_kernel);
+
+
 	m_kernel = kernel;
 }
 
-CKernel* CKernelPCA::get_kernel() const
+std::shared_ptr<CKernel> CKernelPCA::get_kernel() const
 {
-	SG_REF(m_kernel);
+
 	return m_kernel;
 }

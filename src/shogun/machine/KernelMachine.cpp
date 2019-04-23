@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, 
- *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn,
+ *          Giovanni De Toni, Viktor Gal, Evgeniy Andreev, Weijie Lin,
  *          Fernando Iglesias, Thoralf Klein
  */
 
@@ -42,7 +42,7 @@ CKernelMachine::CKernelMachine() : CMachine()
     init();
 }
 
-CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
+CKernelMachine::CKernelMachine(std::shared_ptr<CKernel> k, SGVector<float64_t> alphas,
         SGVector<int32_t> svs, float64_t b) : CMachine()
 {
     init();
@@ -56,14 +56,14 @@ CKernelMachine::CKernelMachine(CKernel* k, SGVector<float64_t> alphas,
     set_bias(b);
 }
 
-CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
+CKernelMachine::CKernelMachine(std::shared_ptr<CKernelMachine> machine) : CMachine()
 {
 	init();
 
 	SGVector<float64_t> alphas = machine->get_alphas().clone();
 	SGVector<int32_t> svs = machine->get_support_vectors().clone();
 	float64_t bias = machine->get_bias();
-	CKernel* ker = machine->get_kernel();
+	auto ker = machine->get_kernel();
 
 	int32_t num_sv = svs.vlen;
 	create_new_model(num_sv);
@@ -75,21 +75,21 @@ CKernelMachine::CKernelMachine(CKernelMachine* machine) : CMachine()
 
 CKernelMachine::~CKernelMachine()
 {
-	SG_UNREF(kernel);
-	SG_UNREF(m_custom_kernel);
-	SG_UNREF(m_kernel_backup);
+
+
+
 }
 
-void CKernelMachine::set_kernel(CKernel* k)
+void CKernelMachine::set_kernel(std::shared_ptr<CKernel> k)
 {
-	SG_REF(k);
-	SG_UNREF(kernel);
+
+
 	kernel=k;
 }
 
-CKernel* CKernelMachine::get_kernel()
+std::shared_ptr<CKernel> CKernelMachine::get_kernel()
 {
-    SG_REF(kernel);
+
     return kernel;
 }
 
@@ -241,22 +241,22 @@ bool CKernelMachine::init_kernel_optimization()
 	return false;
 }
 
-CRegressionLabels* CKernelMachine::apply_regression(CFeatures* data)
+std::shared_ptr<CRegressionLabels> CKernelMachine::apply_regression(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<CRegressionLabels>(outputs);
 }
 
-CBinaryLabels* CKernelMachine::apply_binary(CFeatures* data)
+std::shared_ptr<CBinaryLabels> CKernelMachine::apply_binary(std::shared_ptr<CFeatures> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return new CBinaryLabels(outputs);
+	return std::make_shared<CBinaryLabels>(outputs);
 }
 
-SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
+SGVector<float64_t> CKernelMachine::apply_get_outputs(std::shared_ptr<CFeatures> data)
 {
 	SG_DEBUG("entering %s::apply_get_outputs(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", data.get());
 
 	REQUIRE(kernel, "%s::apply_get_outputs(): No kernel assigned!\n")
 
@@ -270,11 +270,11 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 
 	if (data)
 	{
-		CFeatures* lhs=kernel->get_lhs();
+		auto lhs=kernel->get_lhs();
 		REQUIRE(lhs, "%s::apply_get_outputs(): No left hand side specified\n",
 				get_name());
 		kernel->init(lhs, data);
-		SG_UNREF(lhs);
+
 	}
 
 	/* using the features to get num vectors is far safer than using the kernel
@@ -284,9 +284,9 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	 * However, the below version works
 	 * TODO Heiko Strathmann
 	 */
-	CFeatures* rhs=kernel->get_rhs();
+	auto rhs=kernel->get_rhs();
 	int32_t num_vectors=rhs ? rhs->get_num_vectors() : kernel->get_num_vec_rhs();
-	SG_UNREF(rhs)
+
 
 	SGVector<float64_t> output(num_vectors);
 
@@ -385,7 +385,7 @@ SGVector<float64_t> CKernelMachine::apply_get_outputs(CFeatures* data)
 	}
 
 	SG_DEBUG("leaving %s::apply_get_outputs(%s at %p)\n",
-			get_name(), data ? data->get_name() : "NULL", data);
+			get_name(), data ? data->get_name() : "NULL", data.get());
 
 	return output;
 }
@@ -395,24 +395,24 @@ void CKernelMachine::store_model_features()
 	if (!kernel)
 		SG_ERROR("kernel is needed to store SV features.\n")
 
-	CFeatures* lhs=kernel->get_lhs();
-	CFeatures* rhs=kernel->get_rhs();
+	auto lhs=kernel->get_lhs();
+	auto rhs=kernel->get_rhs();
 
 	if (!lhs)
 		SG_ERROR("kernel lhs is needed to store SV features.\n")
 
 	/* copy sv feature data */
-	CFeatures* sv_features=lhs->copy_subset(m_svs);
-	SG_UNREF(lhs);
+	auto sv_features=lhs->copy_subset(m_svs);
+
 
 	/* set new lhs to kernel */
 	kernel->init(sv_features, rhs);
 
 	/* unref rhs */
-	SG_UNREF(rhs);
+
 
 	/* was SG_REF'ed by copy_subset */
-	SG_UNREF(sv_features);
+
 
 	/* now sv indices are just the identity */
 	m_svs.range_fill();
@@ -449,17 +449,17 @@ bool CKernelMachine::train_locked(SGVector<index_t> indices)
 	return result;
 }
 
-CBinaryLabels* CKernelMachine::apply_locked_binary(SGVector<index_t> indices)
+std::shared_ptr<CBinaryLabels> CKernelMachine::apply_locked_binary(SGVector<index_t> indices)
 {
 	SGVector<float64_t> outputs = apply_locked_get_output(indices);
-	return new CBinaryLabels(outputs);
+	return std::make_shared<CBinaryLabels>(outputs);
 }
 
-CRegressionLabels* CKernelMachine::apply_locked_regression(
+std::shared_ptr<CRegressionLabels> CKernelMachine::apply_locked_regression(
 		SGVector<index_t> indices)
 {
 	SGVector<float64_t> outputs = apply_locked_get_output(indices);
-	return new CRegressionLabels(outputs);
+	return std::make_shared<CRegressionLabels>(outputs);
 }
 
 SGVector<float64_t> CKernelMachine::apply_locked_get_output(
@@ -549,7 +549,7 @@ float64_t CKernelMachine::apply_one(int32_t num)
 	}
 }
 
-void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
+void CKernelMachine::data_lock(std::shared_ptr<CLabels> labs, std::shared_ptr<CFeatures> features)
 {
 	if ( !kernel )
 		SG_ERROR("The kernel is not initialized\n")
@@ -560,21 +560,21 @@ void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
 	kernel->init(features, features);
 
 	/* backup reference to old kernel */
-	SG_UNREF(m_kernel_backup)
+
 	m_kernel_backup=kernel;
-	SG_REF(m_kernel_backup);
+
 
 	/* unref possible old custom kernel */
-	SG_UNREF(m_custom_kernel);
+
 
 	/* create custom kernel matrix from current kernel */
-	m_custom_kernel=new CCustomKernel(kernel);
-	SG_REF(m_custom_kernel);
+	m_custom_kernel=std::make_shared<CCustomKernel>(kernel);
+
 
 	/* replace kernel by custom kernel */
-	SG_UNREF(kernel);
+
 	kernel=m_custom_kernel;
-	SG_REF(kernel);
+
 
 	/* dont forget to call superclass method */
 	CMachine::data_lock(labs, features);
@@ -582,7 +582,7 @@ void CKernelMachine::data_lock(CLabels* labs, CFeatures* features)
 
 void CKernelMachine::data_unlock()
 {
-	SG_UNREF(m_custom_kernel);
+
 	m_custom_kernel=NULL;
 
 	/* restore original kernel, possibly delete created one */
@@ -590,7 +590,7 @@ void CKernelMachine::data_unlock()
 	{
 		/* check if kernel was created in train_locked */
 		if (kernel!=m_kernel_backup)
-			SG_UNREF(kernel);
+
 
 		kernel=m_kernel_backup;
 		m_kernel_backup=NULL;
@@ -611,9 +611,9 @@ void CKernelMachine::init()
 	use_bias=true;
 
 	SG_ADD(&kernel, "kernel", "", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**) &m_custom_kernel, "custom_kernel", "Custom kernel for"
+	SG_ADD((std::shared_ptr<CKernel>*) &m_custom_kernel, "custom_kernel", "Custom kernel for"
 			" data lock");
-	SG_ADD((CSGObject**) &m_kernel_backup, "kernel_backup",
+	SG_ADD(&m_kernel_backup, "kernel_backup",
 			"Kernel backup for data lock");
 	SG_ADD(&use_batch_computation, "use_batch_computation",
 			"Batch computation is enabled.");

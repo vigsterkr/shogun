@@ -29,7 +29,7 @@ class CSparseEuclideanDistance: public CSparseDistance<float64_t>
 		 * @param r features of right-hand side
 		 */
 		CSparseEuclideanDistance(
-			CSparseFeatures<float64_t>* l, CSparseFeatures<float64_t>* r);
+			std::shared_ptr<CSparseFeatures<float64_t>> l, std::shared_ptr<CSparseFeatures<float64_t>> r);
 		virtual ~CSparseEuclideanDistance();
 
 		/** init distance
@@ -38,7 +38,7 @@ class CSparseEuclideanDistance: public CSparseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

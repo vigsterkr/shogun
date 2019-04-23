@@ -41,7 +41,7 @@ TEST(WeightedMajorityVote, combine_matrix)
 	SGVector<float64_t> expected(num_vectors);
 	SGVector<float64_t> weights(num_classifiers);
 	weights.random(0.5, 2.0);
-	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
+	auto mv = std::make_shared<CWeightedMajorityVote>(weights);
 
 	expected.zero();
 
@@ -52,7 +52,7 @@ TEST(WeightedMajorityVote, combine_matrix)
 	for (index_t i = 0; i < cv.vlen; ++i)
 		EXPECT_DOUBLE_EQ(expected[i], cv[i]);
 
-	SG_UNREF(mv);
+	
 }
 
 TEST(WeightedMajorityVote, binary_combine_vector)
@@ -60,7 +60,7 @@ TEST(WeightedMajorityVote, binary_combine_vector)
 	int32_t num_classifiers = 50;
 	SGVector<float64_t> weights(num_classifiers);
 	weights.random(0.5, 2.0);
-	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
+	auto mv = std::make_shared<CWeightedMajorityVote>(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> expected(2);
 
@@ -86,7 +86,7 @@ TEST(WeightedMajorityVote, binary_combine_vector)
 	float64_t combined_label = mv->combine(v);
 	EXPECT_EQ(max_label, combined_label);
 
-	SG_UNREF(mv);
+	
 }
 
 TEST(WeightedMajorityVote, multiclass_combine_vector)
@@ -94,7 +94,7 @@ TEST(WeightedMajorityVote, multiclass_combine_vector)
 	int32_t num_classifiers = 10;
 	SGVector<float64_t> weights(num_classifiers);
 	weights.random(0.5, 2.0);
-	CWeightedMajorityVote* mv = new CWeightedMajorityVote(weights);
+	auto mv = std::make_shared<CWeightedMajorityVote>(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> hist(3);
 
@@ -117,5 +117,5 @@ TEST(WeightedMajorityVote, multiclass_combine_vector)
 
 	EXPECT_EQ(max_label, c);
 
-	SG_UNREF(mv);
+	
 }

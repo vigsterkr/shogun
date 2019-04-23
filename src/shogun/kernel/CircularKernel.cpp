@@ -15,22 +15,22 @@ CCircularKernel::CCircularKernel(): CKernel(0), distance(NULL)
 	set_sigma(1.0);
 }
 
-CCircularKernel::CCircularKernel(int32_t size, float64_t sig, CDistance* dist)
+CCircularKernel::CCircularKernel(int32_t size, float64_t sig, std::shared_ptr<CDistance> dist)
 : CKernel(size), distance(dist)
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 
 	set_sigma(sig);
 	init();
 }
 
 CCircularKernel::CCircularKernel(
-	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
+	std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t sig, std::shared_ptr<CDistance> dist)
 : CKernel(10), distance(dist)
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	set_sigma(sig);
 	init();
 	init(l, r);
@@ -39,10 +39,10 @@ CCircularKernel::CCircularKernel(
 CCircularKernel::~CCircularKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-bool CCircularKernel::init(CFeatures* l, CFeatures* r)
+bool CCircularKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(distance)
 	CKernel::init(l,r);

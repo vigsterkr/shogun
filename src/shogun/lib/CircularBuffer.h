@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Heiko Strathmann, Yuyu Zhang, Thoralf Klein, 
+ * Authors: Evgeniy Andreev, Heiko Strathmann, Yuyu Zhang, Thoralf Klein,
  *          Fernando Iglesias, Bjoern Esser
  */
 
@@ -46,7 +46,7 @@ public:
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(CTokenizer* tokenizer);
+	void set_tokenizer(std::shared_ptr<CTokenizer> tokenizer);
 
 	/** push data into buffer from memory block
 	 *
@@ -152,7 +152,7 @@ private:
 	char* m_end_pos;
 
 	/** tokenizer */
-	CTokenizer* m_tokenizer;
+	std::shared_ptr<CTokenizer> m_tokenizer;
 
 	/** position at which the search starts */
 	index_t m_last_idx;

@@ -18,11 +18,11 @@ CLMNN::CLMNN()
 {
 	init();
 
-	m_statistics = new CLMNNStatistics();
-	SG_REF(m_statistics);
+	m_statistics = std::make_shared<CLMNNStatistics>();
+
 }
 
-CLMNN::CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k)
+CLMNN::CLMNN(std::shared_ptr<CFeatures> features, std::shared_ptr<CMulticlassLabels> labels, int32_t k)
 {
 	init();
 
@@ -30,18 +30,18 @@ CLMNN::CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k)
 	m_labels = labels;
 	m_k = k;
 
-	SG_REF(m_features)
-	SG_REF(m_labels)
 
-	m_statistics = new CLMNNStatistics();
-	SG_REF(m_statistics);
+
+
+	m_statistics = std::make_shared<CLMNNStatistics>();
+
 }
 
 CLMNN::~CLMNN()
 {
-	SG_UNREF(m_features)
-	SG_UNREF(m_labels)
-	SG_UNREF(m_statistics);
+
+
+
 }
 
 const char* CLMNN::get_name() const
@@ -59,8 +59,8 @@ void CLMNN::train(SGMatrix<float64_t> init_transform)
 	// Initializations
 
 	// cast is safe, check_training_setup ensures features are dense
-	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(m_features);
-	CMulticlassLabels* y = multiclass_labels(m_labels);
+	auto x = m_features->as<CDenseFeatures<float64_t>>();
+	auto y = multiclass_labels(m_labels);
 	SG_DEBUG("%d input vectors with %d dimensions.\n", x->get_num_vectors(), x->get_num_features());
 
 	auto& L = init_transform;
@@ -149,17 +149,14 @@ SGMatrix<float64_t> CLMNN::get_linear_transform() const
 	return m_linear_transform;
 }
 
-CDistance* CLMNN::get_distance() const
+std::shared_ptr<CDistance> CLMNN::get_distance() const
 {
 	// Compute Mahalanobis distance matrix M = L^T*L
 	auto M = linalg::matrix_prod(
 	    m_linear_transform, m_linear_transform, true, false);
 
 	// Create custom Mahalanobis distance with matrix M associated with the training features
-	auto distance = new CCustomMahalanobisDistance(m_features, m_features, M);
-	SG_REF(distance)
-
-	return distance;
+	return std::make_shared<CCustomMahalanobisDistance>(m_features, m_features, M);
 }
 
 int32_t CLMNN::get_k() const
@@ -249,9 +246,9 @@ void CLMNN::set_diagonal(const bool diagonal)
 	m_diagonal = diagonal;
 }
 
-CLMNNStatistics* CLMNN::get_statistics() const
+std::shared_ptr<CLMNNStatistics> CLMNN::get_statistics() const
 {
-	SG_REF(m_statistics);
+
 	return m_statistics;
 }
 
@@ -259,8 +256,8 @@ void CLMNN::init()
 {
 	SG_ADD(&m_linear_transform, "linear_transform",
 			"Linear transform in matrix form");
-	SG_ADD((CSGObject**) &m_features, "features", "Training features");
-	SG_ADD((CSGObject**) &m_labels, "labels", "Training labels");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_features, "features", "Training features");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_labels, "labels", "Training labels");
 	SG_ADD(&m_k, "k", "Number of target neighbours per example");
 	SG_ADD(&m_regularization, "regularization", "Regularization",
 			ParameterProperties::HYPER);
@@ -271,7 +268,7 @@ void CLMNN::init()
 			"Iterations between exact impostors search");
 	SG_ADD(&m_obj_threshold, "obj_threshold", "Objective threshold");
 	SG_ADD(&m_diagonal, "m_diagonal", "Diagonal transformation");
-	SG_ADD((CSGObject**) &m_statistics, "statistics", "Training statistics");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_statistics, "statistics", "Training statistics");
 
 	m_features = NULL;
 	m_labels = NULL;

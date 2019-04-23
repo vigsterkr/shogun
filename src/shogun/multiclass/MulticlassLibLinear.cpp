@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Chiyuan Zhang, Giovanni De Toni, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Chiyuan Zhang, Giovanni De Toni,
  *          Evan Shelhamer
  */
 
@@ -22,8 +22,8 @@ CMulticlassLibLinear::CMulticlassLibLinear() :
 	init_defaults();
 }
 
-CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs) :
-	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(),features,NULL,labs)
+CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, std::shared_ptr<CDotFeatures> features, std::shared_ptr<CLabels> labs) :
+	CLinearMulticlassMachine(std::make_shared<CMulticlassOneVsRestStrategy>(),features,NULL,labs)
 {
 	register_parameters();
 	init_defaults();
@@ -61,7 +61,7 @@ SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
 	ASSERT(m_labels && m_labels->get_label_type() == LT_MULTICLASS)
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
+	int32_t num_classes = multiclass_labels(m_labels)->get_num_classes();
 
 	v_array<int32_t> nz_idxs;
 	nz_idxs.reserve(num_vectors);
@@ -87,10 +87,10 @@ SGMatrix<float64_t> CMulticlassLibLinear::obtain_regularizer_matrix() const
 	return SGMatrix<float64_t>();
 }
 
-bool CMulticlassLibLinear::train_machine(CFeatures* data)
+bool CMulticlassLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (data)
-		set_features((CDotFeatures*)data);
+		set_features(data->as<CDotFeatures>());
 
 	ASSERT(m_features)
 	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
@@ -98,7 +98,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	init_strategy();
 
 	int32_t num_vectors = m_features->get_num_vectors();
-	int32_t num_classes = ((CMulticlassLabels*) m_labels)->get_num_classes();
+	int32_t num_classes = multiclass_labels(m_labels)->get_num_classes();
 	int32_t bias_n = m_use_bias ? 1 : 0;
 
 	liblinear_problem mc_problem;
@@ -106,7 +106,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	mc_problem.n = m_features->get_dim_feature_space() + bias_n;
 	mc_problem.y = SG_MALLOC(float64_t, mc_problem.l);
 	for (int32_t i=0; i<num_vectors; i++)
-		mc_problem.y[i] = ((CMulticlassLabels*) m_labels)->get_int_label(i);
+		mc_problem.y[i] = multiclass_labels(m_labels)->get_int_label(i);
 
 	mc_problem.x = m_features;
 	mc_problem.use_bias = m_use_bias;
@@ -127,7 +127,7 @@ bool CMulticlassLibLinear::train_machine(CFeatures* data)
 	m_machines->reset_array();
 	for (int32_t i=0; i<num_classes; i++)
 	{
-		CLinearMachine* machine = new CLinearMachine();
+		auto machine = std::make_shared<CLinearMachine>();
 		SGVector<float64_t> cw(mc_problem.n-bias_n);
 
 		for (int32_t j=0; j<mc_problem.n-bias_n; j++)

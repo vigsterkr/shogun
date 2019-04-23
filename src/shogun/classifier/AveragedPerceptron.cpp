@@ -39,14 +39,14 @@ void CAveragedPerceptron::init()
 	    "Cached bias that contribute to the average.");
 }
 
-void CAveragedPerceptron::init_model(CFeatures* data)
+void CAveragedPerceptron::init_model(std::shared_ptr<CFeatures> data)
 {
 	ASSERT(m_labels)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<CDotFeatures>(data));
 	}
 	ASSERT(features)
 

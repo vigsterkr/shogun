@@ -29,7 +29,7 @@ class CLibSVMOneClass : public CSVM
 		 * @param C constant C
 		 * @param k kernel
 		 */
-		CLibSVMOneClass(float64_t C, CKernel* k);
+		CLibSVMOneClass(float64_t C, std::shared_ptr<CKernel> k);
 		virtual ~CLibSVMOneClass();
 
 		/** get classifier type
@@ -52,7 +52,7 @@ class CLibSVMOneClass : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 };
 }
 #endif

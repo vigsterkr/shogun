@@ -52,7 +52,7 @@ SGNDArray<float64_t> CJediSep::get_covs() const
 	return m_covs;
 }
 
-void CJediSep::fit_dense(CDenseFeatures<float64_t>* features)
+void CJediSep::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 

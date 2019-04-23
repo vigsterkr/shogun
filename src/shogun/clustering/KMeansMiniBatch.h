@@ -32,14 +32,14 @@ class CKMeansMiniBatch : public CKMeansBase
 		 * @param d distance
 		 * @param kmeanspp true for using KMeans++ (default false)
 		 */
-		CKMeansMiniBatch(int32_t k, CDistance* d, bool kmeanspp=false);
+		CKMeansMiniBatch(int32_t k, std::shared_ptr<CDistance> d, bool kmeanspp=false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans aloverride private method c++gorithm
 		*/
-		CKMeansMiniBatch(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i);
+		CKMeansMiniBatch(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i);
 		
 		virtual ~CKMeansMiniBatch();
 
@@ -59,7 +59,7 @@ class CKMeansMiniBatch : public CKMeansBase
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 		/** mini-batch KMeans training method
 		 */

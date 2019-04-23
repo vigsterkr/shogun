@@ -37,7 +37,7 @@ CDotFeatures::CDotFeatures(const CDotFeatures & orig)
 }
 
 
-CDotFeatures::CDotFeatures(CFile* loader)
+CDotFeatures::CDotFeatures(std::shared_ptr<CFile> loader)
 	:CFeatures(loader)
 {
 	init();
@@ -236,7 +236,7 @@ SGVector<float64_t> CDotFeatures::get_std(bool colwise) const
 }
 
 SGVector<float64_t>
-CDotFeatures::compute_mean(CDotFeatures* lhs, CDotFeatures* rhs)
+CDotFeatures::compute_mean(std::shared_ptr<CDotFeatures> lhs, std::shared_ptr<CDotFeatures> rhs)
 {
 	ASSERT(lhs && rhs)
 	ASSERT(lhs->get_dim_feature_space() == rhs->get_dim_feature_space())
@@ -307,9 +307,9 @@ SGMatrix<float64_t> CDotFeatures::get_cov(bool copy_data_for_speed) const
 }
 
 SGMatrix<float64_t> CDotFeatures::compute_cov(
-    CDotFeatures* lhs, CDotFeatures* rhs, bool copy_data_for_speed)
+    std::shared_ptr<CDotFeatures> lhs, std::shared_ptr<CDotFeatures> rhs, bool copy_data_for_speed)
 {
-	CDotFeatures* feats[2];
+	std::shared_ptr<CDotFeatures> feats[2];
 	feats[0]=lhs;
 	feats[1]=rhs;
 

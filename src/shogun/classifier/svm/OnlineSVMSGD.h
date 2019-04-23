@@ -38,7 +38,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 * @param C constant C
 		 * @param traindat training features
 		 */
-		COnlineSVMSGD(float64_t C, CStreamingDotFeatures* traindat);
+		COnlineSVMSGD(float64_t C, std::shared_ptr<CStreamingDotFeatures> traindat);
 
 		virtual ~COnlineSVMSGD();
 
@@ -56,7 +56,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** set C
 		 *
@@ -130,13 +130,13 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		 *
 		 * @param loss_func object derived from CLossFunction
 		 */
-		void set_loss_function(CLossFunction* loss_func);
+		void set_loss_function(std::shared_ptr<CLossFunction> loss_func);
 
 		/** Return the loss function
 		 *
 		 * @return loss function as CLossFunction*
 		 */
-		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
+		inline std::shared_ptr<CLossFunction> get_loss_function() {  return loss; }
 
 		/** @return object name */
 		inline const char* get_name() const { return "OnlineSVMSGD"; }
@@ -166,7 +166,7 @@ class COnlineSVMSGD : public COnlineLinearMachine
 		bool use_bias;
 		bool use_regularized_bias;
 
-		CLossFunction* loss;
+		std::shared_ptr<CLossFunction> loss;
 };
 }
 #endif

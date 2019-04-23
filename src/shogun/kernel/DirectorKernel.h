@@ -58,7 +58,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 		{
 			if (this->parallel->get_num_threads()!=1)
 			{
@@ -72,7 +72,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return if successful
 		 */
-		virtual bool set_normalizer(CKernelNormalizer* normalizer)
+		virtual bool set_normalizer(std::shared_ptr<CKernelNormalizer> normalizer)
 		{
 			return CKernel::set_normalizer(normalizer);
 		}
@@ -81,7 +81,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernel: public CKernel
 		 *
 		 * @return the kernel normalizer
 		 */
-		virtual CKernelNormalizer* get_normalizer()
+		virtual std::shared_ptr<CKernelNormalizer> get_normalizer()
 		{
 			return CKernel::get_normalizer();
 		}

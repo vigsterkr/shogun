@@ -34,12 +34,12 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 }
 
-void CSegmentLoss::set_segment_ids(CDynamicArray<int32_t>* segment_ids)
+void CSegmentLoss::set_segment_ids(std::shared_ptr<CDynamicArray<int32_t>> segment_ids)
 {
 	m_segment_ids = segment_ids;
 }
 
-void CSegmentLoss::set_segment_mask(CDynamicArray<float64_t>* segment_mask)
+void CSegmentLoss::set_segment_mask(std::shared_ptr<CDynamicArray<float64_t>> segment_mask)
 {
 	m_segment_mask = segment_mask;
 }

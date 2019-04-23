@@ -87,7 +87,7 @@ public :
 	 * @param data data points to be used for density estimation
 	 * @return true
 	 */
-	virtual bool train(CFeatures* data=NULL);
+	virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 	/** compute kde for given test points
 	 *
@@ -95,7 +95,7 @@ public :
 	 * @param leaf_size leaf size of query tree (ignored in case of single tree evaluation mode)
 	 * @return log of estimated kernel density velues at given test points
 	 */
-	SGVector<float64_t> get_log_density(CDenseFeatures<float64_t>* test, int32_t leaf_size=1);
+	SGVector<float64_t> get_log_density(std::shared_ptr<CDenseFeatures<float64_t>> test, int32_t leaf_size=1);
 
 	/** return number of model parameters
 	 * NOT IMPLEMENTED
@@ -203,7 +203,7 @@ private :
 	EDistanceType m_dist;
 
 	/** Tree */
-	CNbodyTree* tree;
+	std::shared_ptr<CNbodyTree> tree;
 };
 } /* shogun */
 

@@ -14,30 +14,30 @@ CWaveKernel::CWaveKernel(): CKernel(0), m_distance(NULL), m_theta(1.0)
 	init();
 }
 
-CWaveKernel::CWaveKernel(int32_t cache, float64_t theta, CDistance* dist)
+CWaveKernel::CWaveKernel(int32_t cache, float64_t theta, std::shared_ptr<CDistance> dist)
 : CKernel(cache), m_distance(dist), m_theta(theta)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 }
 
-CWaveKernel::CWaveKernel(CFeatures *l, CFeatures *r, float64_t theta, CDistance* dist)
+CWaveKernel::CWaveKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t theta, std::shared_ptr<CDistance> dist)
 : CKernel(10), m_distance(dist), m_theta(theta)
 {
 	init();
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init(l, r);
 }
 
 CWaveKernel::~CWaveKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CWaveKernel::init(CFeatures* l, CFeatures* r)
+bool CWaveKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(m_distance)
 	CKernel::init(l,r);

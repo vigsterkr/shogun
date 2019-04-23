@@ -29,8 +29,6 @@
 %rename(MulticlassSVM) CMulticlassSVM;
 %rename(MKLMulticlass) CMKLMulticlass;
 
-%newobject apply_multilabel_output();
-
 %rename(ECOCStrategy) CECOCStrategy;
 %rename(ECOCEncoder) CECOCEncoder;
 %rename(ECOCDecoder) CECOCDecoder;

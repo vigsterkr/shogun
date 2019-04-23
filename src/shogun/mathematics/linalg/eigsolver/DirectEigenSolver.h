@@ -30,7 +30,7 @@ public:
 	 * @param linear_operator self-adjoint dense-matrix linear operator whose
 	 * eigenvalues have to be found
 	 */
-	CDirectEigenSolver(CDenseMatrixOperator<float64_t>* linear_operator);
+	CDirectEigenSolver(std::shared_ptr<CDenseMatrixOperator<float64_t>> linear_operator);
 
 	/** destructor */
 	virtual ~CDirectEigenSolver();

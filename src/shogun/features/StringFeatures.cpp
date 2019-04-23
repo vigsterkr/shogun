@@ -29,16 +29,16 @@ namespace shogun
 template<class ST> CStringFeatures<ST>::CStringFeatures() : CFeatures(0)
 {
 	init();
-	alphabet=new CAlphabet();
-	SG_REF(alphabet);
+	alphabet=std::make_shared<CAlphabet>();
+
 }
 
 template<class ST> CStringFeatures<ST>::CStringFeatures(EAlphabet alpha) : CFeatures(0)
 {
 	init();
 
-	alphabet=new CAlphabet(alpha);
-	SG_REF(alphabet);
+	alphabet=std::make_shared<CAlphabet>(alpha);
+
 	num_symbols=alphabet->get_num_symbols();
 	original_num_symbols=num_symbols;
 }
@@ -49,26 +49,24 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_
 	set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
 }
 
-template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_list, CAlphabet* alpha)
-: CStringFeatures(alpha)
-{
-	set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
-}
-
-template<class ST> CStringFeatures<ST>::CStringFeatures(CAlphabet* alpha)
+template<class ST> CStringFeatures<ST>::CStringFeatures(std::shared_ptr<CAlphabet> alpha)
 : CFeatures(0)
 {
 	ASSERT(alpha)
 	init();
 
-	SG_REF(alpha);
-	SG_UNREF(alphabet);
 	alphabet=alpha;
 	num_symbols=alphabet->get_num_symbols();
 	original_num_symbols=num_symbols;
 }
 
-template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet alpha)
+template<class ST> CStringFeatures<ST>::CStringFeatures(SGStringList<ST> string_list, std::shared_ptr<CAlphabet> alpha)
+: CStringFeatures(alpha)
+{
+	set_features(string_list.strings, string_list.num_strings, string_list.max_string_length);
+}
+
+template<class ST> CStringFeatures<ST>::CStringFeatures(std::shared_ptr<CFile> loader, EAlphabet alpha)
 : CStringFeatures(alpha)
 {
 	load(loader);
@@ -77,8 +75,6 @@ template<class ST> CStringFeatures<ST>::CStringFeatures(CFile* loader, EAlphabet
 template<class ST> CStringFeatures<ST>::~CStringFeatures()
 {
 	cleanup();
-
-	SG_UNREF(alphabet);
 }
 
 template<class ST> void CStringFeatures<ST>::cleanup()
@@ -113,10 +109,10 @@ template<class ST> void CStringFeatures<ST>::cleanup()
 	 * create a new object (to leave the alphabet object alone if it is used
 	 * by others)
 	 */
-	CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());
-	SG_UNREF(alphabet);
+	auto alpha=std::make_shared<CAlphabet>(alphabet->get_alphabet());
+
 	alphabet=alpha;
-	SG_REF(alphabet);
+
 }
 
 template<class ST> void CStringFeatures<ST>::cleanup_feature_vector(int32_t num)
@@ -156,15 +152,15 @@ template<class ST> EFeatureClass CStringFeatures<ST>::get_feature_class() const 
 
 template<class ST> EFeatureType CStringFeatures<ST>::get_feature_type() const { return F_UNKNOWN; }
 
-template<class ST> CAlphabet* CStringFeatures<ST>::get_alphabet() const
+template<class ST> std::shared_ptr<CAlphabet> CStringFeatures<ST>::get_alphabet() const
 {
-	SG_REF(alphabet);
+
 	return alphabet;
 }
 
-template<class ST> CFeatures* CStringFeatures<ST>::duplicate() const
+template<class ST> std::shared_ptr<CFeatures> CStringFeatures<ST>::duplicate() const
 {
-	return new CStringFeatures<ST>(*this);
+	return std::make_shared<CStringFeatures>(*this);
 }
 
 template<class ST> SGVector<ST> CStringFeatures<ST>::get_feature_vector(int32_t num)
@@ -245,9 +241,8 @@ template<class ST> ST* CStringFeatures<ST>::get_feature_vector(int32_t num, int3
 
 			for (int32_t i=0; i<get_num_preprocessors(); i++)
 			{
-				CStringPreprocessor<ST>* p=(CStringPreprocessor<ST>*) get_preprocessor(i);
+				auto p=std::dynamic_pointer_cast<CStringPreprocessor<ST>>(get_preprocessor(i));
 				feat=p->apply_to_string(tmp_feat_before, len);
-				SG_UNREF(p);
 				SG_FREE(tmp_feat_before);
 				tmp_feat_before=feat;
 			}
@@ -257,7 +252,7 @@ template<class ST> ST* CStringFeatures<ST>::get_feature_vector(int32_t num, int3
 	}
 }
 
-template<class ST> CStringFeatures<ST>* CStringFeatures<ST>::get_transposed()
+template<class ST> std::shared_ptr<CStringFeatures<ST>> CStringFeatures<ST>::get_transposed()
 {
 	int32_t num_feat;
 	int32_t num_vec;
@@ -267,7 +262,7 @@ template<class ST> CStringFeatures<ST>* CStringFeatures<ST>::get_transposed()
 	string_list.num_strings = num_vec;
 	string_list.max_string_length = num_feat;
 
-	return new CStringFeatures<ST>(string_list, alphabet);
+	return std::make_shared<CStringFeatures<ST>>(string_list, alphabet);
 }
 
 template<class ST> SGString<ST>* CStringFeatures<ST>::get_transposed(int32_t &num_feat, int32_t &num_vec)
@@ -408,8 +403,8 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 
 	cleanup();
 
-	CAlphabet* alpha=new CAlphabet(ascii_alphabet);
-	CAlphabet* alpha_bin=new CAlphabet(binary_alphabet);
+	auto alpha=std::make_shared<CAlphabet>(ascii_alphabet);
+	auto alpha_bin=std::make_shared<CAlphabet>(binary_alphabet);
 
 	FILE* f=fopen(fname, "ro");
 
@@ -527,19 +522,19 @@ template<class ST> void CStringFeatures<ST>::load_ascii_file(char* fname, bool r
 	SG_FREE(dummy);
 	SG_FREE(overflow);
 
-	SG_UNREF(alphabet);
+
 
 	if (remap_to_bin)
 	{
 		alphabet=alpha_bin;
-		SG_UNREF(alpha);
+
 	}
 	else
 	{
 		alphabet=alpha;
-		SG_UNREF(alpha_bin);
+
 	}
-	SG_REF(alphabet);
+
 	num_symbols=alphabet->get_num_symbols();
 }
 
@@ -569,8 +564,8 @@ template<class ST> bool CStringFeatures<ST>::load_fasta_file(const char* fname, 
 		SG_ERROR("No fasta hunks (lines starting with '>') found\n")
 
 	cleanup();
-	SG_UNREF(alphabet);
-	alphabet=new CAlphabet(DNA);
+
+	alphabet=std::make_shared<CAlphabet>(DNA);
 	num_symbols=alphabet->get_num_symbols();
 
 	SGString<ST>* strings=SG_MALLOC(SGString<ST>, num);
@@ -655,8 +650,8 @@ template<class ST> bool CStringFeatures<ST>::load_fastq_file(const char* fname,
 	num/=4;
 
 	cleanup();
-	SG_UNREF(alphabet);
-	alphabet=new CAlphabet(DNA);
+
+	alphabet=std::make_shared<CAlphabet>(DNA);
 
 	SGString<ST>* strings;
 
@@ -822,7 +817,7 @@ template<class ST> bool CStringFeatures<ST>::set_features(SGString<ST>* p_featur
 
 	if (p_features)
 	{
-		CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());
+		auto alpha=std::make_shared<CAlphabet>(alphabet->get_alphabet());
 
 		//compute histogram for char/byte
 		for (int32_t i=0; i<p_num_vectors; i++)
@@ -834,10 +829,10 @@ template<class ST> bool CStringFeatures<ST>::set_features(SGString<ST>* p_featur
 		if (alpha->check_alphabet_size() && alpha->check_alphabet())
 		{
 			cleanup();
-			SG_UNREF(alphabet);
+
 
 			alphabet=alpha;
-			SG_REF(alphabet);
+
 
 			// TODO remove copying
 			features = SG_MALLOC(SGString<ST>,p_num_vectors);
@@ -847,14 +842,12 @@ template<class ST> bool CStringFeatures<ST>::set_features(SGString<ST>* p_featur
 
 			return true;
 		}
-		else
-			SG_UNREF(alpha);
 	}
 
 	return false;
 }
 
-template<class ST> bool CStringFeatures<ST>::append_features(CStringFeatures<ST>* sf)
+template<class ST> bool CStringFeatures<ST>::append_features(std::shared_ptr<CStringFeatures<ST>> sf)
 {
 	ASSERT(sf)
 
@@ -884,7 +877,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_fea
 	if (!features)
 		return set_features(p_features, p_num_vectors, p_max_string_length);
 
-	CAlphabet* alpha=new CAlphabet(alphabet->get_alphabet());
+	auto alpha=std::make_shared<CAlphabet>(alphabet->get_alphabet());
 
 	//compute histogram for char/byte
 	for (int32_t i=0; i<p_num_vectors; i++)
@@ -895,7 +888,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_fea
 
 	if (alpha->check_alphabet_size() && alpha->check_alphabet())
 	{
-		SG_UNREF(alpha);
+
 		for (int32_t i=0; i<p_num_vectors; i++)
 			alphabet->add_string_to_histogram( p_features[i].string, p_features[i].slen);
 
@@ -924,7 +917,7 @@ template<class ST> bool CStringFeatures<ST>::append_features(SGString<ST>* p_fea
 
 		return true;
 	}
-	SG_UNREF(alpha);
+
 
 	return false;
 }
@@ -1006,13 +999,13 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 	uint8_t c;
 	if (fread(&c, sizeof(uint8_t), 1, file)!=1)
 		SG_ERROR("failed to read compression type")
-	CCompressor* compressor= new CCompressor((E_COMPRESSION_TYPE) c);
+	auto compressor= std::make_shared<CCompressor>((E_COMPRESSION_TYPE) c);
 	//alphabet
 	uint8_t a;
-	delete alphabet;
+	alphabet.reset();
 	if (fread(&a, sizeof(uint8_t), 1, file)!=1)
 		SG_ERROR("failed to read compression alphabet")
-	alphabet=new CAlphabet((EAlphabet) a);
+	alphabet=std::make_shared<CAlphabet>((EAlphabet) a);
 	// number of vectors
 	if (fread(&num_vectors, sizeof(int32_t), 1, file)!=1)
 		SG_ERROR("failed to read compression number of vectors")
@@ -1066,7 +1059,6 @@ template<class ST> bool CStringFeatures<ST>::load_compressed(char* src, bool dec
 		}
 	}
 
-	delete compressor;
 	fclose(file);
 
 	return false;
@@ -1082,7 +1074,7 @@ template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPR
 	if (!(file=fopen(dest, "wb")))
 		return false;
 
-	CCompressor* compressor= new CCompressor(compression);
+	auto compressor= std::make_shared<CCompressor>(compression);
 
 	// header shogun v0
 	const char* id="SGV0";
@@ -1127,7 +1119,6 @@ template<class ST> bool CStringFeatures<ST>::save_compressed(char* dest, E_COMPR
 		free_feature_vector(vec, i, vfree);
 	}
 
-	delete compressor;
 	fclose(file);
 	return true;
 }
@@ -1169,7 +1160,7 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_sliding_window(int32_t
 	return num_vectors;
 }
 
-template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t window_size, CDynamicArray<int32_t>* positions,
+template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t window_size, std::shared_ptr<CDynamicArray<int32_t>> positions,
 		int32_t skip)
 {
 	if (m_subset_stack->has_subsets())
@@ -1227,7 +1218,7 @@ template<class ST> int32_t CStringFeatures<ST>::obtain_by_position_list(int32_t 
 	return num_vectors;
 }
 
-template<class ST> bool CStringFeatures<ST>::obtain_from_char(CStringFeatures<char>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<class ST> bool CStringFeatures<ST>::obtain_from_char(std::shared_ptr<CStringFeatures<char>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return obtain_from_char_features(sf, start, p_order, gap, rev);
 }
@@ -1541,7 +1532,7 @@ CStringFeatures<SSKFeature>* obtain_sssk_double_from_char(int **S, int *len, int
 }
 */
 
-template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(
+template<class ST> std::shared_ptr<CFeatures> CStringFeatures<ST>::copy_subset(
 		SGVector<index_t> indices) const
 {
 	/* string list to create new CStringFeatures from */
@@ -1562,7 +1553,7 @@ template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(
 	}
 
 	/* create copy instance */
-	CStringFeatures* result=new CStringFeatures(list_copy, alphabet);
+	auto result=std::make_shared<CStringFeatures<ST>>();
 
 	/* max string length may have changed */
 	result->determine_maximum_string_length();
@@ -1570,8 +1561,6 @@ template<class ST> CFeatures* CStringFeatures<ST>::copy_subset(
 	/* keep things from original features (otherwise assertions in x-val) */
 	result->order=order;
 	result->compute_symbol_mask_table(result->alphabet->get_num_symbols());
-
-	SG_REF(result);
 
 	return result;
 }
@@ -1617,14 +1606,14 @@ template<class ST> void CStringFeatures<ST>::init()
 
 	SG_ADD(&alphabet, "alphabet", "Alphabet used.");
 
-	m_parameters->add_vector(&features, &num_vectors, "features",
-			"This contains the array of features.");
+	/*m_parameters->add_vector(&features, &num_vectors, "features",
+			"This contains the array of features.");*/
 	watch_param("features", &features, &num_vectors);
 
-	m_parameters->add_vector(&single_string,
+	/*m_parameters->add_vector(&single_string,
 			&length_of_single_string,
 			"single_string",
-			"Created by sliding window.");
+			"Created by sliding window.");*/
 	watch_param("single_string", &single_string, &length_of_single_string);
 
 	SG_ADD(
@@ -1639,7 +1628,7 @@ template<class ST> void CStringFeatures<ST>::init()
 	SG_ADD(
 		&preprocess_on_get, "preprocess_on_get", "Preprocess on-the-fly?");
 
-	m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");
+	/*m_parameters->add_vector(&symbol_mask_table, &symbol_mask_table_len, "mask_table", "Symbol mask table - using in higher order mapping");*/
 	watch_param("mask_table", &symbol_mask_table, &symbol_mask_table_len);
 	watch_method("num_vectors", &CStringFeatures::get_num_vectors);
 	watch_method("string_list", &CStringFeatures::get_string_list);
@@ -1805,15 +1794,15 @@ template<> floatmax_t CStringFeatures<floatmax_t>::shift_symbol(floatmax_t symbo
 }
 
 #ifndef SUNOS
-template<>	template <class CT> bool CStringFeatures<float32_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<>	template <class CT> bool CStringFeatures<float32_t>::obtain_from_char_features(std::shared_ptr<CStringFeatures<CT>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
 }
-template<>	template <class CT> bool CStringFeatures<float64_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<>	template <class CT> bool CStringFeatures<float64_t>::obtain_from_char_features(std::shared_ptr<CStringFeatures<CT>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
 }
-template<>	template <class CT> bool CStringFeatures<floatmax_t>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
+template<>	template <class CT> bool CStringFeatures<floatmax_t>::obtain_from_char_features(std::shared_ptr<CStringFeatures<CT>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev)
 {
 	return false;
 }
@@ -1862,7 +1851,7 @@ template<>	void CStringFeatures<floatmax_t>::unembed_word(floatmax_t word, uint8
 {
 }
 #define LOAD(f_load, sg_type)												\
-template<> void CStringFeatures<sg_type>::load(CFile* loader)		\
+template<> void CStringFeatures<sg_type>::load(std::shared_ptr<CFile> loader)		\
 {																			\
 	SG_INFO("loading...\n")												\
 																			\
@@ -1872,6 +1861,7 @@ template<> void CStringFeatures<sg_type>::load(CFile* loader)		\
 	int32_t max_len;														\
 	loader->f_load(strs, num_str, max_len);									\
 	set_features(strs, num_str, max_len);									\
+	SG_FREE(strs);												\
 	SG_RESET_LOCALE;													\
 }
 
@@ -1891,7 +1881,7 @@ LOAD(get_string_list, floatmax_t)
 #undef LOAD
 
 #define SAVE(f_write, sg_type)												\
-template<> void CStringFeatures<sg_type>::save(CFile* writer)		\
+template<> void CStringFeatures<sg_type>::save(std::shared_ptr<CFile> writer)		\
 {																			\
 	if (m_subset_stack->has_subsets())															\
 		SG_ERROR("save() is not possible on subset")						\
@@ -1917,13 +1907,13 @@ SAVE(set_string_list, floatmax_t)
 #undef SAVE
 
 template <class ST> template <class CT>
-bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int32_t start,
+bool CStringFeatures<ST>::obtain_from_char_features(std::shared_ptr<CStringFeatures<CT>> sf, int32_t start,
 		int32_t p_order, int32_t gap, bool rev)
 {
 	remove_all_subsets();
 	ASSERT(sf)
 
-	CAlphabet* alpha=sf->get_alphabet();
+	auto alpha=sf->get_alphabet();
 	ASSERT(alpha->get_num_symbols_in_histogram() > 0)
 
 	this->order=p_order;
@@ -1954,8 +1944,6 @@ bool CStringFeatures<ST>::obtain_from_char_features(CStringFeatures<CT>* sf, int
 
 	original_num_symbols=alpha->get_num_symbols();
 	int32_t max_val=alpha->get_num_bits();
-
-	SG_UNREF(alpha);
 
 	if (p_order>1)
 		num_symbols=CMath::powl((floatmax_t) 2, (floatmax_t) max_val*p_order);
@@ -2007,11 +1995,11 @@ template class CStringFeatures<float32_t>;
 template class CStringFeatures<float64_t>;
 template class CStringFeatures<floatmax_t>;
 
-template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint8_t>(CStringFeatures<uint8_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint8_t>(std::shared_ptr<CStringFeatures<uint8_t>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint8_t>(std::shared_ptr<CStringFeatures<uint8_t>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint8_t>(std::shared_ptr<CStringFeatures<uint8_t>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
 
-template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
-template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint16_t>(CStringFeatures<uint16_t>* sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint16_t>::obtain_from_char_features<uint16_t>(std::shared_ptr<CStringFeatures<uint16_t>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint32_t>::obtain_from_char_features<uint16_t>(std::shared_ptr<CStringFeatures<uint16_t>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
+template bool CStringFeatures<uint64_t>::obtain_from_char_features<uint16_t>(std::shared_ptr<CStringFeatures<uint16_t>> sf, int32_t start, int32_t p_order, int32_t gap, bool rev);
 }

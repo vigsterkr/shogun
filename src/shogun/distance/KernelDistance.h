@@ -39,7 +39,7 @@ class CKernelDistance: public CDistance
 		 * @param width width
 		 * @param k kernel
 		 */
-		CKernelDistance(float64_t width, CKernel* k);
+		CKernelDistance(float64_t width, std::shared_ptr<CKernel> k);
 
 		/** constructor
 		 *
@@ -49,7 +49,7 @@ class CKernelDistance: public CDistance
 		 * @param k kernel
 		 */
 		CKernelDistance(
-			CFeatures *l, CFeatures *r, float64_t width, CKernel* k);
+			std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t width, std::shared_ptr<CKernel> k);
 
 		/** destructor */
 		virtual ~CKernelDistance();
@@ -60,7 +60,7 @@ class CKernelDistance: public CDistance
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *
@@ -106,7 +106,7 @@ class CKernelDistance: public CDistance
 
 	private:
 		/** kernel */
-		CKernel* kernel;
+		std::shared_ptr<CKernel> kernel;
 		/** width */
 		float64_t width;
 };

@@ -31,23 +31,23 @@ public:
 	CMulticlassOVREvaluation();
 
 	/** constructor */
-	CMulticlassOVREvaluation(CBinaryClassEvaluation* binary_evaluation);
+	CMulticlassOVREvaluation(std::shared_ptr<CBinaryClassEvaluation> binary_evaluation);
 
 	/** destructor */
 	virtual ~CMulticlassOVREvaluation();
 
 	/** set evaluation */
-	void set_binary_evaluation(CBinaryClassEvaluation* binary_evaluation)
+	void set_binary_evaluation(std::shared_ptr<CBinaryClassEvaluation> binary_evaluation)
 	{
-		SG_REF(binary_evaluation);
-		SG_UNREF(m_binary_evaluation);
+		
+		
 		m_binary_evaluation = binary_evaluation;
 	}
 
 	/** get evaluation */
-	CBinaryClassEvaluation* get_binary_evaluation()
+	std::shared_ptr<CBinaryClassEvaluation> get_binary_evaluation()
 	{
-		SG_REF(m_binary_evaluation);
+		
 		return m_binary_evaluation;
 	}
 
@@ -56,7 +56,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return mean of OvR binary evaluations
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
 
 	/** returns last results per class */
 	SGVector<float64_t> get_last_results()
@@ -85,7 +85,7 @@ public:
 protected:
 
 	/** binary evaluation to be used */
-	CBinaryClassEvaluation* m_binary_evaluation;
+	std::shared_ptr<CBinaryClassEvaluation> m_binary_evaluation;
 
 	/** last per class results */
 	SGVector<float64_t> m_last_results;

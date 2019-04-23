@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Chiyuan Zhang, Yuyu Zhang, Bjoern Esser, 
+ * Authors: Saurabh Mahindre, Chiyuan Zhang, Yuyu Zhang, Bjoern Esser,
  *          Soeren Sonnenburg, Soumyajit De, Sanuj Sharma
  */
 
@@ -62,7 +62,7 @@ public:
 	 * @param l features of left-hand side
 	 * @param r features of right-hand side
 	 */
-	CEuclideanDistance(CDotFeatures* l, CDotFeatures* r);
+	CEuclideanDistance(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r);
 
 	/** destructor */
 	virtual ~CEuclideanDistance();
@@ -73,7 +73,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if init was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/** cleanup distance */
 	virtual void cleanup();
@@ -158,7 +158,7 @@ public:
 	 * @param rhs features of right-hand side
 	 * @return replaced right-hand side features
 	 */
-	virtual CFeatures* replace_rhs(CFeatures* rhs);
+	virtual std::shared_ptr<CFeatures> replace_rhs(std::shared_ptr<CFeatures> rhs);
 
 	/** replace left-hand side features used in distance matrix
 	 *
@@ -168,7 +168,7 @@ public:
 	 * @param lhs features of right-hand side
 	 * @return replaced left-hand side features
 	 */
-	virtual CFeatures* replace_lhs(CFeatures* lhs);
+	virtual std::shared_ptr<CFeatures> replace_lhs(std::shared_ptr<CFeatures> lhs);
 
 protected:
 	/// compute kernel function for features a and b

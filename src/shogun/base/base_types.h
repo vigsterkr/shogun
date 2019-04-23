@@ -95,6 +95,22 @@ namespace shogun
 	{
 	};
 
+	template <class T>
+   	struct remove_shared_ptr
+	{
+		using type = T;
+	};
+
+	template <class T>
+	struct remove_shared_ptr<std::shared_ptr<T>>
+    	{
+        	using type = T;
+	};
+
+	template <class T>
+	using remove_shared_ptr_t = typename remove_shared_ptr<T>::type;
+
+
 } // namespace shogun
 
 #endif // BASE_TYPES__H

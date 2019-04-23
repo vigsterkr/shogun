@@ -31,7 +31,7 @@ public:
 	 * @param linear_operator self-adjoint linear operator whose eigenvalues
 	 * are to be found
 	 */
-	CLanczosEigenSolver(CLinearOperator<float64_t>* linear_operator);
+	CLanczosEigenSolver(std::shared_ptr<CLinearOperator<float64_t>> linear_operator);
 
 	/** destructor */
 	virtual ~CLanczosEigenSolver();

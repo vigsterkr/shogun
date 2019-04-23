@@ -34,7 +34,7 @@ public:
 	/** constructor from index block
 	 * @param root_block root block of the tree
 	 */
-	CIndexBlockTree(CIndexBlock* root_block);
+	CIndexBlockTree(std::shared_ptr<CIndexBlock> root_block);
 
 	/** constructor from adjacency matrix
 	 * @param adjacency_matrix adjacency matrix
@@ -63,10 +63,10 @@ public:
 	virtual ~CIndexBlockTree();
 
 	/** get root IndexBlock */
-	CIndexBlock* get_root_block() const;
+	std::shared_ptr<CIndexBlock> get_root_block() const;
 
 	/** set root block */
-	void set_root_block(CIndexBlock* root_block);
+	void set_root_block(std::shared_ptr<CIndexBlock> root_block);
 
 	/** returns information about blocks in
 	 * SLEP "ind" format
@@ -95,7 +95,7 @@ public:
 protected:
 
 	/** root block */
-	CIndexBlock* m_root_block;
+	std::shared_ptr<CIndexBlock> m_root_block;
 
 	/** general */
 	bool m_general;

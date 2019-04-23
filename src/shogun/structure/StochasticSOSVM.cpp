@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Abinash Panda, Shell Hu, Soeren Sonnenburg, Fernando Iglesias, 
+ * Authors: Abinash Panda, Shell Hu, Soeren Sonnenburg, Fernando Iglesias,
  *          Bjoern Esser
  */
 
@@ -19,8 +19,8 @@ CStochasticSOSVM::CStochasticSOSVM()
 }
 
 CStochasticSOSVM::CStochasticSOSVM(
-		CStructuredModel*  model,
-		CStructuredLabels* labs,
+		std::shared_ptr<CStructuredModel>  model,
+		std::shared_ptr<CStructuredLabels> labs,
 		bool do_weighted_averaging,
 		bool verbose)
 : CLinearStructuredOutputMachine(model, labs)
@@ -61,7 +61,7 @@ EMachineType CStochasticSOSVM::get_classifier_type()
 	return CT_STOCHASTICSOSVM;
 }
 
-bool CStochasticSOSVM::train_machine(CFeatures* data)
+bool CStochasticSOSVM::train_machine(std::shared_ptr<CFeatures> data)
 {
 	SG_DEBUG("Entering CStochasticSOSVM::train_machine.\n");
 	if (data)
@@ -92,10 +92,10 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 	{
 		if (m_helper != NULL)
-			SG_UNREF(m_helper);
 
-		m_helper = new CSOSVMHelper();
-		SG_REF(m_helper);
+
+		m_helper = std::make_shared<CSOSVMHelper>();
+
 	}
 
 	int32_t debug_iter = 1;
@@ -117,7 +117,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			int32_t i = CMath::random(0, N-1);
 
 			// 2) solve the loss-augmented inference for point i
-			CResultSet* result = m_model->argmax(m_w, i);
+			auto result = m_model->argmax(m_w, i);
 
 			// 3) get the subgradient
 			// psi_i(y) := phi(x_i,y_i) - phi(x_i, y)
@@ -161,7 +161,7 @@ bool CStochasticSOSVM::train_machine(CFeatures* data)
 			}
 
 			k += 1;
-			SG_UNREF(result);
+
 
 			// Debug: compute objective and training error
 			if (m_verbose && k == debug_iter)

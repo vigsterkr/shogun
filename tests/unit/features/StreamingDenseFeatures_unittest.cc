@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Viktor Gal, Thoralf Klein, Giovanni De Toni, Soumyajit De, 
+ * Authors: Viktor Gal, Thoralf Klein, Giovanni De Toni, Soumyajit De,
  *          Bjoern Esser
  */
 
@@ -28,16 +28,16 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i] = sg_rand->std_normal_distrib();
 
-	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
-	CCSVFile* saved_features = new CCSVFile(fname, 'w');
+	auto orig_feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto saved_features = std::make_shared<CCSVFile>(fname, 'w');
 	orig_feats->save(saved_features);
 	saved_features->close();
-	SG_UNREF(saved_features);
 
-	CStreamingAsciiFile* input = new CStreamingAsciiFile(fname);
+
+	auto input = std::make_shared<CStreamingAsciiFile>(fname);
 	input->set_delimiter(',');
-	CStreamingDenseFeatures<float64_t>* feats
-		= new CStreamingDenseFeatures<float64_t>(input, false, 5);
+	auto feats
+		= std::make_shared<CStreamingDenseFeatures<float64_t>>(input, false, 5);
 
 	index_t i = 0;
 	feats->start_parser();
@@ -56,8 +56,8 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 	}
 	feats->end_parser();
 
-	SG_UNREF(orig_feats);
-	SG_UNREF(feats);
+
+
 
 	std::remove(fname);
 }
@@ -71,8 +71,8 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i] = sg_rand->std_normal_distrib();
 
-	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
-	CStreamingDenseFeatures<float64_t>* feats = new CStreamingDenseFeatures<float64_t>(orig_feats);
+	auto orig_feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats = std::make_shared<CStreamingDenseFeatures<float64_t>>(orig_feats);
 
 	index_t i = 0;
 	feats->start_parser();
@@ -91,7 +91,7 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 	}
 	feats->end_parser();
 
-	SG_UNREF(feats);
+
 }
 
 TEST(StreamingDenseFeaturesTest, reset_stream)
@@ -103,23 +103,22 @@ TEST(StreamingDenseFeaturesTest, reset_stream)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i]=sg_rand->std_normal_distrib();
 
-	CDenseFeatures<float64_t>* orig_feats=new CDenseFeatures<float64_t>(data);
-	CStreamingDenseFeatures<float64_t>* feats=new CStreamingDenseFeatures<float64_t>(orig_feats);
+	auto orig_feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<CStreamingDenseFeatures<float64_t>>(orig_feats);
 
 	feats->start_parser();
 
-	CDenseFeatures<float64_t>* streamed=dynamic_cast<CDenseFeatures<float64_t>*>(feats->get_streamed_features(n));
+	auto streamed=feats->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
 	ASSERT_TRUE(streamed!=nullptr);
 	ASSERT_TRUE(orig_feats->equals(streamed));
-	SG_UNREF(streamed);
+
 
 	feats->reset_stream();
 
-	streamed=dynamic_cast<CDenseFeatures<float64_t>*>(feats->get_streamed_features(n));
+	streamed=feats->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
 	ASSERT_TRUE(streamed!=nullptr);
 	ASSERT_TRUE(orig_feats->equals(streamed));
-	SG_UNREF(streamed);
+
 
 	feats->end_parser();
-	SG_UNREF(feats);
 }

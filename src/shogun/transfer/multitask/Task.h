@@ -94,13 +94,13 @@ public:
 	 *
 	 * @param sub_task subtask to add
 	 */
-	void add_subtask(CTask* sub_task);
+	void add_subtask(std::shared_ptr<CTask> sub_task);
 
 	/** get all subtasks of the task
 	 *
 	 * @return subtasks of the task
 	 */
-	CList* get_subtasks();
+	std::shared_ptr<CList> get_subtasks();
 
 	/** get number of subtasks
 	 *
@@ -122,7 +122,7 @@ private:
 protected:
 
 	/** subtasks */
-	CList* m_subtasks;
+	std::shared_ptr<CList> m_subtasks;
 
 	/** name of the block */
 	const char* m_name;

@@ -42,8 +42,8 @@ class CSGDQN : public CLinearMachine
 		 * @param trainlab labels for training features
 		 */
 		CSGDQN(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
+			float64_t C, std::shared_ptr<CDotFeatures> traindat,
+			std::shared_ptr<CLabels> trainlab);
 
 		virtual ~CSGDQN();
 
@@ -61,7 +61,7 @@ class CSGDQN : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** set C
 		 *
@@ -105,13 +105,13 @@ class CSGDQN : public CLinearMachine
 		 *
 		 * @param loss_func object derived from CLossFunction
 		 */
-		void set_loss_function(CLossFunction* loss_func);
+		void set_loss_function(std::shared_ptr<CLossFunction> loss_func);
 
 		/** Return the loss function
 		 *
 		 * @return loss function as CLossFunction*
 		 */
-		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
+		inline std::shared_ptr<CLossFunction> get_loss_function() {  return loss; }
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SGDQN"; }
@@ -131,7 +131,7 @@ class CSGDQN : public CLinearMachine
 		int32_t skip;
 		int32_t count;
 
-		CLossFunction* loss;
+		std::shared_ptr<CLossFunction> loss;
 };
 }
 #endif

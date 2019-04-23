@@ -46,7 +46,7 @@ public:
 	 * @param train_examples train examples
 	 * @param train_labels labels corresponding to train_examples
 	 */
-	CGaussianNaiveBayes(CFeatures* train_examples, CLabels* train_labels);
+	CGaussianNaiveBayes(std::shared_ptr<CFeatures> train_examples, std::shared_ptr<CLabels> train_labels);
 
 	/** destructor
 	 *
@@ -56,18 +56,18 @@ public:
 	/** set features for classify
 	 * @param features features to be set
 	 */
-	virtual void set_features(CFeatures* features);
+	virtual void set_features(std::shared_ptr<CFeatures> features);
 
 	/** get features for classify
 	 * @return current features
 	 */
-	virtual CFeatures* get_features();
+	virtual std::shared_ptr<CFeatures> get_features();
 
 	/** classify specified examples
 	 * @param data examples to be classified
 	 * @return labels corresponding to data
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
 
 	/** classifiy specified example
 	 * @param idx example index
@@ -91,7 +91,7 @@ protected:
 	 * @param data train examples
 	 * @return true if successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 private:
 	void init();
@@ -99,7 +99,7 @@ private:
 protected:
 
 	/// features for training or classifying
-	CDotFeatures* m_features;
+	std::shared_ptr<CDotFeatures> m_features;
 
 	/// minimal label
 	int32_t m_min_label;

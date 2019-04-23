@@ -83,7 +83,7 @@ class CIndexFeatures : public CDummyFeatures
 		 *
 		 * @return the copy of this CIndexFeatures
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** get feature type (ANY)
 		 *

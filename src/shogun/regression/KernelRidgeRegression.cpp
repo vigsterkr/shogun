@@ -21,7 +21,7 @@ CKernelRidgeRegression::CKernelRidgeRegression()
 	init();
 }
 
-CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, CKernel* k, CLabels* lab)
+CKernelRidgeRegression::CKernelRidgeRegression(float64_t tau, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
 : CKernelMachine()
 {
 	init();
@@ -62,7 +62,7 @@ bool CKernelRidgeRegression::solve_krr_system()
 	return true;
 }
 
-bool CKernelRidgeRegression::train_machine(CFeatures *data)
+bool CKernelRidgeRegression::train_machine(std::shared_ptr<CFeatures >data)
 {
 	REQUIRE(m_labels, "No labels set\n")
 

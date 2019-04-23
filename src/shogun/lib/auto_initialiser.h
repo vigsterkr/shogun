@@ -39,7 +39,7 @@ namespace shogun
 					case EFeatureClass::C_DENSE:
 					case EFeatureClass::C_SPARSE:
 					{
-						auto dot_features = (CDotFeatures*)lhs;
+						auto dot_features = lhs->as<CDotFeatures>();
 						return make_any(
 						    1.0 /
 						    (static_cast<float64_t>(
@@ -47,10 +47,13 @@ namespace shogun
 								dot_features->get_std(false)[0]));
 					}
 					default:
+					{
+						auto dot_features = lhs->as<CDotFeatures>();
 						return make_any(
 							1.0 /
 							static_cast<float64_t>(
-								((CDotFeatures*)lhs)->get_dim_feature_space()));
+								dot_features->get_dim_feature_space()));
+					}
 				}
 			}
 

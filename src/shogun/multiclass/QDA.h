@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Michele Mazzoni, Kevin Hughes, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Michele Mazzoni, Kevin Hughes,
  *          Thoralf Klein, Fernando Iglesias, Sergey Lisitsyn, Pan Deng
  */
 
@@ -49,7 +49,7 @@ class CQDA : public CNativeMulticlassMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab);
+		CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab);
 
 		/** constructor
 		 *
@@ -57,7 +57,7 @@ class CQDA : public CNativeMulticlassMachine
 		 * @param trainlab labels for training features
 		 * @param tolerance tolerance used in training
 		 */
-		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance);
+		CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance);
 
 		/** constructor
 		 *
@@ -65,7 +65,7 @@ class CQDA : public CNativeMulticlassMachine
 		 * @param trainlab labels for training features
 		 * @param store_covs whether to store the within class covariances
 		 */
-		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, bool store_covs);
+		CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, bool store_covs);
 
 		/** constructor
 		 *
@@ -74,7 +74,7 @@ class CQDA : public CNativeMulticlassMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_covs whether to store the within class covariances
 		 */
-		CQDA(CDenseFeatures<float64_t>* traindat, CLabels* trainlab, float64_t tolerance, bool store_covs);
+		CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance, bool store_covs);
 
 		virtual ~CQDA();
 
@@ -83,7 +83,7 @@ class CQDA : public CNativeMulticlassMachine
 		 * @param data (test) data to be classified
 		 * @return labels result of classification
 		 */
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
 
 		/** set store_covs
 		 *
@@ -119,14 +119,14 @@ class CQDA : public CNativeMulticlassMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(CDotFeatures* feat)
+		virtual void set_features(std::shared_ptr<CDotFeatures> feat)
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
 				SG_ERROR("QDA requires SIMPLE REAL valued features\n")
 
-			SG_REF(feat);
-			SG_UNREF(m_features);
+
+
 			m_features = feat;
 		}
 
@@ -134,7 +134,7 @@ class CQDA : public CNativeMulticlassMachine
 		 *
 		 * @return features
 		 */
-		virtual CDotFeatures* get_features() { SG_REF(m_features); return m_features; }
+		virtual std::shared_ptr<CDotFeatures> get_features() {  return m_features; }
 
 		/** get object name
 		 *
@@ -173,7 +173,7 @@ class CQDA : public CNativeMulticlassMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 	private:
 		void init();
@@ -182,7 +182,7 @@ class CQDA : public CNativeMulticlassMachine
 
 	private:
 		/** feature vectors */
-		CDotFeatures* m_features;
+		std::shared_ptr<CDotFeatures> m_features;
 
 		/** tolerance used during training */
 		float64_t m_tolerance;

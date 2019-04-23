@@ -17,18 +17,18 @@ CEmbeddingConverter::CEmbeddingConverter()
 : CConverter()
 {
 	m_target_dim = 1;
-	m_distance = new CEuclideanDistance();
-	SG_REF(m_distance);
-	m_kernel = new CLinearKernel();
-	SG_REF(m_kernel);
+	m_distance = std::make_shared<CEuclideanDistance>();
+	
+	m_kernel = std::make_shared<CLinearKernel>();
+	
 
 	init();
 }
 
 CEmbeddingConverter::~CEmbeddingConverter()
 {
-	SG_UNREF(m_distance);
-	SG_UNREF(m_kernel);
+	
+	
 }
 
 void CEmbeddingConverter::set_target_dim(int32_t dim)
@@ -42,29 +42,29 @@ int32_t CEmbeddingConverter::get_target_dim() const
 	return m_target_dim;
 }
 
-void CEmbeddingConverter::set_distance(CDistance* distance)
+void CEmbeddingConverter::set_distance(std::shared_ptr<CDistance> distance)
 {
-	SG_REF(distance);
-	SG_UNREF(m_distance);
+	
+	
 	m_distance = distance;
 }
 
-CDistance* CEmbeddingConverter::get_distance() const
+std::shared_ptr<CDistance> CEmbeddingConverter::get_distance() const
 {
-	SG_REF(m_distance);
+	
 	return m_distance;
 }
 
-void CEmbeddingConverter::set_kernel(CKernel* kernel)
+void CEmbeddingConverter::set_kernel(std::shared_ptr<CKernel> kernel)
 {
-	SG_REF(kernel);
-	SG_UNREF(m_kernel);
+	
+	
 	m_kernel = kernel;
 }
 
-CKernel* CEmbeddingConverter::get_kernel() const
+std::shared_ptr<CKernel> CEmbeddingConverter::get_kernel() const
 {
-	SG_REF(m_kernel);
+	
 	return m_kernel;
 }
 

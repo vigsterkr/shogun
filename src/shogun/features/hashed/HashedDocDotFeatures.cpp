@@ -11,8 +11,8 @@
 
 namespace shogun
 {
-CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, CStringFeatures<char>* docs,
-	CTokenizer* tzer, bool normalize, int32_t n_grams, int32_t skips, int32_t size) : CDotFeatures(size)
+CHashedDocDotFeatures::CHashedDocDotFeatures(int32_t hash_bits, std::shared_ptr<CStringFeatures<char>> docs,
+	std::shared_ptr<CTokenizer> tzer, bool normalize, int32_t n_grams, int32_t skips, int32_t size) : CDotFeatures(size)
 {
 	if (n_grams < 1)
 		n_grams = 1;
@@ -30,13 +30,13 @@ CHashedDocDotFeatures::CHashedDocDotFeatures(const CHashedDocDotFeatures& orig)
 			orig.ngrams, orig.tokens_to_skip);
 }
 
-CHashedDocDotFeatures::CHashedDocDotFeatures(CFile* loader)
+CHashedDocDotFeatures::CHashedDocDotFeatures(std::shared_ptr<CFile> loader)
 {
 	SG_NOTIMPLEMENTED;
 }
 
-void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
-	CTokenizer* tzer, bool normalize, int32_t n_grams, int32_t skips)
+void CHashedDocDotFeatures::init(int32_t hash_bits, std::shared_ptr<CStringFeatures<char>> docs,
+	std::shared_ptr<CTokenizer> tzer, bool normalize, int32_t n_grams, int32_t skips)
 {
 	num_bits = hash_bits;
 	ngrams = n_grams;
@@ -47,25 +47,26 @@ void CHashedDocDotFeatures::init(int32_t hash_bits, CStringFeatures<char>* docs,
 
 	if (!tokenizer)
 	{
-		tokenizer = new CDelimiterTokenizer();
-		((CDelimiterTokenizer* )tokenizer)->init_for_whitespace();
+		auto dt = std::make_shared<CDelimiterTokenizer>();
+		dt->init_for_whitespace();
+		tokenizer = dt;
 	}
 
 	SG_ADD(&num_bits, "num_bits", "Number of bits of hash");
 	SG_ADD(&ngrams, "ngrams", "Number of tokens to combine for quadratic feature support");
 	SG_ADD(&tokens_to_skip, "tokens_to_skip", "Number of tokens to skip when combining features");
-	SG_ADD((CSGObject**) &doc_collection, "doc_collection", "Document collection");
-	SG_ADD((CSGObject**) &tokenizer, "tokenizer", "Document tokenizer");
+	SG_ADD((std::shared_ptr<CSGObject>*) &doc_collection, "doc_collection", "Document collection");
+	SG_ADD((std::shared_ptr<CSGObject>*) &tokenizer, "tokenizer", "Document tokenizer");
 	SG_ADD(&should_normalize, "should_normalize", "Normalize or not the dot products");
 
-	SG_REF(doc_collection);
-	SG_REF(tokenizer);
+
+
 }
 
 CHashedDocDotFeatures::~CHashedDocDotFeatures()
 {
-	SG_UNREF(doc_collection);
-	SG_UNREF(tokenizer);
+
+
 }
 
 int32_t CHashedDocDotFeatures::get_dim_feature_space() const
@@ -73,17 +74,17 @@ int32_t CHashedDocDotFeatures::get_dim_feature_space() const
 	return CMath::pow(2, num_bits);
 }
 
-float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_name() == get_name())
 
-	CHashedDocDotFeatures* hddf = (CHashedDocDotFeatures*) df;
+	auto hddf = std::static_pointer_cast<CHashedDocDotFeatures>(df);
 
 	SGVector<char> sv1 = doc_collection->get_feature_vector(vec_idx1);
 	SGVector<char> sv2 = hddf->doc_collection->get_feature_vector(vec_idx2);
 
-	CHashedDocConverter* converter = new CHashedDocConverter(tokenizer, num_bits,
+	auto converter = std::make_shared<CHashedDocConverter>(tokenizer, num_bits,
 			should_normalize, ngrams, tokens_to_skip);
 	SGSparseVector<float64_t> cv1 = converter->apply(sv1);
 	SGSparseVector<float64_t> cv2 = converter->apply(sv2);
@@ -91,7 +92,7 @@ float64_t CHashedDocDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t
 
 	doc_collection->free_feature_vector(sv1, vec_idx1);
 	hddf->doc_collection->free_feature_vector(sv2, vec_idx2);
-	SG_UNREF(converter);
+
 
 	return result;
 }
@@ -119,7 +120,7 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 	SGVector<index_t> hashed_indices((ngrams-1)*(tokens_to_skip+1) + 1);
 
 	float64_t result = 0;
-	CTokenizer* local_tzer = tokenizer->get_copy();
+	auto local_tzer = tokenizer->get_copy();
 
 	/** Reading n+k-1 tokens */
 	const int32_t seed = 0xdeadbeaf;
@@ -170,7 +171,7 @@ float64_t CHashedDocDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* ve
 		}
 	}
 	doc_collection->free_feature_vector(sv, vec_idx1);
-	SG_UNREF(local_tzer);
+
 	return should_normalize ? result / std::sqrt((float64_t)sv.size()) : result;
 }
 
@@ -197,7 +198,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	 * stored here to avoid creating new objects */
 	SGVector<index_t> hashed_indices((ngrams-1)*(tokens_to_skip+1) + 1);
 
-	CTokenizer* local_tzer = tokenizer->get_copy();
+	auto local_tzer = tokenizer->get_copy();
 
 	/** Reading n+k-1 tokens */
 	const int32_t seed = 0xdeadbeaf;
@@ -248,7 +249,7 @@ void CHashedDocDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1,
 	}
 
 	doc_collection->free_feature_vector(sv, vec_idx1);
-	SG_UNREF(local_tzer);
+
 }
 
 uint32_t CHashedDocDotFeatures::calculate_token_hash(char* token,
@@ -258,9 +259,9 @@ uint32_t CHashedDocDotFeatures::calculate_token_hash(char* token,
 	return hash & ((1 << num_bits) - 1);
 }
 
-void CHashedDocDotFeatures::set_doc_collection(CStringFeatures<char>* docs)
+void CHashedDocDotFeatures::set_doc_collection(std::shared_ptr<CStringFeatures<char>> docs)
 {
-	SG_UNREF(doc_collection);
+
 	doc_collection = docs;
 }
 
@@ -294,9 +295,9 @@ const char* CHashedDocDotFeatures::get_name() const
 	return "HashedDocDotFeatures";
 }
 
-CFeatures* CHashedDocDotFeatures::duplicate() const
+std::shared_ptr<CFeatures> CHashedDocDotFeatures::duplicate() const
 {
-	return new CHashedDocDotFeatures(*this);
+	return std::make_shared<CHashedDocDotFeatures>(*this);
 }
 
 EFeatureType CHashedDocDotFeatures::get_feature_type() const

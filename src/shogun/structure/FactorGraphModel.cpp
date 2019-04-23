@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Abinash Panda, Viktor Gal, Bjoern Esser, Sergey Lisitsyn, 
+ * Authors: Shell Hu, Abinash Panda, Viktor Gal, Bjoern Esser, Sergey Lisitsyn,
  *          Jiaolong Xu, Sanuj Sharma
  */
 
@@ -22,7 +22,7 @@ CFactorGraphModel::CFactorGraphModel()
 	init();
 }
 
-CFactorGraphModel::CFactorGraphModel(CFeatures* features, CStructuredLabels* labels,
+CFactorGraphModel::CFactorGraphModel(std::shared_ptr<CFeatures> features, std::shared_ptr<CStructuredLabels> labels,
 	EMAPInferType inf_type, bool verbose) : CStructuredModel(features, labels)
 {
 	init();
@@ -32,23 +32,23 @@ CFactorGraphModel::CFactorGraphModel(CFeatures* features, CStructuredLabels* lab
 
 CFactorGraphModel::~CFactorGraphModel()
 {
-	SG_UNREF(m_factor_types);
+
 }
 
 void CFactorGraphModel::init()
 {
-	SG_ADD((CSGObject**)&m_factor_types, "factor_types", "Array of factor types");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_factor_types, "factor_types", "Array of factor types");
 	SG_ADD(&m_w_cache, "w_cache", "Cache of global parameters");
 	SG_ADD(&m_w_map, "w_map", "Parameter mapping");
 
 	m_inf_type = TREE_MAX_PROD;
-	m_factor_types = new CDynamicObjectArray();
+	m_factor_types = std::make_shared<CDynamicObjectArray>();
 	m_verbose = false;
 
-	SG_REF(m_factor_types);
+
 }
 
-void CFactorGraphModel::add_factor_type(CFactorType* ftype)
+void CFactorGraphModel::add_factor_type(std::shared_ptr<CFactorType> ftype)
 {
 	REQUIRE(ftype->get_w_dim() > 0, "%s::add_factor_type(): number of parameters can't be 0!\n",
 		get_name());
@@ -57,17 +57,17 @@ void CFactorGraphModel::add_factor_type(CFactorType* ftype)
 	int32_t id = ftype->get_type_id();
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		CFactorType* ft= dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+		auto ft= m_factor_types->get_element<CFactorType>(fi);
 		if (id == ft->get_type_id())
 		{
-			SG_UNREF(ft);
+
 			SG_PRINT("%s::add_factor_type(): factor_type (id = %d) has been added!\n",
 				get_name(), id);
 
 			return;
 		}
 
-		SG_UNREF(ft);
+
 	}
 
 	SGVector<int32_t> w_map_cp = m_w_map.clone();
@@ -101,16 +101,16 @@ void CFactorGraphModel::del_factor_type(const int32_t ftype_id)
 	// delete from m_factor_types
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+		auto ftype = m_factor_types->get_element<CFactorType>(fi);
 		if (ftype_id == ftype->get_type_id())
 		{
 			w_dim = ftype->get_w_dim();
-			SG_UNREF(ftype);
+
 			m_factor_types->delete_element(fi);
 			break;
 		}
 
-		SG_UNREF(ftype);
+
 	}
 
 	ASSERT(w_dim != 0);
@@ -130,21 +130,21 @@ void CFactorGraphModel::del_factor_type(const int32_t ftype_id)
 	ASSERT(ind == m_w_map.size());
 }
 
-CDynamicObjectArray* CFactorGraphModel::get_factor_types() const
+std::shared_ptr<CDynamicObjectArray> CFactorGraphModel::get_factor_types() const
 {
-	SG_REF(m_factor_types);
+
 	return m_factor_types;
 }
 
-CFactorType* CFactorGraphModel::get_factor_type(const int32_t ftype_id) const
+std::shared_ptr<CFactorType> CFactorGraphModel::get_factor_type(const int32_t ftype_id) const
 {
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+		auto ftype = m_factor_types->get_element<CFactorType>(fi);
 		if (ftype_id == ftype->get_type_id())
 			return ftype;
 
-		SG_UNREF(ftype);
+
 	}
 
 	return NULL;
@@ -175,7 +175,7 @@ SGVector<float64_t> CFactorGraphModel::fparams_to_w()
 	int32_t offset = 0;
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+		auto ftype = m_factor_types->get_element<CFactorType>(fi);
 		int32_t w_dim = ftype->get_w_dim();
 		offset += w_dim;
 		SGVector<float64_t> fw = ftype->get_w();
@@ -186,7 +186,7 @@ SGVector<float64_t> CFactorGraphModel::fparams_to_w()
 		for (int32_t wi = 0; wi < w_dim; wi++)
 			m_w_cache[fw_map[wi]] = fw[wi];
 
-		SG_UNREF(ftype);
+
 	}
 
 	ASSERT(offset == m_w_cache.size());
@@ -209,7 +209,7 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 	int32_t offset = 0;
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+		auto ftype = m_factor_types->get_element<CFactorType>(fi);
 		int32_t w_dim = ftype->get_w_dim();
 		offset += w_dim;
 		SGVector<float64_t> fw(w_dim);
@@ -219,20 +219,20 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 			fw[wi] = m_w_cache[fw_map[wi]];
 
 		ftype->set_w(fw);
-		SG_UNREF(ftype);
+
 	}
 
 	ASSERT(offset == m_w_cache.size());
 }
 
-SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_idx, CStructuredData* y)
+SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<CStructuredData> y)
 {
 	// factor graph instance
-	CFactorGraphFeatures* mf = m_features->as<CFactorGraphFeatures>();
-	CFactorGraph* fg = mf->get_sample(feat_idx);
+	auto mf = m_features->as<CFactorGraphFeatures>();
+	auto fg = mf->get_sample(feat_idx);
 
 	// ground truth states
-	CFactorGraphObservation* fg_states = y->as<CFactorGraphObservation>();
+	auto fg_states = y->as<CFactorGraphObservation>();
 	SGVector<int32_t> states = fg_states->get_data();
 
 	// initialize psi
@@ -240,11 +240,11 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 	psi.zero();
 
 	// construct unnormalized psi
-	CDynamicObjectArray* facs = fg->get_factors();
+	auto facs = fg->get_factors();
 	for (int32_t fi = 0; fi < facs->get_num_elements(); ++fi)
 	{
-		CFactor* fac = dynamic_cast<CFactor*>(facs->get_element(fi));
-		CTableFactorType* ftype = fac->get_factor_type();
+		auto fac = facs->get_element<CFactor>(fi);
+		auto ftype = fac->get_factor_type();
 		int32_t id = ftype->get_type_id();
 		SGVector<int32_t> w_map = get_params_mapping(id);
 
@@ -259,15 +259,13 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 		for (int32_t di = 0; di < dat_size; di++)
 			psi[w_map[ei*dat_size + di]] += dat[di];
 
-		SG_UNREF(ftype);
-		SG_UNREF(fac);
+
+
 	}
 
 	// negation (-E(x,y) = <w,phi(x,y)>)
 	psi.scale(-1.0);
 
-	SG_UNREF(facs);
-	SG_UNREF(fg);
 
 	return psi;
 }
@@ -278,11 +276,11 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 //            := argmin_y { -L(y_i, y) + E(x_i, y; w) } - E(x_i, y_i; w)
 // we do energy minimization in inference, so get back to max oracle value is:
 // [ L(y_i, y_star) - E(x_i, y_star; w) ] + E(x_i, y_i; w)
-CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, bool const training)
+std::shared_ptr<CResultSet> CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, bool const training)
 {
 	// factor graph instance
-	CFactorGraphFeatures* mf = m_features->as<CFactorGraphFeatures>();
-	CFactorGraph* fg = mf->get_sample(feat_idx);
+	auto mf = m_features->as<CFactorGraphFeatures>();
+	auto fg = mf->get_sample(feat_idx);
 
 	// prepare factor graph
 	fg->connect_components();
@@ -305,12 +303,12 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	}
 
 	// prepare CResultSet
-	CResultSet* ret = new CResultSet();
-	SG_REF(ret);
+	auto ret = std::make_shared<CResultSet>();
+
 	ret->psi_computed = true;
 
 	// y_truth
-	CFactorGraphObservation* y_truth = m_labels->get_label(feat_idx)->as<CFactorGraphObservation>();
+	auto y_truth = m_labels->get_label(feat_idx)->as<CFactorGraphObservation>();
 
 	SGVector<int32_t> states_gt = y_truth->get_data();
 
@@ -335,7 +333,7 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 	infer_met.inference();
 
 	// y_star
-	CFactorGraphObservation* y_star = infer_met.get_structured_outputs();
+	auto y_star = infer_met.get_structured_outputs();
 	SGVector<int32_t> states_star = y_star->get_data();
 
 	ret->argmax = y_star;
@@ -366,16 +364,14 @@ CResultSet* CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, b
 		SG_SPRINT("slack = %f, score = %f\n\n", slack, ret->score);
 	}
 
-	SG_UNREF(y_truth);
-	SG_UNREF(fg);
 
 	return ret;
 }
 
-float64_t CFactorGraphModel::delta_loss(CStructuredData* y1, CStructuredData* y2)
+float64_t CFactorGraphModel::delta_loss(std::shared_ptr<CStructuredData> y1, std::shared_ptr<CStructuredData> y2)
 {
-	CFactorGraphObservation* y_truth = y1->as<CFactorGraphObservation>();
-	CFactorGraphObservation* y_pred = y2->as<CFactorGraphObservation>();
+	auto y_truth = y1->as<CFactorGraphObservation>();
+	auto y_pred = y2->as<CFactorGraphObservation>();
 	SGVector<int32_t> s_truth = y_truth->get_data();
 	SGVector<int32_t> s_pred = y_pred->get_data();
 
@@ -420,7 +416,7 @@ void CFactorGraphModel::init_primal_opt(
 
 			for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 			{
-				CFactorType* ftype = dynamic_cast<CFactorType*>(m_factor_types->get_element(fi));
+				auto ftype = m_factor_types->get_element<CFactorType>(fi);
 				int32_t w_dim = ftype->get_w_dim();
 				SGVector<int32_t> card = ftype->get_cardinalities();
 
@@ -451,7 +447,7 @@ void CFactorGraphModel::init_primal_opt(
 					lb[fw_map[1]] = 0;
 					lb[fw_map[2]] = 0;
 				}
-				SG_UNREF(ftype);
+
 			}
 			break;
 		case TREE_MAX_PROD:

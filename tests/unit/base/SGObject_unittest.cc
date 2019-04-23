@@ -8,7 +8,6 @@
 
 #include "MockObject.h"
 #include <shogun/base/class_list.h>
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/io/fs/FileSystem.h>
 #include <shogun/io/serialization/JsonSerializer.h>
@@ -46,13 +45,13 @@ SG_TYPED_TEST_CASE(SGObjectClone, sg_all_primitive_types, complex128_t);
 
 TYPED_TEST(SGObjectEquals, mock_allocate_delete)
 {
-	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	auto obj = std::make_shared:make_shared:make_shared<CCloneEqualsMock<TypeParam>>();
 }
 
 TYPED_TEST(SGObjectEquals, same)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	EXPECT_TRUE(obj1->equals(obj1));
 	EXPECT_TRUE(obj1->equals(obj2));
@@ -61,15 +60,15 @@ TYPED_TEST(SGObjectEquals, same)
 
 TYPED_TEST(SGObjectEquals, different_null)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	EXPECT_FALSE(obj1->equals(nullptr));
 }
 
 TYPED_TEST(SGObjectEquals, different_basic)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_basic -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -78,8 +77,8 @@ TYPED_TEST(SGObjectEquals, different_basic)
 
 TYPED_TEST(SGObjectEquals, different_string)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_string = "Oh no!";
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -88,8 +87,8 @@ TYPED_TEST(SGObjectEquals, different_string)
 
 TYPED_TEST(SGObjectEquals, different_object)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_object->m_some_value -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -104,8 +103,8 @@ TYPED_TEST(SGObjectEquals, different_object)
 
 TYPED_TEST(SGObjectEquals, different_sg_vector)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_sg_vector[0] -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -114,8 +113,8 @@ TYPED_TEST(SGObjectEquals, different_sg_vector)
 
 TYPED_TEST(SGObjectEquals, different_sg_sparse_vector)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_sg_sparse_vector.features[0].entry -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -124,8 +123,8 @@ TYPED_TEST(SGObjectEquals, different_sg_sparse_vector)
 
 TYPED_TEST(SGObjectEquals, different_sg_sparse_matrix)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_sg_sparse_matrix.sparse_matrix[0].features[0].entry -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -134,8 +133,8 @@ TYPED_TEST(SGObjectEquals, different_sg_sparse_matrix)
 
 TYPED_TEST(SGObjectEquals, different_sg_matrix)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_sg_matrix(0, 0) = 0;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -144,8 +143,8 @@ TYPED_TEST(SGObjectEquals, different_sg_matrix)
 
 TYPED_TEST(SGObjectEquals, different_raw_vector_basic)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_raw_vector_basic[0] -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -154,8 +153,8 @@ TYPED_TEST(SGObjectEquals, different_raw_vector_basic)
 
 TYPED_TEST(SGObjectEquals, different_raw_vector_sg_string)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_raw_vector_sg_string[0].string[0] -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -164,8 +163,8 @@ TYPED_TEST(SGObjectEquals, different_raw_vector_sg_string)
 
 TYPED_TEST(SGObjectEquals, different_raw_vector_object)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_raw_vector_object[0]->m_some_value -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -180,8 +179,8 @@ TYPED_TEST(SGObjectEquals, different_raw_vector_object)
 
 TYPED_TEST(SGObjectEquals, different_raw_matrix_basic)
 {
-	auto obj1 = some<CCloneEqualsMock<TypeParam>>();
-	auto obj2 = some<CCloneEqualsMock<TypeParam>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
 	obj1->m_raw_matrix_basic[0] -= 1;
 	EXPECT_FALSE(obj1->equals(obj2));
@@ -190,8 +189,8 @@ TYPED_TEST(SGObjectEquals, different_raw_matrix_basic)
 
 TEST(SGObjectEquals, different_type)
 {
-	auto obj1 = some<CCloneEqualsMock<int>>();
-	auto obj2 = some<CCloneEqualsMock<float>>();
+	auto obj1 = std::make_shared<CCloneEqualsMock<int>>();
+	auto obj2 = std::make_shared<CCloneEqualsMock<float>>();
 
 	EXPECT_FALSE(obj1->equals(obj2));
 	EXPECT_FALSE(obj2->equals(obj1));
@@ -199,9 +198,9 @@ TEST(SGObjectEquals, different_type)
 
 TYPED_TEST(SGObjectClone, basic_checks)
 {
-	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	auto obj = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
-	CSGObject* clone = obj->clone();
+	auto clone = obj->clone();
 
 	EXPECT_NE(clone, obj);
 	ASSERT_NE(clone, nullptr);
@@ -211,23 +210,19 @@ TYPED_TEST(SGObjectClone, basic_checks)
 	ASSERT_NE(clone_casted, nullptr);
 
 	EXPECT_EQ(std::string(clone->get_name()), std::string(obj->get_name()));
-
-	SG_UNREF(clone);
 }
 
 TYPED_TEST(SGObjectClone, equals_empty)
 {
-	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	auto obj = std::make_shared<CCloneEqualsMock<TypeParam>>();
 
-	CSGObject* clone = obj->clone();
+	auto clone = obj->clone();
 	EXPECT_TRUE(clone->equals(obj));
-
-	SG_UNREF(clone);
 }
 
 TYPED_TEST(SGObjectClone, equals_non_empty)
 {
-	auto obj = some<CCloneEqualsMock<TypeParam>>();
+	auto obj = std::make_shared<CCloneEqualsMock<TypeParam>>();
 	obj->m_basic -= 1;
 	obj->m_string = "Non empty string";
 	obj->m_object->m_some_value -= 1;
@@ -240,16 +235,14 @@ TYPED_TEST(SGObjectClone, equals_non_empty)
 	obj->m_raw_vector_sg_string[0].string[0] -= 1;
 	obj->m_raw_vector_object[0]->m_some_value -= 1;
 
-	CSGObject* clone = obj->clone();
+	auto clone = obj->clone();
 	EXPECT_TRUE(clone->equals(obj));
-
-	SG_UNREF(clone);
 }
 
 TYPED_TEST(SGObjectClone, not_just_copied_pointer)
 {
-	auto obj = some<CCloneEqualsMock<TypeParam>>();
-	CSGObject* clone = obj->clone();
+	auto obj = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto clone = obj->clone();
 	auto clone_casted = clone->as<CCloneEqualsMock<TypeParam>>();
 	ASSERT_NE(clone_casted, nullptr);
 
@@ -260,46 +253,40 @@ TYPED_TEST(SGObjectClone, not_just_copied_pointer)
 	EXPECT_NE(clone_casted->m_raw_vector_object, obj->m_raw_vector_object);
 	for (auto i : range(obj->m_raw_vector_object_len))
 		EXPECT_NE(clone_casted->m_raw_vector_object[i], obj->m_raw_vector_object[i]);
-
-	SG_UNREF(clone);
 }
 
 TYPED_TEST(SGObjectClone, equals_other_has_null_param)
 {
-	auto obj = some<CCloneEqualsMock<TypeParam>>();
-	SG_UNREF(obj->m_object);
-
-	CSGObject* clone = obj->clone();
+	auto obj = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto clone = obj->clone();
 	EXPECT_TRUE(clone->equals(obj));
-
-	SG_UNREF(clone);
 }
 
 TEST(SGObject,DISABLED_ref_copy_constructor)
 {
-	CBinaryLabels* labs = new CBinaryLabels(10);
+	auto labs = std::make_shared<CBinaryLabels>(10);
 	EXPECT_EQ(labs->ref_count(), 0);
 
-	SG_REF(labs);
+
 	EXPECT_EQ(labs->ref_count(), 1);
 
 	// TODO: This causes memory corruptions; disabled test until fixed
-	CBinaryLabels* labs_2 = new CBinaryLabels(*labs);
-	SG_UNREF(labs_2);
+	auto labs_2 = std::make_shared<CBinaryLabels>(*labs);
 
-	SG_UNREF(labs);
+
+
 	EXPECT_TRUE(labs == NULL);
 }
 
 TEST(SGObject,ref_unref_simple)
 {
-	CBinaryLabels* labs = new CBinaryLabels(10);
+	auto labs = std::make_shared<CBinaryLabels>(10);
 	EXPECT_EQ(labs->ref_count(), 0);
 
-	SG_REF(labs);
+
 	EXPECT_EQ(labs->ref_count(), 1);
 
-	SG_UNREF(labs);
+
 	EXPECT_TRUE(labs == NULL);
 }
 
@@ -321,26 +308,26 @@ TEST(SGObject,equals_complex_equal)
 	}
 
 	/* shogun representation */
-	auto feat_train = some<CDenseFeatures<float64_t>>(X);
-	auto feat_test = some<CDenseFeatures<float64_t>>(X_test);
-	auto label_train = some<CRegressionLabels>(Y);
+	auto feat_train = std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto feat_test = std::make_shared<CDenseFeatures<float64_t>>(X_test);
+	auto label_train = std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel = some<CGaussianKernel>(10, shogun_sigma);
-	auto mean = some<CZeroMean>();
-	auto lik = some<CGaussianLikelihood>();
+	auto kernel = std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean = std::make_shared<CZeroMean>();
+	auto lik = std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf = some<CExactInferenceMethod>(kernel, feat_train,
+	auto inf = std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
-	auto gpr = some<CGaussianProcessRegression>(inf);
+	auto gpr = std::make_shared<CGaussianProcessRegression>(inf);
 
 	/* train machine */
 	gpr->train();
 
 	// apply regression
-	CRegressionLabels* predictions=gpr->apply_regression(feat_test);
+	auto predictions=gpr->apply_regression(feat_test);
 
 	/* save and load instance to compare */
 	std::string filename_gpr {"gpr_instance.json"};
@@ -350,29 +337,28 @@ TEST(SGObject,equals_complex_equal)
 	ASSERT_TRUE(fs->file_exists(filename_gpr));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_FALSE(fs->new_writable_file(filename_gpr, &file));
-	auto fos = some<io::CFileOutputStream>(file.get());
-	auto serializer = some<io::CJsonSerializer>();
+	auto fos = std::make_shared<io::CFileOutputStream>(file.get());
+	auto serializer = std::make_unique<io::CJsonSerializer>();
 	serializer->attach(fos);
 	serializer->write(gpr);
 
-	SG_REF(predictions);
 	ASSERT_TRUE(fs->file_exists(filename_predictions));
 	ASSERT_FALSE(fs->new_writable_file(filename_predictions, &file));
-	fos = some<io::CFileOutputStream>(file.get());
+	fos = std::make_shared<io::CFileOutputStream>(file.get());
 	serializer->attach(fos);
-	serializer->write(wrap<CSGObject>(predictions));
+	serializer->write(predictions);
 
 	std::unique_ptr<io::RandomAccessFile> raf;
 	ASSERT_FALSE(fs->new_random_access_file(filename_gpr, &raf));
-	auto fis = some<io::CFileInputStream>(raf.get());
-	auto bis = some<io::CBufferedInputStream>(fis.get());
-	auto deserializer = some<io::CJsonDeserializer>();
+	auto fis = std::make_unique<io::CFileInputStream>(raf.get());
+	auto bis = std::make_shared<io::CBufferedInputStream>(fis.get());
+	auto deserializer = std::make_unique<io::CJsonDeserializer>();
 	deserializer->attach(bis);
 	auto gpr_copy = deserializer->read_object();
 
 	ASSERT_FALSE(fs->new_random_access_file(filename_predictions, &raf));
-	fis = some<io::CFileInputStream>(raf.get());
-	bis = some<io::CBufferedInputStream>(fis.get());
+	fis = std::make_unique<io::CFileInputStream>(raf.get());
+	bis = std::make_shared<io::CBufferedInputStream>(fis.get());
 	deserializer->attach(bis);
 	auto predictions_copy = deserializer->read_object();
 
@@ -381,7 +367,6 @@ TEST(SGObject,equals_complex_equal)
 	ASSERT_TRUE(predictions->equals(predictions_copy));
 	ASSERT_TRUE(gpr->equals(gpr_copy));
 	set_global_fequals_epsilon(0);
-	SG_UNREF(predictions);
 	ASSERT_FALSE(fs->delete_file(filename_gpr));
 	ASSERT_FALSE(fs->delete_file(filename_predictions));
 }
@@ -408,14 +393,14 @@ TEST(SGObject,update_parameter_hash)
 		Y[i] = std::sin(X(0, i));
 	}
 
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	CDenseFeatures<float64_t>* feat_train=std::make_shared<CDenseFeatures><float64_t>(X);
+	CRegressionLabels* label_train=std::make_shared<CRegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<CZeroMean>();
+	auto lik=std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
@@ -429,7 +414,7 @@ TEST(SGObject,update_parameter_hash)
 
 	EXPECT_TRUE(hash1==hash2);
 
-	SG_UNREF(inf);
+
 }
 #endif //USE_GPL_SHOGUN
 
@@ -455,14 +440,14 @@ TEST(SGObject,parameter_hash_changed)
 		Y[i] = std::sin(X(0, i));
 	}
 
-	CDenseFeatures<float64_t>* feat_train=new CDenseFeatures<float64_t>(X);
-	CRegressionLabels* label_train=new CRegressionLabels(Y);
+	CDenseFeatures<float64_t>* feat_train=std::make_shared<CDenseFeatures><float64_t>(X);
+	CRegressionLabels* label_train=std::make_shared<CRegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	CGaussianKernel* kernel=new CGaussianKernel(10, shogun_sigma);
-	CZeroMean* mean=new CZeroMean();
-	CGaussianLikelihood* lik=new CGaussianLikelihood();
+	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<CZeroMean>();
+	auto lik=std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
 	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
@@ -475,13 +460,13 @@ TEST(SGObject,parameter_hash_changed)
 	inf->update_parameter_hash();
 	EXPECT_FALSE(inf->parameter_hash_changed());
 
-	SG_UNREF(inf);
+
 }
 #endif //USE_GPL_SHOGUN
 
 TEST(SGObject, tags_set_get_string_sgvector)
 {
-	auto obj = some<CMockObject>();
+	auto obj = std::make_shared<CMockObject>();
 	auto vec = SGVector<float64_t>(1);
 	vec[0] = 1;
 
@@ -498,7 +483,7 @@ TEST(SGObject, tags_set_get_string_sgvector)
 
 TEST(SGObject, tags_set_get_tag_sgvector)
 {
-	auto obj = some<CMockObject>();
+	auto obj = std::make_shared<CMockObject>();
 	auto vec = SGVector<float64_t>(1);
 	vec[0] = 1;
 	float64_t bar = 1.0;
@@ -518,7 +503,7 @@ TEST(SGObject, tags_set_get_tag_sgvector)
 
 TEST(SGObject, tags_set_get_int)
 {
-	auto obj = some<CMockObject>();
+	auto obj = std::make_shared<CMockObject>();
 
 	EXPECT_THROW(obj->get<int32_t>("foo"), ShogunException);
 	obj->put("int", 10);
@@ -530,7 +515,7 @@ TEST(SGObject, tags_set_get_int)
 
 TEST(SGObject, tags_has)
 {
-	auto obj = some<CMockObject>();
+	auto obj = std::make_shared<CMockObject>();
 
 	EXPECT_EQ(obj->has(Tag<int32_t>("int")), true);
 	EXPECT_EQ(obj->has(Tag<float64_t>("int")), false);
@@ -552,7 +537,7 @@ TEST(SGObject, tags_has)
 
 TEST(SGObject, watched_parameter)
 {
-	auto obj = some<CMockObject>();
+	auto obj = std::make_shared<CMockObject>();
 
 	obj->put("watched_int", 89);
 	EXPECT_EQ(obj->get<int32_t>("watched_int"), 89);
@@ -564,8 +549,8 @@ TEST(SGObject, watched_parameter)
 
 TEST(SGObject, watched_parameter_object)
 {
-	auto obj = some<CMockObject>();
-	auto other_obj = some<CMockObject>();
+	auto obj = std::make_shared<CMockObject>();
+	auto other_obj = std::make_shared<CMockObject>();
 
 	EXPECT_EQ(other_obj->ref_count(), 1);
 	obj->put(Tag<CMockObject*>("watched_object"), other_obj.get());
@@ -577,7 +562,7 @@ TEST(SGObject, watched_parameter_object)
 
 TEST(SGObject, watch_method)
 {
-	auto obj = some<CMockObject>();
+	auto obj = std::make_shared<CMockObject>();
 	EXPECT_EQ(obj->get<int>("some_method"), obj->some_method());
 	EXPECT_THROW(obj->put<int>("some_method", 0), ShogunException);
 	EXPECT_NO_THROW(obj->to_string());
@@ -585,8 +570,8 @@ TEST(SGObject, watch_method)
 
 TEST(SGObject, subscribe_observer)
 {
-	auto obj = some<CMockObject>();
-	auto param_obs = some<CParameterObserverLogger>();
+	auto obj = std::make_shared<CMockObject>();
+	auto param_obs = std::make_shared<CParameterObserverLogger>();
 	obj->subscribe(param_obs);
 
 	EXPECT_EQ(param_obs->get<int64_t>("subscription_id"), 0);
@@ -597,8 +582,8 @@ TEST(SGObject, subscribe_observer)
 
 TEST(SGObject, unsubscribe_observer)
 {
-	auto obj = some<CMockObject>();
-	auto param_obs = some<CParameterObserverLogger>();
+	auto obj = std::make_shared<CMockObject>();
+	auto param_obs = std::make_shared<CParameterObserverLogger>();
 	obj->subscribe(param_obs);
 	obj->unsubscribe(param_obs);
 
@@ -610,9 +595,10 @@ TEST(SGObject, unsubscribe_observer)
 
 TEST(SGObject, unsubscribe_observer_failure)
 {
-	auto obj = some<CMockObject>();
-	auto param_obs = some<CParameterObserverLogger>();
-	auto param_obs_not_in = some<CParameterObserverLogger>();
+	auto obj = std::make_shared<CMockObject>();
+	auto param_obs = std::make_shared<CParameterObserverLogger>();
+	auto param_obs_not_in = std::make_shared<CParameterObserverLogger>();
 
 	EXPECT_THROW(obj->unsubscribe(param_obs_not_in), ShogunException);
 }
+

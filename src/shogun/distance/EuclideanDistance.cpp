@@ -19,7 +19,7 @@ CEuclideanDistance::CEuclideanDistance() : CDistance()
 	register_params();
 }
 
-CEuclideanDistance::CEuclideanDistance(CDotFeatures* l, CDotFeatures* r) : CDistance()
+CEuclideanDistance::CEuclideanDistance(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r) : CDistance()
 {
 	register_params();
 	init(l, r);
@@ -30,7 +30,7 @@ CEuclideanDistance::~CEuclideanDistance()
 	cleanup();
 }
 
-bool CEuclideanDistance::init(CFeatures* l, CFeatures* r)
+bool CEuclideanDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	cleanup();
 
@@ -38,8 +38,8 @@ bool CEuclideanDistance::init(CFeatures* l, CFeatures* r)
 	REQUIRE(l->has_property(FP_DOT), "Left hand side features must support dot property!\n");
 	REQUIRE(r->has_property(FP_DOT), "Right hand side features must support dot property!\n");
 
-	CDotFeatures* casted_l=static_cast<CDotFeatures*>(l);
-	CDotFeatures* casted_r=static_cast<CDotFeatures*>(r);
+	auto casted_l=std::dynamic_pointer_cast<CDotFeatures>(l);
+	auto casted_r=std::dynamic_pointer_cast<CDotFeatures>(r);
 
 	REQUIRE(casted_l->get_dim_feature_space()==casted_r->get_dim_feature_space(),
 		"Number of dimension mismatch (l:%d vs. r:%d)!\n",
@@ -62,8 +62,8 @@ void CEuclideanDistance::cleanup()
 float64_t CEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=0;
-	CDotFeatures* casted_lhs=static_cast<CDotFeatures*>(lhs);
-	CDotFeatures* casted_rhs=static_cast<CDotFeatures*>(rhs);
+	auto casted_lhs=std::dynamic_pointer_cast<CDotFeatures>(lhs);
+	auto casted_rhs=std::dynamic_pointer_cast<CDotFeatures>(rhs);
 
 	if (lhs->get_feature_class()==rhs->get_feature_class() || lhs->support_compatible_class())
 		result=casted_lhs->dot(idx_a, casted_rhs, idx_b);
@@ -84,7 +84,7 @@ void CEuclideanDistance::precompute_lhs()
 	if (m_lhs_squared_norms.vlen!=num_vec)
 		m_lhs_squared_norms=SGVector<float64_t>(num_vec);
 
-	CDotFeatures* casted_lhs=static_cast<CDotFeatures*>(lhs);
+	auto casted_lhs=std::dynamic_pointer_cast<CDotFeatures>(lhs);
 #pragma omp parallel for schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 	for(index_t i =0; i<num_vec; ++i)
 		m_lhs_squared_norms[i]=casted_lhs->dot(i, casted_lhs, i);
@@ -98,7 +98,7 @@ void CEuclideanDistance::precompute_rhs()
 	if (m_rhs_squared_norms.vlen!=num_vec)
 		m_rhs_squared_norms=SGVector<float64_t>(num_vec);
 
-	CDotFeatures* casted_rhs=static_cast<CDotFeatures*>(rhs);
+	auto casted_rhs=std::dynamic_pointer_cast<CDotFeatures>(rhs);
 #pragma omp parallel for schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 	for(index_t i =0; i<num_vec; ++i)
 		m_rhs_squared_norms[i]=casted_rhs->dot(i, casted_rhs, i);
@@ -110,18 +110,18 @@ void CEuclideanDistance::reset_precompute()
 	m_rhs_squared_norms=SGVector<float64_t>();
 }
 
-CFeatures* CEuclideanDistance::replace_lhs(CFeatures* l)
+std::shared_ptr<CFeatures> CEuclideanDistance::replace_lhs(std::shared_ptr<CFeatures> l)
 {
-	CFeatures* previous_lhs=CDistance::replace_lhs(l);
+	auto previous_lhs=CDistance::replace_lhs(l);
 	precompute_lhs();
 	if (lhs==rhs)
 		m_rhs_squared_norms=m_lhs_squared_norms;
 	return previous_lhs;
 }
 
-CFeatures* CEuclideanDistance::replace_rhs(CFeatures* r)
+std::shared_ptr<CFeatures> CEuclideanDistance::replace_rhs(std::shared_ptr<CFeatures> r)
 {
-	CFeatures* previous_rhs=CDistance::replace_rhs(r);
+	auto previous_rhs=CDistance::replace_rhs(r);
 	if (lhs==rhs)
 		m_rhs_squared_norms=m_lhs_squared_norms;
 	else
@@ -150,8 +150,8 @@ float64_t CEuclideanDistance::distance_upper_bounded(int32_t idx_a, int32_t idx_
 	REQUIRE(rhs->get_feature_type()==F_DREAL,
 		"Right hand side (was %s) has to be double type!\n", rhs->get_name());
 
-	CDenseFeatures<float64_t>* casted_lhs=static_cast<CDenseFeatures<float64_t>*>(lhs);
-	CDenseFeatures<float64_t>* casted_rhs=static_cast<CDenseFeatures<float64_t>*>(rhs);
+	auto casted_lhs=std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(lhs);
+	auto casted_rhs=std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(rhs);
 
 	upper_bound*=upper_bound;
 

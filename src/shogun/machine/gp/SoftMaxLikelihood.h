@@ -108,7 +108,7 @@ public:
 	 * @return final means (based on 0 and 1 bernoulli-encoding) evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_means(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+			SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab=NULL) const;
 
 	/** returns variance of the predictive marginal \f$p(y_*|X,y,x_*)\f$
 	 * The implementation is based on a simple Monte Carlo sampler from the pseudo code.
@@ -127,7 +127,7 @@ public:
 	 * @return final variances (based on 0 and 1 bernoulli-encoding) evaluated by likelihood function
 	 */
 	virtual SGVector<float64_t> get_predictive_variances(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab=NULL) const;
+			SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab=NULL) const;
 
 	/** returns the logarithm of the predictive density of \f$y_*\f$:
 	 * The implementation is based on a simple Monte Carlo sampler from the pseudo code.
@@ -161,7 +161,7 @@ public:
 	 * @return \f$log(p(y_*|X, y, x*))\f$ for each label \f$y_*\f$ (based on 0 and 1 bernoulli-encoding)
 	 */
 	virtual SGVector<float64_t> get_predictive_log_probabilities(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab=NULL);
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab=NULL);
 
 	/** returns the logarithm of the point-wise likelihood \f$log(p(y_i|f_i))\f$
 	 * for each label \f$y_i\f$, an integer between 1 and C (ie. number of classes).
@@ -174,7 +174,7 @@ public:
 	 *
 	 * @return logarithm of the point-wise likelihood
 	 */
-	virtual SGVector<float64_t> get_log_probability_f(const CLabels* lab,
+	virtual SGVector<float64_t> get_log_probability_f(std::shared_ptr<const CLabels> lab,
 			SGVector<float64_t> func) const;
 
 	/** get derivative of log likelihood \f$log(p(y|f))\f$ with respect to
@@ -188,7 +188,7 @@ public:
 	 * @return derivative
 	 */
 	virtual SGVector<float64_t> get_log_probability_derivative_f(
-			const CLabels* lab, SGVector<float64_t> func, index_t i) const;
+			std::shared_ptr<const CLabels> lab, SGVector<float64_t> func, index_t i) const;
 
 	/** returns the zeroth moment of a given (unnormalized) probability
 	 * distribution:
@@ -202,7 +202,7 @@ public:
 	 * @return log zeroth moment \f$log(Z_i)\f$
 	 */
 	virtual SGVector<float64_t> get_log_zeroth_moments(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab) const
+			SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 	{
 		SG_ERROR("Not Implemented\n");
 		return SGVector<float64_t>();
@@ -223,7 +223,7 @@ public:
 	 * @return first moment of \f$q(f_i)\f$
 	 */
 	virtual float64_t get_first_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab, index_t i) const
+			SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab, index_t i) const
 	{
 		SG_ERROR("Not Implemented\n");
 		return -1.0;
@@ -244,7 +244,7 @@ public:
 	 * @return the second moment of \f$q(f_i)\f$
 	 */
 	virtual float64_t get_second_moment(SGVector<float64_t> mu,
-			SGVector<float64_t> s2, const CLabels* lab, index_t i) const
+			SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab, index_t i) const
 	{
 		SG_ERROR("Not Implemented\n");
 		return -1.0;
@@ -283,7 +283,7 @@ private:
 	 * @return the statistics based on mc sampler
 	 */
 	SGVector<float64_t> predictive_helper(SGVector<float64_t> mu,
-	SGVector<float64_t> s2, const CLabels *lab, EMCSamplerType option) const;
+	SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab, EMCSamplerType option) const;
 
 	/** the Monte method sampler
 	 *
@@ -311,7 +311,7 @@ private:
 	 *
 	 * @return derivative (NxC matrix linearized in column major format)
 	 */
-	SGVector<float64_t> get_log_probability_derivative1_f(const CLabels* lab, SGMatrix<float64_t> func) const;
+	SGVector<float64_t> get_log_probability_derivative1_f(std::shared_ptr<const CLabels> lab, SGMatrix<float64_t> func) const;
 
 	/** get 2nd derivative of log likelihood \f$log(p(y|f))\f$ with respect to
 	 * location function \f$f\f$

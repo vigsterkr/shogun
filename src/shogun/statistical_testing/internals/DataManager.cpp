@@ -153,7 +153,7 @@ InitPerFeature DataManager::samples_at(index_t i)
 	return InitPerFeature(fetchers[i]);
 }
 
-CFeatures* DataManager::samples_at(index_t i) const
+std::shared_ptr<CFeatures> DataManager::samples_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
 	REQUIRE(i<(int64_t)fetchers.size(),
@@ -421,7 +421,7 @@ NextSamples DataManager::next()
 				ASSERT(next_samples.m_num_blocks==num_blocks_curr_burst);
 
 			next_samples[i]=Block::create_blocks(feats, num_blocks_curr_burst, blocksize);
-			SG_UNREF(feats);
+			
 		}
 	}
 	SG_SDEBUG("Leaving!\n");

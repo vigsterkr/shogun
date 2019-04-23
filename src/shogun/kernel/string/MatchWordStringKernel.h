@@ -51,7 +51,7 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @param degree degree
 		 */
-		CMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t degree);
+		CMatchWordStringKernel(std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, int32_t degree);
 
 		virtual ~CMatchWordStringKernel();
 
@@ -61,7 +61,7 @@ class CMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *

@@ -54,7 +54,7 @@ class CDistribution : public CSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL)=0;
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL)=0;
 
 		/** get number of parameters in model
 		 *
@@ -153,20 +153,17 @@ class CDistribution : public CSGObject
 		 *
 		 * @param f new feature vectors
 		 */
-		virtual void set_features(CFeatures* f)
+		virtual void set_features(std::shared_ptr<CFeatures> f)
 		{
-			SG_UNREF(features);
 			features=f;
-			SG_REF(features);
 		}
 
 		/** get feature vectors
 		 *
 		 * @return feature vectors
 		 */
-		virtual CFeatures* get_features()
+		virtual std::shared_ptr<CFeatures> get_features()
 		{
-			SG_REF(features);
 			return features;
 		}
 
@@ -200,11 +197,11 @@ class CDistribution : public CSGObject
 #ifndef SWIG
 		[[deprecated("use .as template function")]]
 #endif
-		static CDistribution* obtain_from_generic(CSGObject* object);
+		static std::shared_ptr<CDistribution> obtain_from_generic(std::shared_ptr<CSGObject> object);
 
 	protected:
 		/** feature vectors */
-		CFeatures* features;
+		std::shared_ptr<CFeatures> features;
 		/** pseudo count */
 		float64_t pseudo_count;
 };

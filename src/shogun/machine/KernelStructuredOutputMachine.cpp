@@ -16,9 +16,9 @@ CKernelStructuredOutputMachine::CKernelStructuredOutputMachine()
 }
 
 CKernelStructuredOutputMachine::CKernelStructuredOutputMachine(
-		CStructuredModel*  model,
-		CStructuredLabels* labs,
-		CKernel*           kernel)
+		std::shared_ptr<CStructuredModel>  model,
+		std::shared_ptr<CStructuredLabels> labs,
+		std::shared_ptr<CKernel>           kernel)
 : CStructuredOutputMachine(model, labs), m_kernel(NULL)
 {
 	set_kernel(kernel);
@@ -27,23 +27,23 @@ CKernelStructuredOutputMachine::CKernelStructuredOutputMachine(
 
 CKernelStructuredOutputMachine::~CKernelStructuredOutputMachine()
 {
-	SG_UNREF(m_kernel)
+	
 }
 
-void CKernelStructuredOutputMachine::set_kernel(CKernel* k)
+void CKernelStructuredOutputMachine::set_kernel(std::shared_ptr<CKernel> k)
 {
-	SG_REF(k);
-	SG_UNREF(m_kernel);
+	
+	
 	m_kernel = k;
 }
 
-CKernel* CKernelStructuredOutputMachine::get_kernel() const
+std::shared_ptr<CKernel> CKernelStructuredOutputMachine::get_kernel() const
 {
-	SG_REF(m_kernel);
+	
 	return m_kernel;
 }
 
 void CKernelStructuredOutputMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_kernel, "m_kernel", "The kernel", ParameterProperties::HYPER);
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_kernel, "m_kernel", "The kernel", ParameterProperties::HYPER);
 }

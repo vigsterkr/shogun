@@ -64,8 +64,8 @@ SGMatrix<float64_t> CInference::get_multiclass_E()
 	return SGMatrix<float64_t>(m_E);
 }
 
-CInference::CInference(CKernel* kernel, CFeatures* features,
-	CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
+CInference::CInference(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+	std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model)
 {
 	init();
 
@@ -78,12 +78,12 @@ CInference::CInference(CKernel* kernel, CFeatures* features,
 
 CInference::~CInference()
 {
-	SG_UNREF(m_kernel);
-	SG_UNREF(m_features);
-	SG_UNREF(m_labels);
-	SG_UNREF(m_model);
-	SG_UNREF(m_mean);
-	SG_UNREF(m_minimizer);
+
+
+
+
+
+
 }
 
 void CInference::init()
@@ -95,7 +95,7 @@ void CInference::init()
 	SG_ADD(&m_labels, "labels", "Labels");
 	SG_ADD(&m_features, "features", "Features");
 	SG_ADD(&m_gradient_update, "gradient_update", "Whether gradients are updated");
-	
+
 
 	m_kernel=NULL;
 	m_model=NULL;
@@ -106,19 +106,19 @@ void CInference::init()
 	m_gradient_update=false;
 	m_minimizer=NULL;
 
-	SG_ADD((CSGObject**)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_minimizer, "Inference__m_minimizer", "minimizer in Inference");
 	SG_ADD(&m_alpha, "alpha", "alpha vector used in process mean calculation");
 	SG_ADD(&m_L, "L", "upper triangular factor of Cholesky decomposition");
 	SG_ADD(&m_E, "E", "the matrix used for multi classification");
 }
 
-void CInference::register_minimizer(Minimizer* minimizer)
+void CInference::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
 	if(minimizer!=m_minimizer)
 	{
-		SG_REF(minimizer);
-		SG_UNREF(m_minimizer);
+
+
 		m_minimizer=minimizer;
 	}
 }
@@ -135,7 +135,7 @@ float64_t CInference::get_marginal_likelihood_estimate(
 
 	SGVector<float64_t> mean=get_posterior_mean();
 
-	CGaussianDistribution* post_approx=new CGaussianDistribution(mean, cov);
+	auto post_approx=std::make_shared<CGaussianDistribution>(mean, cov);
 	SGMatrix<float64_t> samples=post_approx->sample(num_importance_samples);
 
 	/* evaluate q(f^i|y), p(f^i|\theta), p(y|f^i), i.e.,
@@ -145,7 +145,7 @@ float64_t CInference::get_marginal_likelihood_estimate(
 	SGVector<float64_t> log_pdf_post_approx=post_approx->log_pdf_multiple(samples);
 
 	/* dont need gaussian anymore, free memory */
-	SG_UNREF(post_approx);
+
 	post_approx=NULL;
 
 	/* log pdf p(f^i|\theta) and free memory afterwise. Scale kernel before */
@@ -159,10 +159,10 @@ float64_t CInference::get_marginal_likelihood_estimate(
 	for (index_t i=0; i<m_ktrtr.num_rows; ++i)
 		scaled_kernel(i,i)+=ridge_size;
 
-	CGaussianDistribution* prior=new CGaussianDistribution(
+	auto prior=std::make_shared<CGaussianDistribution>(
 			m_mean->get_mean_vector(m_features), scaled_kernel);
 	SGVector<float64_t> log_pdf_prior=prior->log_pdf_multiple(samples);
-	SG_UNREF(prior);
+
 	prior=NULL;
 
 	/* p(y|f^i) */
@@ -181,8 +181,8 @@ float64_t CInference::get_marginal_likelihood_estimate(
 	return CMath::log_mean_exp(sum);
 }
 
-CMap<TParameter*, SGVector<float64_t> >* CInference::
-get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* params)
+std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> CInference::
+get_negative_log_marginal_likelihood_derivatives(std::shared_ptr<CMap<TParameter*, CSGObject*>> params)
 {
 	REQUIRE(params->get_num_elements(), "Number of parameters should be greater "
 			"than zero\n")
@@ -193,10 +193,10 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 	const index_t num_deriv=params->get_num_elements();
 
 	// create map of derivatives
-	CMap<TParameter*, SGVector<float64_t> >* result=
-		new CMap<TParameter*, SGVector<float64_t> >(num_deriv, num_deriv);
+	auto result=
+		std::make_shared<CMap<TParameter*, SGVector<float64_t>>>(num_deriv, num_deriv);
 
-	SG_REF(result);
+
 
 	#pragma omp parallel for
 	for (index_t i=0; i<num_deriv; i++)
@@ -209,17 +209,17 @@ get_negative_log_marginal_likelihood_derivatives(CMap<TParameter*, CSGObject*>* 
 			// try to find dervative wrt InferenceMethod.parameter
 			gradient=this->get_derivative_wrt_inference_method(node->key);
 		}
-        else if (node->data == this->m_model)
+        else if (node->data == this->m_model.get())
 		{
 			// try to find derivative wrt LikelihoodModel.parameter
 			gradient=this->get_derivative_wrt_likelihood_model(node->key);
 		}
-		else if (node->data ==this->m_kernel)
+		else if (node->data ==this->m_kernel.get())
 		{
 			// try to find derivative wrt Kernel.parameter
 			gradient=this->get_derivative_wrt_kernel(node->key);
 		}
-		else if (node->data ==this->m_mean)
+		else if (node->data ==this->m_mean.get())
 		{
 			// try to find derivative wrt MeanFunction.parameter
 			gradient=this->get_derivative_wrt_mean(node->key);

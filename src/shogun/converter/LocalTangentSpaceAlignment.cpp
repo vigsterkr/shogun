@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg, 
+ * Authors: Sergey Lisitsyn, Heiko Strathmann, Soeren Sonnenburg,
  *          Evan Shelhamer
  */
 
@@ -26,18 +26,17 @@ const char* CLocalTangentSpaceAlignment::get_name() const
 	return "LocalTangentSpaceAlignment";
 };
 
-CFeatures*
-CLocalTangentSpaceAlignment::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures>
+CLocalTangentSpaceAlignment::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
-	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
+	auto dot_feats = std::static_pointer_cast<CDotFeatures>(features);
+	auto kernel = std::make_shared<CLinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_LOCAL_TANGENT_SPACE_ALIGNMENT;
 	parameters.target_dimension = m_target_dim;
-	parameters.kernel = kernel;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	SG_UNREF(kernel);
-	return embedding;
+	parameters.kernel = kernel.get();
+	return tapkee_embed(parameters);
 }
 

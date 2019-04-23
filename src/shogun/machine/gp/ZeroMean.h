@@ -64,7 +64,7 @@ public:
 	 *
 	 * @return mean of feature vectors
 	 */
-	virtual SGVector<float64_t> get_mean_vector(const CFeatures* features) const;
+	virtual SGVector<float64_t> get_mean_vector(std::shared_ptr<const CFeatures> features) const;
 };
 }
 #endif /* CZEROMEAN_H_ */

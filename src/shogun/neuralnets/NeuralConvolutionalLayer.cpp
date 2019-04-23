@@ -79,16 +79,16 @@ void CNeuralConvolutionalLayer::set_batch_size(int32_t batch_size)
 }
 
 
-void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* layers,
+void CNeuralConvolutionalLayer::initialize_neural_layer(std::shared_ptr<CDynamicObjectArray> layers,
 		SGVector< int32_t > input_indices)
 {
-	CNeuralLayer* first_input_layer =
-		(CNeuralLayer*)layers->get_element(input_indices[0]);
+	auto first_input_layer =
+		layers->get_element<CNeuralLayer>(input_indices[0]);
 
 	m_input_width = first_input_layer->get_width();
 	m_input_height = first_input_layer->get_height();
 
-	SG_UNREF(first_input_layer);
+
 
 	if (autoencoder_position==NLAP_NONE)
 	{
@@ -108,12 +108,12 @@ void CNeuralConvolutionalLayer::initialize_neural_layer(CDynamicObjectArray* lay
 	m_input_num_channels = 0;
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
-		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->get_element(input_indices[l]);
+		auto layer =
+			layers->get_element<CNeuralLayer>(input_indices[l]);
 
 		m_input_num_channels += layer->get_num_neurons()/(m_input_height*m_input_width);
 
-		SG_UNREF(layer);
+
 	}
 
 	// one bias for each map and one weight matrix between each map in this
@@ -158,7 +158,7 @@ void CNeuralConvolutionalLayer::initialize_parameters(SGVector<float64_t> parame
 
 void CNeuralConvolutionalLayer::compute_activations(
 		SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+		std::shared_ptr<CDynamicObjectArray> layers)
 {
 	int32_t num_parameters_per_map =
 		1 + m_input_num_channels*(2*m_radius_x+1)*(2*m_radius_y+1);
@@ -184,7 +184,7 @@ void CNeuralConvolutionalLayer::compute_activations(
 void CNeuralConvolutionalLayer::compute_gradients(
 		SGVector<float64_t> parameters,
 		SGMatrix<float64_t> targets,
-		CDynamicObjectArray* layers,
+		std::shared_ptr<CDynamicObjectArray> layers,
 		SGVector<float64_t> parameter_gradients)
 {
 	if (targets.num_rows != 0)
@@ -309,5 +309,5 @@ void CNeuralConvolutionalLayer::init()
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_activation_function, "activation_function",
 	    "Activation Function", ParameterProperties::NONE,
-	    SG_OPTIONS(CMAF_IDENTITY, CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR))
+	    SG_OPTIONS(CMAF_IDENTITY, CMAF_LOGISTIC, CMAF_RECTIFIED_LINEAR));
 }

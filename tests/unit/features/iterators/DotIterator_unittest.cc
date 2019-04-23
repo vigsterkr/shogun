@@ -33,7 +33,6 @@
 */
 
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/iterators/DotIterator.h>
 #include <shogun/mathematics/Math.h>
@@ -58,7 +57,7 @@ TEST(DotIterator, dot)
 	SGVector<float64_t> vec(n_rows);
 	get_data(mat, vec);
 
-	auto feats = some<CDenseFeatures<float64_t>>(mat);
+	auto feats = std::make_shared<CDenseFeatures<float64_t>>(mat);
 
 	index_t i = 0;
 	for (const auto& v : DotIterator(feats))
@@ -81,7 +80,7 @@ TEST(DotIterator, add)
 	auto vec = SGVector<float64_t>(mat.num_rows);
 	auto res = SGVector<float64_t>(mat.num_rows);
 
-	auto feats = some<CDenseFeatures<float64_t>>(mat);
+	auto feats = std::make_shared<CDenseFeatures<float64_t>>(mat);
 
 	index_t i = 0;
 	for (const auto& v : DotIterator(feats))

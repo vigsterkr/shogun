@@ -54,13 +54,13 @@ public:
 		 * @param C Cost constant C
 		 * @param traindat Training examples
 		 */
-		COnlineLibLinear(float64_t C, CStreamingDotFeatures* traindat);
+		COnlineLibLinear(float64_t C, std::shared_ptr<CStreamingDotFeatures> traindat);
 
 		/**
 		 * Copy Constructor
 		 * @param mch another COnlineLibLinear machine
 		 */
-		COnlineLibLinear(COnlineLibLinear *mch);
+		COnlineLibLinear(std::shared_ptr<COnlineLibLinear >mch);
 
 		/** Destructor */
 		virtual ~COnlineLibLinear();
@@ -119,7 +119,7 @@ public:
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example
 		 */
-		virtual void train_example(CStreamingDotFeatures *feature, float64_t label);
+		virtual void train_example(std::shared_ptr<CStreamingDotFeatures >feature, float64_t label);
 
 private:
 		/** Set up parameters */

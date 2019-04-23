@@ -24,7 +24,7 @@ TEST(HashedDenseFeaturesTest, dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim);
+	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -46,7 +46,7 @@ TEST(HashedDenseFeaturesTest, dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedDenseFeaturesTest, quadratic_dot)
@@ -62,7 +62,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim, true);
+	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -104,7 +104,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedDenseFeaturesTest, dense_dot)
@@ -120,7 +120,7 @@ TEST(HashedDenseFeaturesTest, dense_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim);
+	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -142,7 +142,7 @@ TEST(HashedDenseFeaturesTest, dense_dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedDenseFeaturesTest, quadratic_dense_dot)
@@ -158,7 +158,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dense_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim, true);
+	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -200,7 +200,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dense_dot)
 		EXPECT_EQ(feat_dot, dot_product);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedDenseFeaturesTest, add_to_dense)
@@ -216,7 +216,7 @@ TEST(HashedDenseFeaturesTest, add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim);
+	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -239,7 +239,7 @@ TEST(HashedDenseFeaturesTest, add_to_dense)
 			EXPECT_EQ(tmp2[j], tmp[j]);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 
@@ -256,7 +256,7 @@ TEST(HashedDenseFeaturesTest, quadratic_add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim, true);
+	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<3; i++)
@@ -299,7 +299,7 @@ TEST(HashedDenseFeaturesTest, quadratic_add_to_dense)
 			EXPECT_EQ(tmp2[j], tmp[j]);
 	}
 
-	SG_UNREF(h_feats);
+
 }
 
 TEST(HashedDenseFeaturesTest, dense_comparison)
@@ -315,8 +315,8 @@ TEST(HashedDenseFeaturesTest, dense_comparison)
 	}
 
 	int32_t hashing_dim = 300;
-	CHashedDenseFeatures<float64_t>* h_feats = new CHashedDenseFeatures<float64_t>(data, hashing_dim);
-	CDenseFeatures<float64_t>* d_feats = new CDenseFeatures<float64_t>(data);
+	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
+	auto d_feats = std::make_shared<CDenseFeatures<float64_t>>(data);
 
 	SGVector<float64_t> dense_vec(hashing_dim);
 	for (index_t i=0; i<hashing_dim; i++)
@@ -325,6 +325,6 @@ TEST(HashedDenseFeaturesTest, dense_comparison)
 	for (index_t i=0; i<n; i++)
 		EXPECT_EQ(h_feats->dot(i, h_feats, i), d_feats->dot(i, d_feats, i));
 
-	SG_UNREF(d_feats);
-	SG_UNREF(h_feats);
+
+
 }

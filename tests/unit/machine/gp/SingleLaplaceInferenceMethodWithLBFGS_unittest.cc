@@ -79,19 +79,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -105,7 +105,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -161,7 +161,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_probit_likelihood)
 	EXPECT_NEAR(L(4,4), 1.229706246172444, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 
@@ -195,19 +195,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -219,7 +219,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -253,7 +253,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_probit_likelihood)
 	EXPECT_NEAR(alpha[4], -0.506045417007059, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_probit_likelihood)
@@ -286,19 +286,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_prob
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -310,7 +310,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_prob
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -331,7 +331,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_prob
 	EXPECT_NEAR(nml, 3.499023867961728, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_probit_likelihood)
@@ -364,19 +364,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -388,7 +388,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -400,7 +400,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, CSGObject*>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -425,9 +425,9 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	EXPECT_NEAR(dnlZ_sf2, 0.108245557597861, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+
+
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
@@ -460,19 +460,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -485,7 +485,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -517,7 +517,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_mean_probit_likelihood)
 	EXPECT_NEAR(approx_mean[4], -0.506072142343126, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_covariance_probit_likelihood)
@@ -550,19 +550,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_covariance_probit_likel
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -574,7 +574,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_covariance_probit_likel
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -631,7 +631,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_posterior_covariance_probit_likel
 	EXPECT_NEAR(approx_cov(4,4), 0.661298049137338, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
@@ -665,19 +665,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<CLogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -689,7 +689,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -746,7 +746,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_logit_likelihood)
 
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
@@ -780,19 +780,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<CLogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -805,7 +805,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -837,7 +837,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_logit_likelihood)
 	EXPECT_NEAR(alpha[4], -0.345634045169136, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 
@@ -872,19 +872,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logi
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<CLogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -896,7 +896,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logi
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -917,7 +917,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_logi
 	EXPECT_NEAR(nml, 3.387608216855656, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 
@@ -952,19 +952,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<CLogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -976,7 +976,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -988,7 +988,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, CSGObject*>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1013,9 +1013,9 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	EXPECT_NEAR(dnlZ_sf2, -0.068636643738048, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+
+
+
 }
 
 
@@ -1044,19 +1044,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 1 (by default)
-	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
+	auto likelihood=std::make_shared<CGaussianLikelihood>();
 
 	// specify GP regression with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1068,7 +1068,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1126,7 +1126,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_gaussian_likelihood)
 
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 {
@@ -1153,19 +1153,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 1 (by default)
-	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
+	auto likelihood=std::make_shared<CGaussianLikelihood>();
 
 	// specify GP regression with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1177,7 +1177,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1209,7 +1209,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_gaussian_likelihood)
 	EXPECT_NEAR(alpha[4], 0.660353604050175, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaussian_likelihood)
@@ -1237,19 +1237,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaus
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 1 (by default)
-	CGaussianLikelihood* likelihood=new CGaussianLikelihood();
+	auto likelihood=std::make_shared<CGaussianLikelihood>();
 
 	// specify GP regression with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1261,7 +1261,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaus
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1282,7 +1282,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_gaus
 	EXPECT_NEAR(nml, 6.861543230523298, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_gaussian_likelihood)
@@ -1310,21 +1310,21 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2*ell*ell);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
 
 	// specify GP regression with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1336,7 +1336,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1348,7 +1348,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, CSGObject*>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1379,9 +1379,9 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	EXPECT_NEAR(dnlZ_sf2, -0.570516239076101, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+
+
+
 }
 
 
@@ -1410,19 +1410,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Student's-T likelihood with sigma = 1, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
+	auto likelihood=std::make_shared<CStudentsTLikelihood>(1, 3);
 
 	// specify GP regression with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1434,7 +1434,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1491,7 +1491,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_cholesky_t_likelihood)
 	EXPECT_NEAR(L(4,4), 1.366835295900706, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_t_likelihood)
@@ -1519,19 +1519,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Student's-T likelihood with sigma = 1, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
+	auto likelihood=std::make_shared<CStudentsTLikelihood>(1, 3);
 
 	// specify GP regression with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1543,7 +1543,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1575,7 +1575,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_alpha_t_likelihood)
 	EXPECT_NEAR(alpha[4], 0.710852596742621, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_likelihood)
@@ -1603,19 +1603,19 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_li
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Student's-T likelihood with sigma = 1, df = 3
-	CStudentsTLikelihood* likelihood=new CStudentsTLikelihood(1, 3);
+	auto likelihood=std::make_shared<CStudentsTLikelihood>(1, 3);
 
 	// specify GP regression with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1627,7 +1627,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_li
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1648,7 +1648,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_negative_marginal_likelihood_t_li
 	EXPECT_NEAR(nml, 7.489169113992463, abs_tolerance);
 
 	// clean up
-	SG_UNREF(inf);
+
 }
 
 TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t_likelihood)
@@ -1675,21 +1675,21 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*ell*ell);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2*ell*ell);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Student's-T likelihood with sigma = 0.25, df = 3
-	CStudentsTLikelihood* lik=new CStudentsTLikelihood(0.25, 3);
+	auto lik=std::make_shared<CStudentsTLikelihood>(0.25, 3);
 
 	// specify GP regression with exact inference
-	CSingleLaplaceInferenceMethod* inf
-		= new CSingleLaplaceInferenceMethod(kernel,
+	auto inf
+		= std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 			features_train,
 			mean,
 			labels_train,
@@ -1701,7 +1701,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	float64_t delta = 1e-15;
 	int past = 0;
 	float64_t epsilon = 1e-15;
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	opt->set_lbfgs_parameters(m,
 		max_linesearch,
 		linesearch,
@@ -1713,7 +1713,7 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, CSGObject*>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -1749,8 +1749,8 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	EXPECT_NEAR(dnlZ_sf2, -0.301771081861900, abs_tolerance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
+
+
+
 }
 #endif //USE_GPL_SHOGUN

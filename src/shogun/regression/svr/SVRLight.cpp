@@ -43,12 +43,12 @@ struct S_THREAD_PARAM_SVRLIGHT
 	int32_t start, end;
 	int32_t* active2dnum;
 	int32_t* docs;
-	CKernel* kernel;
+	std::shared_ptr<CKernel> kernel;
     int32_t num_vectors;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-CSVRLight::CSVRLight(float64_t C, float64_t eps, CKernel* k, CLabels* lab)
+CSVRLight::CSVRLight(float64_t C, float64_t eps, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
 : CSVMLight(C, k, lab)
 {
 	set_tube_epsilon(eps);
@@ -69,7 +69,7 @@ EMachineType CSVRLight::get_classifier_type()
 	return CT_SVRLIGHT;
 }
 
-bool CSVRLight::train_machine(CFeatures* data)
+bool CSVRLight::train_machine(std::shared_ptr<CFeatures> data)
 {
 	//certain setup params
 	verbosity=1;
@@ -173,14 +173,15 @@ void CSVRLight::svr_learn()
 	label=SG_MALLOC(int32_t, 2*totdoc);
 	c = SG_MALLOC(float64_t, 2*totdoc);
 
+	auto rl = regression_labels(m_labels);
   for(i=0;i<totdoc;i++) {
 	  docs[i]=i;
 	  j=2*totdoc-1-i;
 	  label[i]=+1;
-	  c[i]=((CRegressionLabels*) m_labels)->get_label(i);
+	  c[i]=rl->get_label(i);
 	  docs[j]=j;
 	  label[j]=-1;
-	  c[j]=((CRegressionLabels*) m_labels)->get_label(i);
+	  c[j]=rl->get_label(i);
   }
   totdoc*=2;
 
@@ -189,13 +190,13 @@ void CSVRLight::svr_learn()
 
   if (kernel->get_kernel_type() == K_COMBINED)
   {
-	  CCombinedKernel* k = (CCombinedKernel*) kernel;
+	  auto k = kernel->as<CCombinedKernel>();
 
 	  for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 	  {
-		  CKernel* kn = k->get_kernel(k_idx);
+		  auto kn = k->get_kernel(k_idx);
 		  kn->resize_kernel_cache( kernel->get_cache_size(), true);
-		  SG_UNREF(kn);
+
 	  }
   }
 
@@ -510,15 +511,15 @@ void CSVRLight::update_linear_component_mkl(
 	ASSERT(num_weights==num_kernels)
 
 	if ((kernel->get_kernel_type()==K_COMBINED) &&
-			 (!((CCombinedKernel*)kernel)->get_append_subkernel_weights()))// for combined kernel
+			 (!(kernel->as<CCombinedKernel>()->get_append_subkernel_weights())))// for combined kernel
 	{
-		CCombinedKernel* k = (CCombinedKernel*) kernel;
+		auto k = kernel->as<CCombinedKernel>();
 
 		int32_t n = 0, i, j ;
 
 		for (index_t k_idx=0; k_idx<k->get_num_kernels(); k_idx++)
 		{
-			CKernel* kn = k->get_kernel(k_idx);
+			auto kn = k->get_kernel(k_idx);
 			for(i=0;i<num;i++)
 			{
 				if(a[i] != a_old[i])
@@ -528,7 +529,7 @@ void CSVRLight::update_linear_component_mkl(
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*aicache[regression_fix_index(j)]*(float64_t)label[i];
 				}
 			}
-			SG_UNREF(kn);
+
 			n++ ;
 		}
 	}

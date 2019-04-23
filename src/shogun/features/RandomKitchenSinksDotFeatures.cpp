@@ -20,13 +20,13 @@ CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures()
 }
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
-	CDotFeatures* dataset, int32_t K)
+	std::shared_ptr<CDotFeatures> dataset, int32_t K)
 {
 	init(dataset, K);
 }
 
 CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
-	CDotFeatures* dataset, int32_t K, SGMatrix<float64_t> coeff)
+	std::shared_ptr<CDotFeatures> dataset, int32_t K, SGMatrix<float64_t> coeff)
 {
 	init(dataset, K);
 	random_coeff = coeff;
@@ -48,7 +48,7 @@ SGMatrix<float64_t> CRandomKitchenSinksDotFeatures::generate_random_coefficients
 	return random_params;
 }
 
-CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(CFile* loader)
+CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(std::shared_ptr<CFile> loader)
 {
 	SG_NOTIMPLEMENTED;
 }
@@ -62,18 +62,18 @@ CRandomKitchenSinksDotFeatures::CRandomKitchenSinksDotFeatures(
 
 CRandomKitchenSinksDotFeatures::~CRandomKitchenSinksDotFeatures()
 {
-	SG_UNREF(feats);
+
 }
 
-void CRandomKitchenSinksDotFeatures::init(CDotFeatures* dataset,
+void CRandomKitchenSinksDotFeatures::init(std::shared_ptr<CDotFeatures> dataset,
 	int32_t K)
 {
 	feats = dataset;
-	SG_REF(feats);
+
 
 	num_samples = K;
 
-	SG_ADD((CSGObject** ) &feats, "feats", "Features to work on");
+	SG_ADD((std::shared_ptr<CSGObject>* ) &feats, "feats", "Features to work on");
 	SG_ADD(
 		&random_coeff, "random_coeff", "Random function parameters");
 }
@@ -83,11 +83,11 @@ int32_t CRandomKitchenSinksDotFeatures::get_dim_feature_space() const
 	return num_samples;
 }
 
-float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, CDotFeatures* df,
+float64_t CRandomKitchenSinksDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df,
 	int32_t vec_idx2) const
 {
 	ASSERT(typeid(*this) == typeid(*df));
-	CRandomKitchenSinksDotFeatures* other = (CRandomKitchenSinksDotFeatures* ) df;
+	auto other = std::static_pointer_cast<CRandomKitchenSinksDotFeatures>(df);
 	ASSERT(get_dim_feature_space()==other->get_dim_feature_space());
 
 	float64_t dot_product = 0;
@@ -181,7 +181,7 @@ const char* CRandomKitchenSinksDotFeatures::get_name() const
 	return "RandomKitchenSinksDotFeatures";
 }
 
-CFeatures* CRandomKitchenSinksDotFeatures::duplicate() const
+std::shared_ptr<CFeatures> CRandomKitchenSinksDotFeatures::duplicate() const
 {
 	SG_NOTIMPLEMENTED;
 	return NULL;

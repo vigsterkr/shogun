@@ -44,8 +44,8 @@ CSingleFITCInference::CSingleFITCInference() : CSingleSparseInference()
 	init();
 }
 
-CSingleFITCInference::CSingleFITCInference(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
+CSingleFITCInference::CSingleFITCInference(std::shared_ptr<CKernel> kern, std::shared_ptr<CFeatures> feat,
+		std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod, std::shared_ptr<CFeatures> lat)
 		: CSingleSparseInference(kern, feat, m, lab, mod, lat)
 {
 	init();
@@ -224,7 +224,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_related_inducing_featur
 	deriv_lat.zero();
 
 	m_lock->lock();
-	CFeatures *inducing_features=get_inducing_features();
+	auto inducing_features=get_inducing_features();
 	//asymtric part (related to xu and x)
 	m_kernel->init(inducing_features, m_features);
 	//A = (Kpu.*BdK)*diag(e);
@@ -251,7 +251,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_related_inducing_featur
 		Map<MatrixXd> eigen_deriv_mat(deriv_mat.matrix, deriv_mat.num_rows, deriv_mat.num_cols);
 		deriv_lat_col_vec+=eigen_deriv_mat*(C.row(lat_lidx).transpose());
 	}
-	SG_UNREF(inducing_features);
+
 	m_lock->unlock();
 	return deriv_lat;
 }

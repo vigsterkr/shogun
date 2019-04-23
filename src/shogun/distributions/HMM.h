@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Elijah Rippeth, Saurabh Goyal, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Elijah Rippeth, Saurabh Goyal,
  *          Bjoern Esser
  */
 
@@ -379,7 +379,7 @@ class CHMM : public CDistribution
 		/// Datatype that is used in parrallel computation of viterbi
 		struct S_DIM_THREAD_PARAM
 		{
-			CHMM* hmm;
+			std::shared_ptr<CHMM> hmm;
 			int32_t dim;
 			float64_t prob_sum;
 		};
@@ -387,7 +387,7 @@ class CHMM : public CDistribution
 		/// Datatype that is used in parrallel baum welch model estimation
 		struct S_BW_THREAD_PARAM
 		{
-			CHMM* hmm;
+			std::shared_ptr<CHMM> hmm;
 			int32_t dim_start;
 			int32_t dim_stop;
 
@@ -474,7 +474,7 @@ class CHMM : public CDistribution
 		CHMM(
 			int32_t N, int32_t M, Model* model, float64_t PSEUDO);
 		CHMM(
-			CStringFeatures<uint16_t>* obs, int32_t N, int32_t M,
+			std::shared_ptr<CStringFeatures<uint16_t>> obs, int32_t N, int32_t M,
 			float64_t PSEUDO);
 		CHMM(
 			int32_t N, float64_t* p, float64_t* q, float64_t* a);
@@ -489,7 +489,7 @@ class CHMM : public CDistribution
 		CHMM(FILE* model_file, float64_t PSEUDO);
 
 		/// Constructor - Clone model h
-		CHMM(CHMM* h);
+		CHMM(std::shared_ptr<CHMM> h);
 
 		/// Destructor - Cleanup
 		virtual ~CHMM();
@@ -502,7 +502,7 @@ class CHMM : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 		virtual int32_t get_num_model_parameters() { return N*(N+M+2); }
 		virtual float64_t get_log_model_parameter(int32_t num_param);
 		virtual float64_t get_log_derivative(int32_t num_param, int32_t num_example);
@@ -634,31 +634,31 @@ class CHMM : public CDistribution
 		/** uses baum-welch-algorithm to train a fully connected HMM.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_baum_welch(CHMM* train);
-		void estimate_model_baum_welch_trans(CHMM* train);
+		void estimate_model_baum_welch(std::shared_ptr<CHMM> train);
+		void estimate_model_baum_welch_trans(std::shared_ptr<CHMM> train);
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		void ab_buf_comp(
 			float64_t* p_buf, float64_t* q_buf, float64_t* a_buf,
 			float64_t* b_buf, int32_t dim) ;
 #else
-		void estimate_model_baum_welch_old(CHMM* train);
+		void estimate_model_baum_welch_old(std::shared_ptr<CHMM> train);
 #endif
 
 		/** uses baum-welch-algorithm to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_baum_welch_defined(CHMM* train);
+		void estimate_model_baum_welch_defined(std::shared_ptr<CHMM> train);
 
 		/** uses viterbi training to train a fully connected HMM
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_viterbi(CHMM* train);
+		void estimate_model_viterbi(std::shared_ptr<CHMM> train);
 
 		/** uses viterbi training to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
-		void estimate_model_viterbi_defined(CHMM* train);
+		void estimate_model_viterbi_defined(std::shared_ptr<CHMM> train);
 
 		//@}
 
@@ -698,12 +698,12 @@ class CHMM : public CDistribution
 		/// the other state is the start state of the append_model.
 		/// transition probability from state 1 to states 1 is 1
 		bool append_model(
-			CHMM* append_model, float64_t* cur_out, float64_t* app_out);
+			std::shared_ptr<CHMM> append_model, float64_t* cur_out, float64_t* app_out);
 
 		/// appends the append_model to the current hmm, here
 		/// no extra states are created. former q_i are multiplied by q_ji
 		/// to give the a_ij from the current hmm to the append_model
-		bool append_model(CHMM* append_model);
+		bool append_model(std::shared_ptr<CHMM> append_model);
 
 		/// set any model parameter with probability smaller than value to ZERO
 		void chop(float64_t value);
@@ -728,7 +728,7 @@ class CHMM : public CDistribution
 		void clear_model_defined();
 
 		/// copies the the modelparameters from l
-		void copy_model(CHMM* l);
+		void copy_model(std::shared_ptr<CHMM> l);
 
 		/** invalidates all caches.
 		 * this function has to be called when direct changes to the model have been made.
@@ -784,17 +784,16 @@ class CHMM : public CDistribution
 		 * sets the observation pointer and initializes observation-dependent caches
 		 * if hmm is given, then the caches of the model hmm are used
 		 */
-		void set_observations(CStringFeatures<uint16_t>* obs, CHMM* hmm=NULL);
+		void set_observations(std::shared_ptr<CStringFeatures<uint16_t>> obs, std::shared_ptr<CHMM> hmm=NULL);
 
 		/** set new observations
 		 * only set the observation pointer and drop caches if there were any
 		 */
-		void set_observation_nocache(CStringFeatures<uint16_t>* obs);
+		void set_observation_nocache(std::shared_ptr<CStringFeatures<uint16_t>> obs);
 
 		/// return observation pointer
-		inline CStringFeatures<uint16_t>* get_observations()
+		inline std::shared_ptr<CStringFeatures<uint16_t>> get_observations()
 		{
-			SG_REF(p_observations);
 			return p_observations;
 		}
 		//@}
@@ -1199,7 +1198,7 @@ class CHMM : public CDistribution
 		int32_t line;
 
 		/// observation matrix
-		CStringFeatures<uint16_t>* p_observations;
+		std::shared_ptr<CStringFeatures<uint16_t>> p_observations;
 
 		//train definition for HMM
 		Model* model;

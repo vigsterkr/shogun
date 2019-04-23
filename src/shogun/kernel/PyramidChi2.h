@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Evan Shelhamer, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Evan Shelhamer,
  *          Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -68,7 +68,7 @@ public:
 	 *	LEFT HAND SIDE features for width estimation
 	 */
 	CPyramidChi2(
-		CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+		std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r,
 		int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
@@ -79,7 +79,7 @@ public:
 	 * @param l features lhs
 	 * @param r reatures rhs
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 
 	virtual ~CPyramidChi2();

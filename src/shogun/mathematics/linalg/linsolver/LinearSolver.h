@@ -40,7 +40,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(std::shared_ptr<CLinearOperator<T>> A, SGVector<ST> b) = 0;
 
 	/** @return object name */
 	virtual const char* get_name() const

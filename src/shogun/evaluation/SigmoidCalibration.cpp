@@ -84,7 +84,7 @@ float64_t CSigmoidCalibration::get_epsilon()
 }
 
 bool CSigmoidCalibration::fit_binary(
-    CBinaryLabels* predictions, CBinaryLabels* targets)
+    std::shared_ptr<CBinaryLabels> predictions, std::shared_ptr<CBinaryLabels> targets)
 {
 	m_sigmoid_as.resize_vector(1);
 	m_sigmoid_bs.resize_vector(1);
@@ -98,7 +98,7 @@ bool CSigmoidCalibration::fit_binary(
 	return true;
 }
 
-CBinaryLabels* CSigmoidCalibration::calibrate_binary(CBinaryLabels* predictions)
+std::shared_ptr<CBinaryLabels> CSigmoidCalibration::calibrate_binary(std::shared_ptr<CBinaryLabels> predictions)
 {
 	REQUIRE(
 	    m_sigmoid_as.size() == 1,
@@ -109,13 +109,11 @@ CBinaryLabels* CSigmoidCalibration::calibrate_binary(CBinaryLabels* predictions)
 
 	auto probabilities = calibrate_values(predictions->get_values(), params);
 
-	CBinaryLabels* calibrated_predictions = new CBinaryLabels(probabilities);
-
-	return calibrated_predictions;
+	return std::make_shared<CBinaryLabels>(probabilities);
 }
 
 bool CSigmoidCalibration::fit_multiclass(
-    CMulticlassLabels* predictions, CMulticlassLabels* targets)
+    std::shared_ptr<CMulticlassLabels> predictions, std::shared_ptr<CMulticlassLabels> targets)
 {
 	index_t num_classes = predictions->get_num_classes();
 
@@ -134,14 +132,14 @@ bool CSigmoidCalibration::fit_multiclass(
 		m_sigmoid_as[i] = sigmoid_params.a;
 		m_sigmoid_bs[i] = sigmoid_params.b;
 
-		SG_UNREF(class_targets);
+
 	}
 
 	return true;
 }
 
-CMulticlassLabels*
-CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
+std::shared_ptr<CMulticlassLabels>
+CSigmoidCalibration::calibrate_multiclass(std::shared_ptr<CMulticlassLabels> predictions)
 {
 	index_t num_classes = predictions->get_num_classes();
 	index_t num_samples = predictions->get_num_labels();
@@ -166,7 +164,7 @@ CSigmoidCalibration::calibrate_multiclass(CMulticlassLabels* predictions)
 		confidence_values.set_column(i, calibrated_values);
 	}
 
-	auto result_labels = new CMulticlassLabels(num_samples);
+	auto result_labels = std::make_shared<CMulticlassLabels>(num_samples);
 	result_labels->allocate_confidences_for(num_classes);
 
 	/** Normalize the probabilities. */

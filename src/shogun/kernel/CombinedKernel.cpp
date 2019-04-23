@@ -39,7 +39,7 @@ CCombinedKernel::~CCombinedKernel()
 	subkernel_weights_buffer=NULL;
 
 	cleanup();
-	SG_UNREF(kernel_array);
+
 }
 
 void CCombinedKernel::init_subkernel_weights()
@@ -60,12 +60,12 @@ void CCombinedKernel::init_subkernel_weights()
 	set_subkernel_weights(wt);
 }
 bool CCombinedKernel::init_with_extracted_subsets(
-    CFeatures* l, CFeatures* r, SGVector<index_t> lhs_subset,
+    std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r, SGVector<index_t> lhs_subset,
     SGVector<index_t> rhs_subset)
 {
 
-	auto l_combined = dynamic_cast<CCombinedFeatures*>(l);
-	auto r_combined = dynamic_cast<CCombinedFeatures*>(r);
+	auto l_combined = std::dynamic_pointer_cast<CCombinedFeatures>(l);
+	auto r_combined = std::dynamic_pointer_cast<CCombinedFeatures>(r);
 
 	if (!l_combined || !r_combined)
 		SG_ERROR("Cast failed - unsupported features passed")
@@ -74,9 +74,9 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	ASSERT(l->get_feature_type() == F_UNKNOWN)
 	ASSERT(r->get_feature_type() == F_UNKNOWN)
 
-	CFeatures* lf = NULL;
-	CFeatures* rf = NULL;
-	CKernel* k = NULL;
+	std::shared_ptr<CFeatures> lf = NULL;
+	std::shared_ptr<CFeatures> rf = NULL;
+	std::shared_ptr<CKernel> k = NULL;
 
 	bool result = true;
 	index_t f_idx = 0;
@@ -102,9 +102,9 @@ bool CCombinedKernel::init_with_extracted_subsets(
 			f_idx++;
 			if (!lf || !rf)
 			{
-				SG_UNREF(lf);
-				SG_UNREF(rf);
-				SG_UNREF(k);
+
+
+
 				SG_ERROR(
 				    "CombinedKernel: Number of features/kernels does not "
 				    "match - bailing out\n")
@@ -112,8 +112,8 @@ bool CCombinedKernel::init_with_extracted_subsets(
 
 			SG_DEBUG("Initializing 0x%p - \"%s\"\n", this, k->get_name())
 			result = k->init(lf, rf);
-			SG_UNREF(lf);
-			SG_UNREF(rf);
+
+
 
 			if (!result)
 				break;
@@ -128,7 +128,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				SG_ERROR(
 				    "No kernel matrix was assigned to this Custom kernel\n")
 
-			auto k_custom = dynamic_cast<CCustomKernel*>(k);
+			auto k_custom = std::dynamic_pointer_cast<CCustomKernel>(k);
 			if (!k_custom)
 				SG_ERROR("Dynamic cast to custom kernel failed")
 
@@ -153,7 +153,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 				    num_rhs, k->get_num_vec_rhs())
 		}
 
-		SG_UNREF(k);
+
 	}
 
 	if (!result)
@@ -162,7 +162,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 		if (k)
 		{
 			k->list_kernel();
-			SG_UNREF(k);
+
 		}
 		else
 			SG_INFO("<NULL>\n")
@@ -180,7 +180,7 @@ bool CCombinedKernel::init_with_extracted_subsets(
 	return true;
 }
 
-bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
+bool CCombinedKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	if (enable_subkernel_weight_opt && !weight_update)
 	{
@@ -195,8 +195,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	SGVector<index_t> lhs_subset;
 	SGVector<index_t> rhs_subset;
 
-	CCombinedFeatures* combined_l;
-	CCombinedFeatures* combined_r;
+	std::shared_ptr<CCombinedFeatures> combined_l;
+	std::shared_ptr<CCombinedFeatures> combined_r;
 
 	auto l_subset_stack = l->get_subset_stack();
 	auto r_subset_stack = r->get_subset_stack();
@@ -221,8 +221,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		rhs_subset.range_fill();
 	}
 
-	SG_UNREF(l_subset_stack);
-	SG_UNREF(r_subset_stack);
+
+
 
 	/* if the specified features are not combined features, but a single other
 	 * feature type, assume that the caller wants to use all kernels on these */
@@ -237,8 +237,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		 * The we must make sure that we make any custom kernels aware of any
 		 * subsets present!
 		 */
-		combined_l = new CCombinedFeatures();
-		combined_r = new CCombinedFeatures();
+		combined_l = std::make_shared<CCombinedFeatures>();
+		combined_r = std::make_shared<CCombinedFeatures>();
 
 		for (index_t i = 0; i < get_num_subkernels(); ++i)
 		{
@@ -248,8 +248,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 	}
 	else
 	{
-		combined_l = (CCombinedFeatures*)l;
-		combined_r = (CCombinedFeatures*)r;
+		combined_l = std::static_pointer_cast<CCombinedFeatures>(l);
+		combined_r = std::static_pointer_cast<CCombinedFeatures>(r);
 	}
 
 	return init_with_extracted_subsets(
@@ -262,11 +262,11 @@ void CCombinedKernel::remove_lhs()
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		if (k->get_kernel_type() != K_CUSTOM)
 			k->remove_lhs();
 
-		SG_UNREF(k);
+
 	}
 	CKernel::remove_lhs();
 
@@ -279,11 +279,11 @@ void CCombinedKernel::remove_rhs()
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		if (k->get_kernel_type() != K_CUSTOM)
 			k->remove_rhs();
 
-		SG_UNREF(k);
+
 	}
 	CKernel::remove_rhs();
 
@@ -296,11 +296,11 @@ void CCombinedKernel::remove_lhs_and_rhs()
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		if (k->get_kernel_type() != K_CUSTOM)
 			k->remove_lhs_and_rhs();
 
-		SG_UNREF(k);
+
 	}
 
 	CKernel::remove_lhs_and_rhs();
@@ -313,9 +313,9 @@ void CCombinedKernel::cleanup()
 {
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		k->cleanup();
-		SG_UNREF(k);
+
 	}
 
 	delete_optimization();
@@ -333,9 +333,9 @@ void CCombinedKernel::list_kernels()
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		k->list_kernel();
-		SG_UNREF(k);
+
 	}
 	SG_INFO("END COMBINED KERNEL LIST - ")
 }
@@ -345,10 +345,10 @@ float64_t CCombinedKernel::compute(int32_t x, int32_t y)
 	float64_t result=0;
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		if (k->get_combined_kernel_weight()!=0)
 			result += k->get_combined_kernel_weight() * k->kernel(x,y);
-		SG_UNREF(k);
+
 	}
 
 	return result;
@@ -365,7 +365,7 @@ bool CCombinedKernel::init_optimization(
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 
 		bool ret=true;
 
@@ -373,17 +373,17 @@ bool CCombinedKernel::init_optimization(
 			ret=k->init_optimization(count, IDX, weights);
 		else
 		{
-			SG_WARNING("non-optimizable kernel 0x%X in kernel-list\n", k)
+			SG_WARNING("non-optimizable kernel 0x%X in kernel-list\n", k.get())
 			have_non_optimizable=true;
 		}
 
 		if (!ret)
 		{
 			have_non_optimizable=true;
-			SG_WARNING("init_optimization of kernel 0x%X failed\n", k)
+			SG_WARNING("init_optimization of kernel 0x%X failed\n", k.get())
 		}
 
-		SG_UNREF(k);
+
 	}
 
 	if (have_non_optimizable)
@@ -408,11 +408,11 @@ bool CCombinedKernel::delete_optimization()
 {
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		if (k->has_property(KP_LINADD))
 			k->delete_optimization();
 
-		SG_UNREF(k);
+
 	}
 
 	SG_FREE(sv_idx);
@@ -442,7 +442,7 @@ void CCombinedKernel::compute_batch(
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		if (k && k->has_property(KP_BATCHEVALUATION))
 		{
 			if (k->get_combined_kernel_weight()!=0)
@@ -451,7 +451,7 @@ void CCombinedKernel::compute_batch(
 		else
 			emulate_compute_batch(k, num_vec, vec_idx, result, num_suppvec, IDX, weights);
 
-		SG_UNREF(k);
+
 	}
 
 	//clean up
@@ -459,7 +459,7 @@ void CCombinedKernel::compute_batch(
 }
 
 void CCombinedKernel::emulate_compute_batch(
-	CKernel* k, int32_t num_vec, int32_t* vec_idx, float64_t* result,
+	std::shared_ptr<CKernel> k, int32_t num_vec, int32_t* vec_idx, float64_t* result,
 	int32_t num_suppvec, int32_t* IDX, float64_t* weights)
 {
 	ASSERT(k)
@@ -510,7 +510,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		if (k->has_property(KP_LINADD) &&
 			k->get_is_initialized())
 		{
@@ -535,7 +535,7 @@ float64_t CCombinedKernel::compute_optimized(int32_t idx)
 			}
 		}
 
-		SG_UNREF(k);
+
 	}
 
 	return result;
@@ -545,9 +545,9 @@ void CCombinedKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		k->add_to_normal(idx, weight);
-		SG_UNREF(k);
+
 	}
 	set_is_initialized(true) ;
 }
@@ -556,9 +556,9 @@ void CCombinedKernel::clear_normal()
 {
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		k->clear_normal() ;
-		SG_UNREF(k);
+
 	}
 	set_is_initialized(true) ;
 }
@@ -571,7 +571,7 @@ void CCombinedKernel::compute_by_subkernel(
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
-			CKernel* k = get_kernel(k_idx);
+			auto k = get_kernel(k_idx);
 			int32_t num = -1 ;
 			k->get_subkernel_weights(num);
 			if (num>1)
@@ -579,7 +579,7 @@ void CCombinedKernel::compute_by_subkernel(
 			else
 				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
 
-			SG_UNREF(k);
+
 			i += num ;
 		}
 	}
@@ -588,11 +588,11 @@ void CCombinedKernel::compute_by_subkernel(
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
-			CKernel* k = get_kernel(k_idx);
+			auto k = get_kernel(k_idx);
 			if (k->get_combined_kernel_weight()!=0)
 				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
 
-			SG_UNREF(k);
+
 			i++ ;
 		}
 	}
@@ -613,14 +613,14 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
-			CKernel* k = get_kernel(k_idx);
+			auto k = get_kernel(k_idx);
 			int32_t num = -1 ;
 			const float64_t *w = k->get_subkernel_weights(num);
 			ASSERT(num==k->get_num_subkernels())
 			for (int32_t j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
 
-			SG_UNREF(k);
+
 			i += num ;
 		}
 	}
@@ -630,10 +630,9 @@ const float64_t* CCombinedKernel::get_subkernel_weights(int32_t& num_weights)
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); ++k_idx)
 		{
-			CKernel* k = get_kernel(k_idx);
+			auto k = get_kernel(k_idx);
 			subkernel_weights_buffer[i] = k->get_combined_kernel_weight();
 
-			SG_UNREF(k);
 			++i;
 		}
 	}
@@ -668,12 +667,12 @@ void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
-			CKernel* k = get_kernel(k_idx);
+			auto k = get_kernel(k_idx);
 			int32_t num = k->get_num_subkernels() ;
 			ASSERT(i<weights.vlen)
 			k->set_subkernel_weights(SGVector<float64_t>(&weights.vector[i],num, false));
 
-			SG_UNREF(k);
+
 			i += num ;
 		}
 	}
@@ -682,11 +681,11 @@ void CCombinedKernel::set_subkernel_weights(SGVector<float64_t> weights)
 		int32_t i=0 ;
 		for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 		{
-			CKernel* k = get_kernel(k_idx);
+			auto k = get_kernel(k_idx);
 			ASSERT(i<weights.vlen)
 			k->set_combined_kernel_weight(weights.vector[i]);
 
-			SG_UNREF(k);
+
 			i++ ;
 		}
 	}
@@ -696,10 +695,10 @@ void CCombinedKernel::set_optimization_type(EOptimizationType t)
 {
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
+		auto k = get_kernel(k_idx);
 		k->set_optimization_type(t);
 
-		SG_UNREF(k);
+
 	}
 
 	CKernel::set_optimization_type(t);
@@ -710,19 +709,19 @@ bool CCombinedKernel::precompute_subkernels()
 	if (get_num_kernels()==0)
 		return false;
 
-	CDynamicObjectArray* new_kernel_array = new CDynamicObjectArray();
+	auto new_kernel_array = std::make_shared<CDynamicObjectArray>();
 
 	for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 	{
-		CKernel* k = get_kernel(k_idx);
-		new_kernel_array->append_element(new CCustomKernel(k));
+		auto k = get_kernel(k_idx);
+		new_kernel_array->append_element(std::make_shared<CCustomKernel>(k));
 
-		SG_UNREF(k);
+
 	}
 
-	SG_UNREF(kernel_array);
+
 	kernel_array=new_kernel_array;
-	SG_REF(kernel_array);
+
 
 	return true;
 }
@@ -737,17 +736,17 @@ void CCombinedKernel::init()
 	append_subkernel_weights = false;
 
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	kernel_array=new CDynamicObjectArray();
-	SG_REF(kernel_array);
+	kernel_array=std::make_shared<CDynamicObjectArray>();
+
 
 	SG_ADD(&kernel_array, "kernel_array", "Array of kernels.", ParameterProperties::HYPER);
 
-	m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
-		 "Support vector index.");
+	/*m_parameters->add_vector(&sv_idx, &sv_count, "sv_idx",
+		 "Support vector index.");*/
 	watch_param("sv_idx", &sv_idx, &sv_count);
 
-	m_parameters->add_vector(&sv_weight, &sv_count, "sv_weight",
-		 "Support vector weights.");
+	/*m_parameters->add_vector(&sv_weight, &sv_count, "sv_weight",
+		 "Support vector weights.");*/
 	watch_param("sv_weight", &sv_weight, &sv_count);
 
 	SG_ADD(&append_subkernel_weights, "append_subkernel_weights",
@@ -793,10 +792,10 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 		{
 			for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 			{
-				CKernel* k=get_kernel(k_idx);
+				auto k=get_kernel(k_idx);
 				result=k->get_parameter_gradient(param, index);
 
-				SG_UNREF(k);
+
 
 				if (result.num_cols*result.num_rows>0)
 					return result;
@@ -806,10 +805,10 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 		{
 			for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 			{
-				CKernel* k=get_kernel(k_idx);
+				auto k=get_kernel(k_idx);
 				result=k->get_kernel_matrix();
 
-				SG_UNREF(k);
+
 
 				return result;
 			}
@@ -822,9 +821,9 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 			if(enable_subkernel_weight_opt)
 			{
 				ASSERT(index>=0 && index<subkernel_log_weights.vlen);
-				CKernel* k=get_kernel(index);
+				auto k=get_kernel(index);
 				result=k->get_kernel_matrix();
-				SG_UNREF(k);
+
 				if (weight_update)
 					weight_update = false;
 				float64_t factor = 1.0;
@@ -842,9 +841,9 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 			}
 			else
 			{
-				CKernel* k=get_kernel(0);
+				auto k=get_kernel(0);
 				result=k->get_kernel_matrix();
-				SG_UNREF(k);
+
 				result.zero();
 			}
 			return result;
@@ -854,7 +853,7 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 			float64_t coeff;
 			for (index_t k_idx=0; k_idx<get_num_kernels(); k_idx++)
 			{
-				CKernel* k=get_kernel(k_idx);
+				auto k=get_kernel(k_idx);
 				SGMatrix<float64_t> derivative=
 					k->get_parameter_gradient(param, index);
 
@@ -883,7 +882,7 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 					}
 				}
 
-				SG_UNREF(k);
+
 			}
 		}
 	}
@@ -891,7 +890,7 @@ SGMatrix<float64_t> CCombinedKernel::get_parameter_gradient(
 	return result;
 }
 
-CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<CCombinedKernel> CCombinedKernel::obtain_from_generic(std::shared_ptr<CKernel> kernel)
 {
 	if (kernel->get_kernel_type()!=K_COMBINED)
 	{
@@ -900,14 +899,14 @@ CCombinedKernel* CCombinedKernel::obtain_from_generic(CKernel* kernel)
 	}
 
 	/* since an additional reference is returned */
-	SG_REF(kernel);
-	return (CCombinedKernel*)kernel;
+
+	return std::static_pointer_cast<CCombinedKernel>(kernel);
 }
 
-CList* CCombinedKernel::combine_kernels(CList* kernel_list)
+std::shared_ptr<CList> CCombinedKernel::combine_kernels(std::shared_ptr<CList> kernel_list)
 {
-	CList* return_list = new CList(true);
-	SG_REF(return_list);
+	auto return_list = std::make_shared<CList>(true);
+
 
 	if (!kernel_list)
 		return return_list;
@@ -919,10 +918,10 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 	int32_t list_index = 0;
 
 	/* calculation of total combinations */
-	CSGObject* list = kernel_list->get_first_element();
+	auto list = kernel_list->get_first_element();
 	while (list)
 	{
-		CList* c_list= dynamic_cast<CList* >(list);
+		auto c_list= std::dynamic_pointer_cast<CList>(list);
 		if (!c_list)
 		{
 			SG_SERROR("CCombinedKernel::combine_kernels() : Failed to cast list of type "
@@ -938,7 +937,7 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 		num_combinations *= c_list->get_num_elements();
 
 		if (kernel_list->get_delete_data())
-			SG_UNREF(list);
+
 
 		list = kernel_list->get_next_element();
 		++list_index;
@@ -948,14 +947,14 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 	CDynamicObjectArray kernel_array(num_combinations);
 	for (index_t i=0; i<num_combinations; ++i)
 	{
-		CCombinedKernel* c_kernel = new CCombinedKernel();
+		auto c_kernel = std::make_shared<CCombinedKernel>();
 		return_list->append_element(c_kernel);
 		kernel_array.push_back(c_kernel);
 	}
 
 	/* first pass */
 	list = kernel_list->get_first_element();
-	CList* c_list = dynamic_cast<CList* >(list);
+	auto c_list = std::dynamic_pointer_cast<CList>(list);
 
 	/* kernel index in the list */
 	index_t kernel_index = 0;
@@ -965,9 +964,9 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 	*/
 	EKernelType prev_kernel_type = K_UNKNOWN;
 	bool first_kernel = true;
-	for (CSGObject* kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
+	for (auto kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
 	{
-		CKernel* c_kernel = dynamic_cast<CKernel* >(kernel);
+		auto c_kernel = std::dynamic_pointer_cast<CKernel>(kernel);
 
 		if (first_kernel)
 			 first_kernel = false;
@@ -981,18 +980,13 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 
 		for (index_t index=kernel_index; index<num_combinations; index+=c_list->get_num_elements())
 		{
-			CCombinedKernel* comb_kernel =
-					dynamic_cast<CCombinedKernel* >(kernel_array.get_element(index));
+			auto comb_kernel =
+					std::dynamic_pointer_cast<CCombinedKernel>(kernel_array.get_element(index));
 			comb_kernel->append_kernel(c_kernel);
-			SG_UNREF(comb_kernel);
+
 		}
 		++kernel_index;
-		if (c_list->get_delete_data())
-			SG_UNREF(kernel);
 	}
-
-	if (kernel_list->get_delete_data())
-		SG_UNREF(list);
 
 	/* how often each kernel of the sub-list must appear */
 	int32_t freq = c_list->get_num_elements();
@@ -1004,14 +998,14 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 	list_index = 1;
 	while (list)
 	{
-		c_list = dynamic_cast<CList* >(list);
+		c_list = std::dynamic_pointer_cast<CList>(list);
 
 		/* index of kernel in the list */
 		kernel_index = 0;
 		first_kernel = true;
-		for (CSGObject* kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
+		for (auto kernel=c_list->get_first_element(); kernel; kernel=c_list->get_next_element())
 		{
-			CKernel* c_kernel = dynamic_cast<CKernel* >(kernel);
+			auto c_kernel = std::dynamic_pointer_cast<CKernel>(kernel);
 
 			if (first_kernel)
 				first_kernel = false;
@@ -1029,21 +1023,18 @@ CList* CCombinedKernel::combine_kernels(CList* kernel_list)
 				/* inserts freq consecutives times the current kernel */
 				for (index_t index=0; index<freq; ++index)
 				{
-					CCombinedKernel* comb_kernel =
-							dynamic_cast<CCombinedKernel* >(kernel_array.get_element(base+index));
+					auto comb_kernel =
+							std::dynamic_pointer_cast<CCombinedKernel>(kernel_array.get_element(base+index));
 					comb_kernel->append_kernel(c_kernel);
-					SG_UNREF(comb_kernel);
+
 				}
 			}
 			++kernel_index;
 
-			if (c_list->get_delete_data())
-				SG_UNREF(kernel);
 		}
 
 		freq *= c_list->get_num_elements();
-		if (kernel_list->get_delete_data())
-			SG_UNREF(list);
+
 		list = kernel_list->get_next_element();
 		++list_index;
 	}

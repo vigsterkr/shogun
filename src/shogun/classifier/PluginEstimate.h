@@ -49,16 +49,16 @@ class CPluginEstimate: public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
 
 		/** set features
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(CStringFeatures<uint16_t>* feat)
+		virtual void set_features(std::shared_ptr<CStringFeatures<uint16_t>> feat)
 		{
-			SG_REF(feat);
-			SG_UNREF(features);
+			
+			
 			features=feat;
 		}
 
@@ -66,7 +66,7 @@ class CPluginEstimate: public CMachine
 		 *
 		 * @return features
 		 */
-		virtual CStringFeatures<uint16_t>* get_features() { SG_REF(features); return features; }
+		virtual std::shared_ptr<CStringFeatures<uint16_t>> get_features() {  return features; }
 
 		/// classify the test feature vector indexed by vec_idx
 		float64_t apply_one(int32_t vec_idx);
@@ -159,14 +159,14 @@ class CPluginEstimate: public CMachine
 		{
 			int32_t num_params;
 
-			SG_UNREF(pos_model);
-			pos_model=new CLinearHMM(seq_length, num_symbols);
-			SG_REF(pos_model);
+			
+			pos_model=std::make_shared<CLinearHMM>(seq_length, num_symbols);
+			
 
 
-			SG_UNREF(neg_model);
-			neg_model=new CLinearHMM(seq_length, num_symbols);
-			SG_REF(neg_model);
+			
+			neg_model=std::make_shared<CLinearHMM>(seq_length, num_symbols);
+			
 
 			num_params=pos_model->get_num_model_parameters();
 			ASSERT(seq_length*num_symbols==num_params)
@@ -206,7 +206,7 @@ class CPluginEstimate: public CMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	protected:
 		/** pseudo count for positive class */
@@ -215,12 +215,12 @@ class CPluginEstimate: public CMachine
 		float64_t m_neg_pseudo;
 
 		/** positive model */
-		CLinearHMM* pos_model;
+		std::shared_ptr<CLinearHMM> pos_model;
 		/** negative model */
-		CLinearHMM* neg_model;
+		std::shared_ptr<CLinearHMM> neg_model;
 
 		/** features */
-		CStringFeatures<uint16_t>* features;
+		std::shared_ptr<CStringFeatures<uint16_t>> features;
 };
 }
 #endif

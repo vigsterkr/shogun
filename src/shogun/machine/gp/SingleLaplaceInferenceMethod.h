@@ -45,8 +45,8 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CSingleLaplaceInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	CSingleLaplaceInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
 
 	virtual ~CSingleLaplaceInferenceMethod();
 
@@ -67,7 +67,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CSingleLaplaceInferenceMethod object
 	 */
-	static CSingleLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CSingleLaplaceInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -137,7 +137,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 
 	/** initialize the update  */
@@ -247,12 +247,12 @@ public:
 
 	virtual const char* get_name() const { return "SingleLaplaceNewtonOptimizer"; }
 
-	virtual ~CSingleLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	virtual ~CSingleLaplaceNewtonOptimizer() {  }
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(CSingleLaplaceInferenceMethod *obj);
+	void set_target(std::shared_ptr<CSingleLaplaceInferenceMethod >obj);
 
 	/** Unset the inference method
 	 * @param is_unref do we SG_UNREF the method
@@ -293,7 +293,7 @@ private:
 	void init();
 
 	/** the inference method */
-	CSingleLaplaceInferenceMethod *m_obj;
+	std::shared_ptr<CSingleLaplaceInferenceMethod >m_obj;
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;

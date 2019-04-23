@@ -83,8 +83,8 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLCovarianceInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	CKLCovarianceInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
 
 	virtual ~CKLCovarianceInferenceMethod();
 
@@ -105,7 +105,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLCovarianceInferenceMethod object
 	 */
-	static CKLCovarianceInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CKLCovarianceInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** get alpha vector
 	 *

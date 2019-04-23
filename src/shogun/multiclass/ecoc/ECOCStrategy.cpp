@@ -15,14 +15,14 @@ CECOCStrategy::CECOCStrategy() : CMulticlassStrategy()
     init();
 }
 
-CECOCStrategy::CECOCStrategy(CECOCEncoder *encoder, CECOCDecoder *decoder)
+CECOCStrategy::CECOCStrategy(std::shared_ptr<CECOCEncoder >encoder, std::shared_ptr<CECOCDecoder >decoder)
 	: CMulticlassStrategy()
 {
     init();
     m_encoder=encoder;
     m_decoder=decoder;
-    SG_REF(m_encoder);
-    SG_REF(decoder);
+
+
 }
 
 void CECOCStrategy::init()
@@ -36,11 +36,11 @@ void CECOCStrategy::init()
 
 CECOCStrategy::~CECOCStrategy()
 {
-    SG_UNREF(m_encoder);
-    SG_UNREF(m_decoder);
+
+
 }
 
-void CECOCStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
+void CECOCStrategy::train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels)
 {
     CMulticlassStrategy::train_start(orig_labels, train_labels);
 
@@ -56,17 +56,19 @@ SGVector<int32_t> CECOCStrategy::train_prepare_next()
 {
     SGVector<int32_t> subset(m_orig_labels->get_num_labels(), false);
     int32_t tot=0;
+    auto bl = binary_labels(m_train_labels);
+    auto mc = multiclass_labels(m_orig_labels);
     for (int32_t i=0; i < m_orig_labels->get_num_labels(); ++i)
     {
-        int32_t label = ((CMulticlassLabels*) m_orig_labels)->get_int_label(i);
+        int32_t label = mc->get_int_label(i);
         switch (m_codebook(m_train_iter, label))
         {
         case -1:
-            ((CBinaryLabels*) m_train_labels)->set_label(i, -1);
+            bl->set_label(i, -1);
             subset[tot++]=i;
             break;
         case 1:
-            ((CBinaryLabels*) m_train_labels)->set_label(i, 1);
+            bl->set_label(i, 1);
             subset[tot++]=i;
             break;
         default:

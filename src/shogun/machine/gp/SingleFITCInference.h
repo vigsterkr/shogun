@@ -80,9 +80,9 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleFITCInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	CSingleFITCInference(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
+			std::shared_ptr<CFeatures> inducing_features);
 
 	virtual ~CSingleFITCInference();
 

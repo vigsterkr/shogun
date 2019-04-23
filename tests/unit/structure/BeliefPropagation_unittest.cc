@@ -35,10 +35,10 @@ float64_t hamming_loss(SGVector<int32_t> y_truth, SGVector<int32_t> y_pred)
 
 TEST(BeliefPropagation, tree_max_product_string)
 {
-	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
-	SG_REF(fg_test_data);
+	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
 
-	CFactorGraph* fg = fg_test_data->simple_chain_graph();
+
+	auto fg = fg_test_data->simple_chain_graph();
 
 	EXPECT_TRUE(fg->is_acyclic_graph());
 	EXPECT_TRUE(fg->is_connected_graph());
@@ -48,14 +48,12 @@ TEST(BeliefPropagation, tree_max_product_string)
 	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	auto fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
-	SG_UNREF(fg_observ);
 
 	EXPECT_NEAR(0.4, infer_met.get_energy(), 1E-10);
 
-	SG_UNREF(fg);
-	SG_UNREF(fg_test_data);
+
 }
 
 TEST(BeliefPropagation, tree_max_product_random)
@@ -63,9 +61,9 @@ TEST(BeliefPropagation, tree_max_product_random)
 	SGVector<int32_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
-	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
-	SG_REF(fg_test_data);
-	CFactorGraph* fg = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
+	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+
+	auto fg = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
 
 	EXPECT_TRUE(fg->is_acyclic_graph());
 	EXPECT_TRUE(fg->is_connected_graph());
@@ -75,9 +73,8 @@ TEST(BeliefPropagation, tree_max_product_random)
 	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	auto fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
-	SG_UNREF(fg_observ);
 
 	EXPECT_EQ(assignment.size(), assignment_expected.size());
 
@@ -86,8 +83,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 
 	EXPECT_NEAR(min_energy_expected, infer_met.get_energy(), 1E-10);
 
-	SG_UNREF(fg_test_data);
-	SG_UNREF(fg);
+
 }
 
 TEST(BeliefPropagation, loss_augmented_energies)
@@ -101,26 +97,26 @@ TEST(BeliefPropagation, loss_augmented_energies)
 	w[2] = 0.0; // 0,1
 	w[3] = 0.0; // 1,1
 	int32_t tid = 0;
-	CTableFactorType* factortype = new CTableFactorType(tid, card, w);
-	SG_REF(factortype);
+	auto factortype = std::make_shared<CTableFactorType>(tid, card, w);
+
 
 	SGVector<int32_t> vc(3);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	CFactorGraph* fg = new CFactorGraph(vc);
-	SG_REF(fg);
+	auto fg = std::make_shared<CFactorGraph>(vc);
+
 
 	SGVector<float64_t> data(1);
 	data[0] = 1.0;
 	SGVector<int32_t> var_index1(2);
 	var_index1[0] = 0;
 	var_index1[1] = 1;
-	CFactor* fac1 = new CFactor(factortype, var_index1, data);
+	auto fac1 = std::make_shared<CFactor>(factortype, var_index1, data);
 	fg->add_factor(fac1);
 
 	SGVector<int32_t> var_index2(2);
 	var_index2[0] = 1;
 	var_index2[1] = 2;
-	CFactor* fac2 = new CFactor(factortype, var_index2, data);
+	auto fac2 = std::make_shared<CFactor>(factortype, var_index2, data);
 	fg->add_factor(fac2);
 
 	fg->connect_components();
@@ -146,21 +142,21 @@ TEST(BeliefPropagation, loss_augmented_energies)
 		}
 	}
 
-	SG_UNREF(fg);
-	SG_UNREF(factortype);
+
+
 }
 
 TEST(BeliefPropagation, tree_max_product_multi_states)
 {
-	CFactorGraphDataGenerator* fg_test_data = new CFactorGraphDataGenerator();
-	SG_REF(fg_test_data);
+	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
 
-	CFactorGraph* fg = fg_test_data->multi_state_tree_graph();
+
+	auto fg = fg_test_data->multi_state_tree_graph();
 
 	CMAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
-	CFactorGraphObservation* fg_observ = infer_met.get_structured_outputs();
+	auto fg_observ = infer_met.get_structured_outputs();
 	SGVector<int32_t> assignment = fg_observ->get_data();
 	EXPECT_EQ(assignment[0],2);
 	EXPECT_EQ(assignment[1],0);
@@ -169,8 +165,6 @@ TEST(BeliefPropagation, tree_max_product_multi_states)
 	EXPECT_NEAR(-3.8, infer_met.get_energy(), 1E-10);
 	EXPECT_NEAR(-3.8, fg->evaluate_energy(assignment), 1E-10);
 
-	SG_UNREF(fg_observ);
-	SG_UNREF(fg);
-	SG_UNREF(fg_test_data);
+
 }
 

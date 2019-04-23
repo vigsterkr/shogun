@@ -60,7 +60,7 @@ public:
 	 *
 	 * @param features features to embed
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 	/** setter for the maximum number of iterations
 	 *

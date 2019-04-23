@@ -37,12 +37,12 @@ public:
 	/** add IndexBlock to the group
 	 * @param block IndexBlock to add
 	 */
-	void add_block(CIndexBlock* block);
+	void add_block(std::shared_ptr<CIndexBlock> block);
 
 	/** remove IndexBlock from the group
 	 * @param block IndexBlock to remove
 	 */
-	void remove_block(CIndexBlock* block);
+	void remove_block(std::shared_ptr<CIndexBlock> block);
 
 	/** returns information about IndexBlocks in
 	 * SLEP "ind" format
@@ -57,7 +57,7 @@ public:
 protected:
 
 	/** blocks in group */
-	CList* m_blocks;
+	std::shared_ptr<CList> m_blocks;
 
 };
 

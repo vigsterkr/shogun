@@ -100,8 +100,8 @@ public:
 	 * @param sigma Standard deviation of the gaussian used to initialize the
 	 * parameters
 	 */
-	CAutoencoder(int32_t num_inputs, CNeuralLayer* hidden_layer,
-		CNeuralLayer* decoding_layer=NULL, float64_t sigma = 0.01);
+	CAutoencoder(int32_t num_inputs, std::shared_ptr<CNeuralLayer> hidden_layer,
+		std::shared_ptr<CNeuralLayer> decoding_layer=NULL, float64_t sigma = 0.01);
 
 	/** Constructor for convolutional autoencoders
 	 *
@@ -115,8 +115,8 @@ public:
 	 * parameters
 	 */
 	CAutoencoder(int32_t input_width, int32_t input_height, int32_t input_num_channels,
-		CNeuralConvolutionalLayer* hidden_layer,
-		CNeuralConvolutionalLayer* decoding_layer, float64_t sigma = 0.01);
+		std::shared_ptr<CNeuralConvolutionalLayer> hidden_layer,
+		std::shared_ptr<CNeuralConvolutionalLayer> decoding_layer, float64_t sigma = 0.01);
 
 	/** Trains the autoencoder
 	 *
@@ -124,7 +124,7 @@ public:
 	 *
 	 * @return True if training succeeded, false otherwise
 	 */
-	virtual bool train(CFeatures* data);
+	virtual bool train(std::shared_ptr<CFeatures> data);
 
 	/** Computes the activation of the hidden layer given the input data
 	 *
@@ -132,8 +132,8 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<CDenseFeatures< float64_t >> transform(
+		std::shared_ptr<CDenseFeatures< float64_t >> data);
 
 	/** Reconstructs the input data
 	 *
@@ -141,8 +141,8 @@ public:
 	 *
 	 * @return Reconstructed features
 	 */
-	virtual CDenseFeatures<float64_t>* reconstruct(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<CDenseFeatures< float64_t >> reconstruct(
+		std::shared_ptr<CDenseFeatures< float64_t >> data);
 
 	/** Sets the contraction coefficient
 	 *

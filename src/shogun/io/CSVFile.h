@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Fernando Iglesias, Sergey Lisitsyn, 
- *          Heiko Strathmann, Yuyu Zhang, Viktor Gal, Thoralf Klein, 
+ * Authors: Evgeniy Andreev, Fernando Iglesias, Sergey Lisitsyn,
+ *          Heiko Strathmann, Yuyu Zhang, Viktor Gal, Thoralf Klein,
  *          Bjoern Esser, Soeren Sonnenburg
  */
 
@@ -387,16 +387,16 @@ private:
 
 private:
 	/** object for reading lines from file */
-	CLineReader* m_line_reader;
+	std::shared_ptr<CLineReader> m_line_reader;
 
 	/** parser of lines */
-	CParser* m_parser;
+	std::shared_ptr<CParser> m_parser;
 
 	/** tokenizer for line_reader */
-	CDelimiterTokenizer* m_line_tokenizer;
+	std::shared_ptr<CDelimiterTokenizer> m_line_tokenizer;
 
 	/** tokenizer for parser */
-	CDelimiterTokenizer* m_tokenizer;
+	std::shared_ptr<CDelimiterTokenizer> m_tokenizer;
 
 	/** data order */
 	bool is_data_transposed;

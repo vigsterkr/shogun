@@ -47,18 +47,18 @@ CNeuralNetwork::CNeuralNetwork()
 	init();
 }
 
-CNeuralNetwork::CNeuralNetwork(CDynamicObjectArray* layers)
+CNeuralNetwork::CNeuralNetwork(std::shared_ptr<CDynamicObjectArray> layers)
 {
 	init();
 	set_layers(layers);
 }
 
-void CNeuralNetwork::set_layers(CDynamicObjectArray* layers)
+void CNeuralNetwork::set_layers(std::shared_ptr<CDynamicObjectArray> layers)
 {
 	REQUIRE(layers, "Layers should not be NULL")
 
-	SG_UNREF(m_layers);
-	SG_REF(layers);
+
+
 	m_layers = layers;
 	init_adj_matrix();
 }
@@ -158,13 +158,13 @@ void CNeuralNetwork::initialize_neural_network(float64_t sigma)
 
 CNeuralNetwork::~CNeuralNetwork()
 {
-	SG_UNREF(m_layers);
+
 }
 
-CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
+std::shared_ptr<CBinaryLabels> CNeuralNetwork::apply_binary(std::shared_ptr<CFeatures> data)
 {
 	SGMatrix<float64_t> output_activations = forward_propagate(data);
-	CBinaryLabels* labels = new CBinaryLabels(m_batch_size);
+	auto labels = std::make_shared<CBinaryLabels>(m_batch_size);
 
 	for (int32_t i=0; i<m_batch_size; i++)
 	{
@@ -190,7 +190,7 @@ CBinaryLabels* CNeuralNetwork::apply_binary(CFeatures* data)
 	return labels;
 }
 
-CRegressionLabels* CNeuralNetwork::apply_regression(CFeatures* data)
+std::shared_ptr<CRegressionLabels> CNeuralNetwork::apply_regression(std::shared_ptr<CFeatures> data)
 {
 	SGMatrix<float64_t> output_activations = forward_propagate(data);
 	SGVector<float64_t> labels_vec(m_batch_size);
@@ -198,11 +198,11 @@ CRegressionLabels* CNeuralNetwork::apply_regression(CFeatures* data)
 	for (int32_t i=0; i<m_batch_size; i++)
 			labels_vec[i] = output_activations[i];
 
-	return new CRegressionLabels(labels_vec);
+	return std::make_shared<CRegressionLabels>(labels_vec);
 }
 
 
-CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CNeuralNetwork::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	SGMatrix<float64_t> output_activations = forward_propagate(data);
 	SGVector<float64_t> labels_vec(m_batch_size);
@@ -213,7 +213,7 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 			output_activations.matrix+i*get_num_outputs(), 1, get_num_outputs());
 	}
 
-	CMulticlassLabels* labels = new CMulticlassLabels(labels_vec);
+	auto labels = std::make_shared<CMulticlassLabels>(labels_vec);
 
 	labels->allocate_confidences_for(get_num_outputs());
 	for (int32_t i=0; i<m_batch_size; i++)
@@ -225,21 +225,21 @@ CMulticlassLabels* CNeuralNetwork::apply_multiclass(CFeatures* data)
 	return labels;
 }
 
-CDenseFeatures< float64_t >* CNeuralNetwork::transform(
-	CDenseFeatures< float64_t >* data)
+std::shared_ptr<CDenseFeatures< float64_t >> CNeuralNetwork::transform(
+	std::shared_ptr<CDenseFeatures< float64_t >> data)
 {
 	SGMatrix<float64_t> output_activations = forward_propagate(data);
-	return new CDenseFeatures<float64_t>(output_activations);
+	return std::make_shared<CDenseFeatures<float64_t>>(output_activations);
 }
 
-bool CNeuralNetwork::train_machine(CFeatures* data)
+bool CNeuralNetwork::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (m_auto_quick_initialize)
 	{
 		quick_connect();
 		initialize_neural_network(m_sigma);
 	}
-	
+
 
 	REQUIRE(m_max_num_epochs>=0,
 		"Maximum number of epochs (%i) must be >= 0\n", m_max_num_epochs);
@@ -413,7 +413,7 @@ float64_t CNeuralNetwork::lbfgs_evaluate(void* userdata,
 		const int32_t n,
 		const float64_t step)
 {
-	CNeuralNetwork* network = static_cast<CNeuralNetwork*>(userdata);
+	auto network = (CNeuralNetwork*)userdata;
 
 	SGVector<float64_t> grad_vector(grad, network->get_num_parameters(), false);
 
@@ -447,7 +447,7 @@ int CNeuralNetwork::lbfgs_progress(void* instance,
 	return 0;
 }
 
-SGMatrix<float64_t> CNeuralNetwork::forward_propagate(CFeatures* data, int32_t j)
+SGMatrix<float64_t> CNeuralNetwork::forward_propagate(std::shared_ptr<CFeatures> data, int32_t j)
 {
 	SGMatrix<float64_t> inputs = features_to_matrix(data);
 	set_batch_size(data->get_num_vectors());
@@ -462,7 +462,7 @@ SGMatrix<float64_t> CNeuralNetwork::forward_propagate(
 
 	for (int32_t i=0; i<=j; i++)
 	{
-		CNeuralLayer* layer = get_layer(i);
+		auto layer = get_layer(i);
 
 		if (layer->is_input())
 			layer->compute_activations(inputs);
@@ -625,7 +625,7 @@ void CNeuralNetwork::set_batch_size(int32_t batch_size)
 	}
 }
 
-SGMatrix<float64_t> CNeuralNetwork::features_to_matrix(CFeatures* features)
+SGMatrix<float64_t> CNeuralNetwork::features_to_matrix(std::shared_ptr<CFeatures> features)
 {
 	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
 	REQUIRE(features->get_feature_type() == F_DREAL,
@@ -633,7 +633,7 @@ SGMatrix<float64_t> CNeuralNetwork::features_to_matrix(CFeatures* features)
 	REQUIRE(features->get_feature_class() == C_DENSE,
 		"Feature class must be C_DENSE\n");
 
-	CDenseFeatures<float64_t>* inputs = (CDenseFeatures<float64_t>*) features;
+	auto inputs = features->as<CDenseFeatures<float64_t>>();
 	REQUIRE(inputs->get_num_features()==m_num_inputs,
 		"Number of features (%i) must match the network's number of inputs "
 		"(%i)\n", inputs->get_num_features(), get_num_inputs());
@@ -641,7 +641,7 @@ SGMatrix<float64_t> CNeuralNetwork::features_to_matrix(CFeatures* features)
 	return inputs->get_feature_matrix();
 }
 
-SGMatrix<float64_t> CNeuralNetwork::labels_to_matrix(CLabels* labs)
+SGMatrix<float64_t> CNeuralNetwork::labels_to_matrix(std::shared_ptr<CLabels> labs)
 {
 	REQUIRE(labs != NULL, "Invalid (NULL) labels pointer\n");
 
@@ -650,7 +650,7 @@ SGMatrix<float64_t> CNeuralNetwork::labels_to_matrix(CLabels* labs)
 
 	if (labs->get_label_type() == LT_MULTICLASS)
 	{
-		CMulticlassLabels* labels_mc = (CMulticlassLabels*) labs;
+		auto labels_mc = multiclass_labels(labs);
 		REQUIRE(labels_mc->get_num_classes()==get_num_outputs(),
 			"Number of classes (%i) must match the network's number of "
 			"outputs (%i)\n", labels_mc->get_num_classes(), get_num_outputs());
@@ -661,7 +661,7 @@ SGMatrix<float64_t> CNeuralNetwork::labels_to_matrix(CLabels* labs)
 	}
 	else if (labs->get_label_type() == LT_BINARY)
 	{
-		CBinaryLabels* labels_bin = (CBinaryLabels*) labs;
+		auto labels_bin = binary_labels(labs);
 		if (get_num_outputs()==1)
 		{
 			for (int32_t i=0; i<labels_bin->get_num_labels(); i++)
@@ -678,7 +678,7 @@ SGMatrix<float64_t> CNeuralNetwork::labels_to_matrix(CLabels* labs)
 	}
 	else if (labs->get_label_type() == LT_REGRESSION)
 	{
-		CRegressionLabels* labels_reg = (CRegressionLabels*) labs;
+		auto labels_reg = regression_labels(labs);
 		for (int32_t i=0; i<labels_reg->get_num_labels(); i++)
 			targets[i] = labels_reg->get_label(i);
 	}
@@ -700,14 +700,14 @@ EProblemType CNeuralNetwork::get_machine_problem_type() const
 	else return PT_MULTICLASS;
 }
 
-bool CNeuralNetwork::is_label_valid(CLabels* lab) const
+bool CNeuralNetwork::is_label_valid(std::shared_ptr<CLabels> lab) const
 {
 	return (lab->get_label_type() == LT_MULTICLASS ||
 		lab->get_label_type() == LT_BINARY ||
 		lab->get_label_type() == LT_REGRESSION);
 }
 
-void CNeuralNetwork::set_labels(CLabels* lab)
+void CNeuralNetwork::set_labels(std::shared_ptr<CLabels> lab)
 {
 	if (lab->get_label_type() == LT_BINARY)
 	{
@@ -734,13 +734,9 @@ SGVector<float64_t>* CNeuralNetwork::get_layer_parameters(int32_t i)
 	return p;
 }
 
-CNeuralLayer* CNeuralNetwork::get_layer(int32_t i)
+std::shared_ptr<CNeuralLayer> CNeuralNetwork::get_layer(int32_t i)
 {
-	CNeuralLayer* layer = (CNeuralLayer*)m_layers->get_element(i);
-	// needed because m_layers->element(i) increases the reference count of
-	// layer i
-	SG_UNREF(layer);
-	return layer;
+	return m_layers->get_element<CNeuralLayer>(i);
 }
 
 template <class T>
@@ -755,9 +751,9 @@ int32_t CNeuralNetwork::get_num_outputs()
 	return get_layer(m_num_layers-1)->get_num_neurons();
 }
 
-CDynamicObjectArray* CNeuralNetwork::get_layers()
+std::shared_ptr<CDynamicObjectArray> CNeuralNetwork::get_layers()
 {
-	SG_REF(m_layers);
+
 	return m_layers;
 }
 
@@ -786,8 +782,8 @@ void CNeuralNetwork::init()
 	m_is_training = false;
 	m_auto_quick_initialize = false;
 	m_sigma = 0.01f;
-	m_layers = new CDynamicObjectArray();
-	SG_REF(m_layers);
+	m_layers = std::make_shared<CDynamicObjectArray>();
+
 
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_optimization_method, "optimization_method",

@@ -32,7 +32,7 @@ CGaussianKernel::CGaussianKernel(int32_t size, float64_t w) : CShiftInvariantKer
 	set_cache_size(size);
 }
 
-CGaussianKernel::CGaussianKernel(CDotFeatures* l, CDotFeatures* r, float64_t w, int32_t size) : CShiftInvariantKernel()
+CGaussianKernel::CGaussianKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, float64_t w, int32_t size) : CShiftInvariantKernel()
 {
 	register_params();
 	set_width(w);
@@ -45,23 +45,23 @@ CGaussianKernel::~CGaussianKernel()
 	cleanup();
 }
 
-CGaussianKernel* CGaussianKernel::obtain_from_generic(CKernel* kernel)
+std::shared_ptr<CGaussianKernel> CGaussianKernel::obtain_from_generic(std::shared_ptr<CKernel> kernel)
 {
 	REQUIRE(kernel->get_kernel_type()==K_GAUSSIAN,
 		"Provided kernel (%s) must be of type CGaussianKernel!\n", kernel->get_name());
 
-	SG_REF(kernel);
-	return (CGaussianKernel*)kernel;
+
+	return std::static_pointer_cast<CGaussianKernel>(kernel);
 }
 
 #include <typeinfo>
-CSGObject *CGaussianKernel::shallow_copy() const
+std::shared_ptr<CSGObject >CGaussianKernel::shallow_copy() const
 {
 	// TODO: remove this after all the classes get shallow_copy properly implemented
 	// this assert is to avoid any subclass of CGaussianKernel accidentally called
 	// with the implement here
 	ASSERT(typeid(*this) == typeid(CGaussianKernel))
-	CGaussianKernel *ker = new CGaussianKernel(cache_size, get_width());
+	auto ker = std::make_shared<CGaussianKernel>(cache_size, get_width());
 	if (lhs && rhs)
 	{
 		ker->init(lhs, rhs);
@@ -76,7 +76,7 @@ void CGaussianKernel::cleanup()
 	m_distance->cleanup();
 }
 
-bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
+bool CGaussianKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	cleanup();
 	return CShiftInvariantKernel::init(l, r);
@@ -137,10 +137,10 @@ void CGaussianKernel::register_params()
 	set_width(1.0);
 	set_cache_size(10);
 
-	CEuclideanDistance* dist=new CEuclideanDistance();
+	auto dist=std::make_shared<CEuclideanDistance>();
 	dist->set_disable_sqrt(true);
 	m_distance=dist;
-	SG_REF(m_distance);
+
 
 	SG_ADD(&m_log_width, "log_width", "Kernel width in log domain", ParameterProperties::HYPER | ParameterProperties::GRADIENT);
 }

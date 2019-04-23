@@ -51,8 +51,8 @@ class CSVMOcas : public CLinearMachine
 		 * @param trainlab labels for training features
 		 */
 		CSVMOcas(
-			float64_t C, CFeatures* traindat,
-			CLabels* trainlab);
+			float64_t C, std::shared_ptr<CFeatures> traindat,
+			std::shared_ptr<CLabels> trainlab);
 		virtual ~CSVMOcas();
 
 		/** get classifier type
@@ -187,7 +187,7 @@ class CSVMOcas : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	private:
 		void init();

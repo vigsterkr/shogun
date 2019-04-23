@@ -51,7 +51,7 @@ CGaussianProcessClassification::CGaussianProcessClassification()
 }
 
 CGaussianProcessClassification::CGaussianProcessClassification(
-		CInference* method) : CGaussianProcessMachine(method)
+		std::shared_ptr<CInference> method) : CGaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
@@ -61,15 +61,15 @@ CGaussianProcessClassification::~CGaussianProcessClassification()
 {
 }
 
-CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CGaussianProcessClassification::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	REQUIRE(m_method->supports_multiclass(), "%s with %s doesn't support "
 			"multi classification\n", m_method->get_name(), lik->get_name())
-	SG_UNREF(lik);
+
 
 	// if regression data equals to NULL, then apply classification on training
 	// features
@@ -82,8 +82,6 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 		else
 			data=m_method->get_features();
 	}
-	else
-		SG_REF(data);
 
 	const index_t n=data->get_num_vectors();
 	SGVector<float64_t> mean=get_mean_vector(data);
@@ -94,24 +92,24 @@ CMulticlassLabels* CGaussianProcessClassification::apply_multiclass(CFeatures* d
 		int32_t cate=CMath::arg_max(mean.vector+idx*C, 1, C);
 		lab[idx]=cate;
 	}
-	CMulticlassLabels *result=new CMulticlassLabels();
+	auto result=std::make_shared<CMulticlassLabels>();
 	result->set_int_labels(lab);
 
-	SG_UNREF(data);
+
 
 	return result;
 }
 
-CBinaryLabels* CGaussianProcessClassification::apply_binary(
-		CFeatures* data)
+std::shared_ptr<CBinaryLabels> CGaussianProcessClassification::apply_binary(
+		std::shared_ptr<CFeatures> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary(), "%s with %s doesn't support "
 			"binary classification\n", m_method->get_name(), lik->get_name())
-	SG_UNREF(lik);
+
 
 	// if regression data equals to NULL, then apply classification on training
 	// features
@@ -120,7 +118,7 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 		if (m_method->get_inference_type()== INF_FITC_LAPLACE_SINGLE)
 		{
 #ifdef USE_GPL_SHOGUN
-			CSingleFITCLaplaceInferenceMethod* fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
+			auto fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
 			data=fitc_method->get_inducing_features();
 #else
 			SG_GPL_ONLY
@@ -129,26 +127,24 @@ CBinaryLabels* CGaussianProcessClassification::apply_binary(
 		else
 			data=m_method->get_features();
 	}
-	else
-		SG_REF(data);
 
-	CBinaryLabels* result=new CBinaryLabels(get_mean_vector(data));
+	auto result=std::make_shared<CBinaryLabels>(get_mean_vector(data));
 	if (m_compute_variance)
 		result->put("current_values", get_variance_vector(data));
-	SG_UNREF(data);
+
 
 	return result;
 }
 
-bool CGaussianProcessClassification::train_machine(CFeatures* data)
+bool CGaussianProcessClassification::train_machine(std::shared_ptr<CFeatures> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(), "%s with %s doesn't support "
 			"classification\n", m_method->get_name(), lik->get_name())
-	SG_UNREF(lik);
+
 
 	if (data)
 	{
@@ -156,7 +152,7 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 		if (m_method->get_inference_type()==INF_FITC_LAPLACE_SINGLE)
 		{
 #ifdef USE_GPL_SHOGUN
-			CSingleFITCLaplaceInferenceMethod* fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
+			auto fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
 			fitc_method->set_inducing_features(data);
 #else
 			SG_ERROR("Single FITC Laplace inference only supported under GPL.\n")
@@ -173,67 +169,67 @@ bool CGaussianProcessClassification::train_machine(CFeatures* data)
 }
 
 SGVector<float64_t> CGaussianProcessClassification::get_mean_vector(
-		CFeatures* data)
+		std::shared_ptr<CFeatures> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
 		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
 
-	SG_REF(data);
+
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);
-	SG_UNREF(data);
+
 
 	// evaluate mean
 	mu=lik->get_predictive_means(mu, s2);
-	SG_UNREF(lik);
+
 
 	return mu;
 }
 
 SGVector<float64_t> CGaussianProcessClassification::get_variance_vector(
-		CFeatures* data)
+		std::shared_ptr<CFeatures> data)
 {
 	// check whether given combination of inference method and
 	// likelihood function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
 		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
 
-	SG_REF(data);
+
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);
-	SG_UNREF(data);
+
 
 	// evaluate variance
 	s2=lik->get_predictive_variances(mu, s2);
-	SG_UNREF(lik);
+
 
 	return s2;
 }
 
 SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
-		CFeatures* data)
+		std::shared_ptr<CFeatures> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
 	REQUIRE(m_method, "Inference method should not be NULL\n")
-	CLikelihoodModel* lik=m_method->get_model();
+	auto lik=m_method->get_model();
 	REQUIRE(m_method->supports_binary() || m_method->supports_multiclass(),
 		"%s with %s doesn't support classification\n", m_method->get_name(), lik->get_name())
 
-	SG_REF(data);
+
 	SGVector<float64_t> mu=get_posterior_means(data);
 	SGVector<float64_t> s2=get_posterior_variances(data);
-	SG_UNREF(data);
+
 
 	// evaluate log probabilities
 	SGVector<float64_t> p=lik->get_predictive_log_probabilities(mu, s2);
-	SG_UNREF(lik);
+
 
 	// evaluate probabilities
 	for (index_t idx=0; idx<p.vlen; idx++)

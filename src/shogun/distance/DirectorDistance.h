@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang, 
+ * Authors: Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, Chiyuan Zhang,
  *          Viktor Gal, Sergey Lisitsyn, Bjoern Esser
  */
 
@@ -87,7 +87,7 @@ IGNORE_IN_CLASSLIST class CDirectorDistance : public CDistance
 		 * @param rhs features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs)
+		virtual bool init(std::shared_ptr<CFeatures> lhs, std::shared_ptr<CFeatures> rhs)
 		{
 			if (this->parallel->get_num_threads()!=1)
 			{

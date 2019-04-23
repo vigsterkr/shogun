@@ -31,7 +31,7 @@ CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
 }
 
 CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r,
+	std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 	int32_t len, int32_t id, int32_t od)
 : CStringKernel<char>()
 {
@@ -49,13 +49,13 @@ CSimpleLocalityImprovedStringKernel::~CSimpleLocalityImprovedStringKernel()
 	cleanup();
 }
 
-bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
+bool CSimpleLocalityImprovedStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	bool result = CStringKernel<char>::init(l,r);
 
 	if (!result)
 		return false;
-	const int32_t num_features = ((CStringFeatures<char>*) l)->get_max_vector_length();
+	const int32_t num_features = std::static_pointer_cast<CStringFeatures<char>>(l)->get_max_vector_length();
 	const int32_t PYRAL = 2 * length - 1; // total window length
 	const int32_t pyra_len  = num_features-PYRAL+1;
 	const int32_t pyra_len2 = (int32_t) pyra_len/2;
@@ -173,8 +173,8 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec = ((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = ((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = std::static_pointer_cast<CStringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
@@ -184,14 +184,14 @@ float64_t CSimpleLocalityImprovedStringKernel::compute(
 	dpt = dot_pyr(avec, bvec, alen, length, inner_degree, outer_degree, pyramid_weights);
 	dpt = dpt / pow((float64_t) alen, (float64_t) outer_degree);
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return (float64_t) dpt;
 }
 
 void CSimpleLocalityImprovedStringKernel::init()
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 
 	length = 3;
 	inner_degree = 3;

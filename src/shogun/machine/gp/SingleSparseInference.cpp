@@ -53,27 +53,19 @@ class SingleSparseInferenceCostFunction: public FirstOrderBoundConstraintsCostFu
 {
 public:
         SingleSparseInferenceCostFunction():FirstOrderBoundConstraintsCostFunction() {  init(); }
-        virtual ~SingleSparseInferenceCostFunction() { SG_UNREF(m_obj); }
+        virtual ~SingleSparseInferenceCostFunction() {  }
 	virtual const char* get_name() const { return "SingleSparseInferenceCostFunction"; }
-        void set_target(CSingleSparseInference *obj)
+        void set_target(std::shared_ptr<CSingleSparseInference >obj)
 	{
 		REQUIRE(obj,"Object not set\n");
 		if(obj!=m_obj)
 		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
+
+
 			m_obj=obj;
 			m_obj->check_fully_sparse();
 			REQUIRE(m_obj->m_fully_sparse,"Can not compute gradient\n");
 		}
-	}
-        void unset_target(bool is_unref)
-	{
-		if(is_unref)
-		{
-			SG_UNREF(m_obj);
-		}
-		m_obj=NULL;
 	}
         virtual float64_t get_cost()
 	{
@@ -107,13 +99,13 @@ public:
 		return m_obj->m_upper_bound;
 	}
 private:
-        CSingleSparseInference *m_obj;
+        std::shared_ptr<CSingleSparseInference >m_obj;
         void init()
 	{
 		m_obj=NULL;
 		//The existing implementation in CSGObject::get_parameter_incremental_hash()
 		//can NOT deal with circular reference when parameter_hash_changed() is called
-		//SG_ADD((CSGObject **)&m_obj, "CSigleSparseInference__m_obj",
+		//SG_ADD((std::shared_ptr<CSGObject>*)&m_obj, "CSigleSparseInference__m_obj",
 			//"m_obj in SingleSparseInferenceCostFunction");
 	}
 };
@@ -124,8 +116,8 @@ CSingleSparseInference::CSingleSparseInference() : CSparseInference()
 	init();
 }
 
-CSingleSparseInference::CSingleSparseInference(CKernel* kern, CFeatures* feat,
-		CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod, CFeatures* lat)
+CSingleSparseInference::CSingleSparseInference(std::shared_ptr<CKernel> kern, std::shared_ptr<CFeatures> feat,
+		std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod, std::shared_ptr<CFeatures> lat)
 		: CSparseInference(kern, feat, m, lab, mod, lat)
 {
 	init();
@@ -151,7 +143,7 @@ void CSingleSparseInference::init()
 	SG_ADD(&m_opt_inducing_features,
 		"opt_inducing_features", "whether optimize inducing features");
 
-	SG_ADD((CSGObject **)&m_inducing_minimizer,
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_inducing_minimizer,
 		"inducing_minimizer", "Minimizer used in optimize inducing features");
 
 	m_max_ind_iterations=50;
@@ -161,7 +153,7 @@ void CSingleSparseInference::init()
 	m_upper_bound=SGVector<float64_t>();
 }
 
-void CSingleSparseInference::set_kernel(CKernel* kern)
+void CSingleSparseInference::set_kernel(std::shared_ptr<CKernel> kern)
 {
 	CInference::set_kernel(kern);
 	check_fully_sparse();
@@ -169,7 +161,7 @@ void CSingleSparseInference::set_kernel(CKernel* kern)
 
 CSingleSparseInference::~CSingleSparseInference()
 {
-	SG_UNREF(m_inducing_minimizer);
+
 	delete m_lock;
 }
 
@@ -245,7 +237,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_kernel(
 	int64_t len=const_cast<TParameter *>(param)->m_datatype.get_num_elements();
 	result=SGVector<float64_t>(len);
 
-	CFeatures *inducing_features=get_inducing_features();
+	auto inducing_features=get_inducing_features();
 	for (index_t i=0; i<result.vlen; i++)
 	{
 		SGVector<float64_t> deriv_trtr;
@@ -275,7 +267,7 @@ SGVector<float64_t> CSingleSparseInference::get_derivative_wrt_kernel(
 		result[i]=get_derivative_related_cov(deriv_trtr, deriv_uu, deriv_tru);
 		result[i] *= std::exp(m_log_scale * 2.0);
 	}
-	SG_UNREF(inducing_features);
+
 	return result;
 }
 
@@ -286,7 +278,7 @@ void CSingleSparseInference::check_bound(SGVector<float64_t> bound, const char* 
 		REQUIRE(m_inducing_features.num_rows>0, "Inducing features must set before this method is called\n");
 		REQUIRE(m_inducing_features.num_rows*m_inducing_features.num_cols==bound.vlen,
 			"The length of inducing features (%dx%d)",
-			" and the length of bound constraints (%d) are different\n", 
+			" and the length of bound constraints (%d) are different\n",
 			m_inducing_features.num_rows,m_inducing_features.num_cols,bound.vlen);
 	}
 	else if(bound.vlen==1)
@@ -318,7 +310,7 @@ void CSingleSparseInference::set_tolearance_for_inducing_features(float64_t tol)
 	REQUIRE(tol>0, "Tolearance (%f) must be positive\n",tol);
 	m_ind_tolerance=tol;
 }
-void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmization, FirstOrderMinimizer* minimizer)
+void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmization, std::shared_ptr<FirstOrderMinimizer> minimizer)
 {
 	m_opt_inducing_features=is_optmization;
 	if (m_opt_inducing_features)
@@ -330,24 +322,24 @@ void CSingleSparseInference::enable_optimizing_inducing_features(bool is_optmiza
 	{
 		if (minimizer!=m_inducing_minimizer)
 		{
-			SG_REF(minimizer);
-			SG_UNREF(m_inducing_minimizer);
+
+
 			m_inducing_minimizer=minimizer;
 		}
 	}
 	else
 	{
 
-		SG_UNREF(m_inducing_minimizer);
+
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-		m_inducing_minimizer=new CNLOPTMinimizer();
-		SG_REF(m_inducing_minimizer);
+		m_inducing_minimizer=std::make_shared<CNLOPTMinimizer>();
+
 #else
 		m_inducing_minimizer=NULL;
 		SG_WARNING("We require NLOPT library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)\n");
 #endif //HAVE_NLOPT
-#else 
+#else
 		m_inducing_minimizer=NULL;
 		SG_WARNING("We require NLOPT (GPL License) library for using default minimizer.\nYou can use other minimizer. (eg, LBFGSMinimier)");
 #endif //USE_GPL_SHOGUN
@@ -360,15 +352,12 @@ void CSingleSparseInference::optimize_inducing_features()
 		return;
 
 	REQUIRE(m_inducing_minimizer, "Please call enable_optimizing_inducing_features() first\n");
-	SingleSparseInferenceCostFunction *cost_fun=new SingleSparseInferenceCostFunction();
-	cost_fun->set_target(this);
-	bool cleanup=false;
-	if(this->ref_count()>1)
-		cleanup=true;
+	auto cost_fun=std::make_shared<SingleSparseInferenceCostFunction>();
+	cost_fun->set_target(shared_from_this()->as<CSingleSparseInference>());
 
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-	CNLOPTMinimizer* opt=dynamic_cast<CNLOPTMinimizer*>(m_inducing_minimizer);
+	auto opt=std::dynamic_pointer_cast<CNLOPTMinimizer>(m_inducing_minimizer);
 	if (opt)
 		opt->set_nlopt_parameters(LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
 #endif //HAVE_NLOPT
@@ -377,8 +366,7 @@ void CSingleSparseInference::optimize_inducing_features()
 	m_inducing_minimizer->set_cost_function(cost_fun);
 	m_inducing_minimizer->minimize();
 	m_inducing_minimizer->unset_cost_function(false);
-	cost_fun->unset_target(cleanup);
-	SG_UNREF(cost_fun);
+
 }
 
 }

@@ -29,7 +29,7 @@ CNewtonSVM::CNewtonSVM() : CIterativeMachine<CLinearMachine>()
 }
 
 CNewtonSVM::CNewtonSVM(
-    float64_t c, CDotFeatures* traindat, CLabels* trainlab, int32_t itr)
+    float64_t c, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab, int32_t itr)
     : CIterativeMachine<CLinearMachine>()
 {
 	lambda=1/c;
@@ -46,13 +46,13 @@ CNewtonSVM::~CNewtonSVM()
 {
 }
 
-void CNewtonSVM::init_model(CFeatures* data)
+void CNewtonSVM::init_model(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<CDotFeatures>(data));
 	}
 
 	ASSERT(features)

@@ -16,7 +16,7 @@ CAttenuatedEuclideanDistance::CAttenuatedEuclideanDistance() : CRealDistance()
 	init();
 }
 
-CAttenuatedEuclideanDistance::CAttenuatedEuclideanDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r)
+CAttenuatedEuclideanDistance::CAttenuatedEuclideanDistance(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r)
 : CRealDistance()
 {
 	init();
@@ -28,7 +28,7 @@ CAttenuatedEuclideanDistance::~CAttenuatedEuclideanDistance()
 	cleanup();
 }
 
-bool CAttenuatedEuclideanDistance::init(CFeatures* l, CFeatures* r)
+bool CAttenuatedEuclideanDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CRealDistance::init(l, r);
 	return true;
@@ -44,17 +44,17 @@ float64_t CAttenuatedEuclideanDistance::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 	float64_t result=0;
 
-	float64_t* avec=((CDenseFeatures<float64_t>*) lhs)->
+	float64_t* avec=(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->
 		get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec=((CDenseFeatures<float64_t>*) rhs)->
+	float64_t* bvec=(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->
 		get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	for (int32_t i=0; i<alen; i++)
 		result+=(CMath::abs(avec[i])*CMath::abs(bvec[i]))*CMath::pow(avec[i] - bvec[i],2);
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	if (disable_sqrt)
 		return result;

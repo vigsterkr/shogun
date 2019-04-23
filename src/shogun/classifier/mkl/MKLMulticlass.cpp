@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Chiyuan Zhang, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Giovanni De Toni,
  *          Heiko Strathmann, Sergey Lisitsyn, Bjoern Esser, Saurabh Goyal
  */
 
@@ -17,7 +17,7 @@ using namespace shogun;
 
 
 CMKLMulticlass::CMKLMulticlass()
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy())
+: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>())
 {
 	svm=NULL;
 	lpw=NULL;
@@ -27,8 +27,8 @@ CMKLMulticlass::CMKLMulticlass()
 	pnorm=1;
 }
 
-CMKLMulticlass::CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab)
+CMKLMulticlass::CMKLMulticlass(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
+: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>(), C, k, lab)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -41,14 +41,10 @@ CMKLMulticlass::CMKLMulticlass(float64_t C, CKernel* k, CLabels* lab)
 
 CMKLMulticlass::~CMKLMulticlass()
 {
-	SG_UNREF(svm);
-	svm=NULL;
-	delete lpw;
-	lpw=NULL;
 }
 
 CMKLMulticlass::CMKLMulticlass( const CMKLMulticlass & cm)
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy())
+: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>())
 {
 	svm=NULL;
 	lpw=NULL;
@@ -73,9 +69,9 @@ void CMKLMulticlass::initsvm()
       SG_ERROR("CMKLMulticlass::initsvm(): the set labels is NULL\n")
 	}
 
-	SG_UNREF(svm);
-	svm=new CGMNPSVM;
-	SG_REF(svm);
+
+	svm=std::make_shared<CGMNPSVM>();
+
 
    svm->set_C(get_C());
    svm->set_epsilon(get_epsilon());
@@ -103,7 +99,7 @@ void CMKLMulticlass::initlpsolver()
             m_kernel->get_kernel_type());
 	}
 
-   int numker=dynamic_cast<CCombinedKernel *>(m_kernel)->get_num_subkernels();
+   int numker=std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_num_subkernels();
 
 	ASSERT(numker>0)
 	/*
@@ -116,12 +112,12 @@ void CMKLMulticlass::initlpsolver()
    //lpw=new MKLMulticlassGLPK;
 	if(pnorm>1)
 	{
-      lpw=new MKLMulticlassGradient;
+    	lpw=std::make_shared<MKLMulticlassGradient>();
 		lpw->set_mkl_norm(pnorm);
 	}
 	else
 	{
-      lpw=new MKLMulticlassGLPK;
+      lpw=std::make_shared<MKLMulticlassGLPK>();
 	}
 	lpw->setup(numker);
 
@@ -233,7 +229,7 @@ void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 	curalphaterm=sumofsignfreealphas;
 
 	int32_t numkernels=
-         dynamic_cast<CCombinedKernel *>(m_kernel)->get_num_subkernels();
+         std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_num_subkernels();
 
 
 	normweightssquared.resize(numkernels);
@@ -249,20 +245,20 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
 {
 
    std::vector<int> trainlabels2(m_labels->get_num_labels());
-   SGVector<int32_t> lab=((CMulticlassLabels*) m_labels)->get_int_labels();
+   SGVector<int32_t> lab=(std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_int_labels();
    std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
 
 	ASSERT (trainlabels2.size()>0)
 	float64_t sum=0;
 
-   for (int32_t nc=0; nc< ((CMulticlassLabels*) m_labels)->get_num_classes();++nc)
+   for (int32_t nc=0; nc< (std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();++nc)
 	{
-		CSVM * sm=svm->get_svm(nc);
+		auto sm=svm->get_svm(nc);
 
 		float64_t bia=sm->get_bias();
 		sum+= 0.5*bia*bia;
 
-		SG_UNREF(sm);
+
 	}
 
 	index_t basealphas_y = 0, basealphas_x = 0;
@@ -271,21 +267,21 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
 
 	for (size_t lb=0; lb< trainlabels2.size();++lb)
 	{
-      for (int32_t nc=0; nc< ((CMulticlassLabels*) m_labels)->get_num_classes();++nc)
+      for (int32_t nc=0; nc< (std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();++nc)
 		{
-			CSVM * sm=svm->get_svm(nc);
+			auto sm=svm->get_svm(nc);
 
 			if ((int)nc!=trainlabels2[lb])
 			{
-				CSVM * sm2=svm->get_svm(trainlabels2[lb]);
+				auto sm2=svm->get_svm(trainlabels2[lb]);
 
 				float64_t bia1=sm2->get_bias();
 				float64_t bia2=sm->get_bias();
-				SG_UNREF(sm2);
+
 
 				sum+= -basealphas[lb*basealphas_y + nc]*(bia1-bia2-1);
 			}
-			SG_UNREF(sm);
+
 		}
 	}
 
@@ -295,14 +291,14 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
 float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 		const int32_t ind)
 {
-   CKernel * ker=dynamic_cast<CCombinedKernel *>(m_kernel)->get_kernel(ind);
+   auto ker=std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_kernel(ind);
 
 	float64_t tmp=0;
 
-   for (int32_t classindex=0; classindex< ((CMulticlassLabels*) m_labels)->get_num_classes();
+   for (int32_t classindex=0; classindex< (std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();
 			++classindex)
 	{
-		CSVM * sm=svm->get_svm(classindex);
+		auto sm=svm->get_svm(classindex);
 
 		for (int32_t i=0; i < sm->get_num_support_vectors(); ++i)
 		{
@@ -319,23 +315,23 @@ float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 
 			}
 		}
-		SG_UNREF(sm);
+
 	}
-	SG_UNREF(ker);
+
 	ker=NULL;
 
 	return tmp;
 }
 
 
-bool CMKLMulticlass::train_machine(CFeatures* data)
+bool CMKLMulticlass::train_machine(std::shared_ptr<CFeatures> data)
 {
    ASSERT(m_kernel)
    ASSERT(m_labels && m_labels->get_num_labels())
    ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
    init_strategy();
 
-   int numcl=((CMulticlassLabels*) m_labels)->get_num_classes();
+   int numcl=(std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();
 
 	if (data)
 	{
@@ -353,7 +349,7 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 	weightshistory.clear();
 
 	int32_t numkernels=
-         dynamic_cast<CCombinedKernel *>(m_kernel)->get_num_subkernels();
+         std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_num_subkernels();
 
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);
@@ -394,8 +390,8 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 
 	for (int32_t i=0; i<numcl; i++)
 	{
-		CSVM* osvm=svm->get_svm(i);
-		CSVM* nsvm=new CSVM(osvm->get_num_support_vectors());
+		auto osvm=svm->get_svm(i);
+		auto nsvm=std::make_shared<CSVM>(osvm->get_num_support_vectors());
 
 		for (int32_t k=0; k<osvm->get_num_support_vectors() ; k++)
 		{
@@ -405,17 +401,13 @@ bool CMKLMulticlass::train_machine(CFeatures* data)
 		nsvm->set_bias(osvm->get_bias() );
 		set_svm(i, nsvm);
 
-		SG_UNREF(osvm);
+
 		osvm=NULL;
 	}
 
-	SG_UNREF(svm);
+
 	svm=NULL;
-	if (lpw)
-	{
-		delete lpw;
-	}
-	lpw=NULL;
+	lpw.reset();
 	return true;
 }
 

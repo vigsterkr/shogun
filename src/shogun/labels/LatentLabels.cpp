@@ -19,11 +19,11 @@ CLatentLabels::CLatentLabels(int32_t num_samples)
 	: CLabels()
 {
 	init();
-	m_latent_labels = new CDynamicObjectArray(num_samples);
-	SG_REF(m_latent_labels);
+	m_latent_labels = std::make_shared<CDynamicObjectArray>(num_samples);
+	
 }
 
-CLatentLabels::CLatentLabels(CLabels* labels)
+CLatentLabels::CLatentLabels(std::shared_ptr<CLabels> labels)
 	: CLabels()
 {
 	init();
@@ -33,46 +33,46 @@ CLatentLabels::CLatentLabels(CLabels* labels)
 	if (m_labels)
 		num_labels = m_labels->get_num_labels();
 
-	m_latent_labels = new CDynamicObjectArray(num_labels);
-	SG_REF(m_latent_labels);
+	m_latent_labels = std::make_shared<CDynamicObjectArray>(num_labels);
+	
 }
 
 CLatentLabels::~CLatentLabels()
 {
-	SG_UNREF(m_latent_labels);
-	SG_UNREF(m_labels);
+	
+	
 }
 
 void CLatentLabels::init()
 {
-	SG_ADD((CSGObject**) &m_latent_labels, "m_latent_labels", "The latent labels");
-	SG_ADD((CSGObject**) &m_labels, "m_labels", "The labels");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_latent_labels, "m_latent_labels", "The latent labels");
+	SG_ADD((std::shared_ptr<CSGObject>*) &m_labels, "m_labels", "The labels");
 	m_latent_labels = NULL;
 	m_labels = NULL;
 }
 
-CDynamicObjectArray* CLatentLabels::get_latent_labels() const
+std::shared_ptr<CDynamicObjectArray> CLatentLabels::get_latent_labels() const
 {
-	SG_REF(m_latent_labels);
+	
 	return m_latent_labels;
 }
 
-CData* CLatentLabels::get_latent_label(int32_t idx)
+std::shared_ptr<CData> CLatentLabels::get_latent_label(int32_t idx)
 {
 	ASSERT(m_latent_labels != NULL)
 	if (idx < 0 || idx >= get_num_labels())
 		SG_ERROR("Out of index!\n")
 
-	return (CData*) m_latent_labels->get_element(idx);
+	return std::static_pointer_cast<CData>( m_latent_labels->get_element(idx));
 }
 
-void CLatentLabels::add_latent_label(CData* label)
+void CLatentLabels::add_latent_label(std::shared_ptr<CData> label)
 {
 	ASSERT(m_latent_labels != NULL)
 	m_latent_labels->push_back(label);
 }
 
-bool CLatentLabels::set_latent_label(int32_t idx, CData* label)
+bool CLatentLabels::set_latent_label(int32_t idx, std::shared_ptr<CData> label)
 {
 	if (idx < get_num_labels())
 	{
@@ -105,16 +105,16 @@ int32_t CLatentLabels::get_num_labels() const
 	return num_labels;
 }
 
-void CLatentLabels::set_labels(CLabels* labels)
+void CLatentLabels::set_labels(std::shared_ptr<CLabels> labels)
 {
-	SG_REF(labels);
-	SG_UNREF(m_labels);
+	
+	
 	m_labels = labels;
 }
 
-CLabels* CLatentLabels::get_labels() const
+std::shared_ptr<CLabels> CLatentLabels::get_labels() const
 {
-	SG_REF(m_labels);
+	
 	return m_labels;
 }
 

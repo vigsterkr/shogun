@@ -24,8 +24,8 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(
 	init();
 }
 
-CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<char>* lstr, CStringFeatures<char>* rstr,
-		CDenseFeatures<uint16_t>* lpos, CDenseFeatures<uint16_t>* rpos,
+CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(std::shared_ptr<CStringFeatures<char>> lstr, std::shared_ptr<CStringFeatures<char>> rstr,
+		std::shared_ptr<CDenseFeatures<uint16_t>> lpos, std::shared_ptr<CDenseFeatures<uint16_t>> rpos,
 		float64_t w, int32_t d, int32_t s, int32_t wl, int32_t size)
 : CStringKernel<char>(size)
 {
@@ -36,8 +36,8 @@ CRegulatoryModulesStringKernel::CRegulatoryModulesStringKernel(CStringFeatures<c
 
 CRegulatoryModulesStringKernel::~CRegulatoryModulesStringKernel()
 {
-	SG_UNREF(motif_positions_lhs);
-	SG_UNREF(motif_positions_rhs);
+
+
 }
 
 void CRegulatoryModulesStringKernel::init()
@@ -55,15 +55,15 @@ void CRegulatoryModulesStringKernel::init()
 	SG_ADD(&shift, "shift",
 	    "the shift of weighted degree with shifts kernel part", ParameterProperties::HYPER);
 	SG_ADD(&window, "window", "the size of window around motifs", ParameterProperties::HYPER);
-	SG_ADD((CSGObject**)&motif_positions_lhs, "motif_positions_lhs",
+	SG_ADD((std::shared_ptr<CSGObject>*)&motif_positions_lhs, "motif_positions_lhs",
 			"the matrix of motif positions from sequences left-hand side");
-	SG_ADD((CSGObject**)&motif_positions_rhs, "motif_positions_rhs",
+	SG_ADD((std::shared_ptr<CSGObject>*)&motif_positions_rhs, "motif_positions_rhs",
 			"the matrix of motif positions from sequences right-hand side");
 	SG_ADD(&position_weights, "position_weights", "scaling weights in window");
 	SG_ADD(&weights, "weights", "weights of WD kernel");
 }
 
-bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
+bool CRegulatoryModulesStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(motif_positions_lhs)
 	ASSERT(motif_positions_rhs)
@@ -81,19 +81,19 @@ bool CRegulatoryModulesStringKernel::init(CFeatures* l, CFeatures* r)
 }
 
 void CRegulatoryModulesStringKernel::set_motif_positions(
-		CDenseFeatures<uint16_t>* positions_lhs, CDenseFeatures<uint16_t>* positions_rhs)
+		std::shared_ptr<CDenseFeatures<uint16_t>> positions_lhs, std::shared_ptr<CDenseFeatures<uint16_t>> positions_rhs)
 {
 	ASSERT(positions_lhs)
 	ASSERT(positions_rhs)
-	SG_UNREF(motif_positions_lhs);
-	SG_UNREF(motif_positions_rhs);
+
+
 	if (positions_lhs->get_num_features() != positions_rhs->get_num_features())
 		SG_ERROR("Number of dimensions does not agree.\n")
 
 	motif_positions_lhs=positions_lhs;
 	motif_positions_rhs=positions_rhs;
-	SG_REF(positions_lhs);
-	SG_REF(positions_rhs);
+
+
 }
 
 float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
@@ -104,8 +104,8 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	bool free_avec, free_bvec;
 	int32_t alen=0;
 	int32_t blen=0;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec=std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec=std::static_pointer_cast<CStringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	int32_t alen_pos, blen_pos;
 	bool afree_pos, bfree_pos;
@@ -138,10 +138,10 @@ float64_t CRegulatoryModulesStringKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t result=exp(-result_rbf/width)+result_wds;
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
-	((CDenseFeatures<uint16_t>*) lhs)->free_feature_vector(positions_a, idx_a, afree_pos);
-	((CDenseFeatures<uint16_t>*) rhs)->free_feature_vector(positions_b, idx_b, bfree_pos);
+	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<CDenseFeatures<uint16_t>>(lhs)->free_feature_vector(positions_a, idx_a, afree_pos);
+	std::static_pointer_cast<CDenseFeatures<uint16_t>>(rhs)->free_feature_vector(positions_b, idx_b, bfree_pos);
 
 	return result;
 }

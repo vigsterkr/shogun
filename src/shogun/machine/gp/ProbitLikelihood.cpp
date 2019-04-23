@@ -47,7 +47,7 @@ CProbitLikelihood::~CProbitLikelihood()
 }
 
 SGVector<float64_t> CProbitLikelihood::get_predictive_means(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -62,7 +62,7 @@ SGVector<float64_t> CProbitLikelihood::get_predictive_means(
 }
 
 SGVector<float64_t> CProbitLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	SGVector<float64_t> lp=get_log_zeroth_moments(mu, s2, lab);
 	Map<VectorXd> eigen_lp(lp.vector, lp.vlen);
@@ -76,7 +76,7 @@ SGVector<float64_t> CProbitLikelihood::get_predictive_variances(
 	return r;
 }
 
-SGVector<float64_t> CProbitLikelihood::get_log_probability_f(const CLabels* lab,
+SGVector<float64_t> CProbitLikelihood::get_log_probability_f(std::shared_ptr<const CLabels> lab,
 		SGVector<float64_t> func) const
 {
 	// check the parameters
@@ -86,7 +86,7 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_f(const CLabels* lab,
 	REQUIRE(lab->get_num_labels()==func.vlen, "Number of labels must match "
 			"length of the function vector\n")
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CBinaryLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -104,7 +104,7 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_f(const CLabels* lab,
 }
 
 SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
-		const CLabels* lab, SGVector<float64_t> func, index_t i) const
+		std::shared_ptr<const CLabels> lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -114,7 +114,7 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 			"length of the function vector\n")
 	REQUIRE(i>=1 && i<=3, "Index for derivative should be 1, 2 or 3\n")
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CBinaryLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
@@ -169,7 +169,7 @@ SGVector<float64_t> CProbitLikelihood::get_log_probability_derivative_f(
 }
 
 SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	SGVector<float64_t> y;
 
@@ -182,7 +182,7 @@ SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
 		REQUIRE(lab->get_label_type()==LT_BINARY,
 				"Labels must be type of CBinaryLabels\n")
 
-		y=((CBinaryLabels*)lab)->get_labels();
+		y=lab->as<CBinaryLabels>()->get_labels();
 	}
 	else
 	{
@@ -211,7 +211,7 @@ SGVector<float64_t> CProbitLikelihood::get_log_zeroth_moments(
 }
 
 float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -223,7 +223,7 @@ float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
 	REQUIRE(lab->get_label_type()==LT_BINARY,
 			"Labels must be type of CBinaryLabels\n")
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CBinaryLabels>()->get_labels();
 
 	float64_t z = y[i] * mu[i] / std::sqrt(1.0 + s2[i]);
 
@@ -242,7 +242,7 @@ float64_t CProbitLikelihood::get_first_moment(SGVector<float64_t> mu,
 }
 
 float64_t CProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -254,7 +254,7 @@ float64_t CProbitLikelihood::get_second_moment(SGVector<float64_t> mu,
 	REQUIRE(lab->get_label_type()==LT_BINARY,
 			"Labels must be type of CBinaryLabels\n")
 
-	SGVector<float64_t> y=((CBinaryLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CBinaryLabels>()->get_labels();
 
 	float64_t z = y[i] * mu[i] / std::sqrt(1.0 + s2[i]);
 

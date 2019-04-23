@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Sergey Lisitsyn, Thoralf Klein,
  *          Viktor Gal, Evan Shelhamer
  */
 
@@ -23,7 +23,7 @@ CDistanceMachine::CDistanceMachine()
 
 CDistanceMachine::~CDistanceMachine()
 {
-	SG_UNREF(distance);
+
 }
 
 void CDistanceMachine::init()
@@ -102,17 +102,16 @@ void CDistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1
     }
 }
 
-CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CDistanceMachine::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
 		/* set distance features to given ones and apply to all */
-		CFeatures* lhs=distance->get_lhs();
+		auto lhs=distance->get_lhs();
 		distance->init(lhs, data);
-		SG_UNREF(lhs);
 
 		/* build result labels and classify all elements of procedure */
-		CMulticlassLabels* result=new CMulticlassLabels(data->get_num_vectors());
+		auto result=std::make_shared<CMulticlassLabels>(data->get_num_vectors());
 		for (index_t i=0; i<data->get_num_vectors(); ++i)
 			result->set_label(i, apply_one(i));
 		return result;
@@ -120,10 +119,8 @@ CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
 	else
 	{
 		/* call apply on complete right hand side */
-		CFeatures* all=distance->get_rhs();
-		CMulticlassLabels* result = apply_multiclass(all);
-		SG_UNREF(all);
-		return result;
+		auto all=distance->get_rhs();
+		return apply_multiclass(all);
 	}
 	return NULL;
 }
@@ -131,9 +128,8 @@ CMulticlassLabels* CDistanceMachine::apply_multiclass(CFeatures* data)
 float64_t CDistanceMachine::apply_one(int32_t num)
 {
 	/* number of clusters */
-	CFeatures* lhs=distance->get_lhs();
+	auto lhs=distance->get_lhs();
 	int32_t num_clusters=lhs->get_num_vectors();
-	SG_UNREF(lhs);
 
 	/* (multiple threads) calculate distances to all cluster centers */
     SGVector<float64_t> dists(num_clusters);
@@ -155,16 +151,16 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 	return best_index;
 }
 
-void CDistanceMachine::set_distance(CDistance* d)
+void CDistanceMachine::set_distance(std::shared_ptr<CDistance> d)
 {
-	SG_REF(d);
-	SG_UNREF(distance);
+
+
 	distance=d;
 }
 
-CDistance* CDistanceMachine::get_distance() const
+std::shared_ptr<CDistance> CDistanceMachine::get_distance() const
 {
-	SG_REF(distance);
+
 	return distance;
 }
 

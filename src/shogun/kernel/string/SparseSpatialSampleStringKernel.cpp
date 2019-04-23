@@ -17,13 +17,13 @@ CSparseSpatialSampleStringKernel::CSparseSpatialSampleStringKernel()
 {
 }
 
-CSparseSpatialSampleStringKernel::CSparseSpatialSampleStringKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r) : CStringKernel<char>(0), t(2), d(5)
+CSparseSpatialSampleStringKernel::CSparseSpatialSampleStringKernel(std::shared_ptr<CStringFeatures<char>> l,
+		std::shared_ptr<CStringFeatures<char>> r) : CStringKernel<char>(0), t(2), d(5)
 {
 	init(l, r);
 }
 
-bool CSparseSpatialSampleStringKernel::init(CFeatures* l, CFeatures* r)
+bool CSparseSpatialSampleStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CStringKernel<char>::init(l, r);
 	return init_normalizer();

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Giovanni De Toni, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Evangelos Anagnostopoulos, Leon Kuchenbecker
  */
 
@@ -30,11 +30,11 @@ CCommUlongStringKernel::CCommUlongStringKernel(bool us, int32_t size)
 	properties |= KP_LINADD;
 	clear_normal();
 
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 }
 
 CCommUlongStringKernel::CCommUlongStringKernel(
-	CStringFeatures<uint64_t>* l, CStringFeatures<uint64_t>* r, bool us,
+	std::shared_ptr<CStringFeatures<uint64_t>> l, std::shared_ptr<CStringFeatures<uint64_t>> r, bool us,
 	int32_t size)
 : CStringKernel<uint64_t>(size)
 {
@@ -42,14 +42,14 @@ CCommUlongStringKernel::CCommUlongStringKernel(
 	use_sign=us;
 	properties |= KP_LINADD;
 	clear_normal();
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	init(l,r);
 }
 
 void CCommUlongStringKernel::init_params()
 {
 	use_sign = false;
-	SG_ADD(&use_sign, "use_sign", "Whether or not to use sign.")
+	SG_ADD(&use_sign, "use_sign", "Whether or not to use sign.");
 }
 
 CCommUlongStringKernel::~CCommUlongStringKernel()
@@ -80,7 +80,7 @@ void CCommUlongStringKernel::remove_rhs()
 	rhs = lhs;
 }
 
-bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
+bool CCommUlongStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CStringKernel<uint64_t>::init(l,r);
 	return init_normalizer();
@@ -97,8 +97,8 @@ float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
-	uint64_t* avec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	uint64_t* bvec=((CStringFeatures<uint64_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	uint64_t* avec=(std::static_pointer_cast<CStringFeatures<uint64_t>>(lhs))->get_feature_vector(idx_a, alen, free_avec);
+	uint64_t* bvec=(std::static_pointer_cast<CStringFeatures<uint64_t>>(rhs))->get_feature_vector(idx_b, blen, free_bvec);
 
 	float64_t result=0;
 
@@ -152,8 +152,8 @@ float64_t CCommUlongStringKernel::compute(int32_t idx_a, int32_t idx_b)
 				right_idx++;
 		}
 	}
-	((CStringFeatures<uint64_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint64_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	(std::static_pointer_cast<CStringFeatures<uint64_t>>(lhs))->free_feature_vector(avec, idx_a, free_avec);
+	(std::static_pointer_cast<CStringFeatures<uint64_t>>(rhs))->free_feature_vector(bvec, idx_b, free_bvec);
 
 	return result;
 }
@@ -166,7 +166,7 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 	int32_t last_j=0;
 	int32_t len=-1;
 	bool free_vec;
-	uint64_t* vec=((CStringFeatures<uint64_t>*) lhs)->get_feature_vector(vec_idx, len, free_vec);
+	uint64_t* vec=(std::static_pointer_cast<CStringFeatures<uint64_t>>(lhs))->get_feature_vector(vec_idx, len, free_vec);
 
 	if (vec && len>0)
 	{
@@ -221,7 +221,7 @@ void CCommUlongStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 		dictionary = dic;
 		dictionary_weights = dic_weights;
 	}
-	((CStringFeatures<uint64_t>*) lhs)->free_feature_vector(vec, vec_idx, free_vec);
+	(std::static_pointer_cast<CStringFeatures<uint64_t>>(lhs))->free_feature_vector(vec, vec_idx, free_vec);
 
 	set_is_initialized(true);
 }
@@ -283,7 +283,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 
 	int32_t alen = -1;
 	bool free_avec;
-	uint64_t* avec=((CStringFeatures<uint64_t>*) rhs)->
+	uint64_t* avec=(std::static_pointer_cast<CStringFeatures<uint64_t>>(rhs))->
 		get_feature_vector(i, alen, free_avec);
 
 	if (avec && alen>0)
@@ -336,7 +336,7 @@ float64_t CCommUlongStringKernel::compute_optimized(int32_t i)
 		}
 	}
 
-	((CStringFeatures<uint64_t>*) rhs)->free_feature_vector(avec, i, free_avec);
+	(std::static_pointer_cast<CStringFeatures<uint64_t>>(rhs))->free_feature_vector(avec, i, free_avec);
 
 	return normalizer->normalize_rhs(result, i);
 }

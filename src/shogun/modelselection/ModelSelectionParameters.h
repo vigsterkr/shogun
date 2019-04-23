@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
+ * Authors: Jacob Walker, Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
  *          Yuyu Zhang, Evgeniy Andreev, Thoralf Klein, Leon Kuchenbecker
  */
 
@@ -82,7 +82,7 @@ public:
 	 * @param sgobject the CSGObject for this node. Is SG_REF'ed
 	 * @name name of the parameter of the CSGObject
 	 */
-	CModelSelectionParameters(const char* node_name, CSGObject* sgobject);
+	CModelSelectionParameters(const char* node_name, std::shared_ptr<CSGObject> sgobject);
 
 	/** destructor. If set, deletes data array and SG_UNREF's the CSGObject */
 	~CModelSelectionParameters();
@@ -91,7 +91,7 @@ public:
 	 *
 	 * @param child child to append
 	 */
-	void append_child(CModelSelectionParameters* child);
+	void append_child(std::shared_ptr<CModelSelectionParameters> child);
 
 	/** setter for values of this node.
 	 * If the latter are not possible to be produced by set_range, a vector may
@@ -125,7 +125,7 @@ public:
 	 * to have a more readable print layout
 	 * @return result all trees of parameter combinations are put into here
 	 */
-	CDynamicObjectArray* get_combinations(index_t prefix_num=1);
+	std::shared_ptr<CDynamicObjectArray> get_combinations(index_t prefix_num=1);
 
 	/** Instead of generating an array of combinations, get_single_combination
 	 * generates a single  combination of parameters. The choice of
@@ -137,7 +137,7 @@ public:
 	 *
 	 * @return parameter tree of random parameter values.
 	 */
-	CParameterCombination* get_single_combination(bool rand = true);
+	std::shared_ptr<CParameterCombination> get_single_combination(bool rand = true);
 
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,
@@ -188,12 +188,12 @@ protected:
 	}
 
 private:
-	CSGObject* m_sgobject;
+	std::shared_ptr<CSGObject> m_sgobject;
 	const char* m_node_name;
 	void* m_values;
 	index_t m_values_length;
 	index_t* m_vector_length;
-	CDynamicObjectArray* m_child_nodes;
+	std::shared_ptr<CDynamicObjectArray> m_child_nodes;
 	EMSParamType m_value_type;
 	void*	m_vector;
 };

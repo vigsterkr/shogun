@@ -59,14 +59,14 @@ CTwoSampleTest::~CTwoSampleTest()
 {
 }
 
-void CTwoSampleTest::set_kernel(CKernel* kernel)
+void CTwoSampleTest::set_kernel(std::shared_ptr<CKernel> kernel)
 {
 	REQUIRE(kernel, "Kernel cannot be NULL!\n");
 	self->kernel_mgr.kernel_at(0)=kernel;
 	self->kernel_mgr.restore_kernel_at(0);
 }
 
-CKernel* CTwoSampleTest::get_kernel() const
+std::shared_ptr<CKernel> CTwoSampleTest::get_kernel() const
 {
 	return get_kernel_mgr().kernel_at(0);
 }

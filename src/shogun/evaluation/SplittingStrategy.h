@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Fernando Iglesias, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Fernando Iglesias, Yuyu Zhang,
  *          Sergey Lisitsyn
  */
 
@@ -47,7 +47,7 @@ public:
 	 * @param labels labels to be (possibly) used for splitting
 	 * @param num_subsets desired number of subsets, the labels are split into
 	 */
-	CSplittingStrategy(CLabels* labels, index_t num_subsets);
+	CSplittingStrategy(std::shared_ptr<CLabels> labels, index_t num_subsets);
 
 	/** destructor */
 	virtual ~CSplittingStrategy();
@@ -96,10 +96,10 @@ private:
 protected:
 
 	/** labels */
-	CLabels* m_labels;
+	std::shared_ptr<CLabels> m_labels;
 
 	/** subset indices */
-	CDynamicObjectArray* m_subset_indices;
+	std::shared_ptr<CDynamicObjectArray> m_subset_indices;
 
 	/** additional variable to store number of index subsets */
 	index_t m_num_subsets;

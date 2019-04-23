@@ -53,7 +53,7 @@ class CMixtureModel : public CDistribution
 		 * @param components individual distributions forming the mixture (parameters must be initialized)
 		 * @param weights initial \f$w_m\f$ ie. weights of individual distributions
 		 */
-		CMixtureModel(CDynamicObjectArray* components, SGVector<float64_t> weights);
+		CMixtureModel(std::shared_ptr<CDynamicObjectArray> components, SGVector<float64_t> weights);
 
 		/* destructor */
 		~CMixtureModel();
@@ -66,7 +66,7 @@ class CMixtureModel : public CDistribution
 		 * @param data training data
 		 * @return whether training was successful
 		 */
-		bool train(CFeatures* data=NULL);
+		bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** get number of parameters in model
 		 *
@@ -111,13 +111,13 @@ class CMixtureModel : public CDistribution
 		 *
 		 * @return components
 		 */
-		CDynamicObjectArray* get_components() const;
+		std::shared_ptr<CDynamicObjectArray> get_components() const;
 
 		/** set components
 		 *
 		 * @param components mixture components
 		 */
-		void set_components(CDynamicObjectArray* components);
+		void set_components(std::shared_ptr<CDynamicObjectArray> components);
 
 		/** get number of components
 		 *
@@ -130,7 +130,7 @@ class CMixtureModel : public CDistribution
 		 * @param index index of component
 		 * @return component at index
 		 */
-		CDistribution* get_component(index_t index) const;
+		std::shared_ptr<CDistribution> get_component(index_t index) const;
 
 		/** set max iterations in EM
 		 *
@@ -175,7 +175,7 @@ class CMixtureModel : public CDistribution
 
 	private:
 		/** array of components */
-		CDynamicObjectArray* m_components;
+		std::shared_ptr<CDynamicObjectArray> m_components;
 
 		/** weights */
 		SGVector<float64_t> m_weights;

@@ -43,7 +43,7 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @param f features to use
 		 */
-		CLinearHMM(CStringFeatures<uint16_t>* f);
+		CLinearHMM(std::shared_ptr<CStringFeatures<uint16_t>> f);
 
 		/** constructor
 		 *
@@ -62,7 +62,7 @@ class CLinearHMM : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** alternative train distribution
 		 *

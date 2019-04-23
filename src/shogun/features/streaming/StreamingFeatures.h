@@ -185,7 +185,7 @@ public:
 	 *
 	 * NOT IMPLEMENTED!
 	 */
-	virtual CFeatures* get_streamed_features(index_t num_elements)
+	virtual std::shared_ptr<CFeatures> get_streamed_features(index_t num_elements)
 	{
 		SG_ERROR("%s::get_streamed_features() is not yet implemented!\n",
 				get_name());
@@ -197,7 +197,7 @@ public:
 	 *
 	 * @return a duplicate object as CFeatures*
 	 */
-	virtual CFeatures* duplicate() const
+	virtual std::shared_ptr<CFeatures> duplicate() const
 	{
 		SG_NOTIMPLEMENTED
 		return NULL;
@@ -209,7 +209,7 @@ protected:
 	bool has_labels;
 
 	/// The StreamingFile object to read from.
-	CStreamingFile* working_file;
+	std::shared_ptr<CStreamingFile> working_file;
 
 	/// Whether the stream is seekable
 	bool seekable;

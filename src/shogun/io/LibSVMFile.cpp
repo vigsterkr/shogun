@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evgeniy Andreev, Jiaolong Xu, Thoralf Klein, Bjoern Esser, 
+ * Authors: Evgeniy Andreev, Jiaolong Xu, Thoralf Klein, Bjoern Esser,
  *          Giovanni De Toni, Fernando Iglesias
  */
 
@@ -38,12 +38,12 @@ CLibSVMFile::CLibSVMFile(const char* fname, char rw, const char* name) :
 
 CLibSVMFile::~CLibSVMFile()
 {
-	SG_UNREF(m_whitespace_tokenizer);
-	SG_UNREF(m_delimiter_feat_tokenizer);
-	SG_UNREF(m_delimiter_label_tokenizer);
-	SG_UNREF(m_line_tokenizer);
-	SG_UNREF(m_parser);
-	SG_UNREF(m_line_reader);
+
+
+
+
+
+
 }
 
 void CLibSVMFile::init()
@@ -63,24 +63,24 @@ void CLibSVMFile::init_with_defaults()
 	m_delimiter_feat=':';
 	m_delimiter_label=',';
 
-	m_whitespace_tokenizer=new CDelimiterTokenizer(true);
+	m_whitespace_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
 	m_whitespace_tokenizer->delimiters[' ']=1;
-	SG_REF(m_whitespace_tokenizer);
 
-	m_delimiter_feat_tokenizer=new CDelimiterTokenizer(true);
+
+	m_delimiter_feat_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
 	m_delimiter_feat_tokenizer->delimiters[m_delimiter_feat]=1;
-	SG_REF(m_delimiter_feat_tokenizer);
 
-	m_delimiter_label_tokenizer=new CDelimiterTokenizer(true);
+
+	m_delimiter_label_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
 	m_delimiter_label_tokenizer->delimiters[m_delimiter_label]=1;
-	SG_REF(m_delimiter_label_tokenizer);
 
-	m_line_tokenizer=new CDelimiterTokenizer(true);
+
+	m_line_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
 	m_line_tokenizer->delimiters['\n']=1;
-	SG_REF(m_line_tokenizer);
 
-	m_parser=new CParser();
-	m_line_reader=new CLineReader(file, m_line_tokenizer);
+
+	m_parser=std::make_shared<CParser>();
+	m_line_reader=std::make_shared<CLineReader>(file, m_line_tokenizer);
 }
 
 #define GET_SPARSE_MATRIX(read_func, sg_type) \
@@ -395,7 +395,7 @@ int32_t CLibSVMFile::get_num_lines()
 
 bool CLibSVMFile::is_feat_entry(const SGVector<char> entry)
 {
-	CParser* parser = new CParser();
+	auto parser = std::make_shared<CParser>();
 	parser->set_tokenizer(m_delimiter_feat_tokenizer);
 	parser->set_text(entry);
 	bool isfeat = false;
@@ -409,7 +409,7 @@ bool CLibSVMFile::is_feat_entry(const SGVector<char> entry)
 
 	}
 
-	SG_UNREF(parser);
+
 
 	return isfeat;
 }

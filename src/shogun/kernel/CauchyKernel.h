@@ -39,7 +39,7 @@ public:
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance to be used
 	 */
-	CCauchyKernel(int32_t cache, float64_t sigma, CDistance* dist);
+	CCauchyKernel(int32_t cache, float64_t sigma, std::shared_ptr<CDistance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -47,14 +47,14 @@ public:
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance to be used
 	 */
-	CCauchyKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist);
+	CCauchyKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t sigma, std::shared_ptr<CDistance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/**
 	 * @return kernel type
@@ -96,7 +96,7 @@ private:
 protected:
 
 	/// distance to be used
-	CDistance* m_distance;
+	std::shared_ptr<CDistance> m_distance;
 
 	/// sigma parameter of kernel
 	float64_t m_sigma;

@@ -64,7 +64,7 @@ public:
 	 * Note that the variational distribution is Gaussian
 	 */
 	virtual bool set_variational_distribution(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels* lab);
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab);
 
 	/** set a non-negative noise factor in order to correct the variance if variance is close to zero or negative
 	 * setting 0 means correction is not applied

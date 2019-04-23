@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang,
  *          Evangelos Anagnostopoulos, Sergey Lisitsyn
  */
 #ifndef __STREAMING_FILEFROMSPARSE_H__
@@ -31,7 +31,7 @@ public:
 	 *
 	 * @param feat SparseFeatures object
 	 */
-	CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat);
+	CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat);
 
 	/**
 	 * Constructor taking a SparseFeatures object as arg
@@ -39,7 +39,7 @@ public:
 	 * @param feat SparseFeatures object
 	 * @param lab Labels as float64_t*
 	 */
-	CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float64_t* lab);
+	CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat, float64_t* lab);
 
 	/**
 	 * Destructor
@@ -88,11 +88,11 @@ private:
 	/**
 	 * Initialize members to defaults
 	 */
-	void init(CSparseFeatures<T>* feat);
+	void init(std::shared_ptr<CSparseFeatures<T>> feat);
 
 protected:
 	/// SparseFeatures object
-	CSparseFeatures<T>* features;
+	std::shared_ptr<CSparseFeatures<T>> features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
@@ -107,14 +107,14 @@ CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures()
 }
 
 template <class T>
-CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat)
+CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat)
 	: CStreamingFileFromFeatures(feat)
 {
 	init(feat);
 }
 
 template <class T>
-CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFeatures<T>* feat, float64_t* lab)
+CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat, float64_t* lab)
 	: CStreamingFileFromFeatures(feat,lab)
 {
 	init(feat);
@@ -123,14 +123,12 @@ CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(CSparseFea
 template <class T>
 CStreamingFileFromSparseFeatures<T>::~CStreamingFileFromSparseFeatures()
 {
-	SG_UNREF(features);
 }
 
 template <class T>
-void CStreamingFileFromSparseFeatures<T>::init(CSparseFeatures<T>* feat)
+void CStreamingFileFromSparseFeatures<T>::init(std::shared_ptr<CSparseFeatures<T>> feat)
 {
 	features = feat;
-	SG_REF(features);
 	vector_num=0;
 
 	set_generic<T>();

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Giovanni De Toni, Christian Widmer, Sergey Lisitsyn, 
+ * Authors: Giovanni De Toni, Christian Widmer, Sergey Lisitsyn,
  *          Soeren Sonnenburg, Bjoern Esser
  */
 
@@ -29,7 +29,7 @@ using namespace shogun;
 }
 
 CLibLinearMTL::CLibLinearMTL(
-		float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+		float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab)
 : CLinearMachine()
 {
 	init();
@@ -63,7 +63,7 @@ CLibLinearMTL::~CLibLinearMTL()
 {
 }
 
-bool CLibLinearMTL::train_machine(CFeatures* data)
+bool CLibLinearMTL::train_machine(std::shared_ptr<CFeatures> data)
 {
 
 	ASSERT(m_labels)
@@ -73,7 +73,7 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<CDotFeatures>());
 	}
 	ASSERT(features)
 	m_labels->ensure_valid();
@@ -113,8 +113,9 @@ bool CLibLinearMTL::train_machine(CFeatures* data)
 	prob.y=SG_MALLOC(float64_t, prob.l);
 	prob.use_bias=use_bias;
 
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<prob.l; i++)
-		prob.y[i]=((CBinaryLabels*)m_labels)->get_label(i);
+		prob.y[i]=bl->get_label(i);
 
 	int pos = 0;
 	int neg = 0;
@@ -466,11 +467,12 @@ return obj
 	}
 
 	// loss
+	auto bl = binary_labels(m_labels);
 	for(int32_t i=0; i<num_vec; i++)
 	{
 		int32_t ti = task_indicator_lhs[i];
 		float64_t* w_t = W.get_column_vector(ti);
-		float64_t residual = ((CBinaryLabels*)m_labels)->get_label(i) * features->dense_dot(i, w_t, w_size);
+		float64_t residual = bl->get_label(i) * features->dense_dot(i, w_t, w_size);
 
 		// hinge loss
 		obj += C1 * CMath::max(0.0, 1 - residual);

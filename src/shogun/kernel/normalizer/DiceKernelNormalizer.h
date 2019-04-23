@@ -32,17 +32,17 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			diag_lhs(NULL), num_diag_lhs(0), diag_rhs(NULL), num_diag_rhs(0),
 			use_optimized_diagonal_computation(use_opt_diag)
 		{
-			m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
-							  "K(x,x) for left hand side examples.");
-			watch_param("diag_lhs", &diag_lhs, &num_diag_lhs);
+			/*m_parameters->add_vector(&diag_lhs, &num_diag_lhs, "diag_lhs",
+							  "K(x,x) for left hand side examples.")*/;
+			/*watch_param("diag_lhs", &diag_lhs, &num_diag_lhs)*/;
 
-			m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
-							  "K(x,x) for right hand side examples.");
-			watch_param("diag_rhs", &diag_rhs, &num_diag_rhs);
+			/*m_parameters->add_vector(&diag_rhs, &num_diag_rhs, "diag_rhs",
+							  "K(x,x) for right hand side examples.")*/;
+			/*watch_param("diag_rhs", &diag_rhs, &num_diag_rhs)*/;
 
-			SG_ADD(&use_optimized_diagonal_computation,
+			/*SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
-					"flat if optimized diagonal computation is used");
+					"flat if optimized diagonal computation is used");*/
 		}
 
 		/** default destructor */
@@ -62,8 +62,8 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			ASSERT(num_diag_lhs>0)
 			ASSERT(num_diag_rhs>0)
 
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
@@ -133,10 +133,11 @@ class CDiceKernelNormalizer : public CKernelNormalizer
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
+					auto cwsk = k->as<CCommWordStringKernel>();
 					if (use_optimized_diagonal_computation)
-						v[i]=((CCommWordStringKernel*) k)->compute_diag(i);
+						v[i]=cwsk->compute_diag(i);
 					else
-						v[i]=((CCommWordStringKernel*) k)->compute_helper(i,i, true);
+						v[i]=cwsk->compute_helper(i,i, true);
 				}
 				else
 					v[i]=k->compute(i,i);

@@ -27,7 +27,7 @@ template <class ST> class CSparseDistance : public CDistance
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 		{
 			CDistance::init(l,r);
 
@@ -36,10 +36,11 @@ template <class ST> class CSparseDistance : public CDistance
 			ASSERT(l->get_feature_type()==this->get_feature_type())
 			ASSERT(r->get_feature_type()==this->get_feature_type())
 
-			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features() )
+			if ((std::static_pointer_cast<CSparseFeatures<ST>>(lhs))->get_num_features() != (std::static_pointer_cast<CSparseFeatures<ST>>(rhs))->get_num_features() )
 			{
 				SG_ERROR("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
+						(std::static_pointer_cast<CSparseFeatures<ST>>(lhs))->get_num_features(),
+						(std::static_pointer_cast<CSparseFeatures<ST>>(rhs))->get_num_features());
 			}
 			return true;
 		}

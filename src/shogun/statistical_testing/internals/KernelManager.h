@@ -55,9 +55,9 @@ public:
 	~KernelManager();
 
 	InitPerKernel kernel_at(index_t i);
-	CKernel* kernel_at(index_t i) const;
+	std::shared_ptr<CKernel> kernel_at(index_t i) const;
 
-	void push_back(CKernel* kernel);
+	void push_back(std::shared_ptr<CKernel> kernel);
 	const index_t num_kernels() const;
 
 	void precompute_kernel_at(index_t i);
@@ -65,8 +65,8 @@ public:
 
 	void clear();
 	bool same_distance_type() const;
-	CDistance* get_distance_instance() const;
-	void set_precomputed_distance(CCustomDistance* distance) const;
+	std::shared_ptr<CDistance> get_distance_instance() const;
+	void set_precomputed_distance(std::shared_ptr<CCustomDistance> distance) const;
 	void unset_precomputed_distance() const;
 private:
 	std::vector<std::shared_ptr<CKernel> > m_kernels;

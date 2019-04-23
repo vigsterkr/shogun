@@ -45,12 +45,12 @@ public:
 	 *
 	 * @param lab the labels being checked, guaranteed to be non-NULL
 	 */
-	virtual bool is_label_valid(CLabels *lab) const;
+	virtual bool is_label_valid(std::shared_ptr<CLabels >lab) const;
 
 protected:
 
 	/** machines */
-	CDynamicObjectArray *m_machines;
+	std::shared_ptr<CDynamicObjectArray >m_machines;
 };
 
 } /* shogun */

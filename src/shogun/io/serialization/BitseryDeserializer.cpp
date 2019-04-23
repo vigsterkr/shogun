@@ -49,14 +49,10 @@ public:
 		SG_SDEBUG("read floatmax_t with value %Lf\n", *v);
 	}
 
-	void on_object(S& s, CSGObject** v)
+	void on_object(S& s, std::shared_ptr<CSGObject>* v)
 	{
 		SG_SDEBUG("reading SGObject: ");
-		if (*v != nullptr)
-			SG_UNREF(*v);
 		*v = object_reader(s, this);
-		if (*v != nullptr)
-			SG_REF(*v);
 	}
 
 private:
@@ -94,13 +90,13 @@ struct InputStreamAdapter
 		// ignore
 	}
 
-	Some<CInputStream> m_stream;
+	std::shared_ptr<CInputStream> m_stream;
 	string m_buffer;
 	error_condition m_status;
 };
 
 template<typename Reader>
-CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, CSGObject* _this = nullptr)
+std::shared_ptr<CSGObject> object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, std::shared_ptr<CSGObject> _this = nullptr)
 {
 	size_t obj_magic;
 	reader.value8b(obj_magic);
@@ -111,7 +107,7 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	reader.text1b(obj_name, 64);
 	uint16_t primitive_type;
 	reader.value2b(primitive_type);
-	CSGObject* obj = nullptr;
+	std::shared_ptr<CSGObject> obj = nullptr;
 	if (_this)
 	{
 		REQUIRE(_this->get_name() == obj_name, "");
@@ -144,7 +140,6 @@ CSGObject* object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, 
 	{
 		SG_SWARNING("Error while deserializeing %s: ShogunException: "
 			"%s\n", obj_name.c_str(), e.what());
-		SG_UNREF(obj);
 		return nullptr;
 	}
 
@@ -162,15 +157,15 @@ CBitseryDeserializer::~CBitseryDeserializer()
 {
 }
 
-Some<CSGObject> CBitseryDeserializer::read_object()
+std::shared_ptr<CSGObject> CBitseryDeserializer::read_object()
 {
 	InputStreamAdapter adapter { stream() };
 	BitseryDeserializer deser {std::move(adapter)};
 	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
-	return wrap<CSGObject>(object_reader(deser, addressof(reader_visitor)));
+	return object_reader(deser, addressof(reader_visitor));
 }
 
-void CBitseryDeserializer::read(CSGObject* _this)
+void CBitseryDeserializer::read(std::shared_ptr<CSGObject> _this)
 {
 	InputStreamAdapter adapter { stream() };
 	BitseryDeserializer deser {std::move(adapter)};

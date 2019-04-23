@@ -47,7 +47,7 @@ namespace internal
 class MaxTestPower : public MaxMeasure
 {
 public:
-	MaxTestPower(KernelManager&, CMMD*);
+	MaxTestPower(KernelManager&, std::shared_ptr<CMMD>);
 	MaxTestPower(const MaxTestPower& other)=delete;
 	~MaxTestPower();
 	MaxTestPower& operator=(const MaxTestPower& other)=delete;

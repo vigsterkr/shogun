@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni, 
+ * Authors: Pan Deng, Heiko Strathmann, Soeren Sonnenburg, Giovanni De Toni,
  *          Yuyu Zhang, Viktor Gal, Sergey Lisitsyn
  */
 
@@ -12,6 +12,7 @@
 #include <shogun/lib/config.h>
 
 #include <functional>
+#include <memory>
 #include <stdio.h>
 
 namespace shogun
@@ -55,13 +56,13 @@ namespace shogun
 	 *
 	 * @param io io object to use
 	 */
-	void set_global_io(SGIO* io);
+	void set_global_io(std::shared_ptr<SGIO> io);
 
 	/** get the global io object
 	 *
 	 * @return io object
 	 */
-	SGIO* get_global_io();
+	std::shared_ptr<SGIO> get_global_io();
 
 	/** @return the globally over-ridden floating point epsilon for
 	 * CMath::fequals
@@ -90,37 +91,37 @@ namespace shogun
 	 *
 	 * @param parallel parallel object to use
 	 */
-	void set_global_parallel(Parallel* parallel);
+	void set_global_parallel(std::shared_ptr<Parallel> parallel);
 
 	/** get the global parallel object
 	 *
 	 * @return parallel object
 	 */
-	Parallel* get_global_parallel();
+	std::shared_ptr<Parallel> get_global_parallel();
 
 	/** set the global version object
 	 *
 	 * @param version version object to use
 	 */
-	void set_global_version(Version* version);
+	void set_global_version(std::shared_ptr<Version> version);
 
 	/** get the global version object
 	 *
 	 * @return version object
 	 */
-	Version* get_global_version();
+	std::shared_ptr<Version> get_global_version();
 
 	/** set the global random object
 	 *
 	 * @param rand random object to use
 	 */
-	void set_global_rand(CRandom* rand);
+	void set_global_rand(std::shared_ptr<CRandom> rand);
 
 	/** get the global random object
 	 *
 	 * @return random object
 	 */
-	CRandom* get_global_rand();
+	std::shared_ptr<CRandom> get_global_rand();
 
 #ifndef SWIG // SWIG should skip this part
 /** get the global linalg library object

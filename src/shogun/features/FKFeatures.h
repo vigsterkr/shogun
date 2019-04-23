@@ -47,7 +47,7 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		CFKFeatures(int32_t size, CHMM* p, CHMM* n);
+		CFKFeatures(int32_t size, std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n);
 
 		/** copy constructor */
 		CFKFeatures(const CFKFeatures &orig);
@@ -59,7 +59,7 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		void set_models(CHMM* p, CHMM* n);
+		void set_models(std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n);
 
 		/** set weight a
 		 *
@@ -132,9 +132,9 @@ class CFKFeatures: public CDenseFeatures<float64_t>
 
 	protected:
 		/** positive HMM */
-		CHMM* pos;
+		std::shared_ptr<CHMM> pos;
 		/** negative HMM */
-		CHMM* neg;
+		std::shared_ptr<CHMM> neg;
 		/** positive prob */
 		float64_t* pos_prob;
 		/** negative prob */

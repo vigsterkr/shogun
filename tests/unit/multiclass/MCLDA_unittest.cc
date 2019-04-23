@@ -26,21 +26,18 @@ TEST(MCLDA, train_and_apply)
 		for( int j = 0 ; j < NUM ; ++j )
 			lab[i*NUM+j] = double(i);
 
-	CMulticlassLabels* labels = new CMulticlassLabels(lab);
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
+	auto labels = std::make_shared<CMulticlassLabels>(lab);
+	auto features = std::make_shared<CDenseFeatures< float64_t >>(feat);
 
-	CMCLDA* lda = new CMCLDA(features, labels);
-	SG_REF(lda);
+	auto lda = std::make_shared<CMCLDA>(features, labels);
+
 	lda->train();
 
-	CMulticlassLabels* output = lda->apply()->as<CMulticlassLabels>();
-	SG_REF(output);
-
+	auto output = lda->apply()->as<CMulticlassLabels>();
 	// Test
 	for ( index_t i = 0; i < CLASSES*NUM; ++i )
 		EXPECT_EQ(output->get_label(i), labels->get_label(i));
 
-	SG_UNREF(output);
-	SG_UNREF(lda);
+
 }
 #endif // HAVE_LAPACK

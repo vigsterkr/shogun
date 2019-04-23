@@ -37,7 +37,7 @@ bool CImpostorNode::operator<(const CImpostorNode& rhs) const
 }
 
 void CLMNNImpl::check_training_setup(
-    CFeatures* features, CLabels* labels, SGMatrix<float64_t>& init_transform,
+    std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels, SGMatrix<float64_t>& init_transform,
     int32_t k)
 {
 	REQUIRE(features->has_property(FP_DOT),
@@ -51,7 +51,7 @@ void CLMNNImpl::check_training_setup(
 			"Currently, LMNN supports only DenseFeatures\n")
 
 	// cast is safe, we ensure above that features are dense
-	CDenseFeatures<float64_t>* x = static_cast<CDenseFeatures<float64_t>*>(features);
+	auto x = features->as<CDenseFeatures<float64_t>>();
 
 	/// Initialize, if necessary, the initial transform
 	if (init_transform.num_rows==0)
@@ -65,9 +65,9 @@ void CLMNNImpl::check_training_setup(
 	check_maximum_k(labels, k);
 }
 
-void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
+void CLMNNImpl::check_maximum_k(std::shared_ptr<CLabels> labels, int32_t k)
 {
-	CMulticlassLabels* y = multiclass_labels(labels);
+	auto y = multiclass_labels(labels);
 	SGVector<int32_t> int_labels = y->get_int_labels();
 
 	// back-up initial values because they will be overwritten by unique
@@ -104,8 +104,8 @@ void CLMNNImpl::check_maximum_k(CLabels* labels, int32_t k)
 	    min_num_examples, k)
 }
 
-SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
-		CMulticlassLabels* y, int32_t k)
+SGMatrix<index_t> CLMNNImpl::find_target_nn(std::shared_ptr<CDenseFeatures<float64_t>> x,
+		std::shared_ptr<CMulticlassLabels> y, int32_t k)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_target_nn().\n")
 
@@ -137,10 +137,10 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		SGVector<float64_t> labels_vec(slice_size);
 		labels_vec.set_const(unique_labels[i]);
 
-		auto features_slice = some<CDenseFeatures<float64_t>>(slice_mat);
-		auto labels_slice = some<CMulticlassLabels>(labels_vec);
+		auto features_slice = std::make_shared<CDenseFeatures<float64_t>>(slice_mat);
+		auto labels_slice = std::make_shared<CMulticlassLabels>(labels_vec);
 
-		CKNN* knn = new CKNN(k+1, new CEuclideanDistance(features_slice, features_slice), labels_slice);
+		auto knn = std::make_shared<CKNN>(k+1, std::make_shared<CEuclideanDistance>(features_slice, features_slice), labels_slice);
 		SGMatrix<int32_t> target_slice = knn->nearest_neighbors();
 		// sanity check
 		ASSERT(target_slice.num_rows==k+1 && target_slice.num_cols==slice_size)
@@ -152,7 +152,7 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 		}
 
 		// clean up knn
-		SG_UNREF(knn)
+
 	}
 
 	SG_SDEBUG("Leaving CLMNNImpl::find_target_nn().\n")
@@ -161,7 +161,7 @@ SGMatrix<index_t> CLMNNImpl::find_target_nn(CDenseFeatures<float64_t>* x,
 }
 
 SGMatrix<float64_t> CLMNNImpl::sum_outer_products(
-    CDenseFeatures<float64_t>* x, const SGMatrix<index_t>& target_nn)
+    std::shared_ptr<CDenseFeatures<float64_t>> x, const SGMatrix<index_t>& target_nn)
 {
 	// get the number of features
 	int32_t d = x->get_num_features();
@@ -185,7 +185,7 @@ SGMatrix<float64_t> CLMNNImpl::sum_outer_products(
 }
 
 ImpostorsSetType CLMNNImpl::find_impostors(
-    CDenseFeatures<float64_t>* x, CMulticlassLabels* y,
+    std::shared_ptr<CDenseFeatures<float64_t>> x, std::shared_ptr<CMulticlassLabels> y,
     const SGMatrix<float64_t>& L, const SGMatrix<index_t>& target_nn,
     const int32_t iter, const int32_t correction)
 {
@@ -227,7 +227,7 @@ ImpostorsSetType CLMNNImpl::find_impostors(
 }
 
 void CLMNNImpl::update_gradient(
-    CDenseFeatures<float64_t>* x, SGMatrix<float64_t>& G,
+    std::shared_ptr<CDenseFeatures<float64_t>> x, SGMatrix<float64_t>& G,
     const ImpostorsSetType& Nc, const ImpostorsSetType& Np,
     float64_t regularization)
 {
@@ -346,19 +346,19 @@ bool CLMNNImpl::check_termination(
 	return false;
 }
 
-SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(CDenseFeatures<float64_t>* features)
+SGMatrix<float64_t> CLMNNImpl::compute_pca_transform(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
 	SG_SDEBUG("Initializing LMNN transform using PCA.\n");
 
 	// Substract the mean of the features
 	// Create clone of the features to keep the input features unmodified
 	auto mean_substractor =
-	    some<CPruneVarSubMean>(false); // false to avoid variance normalization
+	    std::make_shared<CPruneVarSubMean>(false); // false to avoid variance normalization
 	mean_substractor->fit(features);
 	auto centered_feats = mean_substractor->transform(features)->as<CDenseFeatures<float64_t>>();
 
 	// Obtain the linear transform applying PCA
-	auto pca = some<CPCA>();
+	auto pca = std::make_shared<CPCA>();
 	pca->set_target_dim(centered_feats->get_num_features());
 	pca->fit(centered_feats);
 	SGMatrix<float64_t> pca_transform = pca->get_transformation_matrix();
@@ -378,7 +378,7 @@ SGMatrix<float64_t> CLMNNImpl::compute_sqdists(
 	/// compute square distances to target neighbors plus margin
 
 	// create Shogun features from LX to later apply subset
-	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(LX);
+	auto lx = std::make_shared<CDenseFeatures<float64_t>>(LX);
 
 	// initialize distances
 	SGMatrix<float64_t> sqdists(k, n);
@@ -399,14 +399,14 @@ SGMatrix<float64_t> CLMNNImpl::compute_sqdists(
 	}
 
 	// clean up features used to apply subset
-	SG_UNREF(lx);
+
 
 	return sqdists;
 }
 
 ImpostorsSetType CLMNNImpl::find_impostors_exact(
     const SGMatrix<float64_t>& LX, const SGMatrix<float64_t>& sqdists,
-    CMulticlassLabels* y, const SGMatrix<index_t>& target_nn, int32_t k)
+    std::shared_ptr<CMulticlassLabels> y, const SGMatrix<index_t>& target_nn, int32_t k)
 {
 	SG_SDEBUG("Entering CLMNNImpl::find_impostors_exact().\n")
 
@@ -414,7 +414,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(
 	ImpostorsSetType N = ImpostorsSetType();
 
 	// create Shogun features from LX to later apply subset
-	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(LX);
+	auto lx = std::make_shared<CDenseFeatures<float64_t>>(LX);
 
 	// get a vector with unique label values
 	SGVector<float64_t> unique = y->get_unique_labels();
@@ -429,7 +429,7 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(
 		std::vector<index_t> gtidxs = CLMNNImpl::get_examples_gtlabel(y,unique[i]);
 
 		// get distance with features indexed by iidxs and gtidxs separated
-		CEuclideanDistance* euclidean = CLMNNImpl::setup_distance(lx,iidxs,gtidxs);
+		auto euclidean = CLMNNImpl::setup_distance(lx,iidxs,gtidxs);
 		euclidean->set_disable_sqrt(true);
 
 		for (int32_t j = 0; j < k; ++j)
@@ -450,10 +450,10 @@ ImpostorsSetType CLMNNImpl::find_impostors_exact(
 			}
 		}
 
-		SG_UNREF(euclidean);
+
 	}
 
-	SG_UNREF(lx);
+
 
 	SG_SDEBUG("Leaving CLMNNImpl::find_impostors_exact().\n")
 
@@ -503,8 +503,8 @@ SGVector<float64_t> CLMNNImpl::compute_impostors_sqdists(
 	/// compute square distances to impostors
 
 	// create Shogun features from LX and distance
-	CDenseFeatures<float64_t>* lx = new CDenseFeatures<float64_t>(LX);
-	CEuclideanDistance* euclidean = new CEuclideanDistance(lx,lx);
+	auto lx = std::make_shared<CDenseFeatures<float64_t>>(LX);
+	auto euclidean = std::make_shared<CEuclideanDistance>(lx,lx);
 	euclidean->set_disable_sqrt(true);
 
 	// initialize vector of square distances
@@ -515,12 +515,12 @@ SGVector<float64_t> CLMNNImpl::compute_impostors_sqdists(
 		sqdists[i++] = euclidean->distance(it->example,it->impostor);
 
 	// clean up distance
-	SG_UNREF(euclidean);
+
 
 	return sqdists;
 }
 
-std::vector<index_t> CLMNNImpl::get_examples_label(CMulticlassLabels* y,
+std::vector<index_t> CLMNNImpl::get_examples_label(std::shared_ptr<CMulticlassLabels> y,
 		float64_t yi)
 {
 	// indices of the examples with label equal to yi
@@ -535,7 +535,7 @@ std::vector<index_t> CLMNNImpl::get_examples_label(CMulticlassLabels* y,
 	return idxs;
 }
 
-std::vector<index_t> CLMNNImpl::get_examples_gtlabel(CMulticlassLabels* y,
+std::vector<index_t> CLMNNImpl::get_examples_gtlabel(std::shared_ptr<CMulticlassLabels> y,
 		float64_t yi)
 {
 	// indices of the examples with label equal greater than yi
@@ -550,7 +550,7 @@ std::vector<index_t> CLMNNImpl::get_examples_gtlabel(CMulticlassLabels* y,
 	return idxs;
 }
 
-CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
+std::shared_ptr<CEuclideanDistance> CLMNNImpl::setup_distance(std::shared_ptr<CDenseFeatures<float64_t>> x,
 		std::vector<index_t>& a, std::vector<index_t>& b)
 {
 	// create new features only containing examples whose indices are in a
@@ -560,7 +560,6 @@ CEuclideanDistance* CLMNNImpl::setup_distance(CDenseFeatures<float64_t>* x,
 	auto bfeats = view(x, SGVector<index_t>(b.data(), b.size(), false));
 
 	// create and return distance
-	CEuclideanDistance* euclidean = new CEuclideanDistance(afeats,bfeats);
-	return euclidean;
+	return std::make_shared<CEuclideanDistance>(afeats,bfeats);
 }
 

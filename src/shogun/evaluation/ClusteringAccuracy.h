@@ -33,7 +33,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
 
 	/** @return whether criterium has to be maximized or minimized */
 	virtual EEvaluationDirection get_evaluation_direction() const

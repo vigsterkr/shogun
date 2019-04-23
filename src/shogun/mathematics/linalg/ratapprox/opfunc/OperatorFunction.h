@@ -47,7 +47,7 @@ public:
 	 * @param op the linear operator of this operator function
 	 * @param type the type of the operator function (sqrt, log, etc)
 	 */
-	COperatorFunction(CLinearOperator<T>* op,
+	COperatorFunction(std::shared_ptr<CLinearOperator<T>> op,
 		EOperatorFunction type=OF_UNDEFINED)
 	: CSGObject(),
 	  m_function_type(type)
@@ -55,17 +55,15 @@ public:
 		init();
 
 		m_linear_operator=op;
-		SG_REF(m_linear_operator);
 	}
 
 	/** destructor */
 	virtual ~COperatorFunction()
 	{
-		SG_UNREF(m_linear_operator);
 	}
 
 	/** @return the operator */
-	CLinearOperator<T>* get_operator() const
+	std::shared_ptr<CLinearOperator<T>> get_operator() const
 	{
 		return m_linear_operator;
 	}
@@ -88,7 +86,7 @@ public:
 	}
 protected:
 	/** the linear operator */
-	CLinearOperator<T>* m_linear_operator;
+	std::shared_ptr<CLinearOperator<T>> m_linear_operator;
 
 	/** the linear operator function type */
 	const EOperatorFunction m_function_type;
@@ -99,7 +97,7 @@ private:
 	{
 	  m_linear_operator=NULL;
 
-		SG_ADD((CSGObject**)&m_linear_operator, "linear_operator",
+		SG_ADD((std::shared_ptr<CSGObject>*)&m_linear_operator, "linear_operator",
 			"Linear operator of this operator function");
 	}
 };

@@ -27,19 +27,18 @@ CWDFeatures::CWDFeatures() :CDotFeatures()
 	normalization_const = 0.0;
 }
 
-CWDFeatures::CWDFeatures(CStringFeatures<uint8_t>* str,
+CWDFeatures::CWDFeatures(std::shared_ptr<CStringFeatures<uint8_t>> str,
 		int32_t order, int32_t from_order) : CDotFeatures()
 {
 	ASSERT(str)
 	ASSERT(str->have_same_length())
-	SG_REF(str);
+
 
 	strings=str;
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
-	CAlphabet* alpha=str->get_alphabet();
+	auto alpha=str->get_alphabet();
 	alphabet_size=alpha->get_num_symbols();
-	SG_UNREF(alpha);
 
 	degree=order;
 	from_degree=from_order;
@@ -54,15 +53,14 @@ CWDFeatures::CWDFeatures(const CWDFeatures& orig)
 	degree(orig.degree), from_degree(orig.from_degree),
 	normalization_const(orig.normalization_const)
 {
-	SG_REF(strings);
+
 
 	if (strings)
 	{
 		string_length=strings->get_max_vector_length();
 		num_strings=strings->get_num_vectors();
-		CAlphabet* alpha=strings->get_alphabet();
+		auto alpha=strings->get_alphabet();
 		alphabet_size=alpha->get_num_symbols();
-		SG_UNREF(alpha);
 	}
 	else
 	{
@@ -78,16 +76,16 @@ CWDFeatures::CWDFeatures(const CWDFeatures& orig)
 
 CWDFeatures::~CWDFeatures()
 {
-	SG_UNREF(strings);
+
 	SG_FREE(wd_weights);
 }
 
-float64_t CWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CWDFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CWDFeatures* wdf = (CWDFeatures*) df;
+	auto wdf = std::static_pointer_cast<CWDFeatures>(df);
 
 	int32_t len1, len2;
 	bool free_vec1, free_vec2;
@@ -297,9 +295,9 @@ void CWDFeatures::free_feature_iterator(void* iterator)
 	SG_FREE(it);
 }
 
-CFeatures* CWDFeatures::duplicate() const
+std::shared_ptr<CFeatures> CWDFeatures::duplicate() const
 {
-	return new CWDFeatures(*this);
+	return std::make_shared<CWDFeatures>(*this);
 }
 
 int32_t CWDFeatures::get_dim_feature_space() const

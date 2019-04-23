@@ -73,9 +73,9 @@ public:
 	 * @param model Likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleFITCLaplaceInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	CSingleFITCLaplaceInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
+			std::shared_ptr<CFeatures> inducing_features);
 
 	virtual ~CSingleFITCLaplaceInferenceMethod();
 
@@ -97,7 +97,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CSingleFITCLaplaceInferenceMethod object
 	 */
-	static CSingleFITCLaplaceInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CSingleFITCLaplaceInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/**
 	 * @return whether combination of Laplace approximation inference method and
@@ -175,7 +175,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 
 protected:
 	/** update gradients */
@@ -396,12 +396,12 @@ public:
 
 	virtual const char* get_name() const { return "SingleFITCLaplaceNewtonOptimizer"; }
 
-	virtual ~CSingleFITCLaplaceNewtonOptimizer() { SG_UNREF(m_obj); }
+	virtual ~CSingleFITCLaplaceNewtonOptimizer() {  }
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(CSingleFITCLaplaceInferenceMethod *obj);
+	void set_target(std::shared_ptr<CSingleFITCLaplaceInferenceMethod >obj);
 
 	/** Unset the inference method
 	 * @param is_unref do we SG_UNREF the method
@@ -441,7 +441,7 @@ private:
 	void init();
 
 	/** the inference method */
-	CSingleFITCLaplaceInferenceMethod *m_obj;
+	std::shared_ptr<CSingleFITCLaplaceInferenceMethod >m_obj;
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;

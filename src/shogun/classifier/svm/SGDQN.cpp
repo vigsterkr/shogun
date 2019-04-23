@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Shashwat Lal Das, Giovanni De Toni,
  *          Sergey Lisitsyn, Thoralf Klein, Evan Shelhamer, Bjoern Esser
  */
 
@@ -30,7 +30,7 @@ CSGDQN::CSGDQN(float64_t C)
 	C2=C;
 }
 
-CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+CSGDQN::CSGDQN(float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab)
 : CLinearMachine()
 {
 	init();
@@ -43,13 +43,13 @@ CSGDQN::CSGDQN(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 
 CSGDQN::~CSGDQN()
 {
-	SG_UNREF(loss);
+
 }
 
-void CSGDQN::set_loss_function(CLossFunction* loss_func)
+void CSGDQN::set_loss_function(std::shared_ptr<CLossFunction> loss_func)
 {
-	SG_REF(loss_func);
-	SG_UNREF(loss);
+
+
 	loss=loss_func;
 }
 
@@ -77,7 +77,7 @@ void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c
 	}
 }
 
-bool CSGDQN::train(CFeatures* data)
+bool CSGDQN::train(std::shared_ptr<CFeatures> data)
 {
 
 	ASSERT(m_labels)
@@ -87,7 +87,7 @@ bool CSGDQN::train(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<CDotFeatures>(data));
 	}
 
 	ASSERT(features)
@@ -130,6 +130,7 @@ bool CSGDQN::train(CFeatures* data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
+	auto binary_labels = std::static_pointer_cast<CBinaryLabels>(m_labels);
 	for (auto e : SG_PROGRESS(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
@@ -140,7 +141,7 @@ bool CSGDQN::train(CFeatures* data)
 			SGVector<float64_t> v = features->get_computed_dot_feature_vector(i);
 			ASSERT(w.vlen==v.vlen)
 			float64_t eta = 1.0/t;
-			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
+			float64_t y = binary_labels->get_label(i);
 			float64_t z = y * features->dense_dot(i, w.vector, w.vlen);
 			if(updateB==true)
 			{
@@ -223,8 +224,8 @@ void CSGDQN::init()
 	skip=1000;
 	count=1000;
 
-	loss=new CHingeLoss();
-	SG_REF(loss);
+	loss=std::make_shared<CHingeLoss>();
+
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);

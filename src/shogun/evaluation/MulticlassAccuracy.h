@@ -49,14 +49,14 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return accuracy
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
 
 	/** constructs confusion matrix for multiclass classification
 	 * @param predicted labels to be evaluated
 	 * @param ground_truth labels assumed to be correct
 	 * @return confusion matrix
 	 */
-	static SGMatrix<int32_t> get_confusion_matrix(CLabels* predicted, CLabels* ground_truth);
+	static SGMatrix<int32_t> get_confusion_matrix(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
 
 	inline EEvaluationDirection get_evaluation_direction() const
 	{

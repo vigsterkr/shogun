@@ -70,21 +70,21 @@ TEST(GaussianProcessRegression,apply_regression)
 	}
 
 	/* shogun representation */
-	auto feat_train = some<CDenseFeatures<float64_t>>(X);
-	auto feat_test = some<CDenseFeatures<float64_t>>(X_test);
-	auto label_train = some<CRegressionLabels>(Y);
+	auto feat_train = std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto feat_test = std::make_shared<CDenseFeatures<float64_t>>(X_test);
+	auto label_train = std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel = some<CGaussianKernel>(10, shogun_sigma);
-	auto mean = some<CZeroMean>();
-	auto lik = some<CGaussianLikelihood>();
+	auto kernel = std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean = std::make_shared<CZeroMean>();
+	auto lik = std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf = some<CExactInferenceMethod>(kernel, feat_train,
+	auto inf = std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
-	auto gpr = some<CGaussianProcessRegression>(inf);
+	auto gpr = std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
@@ -129,21 +129,21 @@ TEST(GaussianProcessRegression,apply_regression_larger_test)
 	}
 
 	/* shogun representation */
-	auto feat_train = some<CDenseFeatures<float64_t>>(X);
-	auto feat_test = some<CDenseFeatures<float64_t>>(X_test);
-	auto label_train = some<CRegressionLabels>(Y);
+	auto feat_train = std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto feat_test = std::make_shared<CDenseFeatures<float64_t>>(X_test);
+	auto label_train = std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel = some<CGaussianKernel>(10, shogun_sigma);
-	auto mean = some<CZeroMean>();
-	auto lik = some<CGaussianLikelihood>();
+	auto kernel = std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean = std::make_shared<CZeroMean>();
+	auto lik = std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf = some<CExactInferenceMethod>(kernel, feat_train,
+	auto inf = std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
-	auto gpr = some<CGaussianProcessRegression>(inf);
+	auto gpr = std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
@@ -187,27 +187,27 @@ TEST(GaussianProcessRegression, apply_regression_on_training_features)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 0.02 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(0.25);
+	auto liklihood=std::make_shared<CGaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, liklihood);
 
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
 
 	// apply regression
-	CRegressionLabels* predictions=gpr->apply_regression();
+	auto predictions=gpr->apply_regression();
 	SGVector<float64_t> prediction_vector=predictions->get_labels();
 
 	// comparison of predictions with result from GPML package:
@@ -223,8 +223,6 @@ TEST(GaussianProcessRegression, apply_regression_on_training_features)
 	EXPECT_NEAR(prediction_vector[3], 1.2756631, 1E-7);
 	EXPECT_NEAR(prediction_vector[4], -0.0774804, 1E-7);
 
-	SG_UNREF(predictions);
-	SG_UNREF(gpr);
 }
 
 TEST(GaussianProcessRegression, get_mean_vector)
@@ -250,21 +248,21 @@ TEST(GaussianProcessRegression, get_mean_vector)
 	}
 
 	/* shogun representation */
-	auto feat_train=some<CDenseFeatures<float64_t>>(X);
-	auto feat_test=some<CDenseFeatures<float64_t>>(X_test);
-	auto label_train=some<CRegressionLabels>(Y);
+	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto feat_test=std::make_shared<CDenseFeatures<float64_t>>(X_test);
+	auto label_train=std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=some<CGaussianKernel>(10, shogun_sigma);
-	auto mean=some<CZeroMean>();
-	auto lik=some<CGaussianLikelihood>();
+	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<CZeroMean>();
+	auto lik=std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf=some<CExactInferenceMethod>(kernel, feat_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
-	auto gpr=some<CGaussianProcessRegression>(inf);
+	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
@@ -305,21 +303,21 @@ TEST(GaussianProcessRegression, get_variance_vector_1)
 	}
 
 	/* shogun representation */
-	auto feat_train=some<CDenseFeatures<float64_t>>(X);
-	auto feat_test=some<CDenseFeatures<float64_t>>(X_test);
-	auto label_train=some<CRegressionLabels>(Y);
+	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto feat_test=std::make_shared<CDenseFeatures<float64_t>>(X_test);
+	auto label_train=std::make_shared<CRegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=some<CGaussianKernel>(10, shogun_sigma);
-	auto mean=some<CZeroMean>();
-	auto lik=some<CGaussianLikelihood>();
+	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<CZeroMean>();
+	auto lik=std::make_shared<CGaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf=some<CExactInferenceMethod>(kernel, feat_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
-	auto gpr=some<CGaussianProcessRegression>(inf);
+	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
@@ -362,22 +360,22 @@ TEST(GaussianProcessRegression, get_variance_vector_2)
 		feat_test[i]=(float64_t)i/3.0;
 
 	// shogun representation of features and labels
-	auto features_train = some<CDenseFeatures<float64_t>>(feat_train);
-	auto features_test = some<CDenseFeatures<float64_t>>(feat_test);
-	auto labels_train = some<CRegressionLabels>(lab_train);
+	auto features_train = std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto features_test = std::make_shared<CDenseFeatures<float64_t>>(feat_test);
+	auto labels_train = std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 1 (by default)
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood();
+	auto liklihood=std::make_shared<CGaussianLikelihood>();
 
 	// specify GP regression with exact inference
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, liklihood);
 
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
@@ -418,7 +416,7 @@ TEST(GaussianProcessRegression, get_variance_vector_2)
 	EXPECT_NEAR(variance_vector[13], 1.9952, 1E-4);
 	EXPECT_NEAR(variance_vector[14], 1.9990, 1E-4);
 
-	SG_UNREF(gpr);
+
 }
 
 TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
@@ -442,28 +440,28 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 0.02);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	CGaussianLikelihood* lik=new CGaussianLikelihood(0.25);
+	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
 	// create GPR and train
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
 	gpr->train();
 
 	// apply regression to train features
-	CRegressionLabels* predictions=gpr->apply_regression();
+	auto predictions=gpr->apply_regression();
 
 	// comparison of predictions with result from GPML package
 	SGVector<float64_t> mu=predictions->get_labels();
@@ -474,8 +472,7 @@ TEST(GaussianProcessRegression,apply_regression_scaled_kernel)
 	EXPECT_NEAR(mu[3], 1.23483449459758354, 1E-15);
 	EXPECT_NEAR(mu[4], -0.07500012155336166, 1E-15);
 
-	SG_UNREF(predictions);
-	SG_UNREF(gpr);
+
 }
 
 TEST(GaussianProcessRegression,var_dtc_regression)
@@ -518,22 +515,22 @@ TEST(GaussianProcessRegression,var_dtc_regression)
 	lab_train[4]=3.5;
 	lab_train[5]=-5.0;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	float64_t ell=log(2.0);
-	CKernel* kernel=new CGaussianKernel(10,2.0*exp(ell*2.0));
+	auto kernel=std::make_shared<CGaussianKernel>(10,2.0*exp(ell*2.0));
 
 
 	float64_t mean_weight=0.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CVarDTCInferenceMethod* inf=new CVarDTCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CVarDTCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6;
@@ -556,16 +553,16 @@ TEST(GaussianProcessRegression,var_dtc_regression)
 	feat_test(1,2)=3.1767;
 	feat_test(1,3)=1.5652;
 
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+	auto features_test=std::make_shared<CDenseFeatures<float64_t>>(feat_test);
 
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
-	SG_REF(features_test);
+
 	SGVector<float64_t> mean_vector=gpr->get_mean_vector(features_test);
 	SGVector<float64_t> var_vector=gpr->get_variance_vector(features_test);
-	SG_UNREF(features_test);
+
 	// comparison of mean and variance with result from varsgpv package:
 	// http://www.aueb.gr/users/mtitsias/code/varsgp.tar.gz
 	//mustar =
@@ -598,8 +595,8 @@ TEST(GaussianProcessRegression,var_dtc_regression)
 	EXPECT_NEAR(var_vector[3],  1.293072726669006,  abs_tolerance);
 
 	// clean up
-	SG_UNREF(gpr);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(GaussianProcessRegression,fitc_regression)
@@ -641,11 +638,11 @@ TEST(GaussianProcessRegression,fitc_regression)
 	lab_train[4]=3.59764;
 	lab_train[5]=2.39475;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -660,14 +657,14 @@ TEST(GaussianProcessRegression,fitc_regression)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
 	// Gaussian likelihood with sigma = 0.5
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
@@ -688,17 +685,17 @@ TEST(GaussianProcessRegression,fitc_regression)
 	feat_test(1,2)=2.3546;
 	feat_test(1,3)=-0.46;
 
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+	auto features_test=std::make_shared<CDenseFeatures<float64_t>>(feat_test);
 
-	CGaussianProcessRegression* gpr=new CGaussianProcessRegression(inf);
+	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
 
 	// train model
 	gpr->train();
 
-	SG_REF(features_test);
+
 	SGVector<float64_t> mean_vector=gpr->get_mean_vector(features_test);
 	SGVector<float64_t> var_vector=gpr->get_variance_vector(features_test);
-	SG_UNREF(features_test);
+
 
 	// comparison of mean and variance with result from GPML 3.5 package:
 	//ymu =
@@ -723,6 +720,6 @@ TEST(GaussianProcessRegression,fitc_regression)
 	EXPECT_NEAR(var_vector[3], 4.354657330167651, 1E-10);
 
 	// clean up
-	SG_UNREF(latent_features_train);
-	SG_UNREF(gpr);
+
+
 }

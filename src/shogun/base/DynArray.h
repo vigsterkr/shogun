@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, Thoralf Klein, 
- *          Evan Shelhamer, Yuyu Zhang, Weijie Lin, Fernando Iglesias, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Evgeniy Andreev, Thoralf Klein,
+ *          Evan Shelhamer, Yuyu Zhang, Weijie Lin, Fernando Iglesias,
  *          Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -446,16 +446,16 @@ template <class T> class DynArray
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				std::swap(
-					array[i], 
+					array[i],
 					array[CMath::random(i, current_num_elements - 1)]);
 		}
 
 		/** randomizes the array with external random state */
-		void shuffle(CRandom * rand)
+		void shuffle(std::shared_ptr<CRandom> rand)
 		{
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				std::swap(
-					array[i], 
+					array[i],
 					array[rand->random(i, current_num_elements - 1)]);
 		}
 

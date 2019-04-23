@@ -14,19 +14,19 @@ CRationalQuadraticKernel::CRationalQuadraticKernel(): CKernel(0), m_distance(NUL
 	init();
 }
 
-CRationalQuadraticKernel::CRationalQuadraticKernel(int32_t cache, float64_t coef, CDistance* distance)
+CRationalQuadraticKernel::CRationalQuadraticKernel(int32_t cache, float64_t coef, std::shared_ptr<CDistance> distance)
 : CKernel(cache), m_distance(distance), m_coef(coef)
 {
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init();
 }
 
-CRationalQuadraticKernel::CRationalQuadraticKernel(CFeatures *l, CFeatures *r, float64_t coef, CDistance* dist)
+CRationalQuadraticKernel::CRationalQuadraticKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t coef, std::shared_ptr<CDistance> dist)
 : CKernel(10), m_distance(dist), m_coef(coef)
 {
 	ASSERT(m_distance)
-	SG_REF(m_distance);
+	
 	init();
 	init(l, r);
 }
@@ -34,10 +34,10 @@ CRationalQuadraticKernel::CRationalQuadraticKernel(CFeatures *l, CFeatures *r, f
 CRationalQuadraticKernel::~CRationalQuadraticKernel()
 {
 	cleanup();
-	SG_UNREF(m_distance);
+	
 }
 
-bool CRationalQuadraticKernel::init(CFeatures* l, CFeatures* r)
+bool CRationalQuadraticKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(m_distance)
 	CKernel::init(l,r);

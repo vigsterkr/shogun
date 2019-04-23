@@ -38,7 +38,7 @@ class CHMSVMModel : public CStructuredModel
 		 * @param num_obs number of observations
 		 * @param use_plifs whether to model the observations using PLiFs
 		 */
-		CHMSVMModel(CFeatures* features, CStructuredLabels* labels, EStateModelType smt, int32_t num_obs=0, bool use_plifs=false);
+		CHMSVMModel(std::shared_ptr<CFeatures> features, std::shared_ptr<CStructuredLabels> labels, EStateModelType smt, int32_t num_obs=0, bool use_plifs=false);
 
 		/** destructor */
 		virtual ~CHMSVMModel();
@@ -61,7 +61,7 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<CStructuredData> y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -76,7 +76,7 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+		virtual std::shared_ptr<CResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -85,7 +85,7 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+		virtual float64_t delta_loss(std::shared_ptr<CStructuredData> y1, std::shared_ptr<CStructuredData> y2);
 
 		/** initialize the optimization problem
 		 *
@@ -160,7 +160,7 @@ class CHMSVMModel : public CStructuredModel
 		 *
 		 * @return model with the description of the states
 		 */
-		CStateModel* get_state_model() const;
+		std::shared_ptr<CStateModel> get_state_model() const;
 
 		/** return the SGSerializable's name
 		 *
@@ -180,7 +180,7 @@ class CHMSVMModel : public CStructuredModel
 		int32_t m_num_aux;
 
 		/** the state model */
-		CStateModel* m_state_model;
+		std::shared_ptr<CStateModel> m_state_model;
 
 		/** transition weights used in Viterbi */
 		SGMatrix< float64_t > m_transmission_weights;
@@ -192,7 +192,7 @@ class CHMSVMModel : public CStructuredModel
 		int32_t m_num_plif_nodes;
 
 		/** PLiF matrix of dimensions (num_states, num_features) */
-		CDynamicObjectArray* m_plif_matrix;
+		std::shared_ptr<CDynamicObjectArray> m_plif_matrix;
 
 		/** whether to use PLiFs. Otherwise, the observations must be discrete and finite */
 		bool m_use_plifs;

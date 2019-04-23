@@ -33,13 +33,13 @@ public:
 	 * @param features features
 	 * @param labels structured labels
 	 */
-	CMultilabelCLRModel(CFeatures * features, CStructuredLabels * labels);
+	CMultilabelCLRModel(std::shared_ptr<CFeatures > features, std::shared_ptr<CStructuredLabels > labels);
 
 	/** destructor */
 	virtual ~CMultilabelCLRModel();
 
 	/** create empty StructuredLabels object */
-	virtual CStructuredLabels * structured_labels_factory(int32_t num_labels = 0);
+	virtual std::shared_ptr<CStructuredLabels > structured_labels_factory(int32_t num_labels = 0);
 
 	/** return the dimensionality of the joint feature space, i.e., the
 	 * dimension of the weight vector \f$w\f$.
@@ -56,7 +56,7 @@ public:
 	 * @param y structured label to use
 	 */
 	virtual SGVector<float64_t> get_joint_feature_vector(int32_t feat_idx,
-	                CStructuredData * y);
+	                std::shared_ptr<CStructuredData > y);
 
 	/** obtain the argmax of \f$ \Delta(y_{pred}, y_{truth}) + \langle w,
 	 * \Psi(x_{truth}, y_{pred}) \rangle \f$
@@ -69,7 +69,7 @@ public:
 	 *
 	 * @return structure with the predicted output
 	 */
-	virtual CResultSet * argmax(SGVector<float64_t> w, int32_t feat_idx,
+	virtual std::shared_ptr<CResultSet > argmax(SGVector<float64_t> w, int32_t feat_idx,
 	                            bool const training = true);
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
@@ -79,7 +79,7 @@ public:
 	 *
 	 * @return loss value
 	 */
-	virtual float64_t delta_loss(CStructuredData * y1, CStructuredData * y2);
+	virtual float64_t delta_loss(std::shared_ptr<CStructuredData > y1, std::shared_ptr<CStructuredData > y2);
 
 	/** initialize the optimization problem
 	 *

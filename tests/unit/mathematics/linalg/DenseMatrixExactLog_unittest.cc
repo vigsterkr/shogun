@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soumyajit De, Viktor Gal, Thoralf Klein, Bjoern Esser, 
+ * Authors: Soumyajit De, Viktor Gal, Thoralf Klein, Bjoern Esser,
  *          Shubham Shukla, Pan Deng
  */
 #include <gtest/gtest.h>
@@ -31,12 +31,12 @@ TEST(DenseMatrixExactLog, dense_log_det)
 	mat(0,1)=1.0;
 	mat(1,0)=1.0;
 	mat(1,1)=3.0;
-	CDenseMatrixOperator<float64_t>* op=new CDenseMatrixOperator<float64_t>(mat);
-	SG_REF(op);
+	auto op=std::make_shared<CDenseMatrixOperator<float64_t>>(mat);
+
 
 	// create operator function with the operator
-	CDenseMatrixExactLog* op_func = new CDenseMatrixExactLog(op);
-	SG_REF(op_func);
+	auto op_func = new CDenseMatrixExactLog(op);
+
 
 	// its really important we call the precompute on the operato function
 	op_func->precompute();
@@ -55,6 +55,6 @@ TEST(DenseMatrixExactLog, dense_log_det)
 	EXPECT_NEAR(result, CStatistics::log_det(mat), 1E-15);
 
 	// clean up
-	SG_UNREF(op_func);
-	SG_UNREF(op);
+
+
 }

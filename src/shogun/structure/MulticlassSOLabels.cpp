@@ -34,7 +34,7 @@ CMulticlassSOLabels::CMulticlassSOLabels(SGVector< float64_t > const src)
 		if ( src[i] < 0 || src[i] >= m_num_classes )
 			SG_ERROR("Found label out of {0, 1, 2, ..., num_classes-1}")
 		else
-			add_label( new CRealNumber(src[i]) );
+			add_label( std::make_shared<CRealNumber>(src[i]) );
 	}
 
 	//TODO check that every class has at least one example
@@ -44,20 +44,20 @@ CMulticlassSOLabels::~CMulticlassSOLabels()
 {
 }
 
-CStructuredData* CMulticlassSOLabels::get_label(int32_t idx)
+std::shared_ptr<CStructuredData> CMulticlassSOLabels::get_label(int32_t idx)
 {
 	// ensure_valid("CMulticlassSOLabels::get_label(int32_t)");
 	if ( idx < 0 || idx >= get_num_labels() )
 		SG_ERROR("Index must be inside [0, num_labels-1]\n")
 
-	return (CStructuredData*) new CRealNumber(m_labels_vector[idx]);
+	return std::static_pointer_cast<CStructuredData>( std::make_shared<CRealNumber>(m_labels_vector[idx]));
 }
 
-void CMulticlassSOLabels::add_label(CStructuredData* label)
+void CMulticlassSOLabels::add_label(std::shared_ptr<CStructuredData> label)
 {
-        SG_REF(label);
+        
         float64_t value = label->as<CRealNumber>()->value;
-        SG_UNREF(label);
+        
 
 	//ensure_valid_sdt(label);
 	if (m_num_labels_set >= m_labels_vector.vlen)
@@ -70,11 +70,11 @@ void CMulticlassSOLabels::add_label(CStructuredData* label)
 	m_num_labels_set++;
 }
 
-bool CMulticlassSOLabels::set_label(int32_t idx, CStructuredData* label)
+bool CMulticlassSOLabels::set_label(int32_t idx, std::shared_ptr<CStructuredData> label)
 {
-        SG_REF(label);
+        
         float64_t value = label->as<CRealNumber>()->value;
-        SG_UNREF(label);
+        
 
 	// ensure_valid_sdt(label);
 	int32_t real_idx = m_subset_stack->subset_idx_conversion(idx);

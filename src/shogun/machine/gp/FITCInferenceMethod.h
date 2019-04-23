@@ -54,9 +54,9 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CFITCInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	CFITCInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
+			std::shared_ptr<CFeatures> inducing_features);
 
 	virtual ~CFITCInferenceMethod();
 
@@ -77,7 +77,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CFITCInferenceMethod object
 	 */
-	static CFITCInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CFITCInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -158,7 +158,7 @@ public:
          *
          * @param minimizer minimizer used in inference method
          */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 protected:
 	/** check if members of object are valid for inference */
 	virtual void check_members() const;

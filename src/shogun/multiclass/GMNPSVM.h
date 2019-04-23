@@ -33,7 +33,7 @@ class CGMNPSVM : public CMulticlassSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGMNPSVM(float64_t C, CKernel* k, CLabels* lab);
+		CGMNPSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
 		/** default destructor */
 		virtual ~CGMNPSVM();
@@ -67,7 +67,7 @@ class CGMNPSVM : public CMulticlassSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	protected:
 		/** required for CMKLMulticlass

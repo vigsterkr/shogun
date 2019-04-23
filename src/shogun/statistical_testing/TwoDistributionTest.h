@@ -64,10 +64,10 @@ public:
 	 * @param samples_from_p The CFeatures instance representing the samples
 	 * from \f$\mathbf{P}\f$.
 	 */
-	virtual void set_p(CFeatures* samples_from_p);
+	virtual void set_p(std::shared_ptr<CFeatures> samples_from_p);
 
 	/** @return The samples from \f$\mathbf{P}\f$. */
-	CFeatures* get_p() const;
+	std::shared_ptr<CFeatures> get_p() const;
 
 	/**
 	 * Method that initializes the samples from \f$\mathbf{Q}\f$. This method
@@ -77,10 +77,10 @@ public:
 	 * @param samples_from_q The CFeatures instance representing the samples
 	 * from \f$\mathbf{Q}\f$.
 	 */
-	virtual void set_q(CFeatures* samples_from_q);
+	virtual void set_q(std::shared_ptr<CFeatures> samples_from_q);
 
 	/** @return The samples from \f$\mathbf{Q}\f$. */
-	CFeatures* get_q() const;
+	std::shared_ptr<CFeatures> get_q() const;
 
 	/**
 	 * Method that initializes the number of samples to be drawn from distribution
@@ -121,7 +121,7 @@ public:
 	 * @return A newly created CCustomDistance instance representing the
 	 * pre-computed pair-wise distance between the samples.
 	 */
-	CCustomDistance* compute_distance(CDistance* distance);
+	std::shared_ptr<CCustomDistance> compute_distance(std::shared_ptr<CDistance> distance);
 
 	/**
 	 * Method that pre-computes the pair-wise distance between the joint samples using
@@ -133,7 +133,7 @@ public:
 	 * @return A newly created CCustomDistance instance representing the
 	 * pre-computed pair-wise distance between the joint samples.
 	 */
-	CCustomDistance* compute_joint_distance(CDistance* distance);
+	std::shared_ptr<CCustomDistance> compute_joint_distance(std::shared_ptr<CDistance> distance);
 
 	/**
 	 * Interface for computing the test-statistic for the hypothesis test.

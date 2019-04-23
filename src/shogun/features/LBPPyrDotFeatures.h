@@ -36,7 +36,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param image_h image height
 		 * @param num_pyramids the number of pyramids to consider
 		 */
-		CLBPPyrDotFeatures(CDenseFeatures<uint32_t>* image_set, int32_t image_w, int32_t image_h,
+		CLBPPyrDotFeatures(std::shared_ptr<CDenseFeatures<uint32_t>> image_set, int32_t image_w, int32_t image_h,
 			uint16_t num_pyramids);
 
 		/** Destructor */
@@ -88,7 +88,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const;
 
 		/** iterate over the non-zero features
 		 *
@@ -124,7 +124,7 @@ class CLBPPyrDotFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		CFeatures* duplicate() const;
+		std::shared_ptr<CFeatures> duplicate() const;
 
 		/**
 		 *
@@ -184,12 +184,12 @@ class CLBPPyrDotFeatures : public CDotFeatures
 	private:
 
 		/** init */
-		void init(CDenseFeatures<uint32_t>* image_set, int32_t image_w,
+		void init(std::shared_ptr<CDenseFeatures<uint32_t>> image_set, int32_t image_w,
 				int32_t image_h);
 
 	protected:
 		/** features in original space */
-		CDenseFeatures<uint32_t>* images;
+		std::shared_ptr<CDenseFeatures<uint32_t>> images;
 
 		/** image width */
 		int32_t image_width;

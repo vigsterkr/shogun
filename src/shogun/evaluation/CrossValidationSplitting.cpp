@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Thoralf Klein, Soeren Sonnenburg, 
+ * Authors: Heiko Strathmann, Thoralf Klein, Soeren Sonnenburg,
  *          Fernando Iglesias, Viktor Gal
  */
 
@@ -17,7 +17,7 @@ CCrossValidationSplitting::CCrossValidationSplitting() :
 }
 
 CCrossValidationSplitting::CCrossValidationSplitting(
-		CLabels* labels, index_t num_subsets) :
+		std::shared_ptr<CLabels> labels, index_t num_subsets) :
 	CSplittingStrategy(labels, num_subsets)
 {
 	m_rng = sg_rand;
@@ -41,14 +41,10 @@ void CCrossValidationSplitting::build_subsets()
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
 		/* fill current subset */
-		CDynamicArray<index_t>* current=(CDynamicArray<index_t>*)
-				m_subset_indices->get_element(current_subset);
+		auto current=m_subset_indices->get_element<CDynamicArray<index_t>>(current_subset);
 
 		/* add element of current index */
 		current->append_element(indices.vector[i]);
-
-		/* unref */
-		SG_UNREF(current);
 
 		/* iterate over subsets */
 		current_subset=(current_subset+1) % num_subsets;

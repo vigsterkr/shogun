@@ -87,9 +87,9 @@ public:
 		return "Object";
 	}
 
-	CSGObject* create_empty() const override
+	std::shared_ptr<CSGObject> create_empty() const override
 	{
-		return new Object();
+		return std::make_shared<Object>();
 	}
 
 	int computed_member() const
@@ -523,7 +523,7 @@ TEST(Any, clone_array_sgobject)
 {
 	int src_len = 3;
 	Object** src = new Object*[src_len];
-	std::generate(src, src + src_len, []() { return new Object(); });
+	std::generate(src, src + src_len, []() { return std::make_shared<Object>(); });
 	auto any_src = make_any_ref(&src, &src_len);
 
 	Object** dst = nullptr;
@@ -550,7 +550,7 @@ TEST(Any, clone_array2d_sgobject)
 	int src_cols = 4;
 	int src_size = src_rows * src_cols;
 	Object** src = new Object*[src_size];
-	std::generate(src, src + src_size, []() { return new Object(); });
+	std::generate(src, src + src_size, []() { return std::make_shared<Object>(); });
 	auto any_src = make_any_ref(&src, &src_rows, &src_cols);
 
 	int dst_rows = 0;
@@ -582,31 +582,31 @@ TEST(Any, free_array_simple)
 
 TEST(Any, free_array_sgobject)
 {
-	CSGObject* obj = new Object();
-	SG_REF(obj);
+	auto obj = std::make_shared<Object>();
+
 	auto size = 4;
 	auto array = SG_MALLOC(CSGObject*, size);
 	for (auto i = 0; i < size; ++i)
 	{
 		array[i] = obj;
-		SG_REF(obj);
+
 	}
 	EXPECT_EQ(obj->ref_count(), size + 1);
 	any_detail::free_array(array, size);
 	EXPECT_EQ(obj->ref_count(), 1);
-	SG_UNREF(obj);
+
 }
 
 TEST(Any, reset_array_reference)
 {
-	Object* obj = new Object();
-	SG_REF(obj);
+	auto obj = std::make_shared<Object>();
+
 	auto size = 4;
 	auto array = SG_MALLOC(Object*, size);
 	for (auto i = 0; i < size; ++i)
 	{
 		array[i] = obj;
-		SG_REF(obj);
+
 	}
 	EXPECT_EQ(obj->ref_count(), size + 1);
 
@@ -616,20 +616,20 @@ TEST(Any, reset_array_reference)
 	auto array_ref = ArrayReference<Object*, int>(&array, &size);
 	array_ref.reset(ArrayReference<Object*, int>(&src_array, &src_size));
 	EXPECT_EQ(obj->ref_count(), 1);
-	SG_UNREF(obj);
+
 }
 
 TEST(Any, reset_array2d_reference)
 {
-	Object* obj = new Object();
-	SG_REF(obj);
+	auto obj = std::make_shared<Object>();
+
 	auto rows = 4;
 	auto cols = 3;
 	auto array = SG_MALLOC(Object*, rows * cols);
 	for (auto i = 0; i < rows * cols; ++i)
 	{
 		array[i] = obj;
-		SG_REF(obj);
+
 	}
 	EXPECT_EQ(obj->ref_count(), rows * cols + 1);
 
@@ -641,7 +641,7 @@ TEST(Any, reset_array2d_reference)
 	array_ref.reset(
 	    Array2DReference<Object*, int>(&src_array, &src_rows, &src_cols));
 	EXPECT_EQ(obj->ref_count(), 1);
-	SG_UNREF(obj);
+
 }
 
 TEST(Any, lazy_simple)

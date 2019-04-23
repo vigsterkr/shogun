@@ -83,8 +83,8 @@ public:
 
 
 		//same as first-element normalizer
-		CFeatures* old_lhs=k->lhs;
-		CFeatures* old_rhs=k->rhs;
+		auto old_lhs=k->lhs;
+		auto old_rhs=k->rhs;
 		k->lhs=old_lhs;
 		k->rhs=old_lhs;
 
@@ -264,9 +264,9 @@ public:
 	/** casts kernel normalizer to multitask kernel mask normalizer
 	 * @param n kernel normalizer to cast
 	 */
-	CMultitaskKernelMaskNormalizer* KernelNormalizerToMultitaskKernelMaskNormalizer(CKernelNormalizer* n)
+	std::shared_ptr<CMultitaskKernelMaskNormalizer> KernelNormalizerToMultitaskKernelMaskNormalizer(std::shared_ptr<CKernelNormalizer> n)
 	{
-		   return dynamic_cast<CMultitaskKernelMaskNormalizer*>(n);
+		   return std::dynamic_pointer_cast<CMultitaskKernelMaskNormalizer>(n);
 	}
 
 protected:

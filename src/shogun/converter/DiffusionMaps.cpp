@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer,
  *          Heiko Strathmann, Fernando Iglesias
  */
 
@@ -18,7 +18,7 @@ CDiffusionMaps::CDiffusionMaps() :
 {
 	m_t = 10;
 	m_width = 1.0;
-	set_distance(new CEuclideanDistance());
+	set_distance(std::make_shared<CEuclideanDistance>());
 
 	init();
 }
@@ -58,27 +58,27 @@ const char* CDiffusionMaps::get_name() const
 	return "DiffusionMaps";
 };
 
-CFeatures* CDiffusionMaps::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CDiffusionMaps::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	ASSERT(features)
 	// shorthand for simplefeatures
-	SG_REF(features);
+
 	// compute distance matrix
 	ASSERT(m_distance)
 	m_distance->init(features,features);
-	CDenseFeatures<float64_t>* embedding = embed_distance(m_distance);
+	auto embedding = embed_distance(m_distance);
 	m_distance->cleanup();
-	SG_UNREF(features);
-	return (CFeatures*)embedding;
+
+	return std::static_pointer_cast<CFeatures>(embedding);
 }
 
-CDenseFeatures<float64_t>* CDiffusionMaps::embed_distance(CDistance* distance)
+std::shared_ptr<CDenseFeatures<float64_t>> CDiffusionMaps::embed_distance(std::shared_ptr<CDistance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_timesteps = m_t;
 	parameters.gaussian_kernel_width = m_width;
 	parameters.method = SHOGUN_DIFFUSION_MAPS;
 	parameters.target_dimension = m_target_dim;
-	parameters.distance = distance;
+	parameters.distance = distance.get();
 	return tapkee_embed(parameters);
 }

@@ -58,14 +58,14 @@ TEST(NeuralNetwork, backpropagation_linear)
 
 	CMath::init_random(10);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
-	layers->append_element(new CNeuralLinearLayer(3));
-	layers->append_element(new CNeuralLinearLayer(6));
-	layers->append_element(new CNeuralLinearLayer(5));
-	layers->append_element(new CNeuralLinearLayer(4));
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
+	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(3));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(6));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(5));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(4));
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -79,7 +79,7 @@ TEST(NeuralNetwork, backpropagation_linear)
 	network->set_l1_coefficient(0.03);
 
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-	SG_UNREF(network);
+
 }
 
 /** Tests neural layers builder
@@ -90,14 +90,14 @@ TEST(NeuralNetwork, neural_layers_builder)
 
 	CMath::init_random(10);
 
-	CNeuralLayers* layers = new CNeuralLayers();
+	auto layers = std::make_shared<CNeuralLayers>();
 	layers->input(5)
 	      ->input(7)
 	      ->linear(3)
 	      ->linear(6)
 	      ->linear(5)
 	      ->linear(4);
-	CNeuralNetwork* network = new CNeuralNetwork(layers->done());
+	auto network = std::make_shared<CNeuralNetwork>(layers->done());
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -111,8 +111,8 @@ TEST(NeuralNetwork, neural_layers_builder)
 	network->set_l1_coefficient(0.03);
 
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-	SG_UNREF(network);
-	SG_UNREF(layers);
+
+
 }
 
 
@@ -125,14 +125,14 @@ TEST(NeuralNetwork, backpropagation_logistic)
 
 	CMath::init_random(10);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
-	layers->append_element(new CNeuralLogisticLayer(3));
-	layers->append_element(new CNeuralLogisticLayer(6));
-	layers->append_element(new CNeuralLogisticLayer(5));
-	layers->append_element(new CNeuralLogisticLayer(4));
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
+	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(3));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(6));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(5));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(4));
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -145,7 +145,7 @@ TEST(NeuralNetwork, backpropagation_logistic)
 	network->set_l1_coefficient(0.03);
 	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-	SG_UNREF(network);
+
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -157,14 +157,14 @@ TEST(NeuralNetwork, backpropagation_softmax)
 
 	CMath::init_random(10);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
-	layers->append_element(new CNeuralLinearLayer(3));
-	layers->append_element(new CNeuralLinearLayer(6));
-	layers->append_element(new CNeuralLinearLayer(5));
-	layers->append_element(new CNeuralSoftmaxLayer(4));
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
+	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(3));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(6));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(5));
+	layers->append_element(std::make_shared<CNeuralSoftmaxLayer>(4));
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -177,7 +177,7 @@ TEST(NeuralNetwork, backpropagation_softmax)
 	network->set_l1_coefficient(0.03);
 	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-	SG_UNREF(network);
+
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -189,14 +189,14 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 
 	CMath::init_random(10);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(5));
-	layers->append_element(new CNeuralInputLayer(7));
-	layers->append_element(new CNeuralRectifiedLinearLayer(3));
-	layers->append_element(new CNeuralRectifiedLinearLayer(6));
-	layers->append_element(new CNeuralRectifiedLinearLayer(5));
-	layers->append_element(new CNeuralLinearLayer(4));
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
+	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
+	layers->append_element(std::make_shared<CNeuralRectifiedLinearLayer>(3));
+	layers->append_element(std::make_shared<CNeuralRectifiedLinearLayer>(6));
+	layers->append_element(std::make_shared<CNeuralRectifiedLinearLayer>(5));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(4));
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -209,7 +209,7 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 	network->set_l1_coefficient(0.03);
 	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-	SG_UNREF(network);
+
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
@@ -221,17 +221,17 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 
 	CMath::init_random(10);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(6,4));
-	layers->append_element(new CNeuralInputLayer(6,4));
-	layers->append_element(new CNeuralConvolutionalLayer(
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(6,4));
+	layers->append_element(std::make_shared<CNeuralInputLayer>(6,4));
+	layers->append_element(std::make_shared<CNeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1));
-	layers->append_element(new CNeuralConvolutionalLayer(
+	layers->append_element(std::make_shared<CNeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1));
-	layers->append_element(new CNeuralConvolutionalLayer(
+	layers->append_element(std::make_shared<CNeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1, RE_NORMAL));
-	layers->append_element(new CNeuralLinearLayer(4));
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(4));
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -244,7 +244,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 	network->set_l1_coefficient(0.03);
 	network->set_l2_coefficient(0.01);
 	EXPECT_NEAR(network->check_gradients(), 0.0, tolerance);
-	SG_UNREF(network);
+
 }
 
 /** tests a neural network on the binary XOR problem */
@@ -270,17 +270,17 @@ TEST(NeuralNetwork, binary_classification)
 	inputs_matrix(1,3) = 1.0;
 	targets_vector[3] = -1.0;
 
-	CDenseFeatures<float64_t>* features =
-		new CDenseFeatures<float64_t>(inputs_matrix);
+	auto features =
+		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
 
-	CBinaryLabels* labels = new CBinaryLabels(targets_vector);
+	auto labels = std::make_shared<CBinaryLabels>(targets_vector);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(2));
-	layers->append_element(new CNeuralLogisticLayer(2));
-	layers->append_element(new CNeuralLogisticLayer(1));
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(2));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(1));
 
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -289,7 +289,7 @@ TEST(NeuralNetwork, binary_classification)
 	network->set_labels(labels);
 	network->train(features);
 
-	CBinaryLabels* predictions = network->apply_binary(features);
+	auto predictions = network->apply_binary(features);
 
 	for (int32_t i=0; i<4; i++)
 		EXPECT_EQ(predictions->get_label(i), labels->get_label(i));
@@ -299,9 +299,7 @@ TEST(NeuralNetwork, binary_classification)
 	EXPECT_NEAR(predictions->get_value(2), 1, 1e-8);
 	EXPECT_NEAR(predictions->get_value(3), 0, 1e-8);
 
-	SG_UNREF(network);
-	SG_UNREF(features);
-	SG_UNREF(predictions);
+
 }
 
 /** tests a neural network on the multiclass XOR problem (the binary xor problem
@@ -329,17 +327,17 @@ TEST(NeuralNetwork, multiclass_classification)
 	inputs_matrix(1,3) = 1.0;
 	targets_vector[3] = 0.0;
 
-	CDenseFeatures<float64_t>* features =
-		new CDenseFeatures<float64_t>(inputs_matrix);
+	auto features =
+		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
 
-	CMulticlassLabels* labels = new CMulticlassLabels(targets_vector);
+	auto labels = std::make_shared<CMulticlassLabels>(targets_vector);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(2));
-	layers->append_element(new CNeuralLogisticLayer(2));
-	layers->append_element(new CNeuralLogisticLayer(2));
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(2));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
 
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -348,7 +346,7 @@ TEST(NeuralNetwork, multiclass_classification)
 	network->set_labels(labels);
 	network->train(features);
 
-	CMulticlassLabels* predictions = network->apply_multiclass(features);
+	auto predictions = network->apply_multiclass(features);
 
 	for (int32_t i=0; i<4; i++)
 		EXPECT_EQ(predictions->get_label(i), labels->get_label(i));
@@ -360,9 +358,7 @@ TEST(NeuralNetwork, multiclass_classification)
 		EXPECT_NEAR(confidences[1], targets_vector[i], 1e-8);
 	}
 
-	SG_UNREF(network);
-	SG_UNREF(features);
-	SG_UNREF(predictions);
+
 }
 
 /** tests a neural network on a very simple regression problem */
@@ -380,17 +376,17 @@ TEST(NeuralNetwork, regression)
 		targets_vector[i] = i*i;
 	}
 
-	CDenseFeatures<float64_t>* features =
-		new CDenseFeatures<float64_t>(inputs_matrix);
+	auto features =
+		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
 
-	CRegressionLabels* labels = new CRegressionLabels(targets_vector);
+	auto labels = std::make_shared<CRegressionLabels>(targets_vector);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(1));
-	layers->append_element(new CNeuralLogisticLayer(20));
-	layers->append_element(new CNeuralLinearLayer(1));
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(1));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(20));
+	layers->append_element(std::make_shared<CNeuralLinearLayer>(1));
 
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(1e-6);
 
@@ -399,14 +395,12 @@ TEST(NeuralNetwork, regression)
 	network->set_labels(labels);
 	network->train(features);
 
-	CRegressionLabels* predictions = network->apply_regression(features);
+	auto predictions = network->apply_regression(features);
 
 	for (int32_t i=0; i<N; i++)
 		EXPECT_NEAR(predictions->get_label(i), labels->get_label(i), 0.5);
 
-	SG_UNREF(network);
-	SG_UNREF(features);
-	SG_UNREF(predictions);
+
 }
 
 /** tests a neural network (trained using gradient descent) on the binary XOR
@@ -434,17 +428,17 @@ TEST(NeuralNetwork, gradient_descent)
 	inputs_matrix(1,3) = 1.0;
 	targets_vector[3] = -1.0;
 
-	CDenseFeatures<float64_t>* features =
-		new CDenseFeatures<float64_t>(inputs_matrix);
+	auto features =
+		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
 
-	CBinaryLabels* labels = new CBinaryLabels(targets_vector);
+	auto labels = std::make_shared<CBinaryLabels>(targets_vector);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
-	layers->append_element(new CNeuralInputLayer(2));
-	layers->append_element(new CNeuralLogisticLayer(2));
-	layers->append_element(new CNeuralLogisticLayer(1));
+	auto layers = std::make_shared<CDynamicObjectArray>();
+	layers->append_element(std::make_shared<CNeuralInputLayer>(2));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
+	layers->append_element(std::make_shared<CNeuralLogisticLayer>(1));
 
-	CNeuralNetwork* network = new CNeuralNetwork(layers);
+	auto network = std::make_shared<CNeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -456,12 +450,10 @@ TEST(NeuralNetwork, gradient_descent)
 	network->set_labels(labels);
 	network->train(features);
 
-	CBinaryLabels* predictions = network->apply_binary(features);
+	auto predictions = network->apply_binary(features);
 
 	for (int32_t i=0; i<4; i++)
 		EXPECT_EQ(predictions->get_label(i), labels->get_label(i));
 
-	SG_UNREF(network);
-	SG_UNREF(features);
-	SG_UNREF(predictions);
+
 }

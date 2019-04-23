@@ -69,7 +69,7 @@ namespace shogun
 		 * @param data training data
 		 * @param lab labels
 		 */
-		CLinearRidgeRegression(float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab);
+		CLinearRidgeRegression(float64_t tau, std::shared_ptr<CDenseFeatures<float64_t>> data, std::shared_ptr<CLabels> lab);
 		virtual ~CLinearRidgeRegression() {}
 
 		/** set regularization constant
@@ -106,7 +106,7 @@ namespace shogun
 
 	protected:
 		template <typename T>
-		bool train_machine_templated(const CDenseFeatures<T>* feats);
+		bool train_machine_templated(std::shared_ptr<const CDenseFeatures<T>> feats);
 
 	private:
 		void init();

@@ -55,8 +55,8 @@ CKLLowerTriangularInference::CKLLowerTriangularInference() : CKLInference()
 	init();
 }
 
-CKLLowerTriangularInference::CKLLowerTriangularInference(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CKLLowerTriangularInference::CKLLowerTriangularInference(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();

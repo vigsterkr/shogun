@@ -28,7 +28,7 @@
  * either expressed or implied, of the Shogun Development Team.
  *
  */
- 
+
 
 #include <gtest/gtest.h>
 #include <shogun/lib/config.h>
@@ -87,11 +87,11 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_cholesky)
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -106,15 +106,15 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_cholesky)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	inf->register_minimizer(opt);
 
 
@@ -152,8 +152,8 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_cholesky)
 	abs_tolorance = CMath::get_abs_tolerance(-0.006876868793106, rel_tolorance);
 	EXPECT_NEAR(L(2,2),  -0.006876868793106,  abs_tolorance);
 
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
 }
 
 TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
@@ -198,11 +198,11 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
 	//the weights is a upper triangular matrix since GPML 3.5 only supports this type
@@ -217,15 +217,15 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
@@ -248,8 +248,8 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_alpha)
 	abs_tolorance = CMath::get_abs_tolerance(0.028021450045659, rel_tolorance);
 	EXPECT_NEAR(alpha[2],  0.028021450045659,  abs_tolorance);
 
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
 }
 
 
@@ -295,27 +295,27 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_negative_log_marginal_likelih
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	float64_t weight1=2.0;
 	float64_t weight2=3.0;
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	SGVector<float64_t> weights(2);
 	weights[0]=1.0/weight1;
 	weights[1]=1.0/weight2;
 	kernel->set_vector_weights(weights);
 
-	CZeroMean* mean=new CZeroMean();
+	auto mean=std::make_shared<CZeroMean>();
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
@@ -333,8 +333,8 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_negative_log_marginal_likelih
 	abs_tolorance = CMath::get_abs_tolerance(5.479598775896901, rel_tolorance);
 	EXPECT_NEAR(nml, 5.479598775896901,  abs_tolorance);
 
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
 }
 
 TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives)
@@ -379,27 +379,27 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	lab_train[5]=-1;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CBinaryLabels* labels_train=new CBinaryLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
 
 	float64_t weight1=2.0;
 	float64_t weight2=3.0;
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	SGVector<float64_t> weights(2);
 	weights[0]=1.0/weight1;
 	weights[1]=1.0/weight2;
 	kernel->set_vector_weights(weights);
 
-	CZeroMean* mean=new CZeroMean();
+	auto mean=std::make_shared<CZeroMean>();
 
-	CLogitLikelihood* lik=new CLogitLikelihood();
+	auto lik=std::make_shared<CLogitLikelihood>();
 
 	// specify GP regression with FITC inference
-	CSingleFITCLaplaceInferenceMethod* inf=new CSingleFITCLaplaceInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CSingleFITCLaplaceInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
-	CLBFGSMinimizer* opt=new CLBFGSMinimizer();
+	auto opt=std::make_shared<CLBFGSMinimizer>();
 	inf->register_minimizer(opt);
 
 	float64_t ind_noise=1e-6;
@@ -409,11 +409,11 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// result from GPML 3.4 package:
@@ -460,8 +460,8 @@ TEST(SingleFITCLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivativ
 	EXPECT_NEAR(deriv_lat(1,2),  -0.007553979244171,  abs_tolorance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
+
+
 }

@@ -65,7 +65,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param size cache size
 		 */
 		CWeightedCommWordStringKernel(
-			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
+			std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r,
 			bool use_sign=false, int32_t size=10);
 
 		virtual ~CWeightedCommWordStringKernel();
@@ -76,7 +76,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

@@ -123,8 +123,6 @@ SparsityStructure* CSparseMatrixOperator<T>::get_sparsity_structure(
 		int32_t* outerIndexPtr=const_cast<int32_t*>(matrix_power.outerIndexPtr());
 		int32_t* innerIndexPtr=const_cast<int32_t*>(matrix_power.innerIndexPtr());
 
-		SG_UNREF(sp_str);
-
 		return new SparsityStructure(outerIndexPtr, innerIndexPtr,
 			matrix_power.rows());
 	}

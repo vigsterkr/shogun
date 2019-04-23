@@ -47,7 +47,7 @@ namespace shogun
 		}
 		virtual ~CIterativeMachine()
 		{
-			SG_UNREF(m_continue_features);
+
 		}
 
 		/** Returns convergence status */
@@ -59,7 +59,7 @@ namespace shogun
 		virtual bool continue_train()
 		{
 			this->reset_computation_variables();
-			this->put("features", m_continue_features);
+			//this->put("features", m_continue_features);
 
 			auto pb = SG_PROGRESS(range(m_max_iterations));
 			while (m_current_iteration < m_max_iterations && !m_complete)
@@ -92,12 +92,12 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_machine(CFeatures* data = NULL)
+		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL)
 		{
-			if (data) 
+			if (data)
 			{
-				SG_REF(data);
-				SG_UNREF(m_continue_features);
+
+
 				m_continue_features = data;
 			}
 			m_current_iteration = 0;
@@ -113,7 +113,7 @@ namespace shogun
 
 		/** To be overloaded in subclasses to initialize the model for training
 		  */
-		virtual void init_model(CFeatures* data = NULL) = 0;
+		virtual void init_model(std::shared_ptr<CFeatures> data = NULL) = 0;
 
 		/** Can be overloaded in subclasses to show more information
 		  * and/or clean up states
@@ -123,7 +123,7 @@ namespace shogun
 		}
 
 		/** Stores features to continue training */
-		CFeatures* m_continue_features;
+		std::shared_ptr<CFeatures> m_continue_features;
 		/** Maximum Iterations */
 		int32_t m_max_iterations;
 		/** Current iteration of training loop */

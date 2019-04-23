@@ -90,19 +90,19 @@ public:
 	 *
 	 * @param features DotFeatures object
 	 */
-	CDenseFeatures(CDotFeatures* features);
+	CDenseFeatures(std::shared_ptr<CDotFeatures> features);
 
 	/** constructor loading features from file
 	 *
 	 * @param loader File object via which to load data
 	 */
-	CDenseFeatures(CFile* loader);
+	CDenseFeatures(std::shared_ptr<CFile> loader);
 
 	/** duplicate feature object
 	 *
 	 * @return feature object
 	 */
-	virtual CFeatures* duplicate() const;
+	virtual std::shared_ptr<CFeatures> duplicate() const;
 
 	virtual ~CDenseFeatures();
 
@@ -209,7 +209,7 @@ public:
 	 *
 	 * @return transposed copy
 	 */
-	CDenseFeatures<ST>* get_transposed();
+	std::shared_ptr<CDenseFeatures<ST>> get_transposed();
 
 	/** compute and return the transpose of the feature matrix
 	 * which will be prepocessed.
@@ -286,7 +286,7 @@ public:
 	 * @param df DotFeatures (of same kind) to compute dot product with
 	 * @param vec_idx2 index of second vector
 	 */
-	virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df,
+	virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df,
 			int32_t vec_idx2) const;
 
 	/** Computes the sum of all feature vectors
@@ -371,13 +371,13 @@ public:
 	 *
 	 * @param loader File object via which to load data
 	 */
-	virtual void load(CFile* loader);
+	virtual void load(std::shared_ptr<CFile> loader);
 
 	/** save features to file
 	 *
 	 * @param saver File object via which to save data
 	 */
-	virtual void save(CFile* saver);
+	virtual void save(std::shared_ptr<CFile> saver);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	/** iterator for dense features */
@@ -440,7 +440,7 @@ public:
 	 * @param indices indices of feature elements to copy
 	 * @return new CFeatures instance with copies of feature data
 	 */
-	virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+	virtual std::shared_ptr<CFeatures> copy_subset(SGVector<index_t> indices) const;
 
 	/** Creates a new CFeatures instance containing only the dimensions
 	 * of the feature vector which are specified by the provided indices.
@@ -452,7 +452,7 @@ public:
 	 * @param dims indices of feature dimensions to copy
 	 * @return new CFeatures instance with copies of specified features
 	 */
-	virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims) const;
+	virtual std::shared_ptr<CFeatures> copy_dimension_subset(SGVector<index_t> dims) const;
 
 	/** checks if the contents of this CDenseFeatures object are the same to
 	 * the contents of rhs
@@ -460,7 +460,7 @@ public:
 	 * @param rhs other CDenseFeatures object to compare to this one
 	 * @return whether they represent the same information
 	 */
-	virtual bool is_equal(CDenseFeatures* rhs);
+	virtual bool is_equal(std::shared_ptr<CDenseFeatures> rhs);
 
 	/** Takes a list of feature instances and returns a new instance which is
 	 * a concatenation of a copy if this instace's data and the given
@@ -471,7 +471,7 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	CFeatures* create_merged_copy(CList* other) const;
+	std::shared_ptr<CFeatures> create_merged_copy(const std::vector<std::shared_ptr<CFeatures>>& other) const override;
 
 	/** Convenience method for method with same name and list as parameter.
 	 *
@@ -479,7 +479,7 @@ public:
 	 * @return new feature object which contains copy of data of this
 	 * instance and of given one
 	 */
-	CFeatures* create_merged_copy(CFeatures* other) const;
+	std::shared_ptr<CFeatures> create_merged_copy(std::shared_ptr<CFeatures> other) const;
 
 /** helper method used to specialize a base class instance
  *
@@ -487,10 +487,10 @@ public:
 #ifndef SWIG
 	[[deprecated("use .as template function")]]
 #endif
-	static CDenseFeatures* obtain_from_generic(CFeatures* const base_features);
+	static std::shared_ptr<CDenseFeatures> obtain_from_generic(std::shared_ptr<CFeatures> base_features);
 
 #ifndef SWIG // SWIG should skip this part
-	virtual CFeatures* shallow_subset_copy();
+	virtual std::shared_ptr<CFeatures> shallow_subset_copy();
 #endif
 
 	/** @return object name */
@@ -556,7 +556,7 @@ protected:
 	SGMatrix<ST> feature_matrix;
 
 	/** feature cache */
-	CCache<ST>* feature_cache;
+	std::shared_ptr<CCache<ST>> feature_cache;
 };
 }
 #endif // _DENSEFEATURES__H__

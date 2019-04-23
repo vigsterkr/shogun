@@ -17,9 +17,9 @@ using namespace shogun;
 class LibLinear : public ::testing::Test
 {
 public:
-	CDenseFeatures<float64_t>* train_feats;
-	CDenseFeatures<float64_t>* test_feats;
-	CBinaryLabels* ground_truth;
+	std::shared_ptr<CDenseFeatures<float64_t>> train_feats;
+	std::shared_ptr<CDenseFeatures<float64_t>> test_feats;
+	std::shared_ptr<CBinaryLabels> ground_truth;
 
 	virtual void SetUp()
 	{
@@ -27,9 +27,9 @@ public:
 	}
 	virtual void TearDown()
 	{
-		SG_UNREF(train_feats);
-		SG_UNREF(test_feats);
-		SG_UNREF(ground_truth);
+
+
+
 	}
 
 	void train_with_solver
@@ -42,11 +42,11 @@ public:
 		else
 				generate_data_l2();
 
-		auto ll = new CLibLinear();
-		SG_REF(ll);
+		auto ll = std::make_shared<CLibLinear>();
 
-		auto eval = new CContingencyTableEvaluation();
-		SG_REF(eval);
+
+		auto eval = std::make_shared<CContingencyTableEvaluation>();
+
 
 		ll->set_bias_enabled(biasEnable);
 		ll->set_features(train_feats);
@@ -55,15 +55,10 @@ public:
 		ll->set_liblinear_solver_type(liblinear_solver_type);
 		ll->train();
 		auto pred = ll->apply_binary(test_feats);
-		SG_REF(pred);
 
 		auto liblin_accuracy = eval->evaluate(pred, ground_truth);
 
 		EXPECT_NEAR(liblin_accuracy, 1.0, 1e-6);
-
-		SG_UNREF(eval);
-		SG_UNREF(ll);
-		SG_UNREF(pred);
 	}
 	void train_with_solver_simple(
 		LIBLINEAR_SOLVER_TYPE llst, bool biasEnable, bool l1, SGVector<float64_t> t_w, bool C_value=false) //C_value only for L2R_L1LOSS_SVC_DUAL
@@ -75,11 +70,11 @@ public:
 		else
 				generate_data_l2_simple();
 
-		auto ll = new CLibLinear();
-		SG_REF(ll);
+		auto ll = std::make_shared<CLibLinear>();
 
-		auto eval = new  CContingencyTableEvaluation();
-		SG_REF(eval);
+
+		auto eval = std::make_shared<CContingencyTableEvaluation>();
+
 
 		ll->set_bias_enabled(biasEnable);
 		ll->set_features(train_feats);
@@ -90,7 +85,6 @@ public:
 		ll->train();
 
 		auto pred = ll->apply_binary(test_feats);
-		SG_REF(pred);
 
 		auto liblin_accuracy = eval->evaluate(pred, ground_truth);
 
@@ -106,10 +100,6 @@ public:
 			EXPECT_NEAR(ll->get_bias(), t_w[2], 4e-5);
 		}
 		EXPECT_NEAR(liblin_accuracy, 1.0, 1e-5);
-
-		SG_UNREF(ll);
-		SG_UNREF(eval);
-		SG_UNREF(pred);
 	}
 
 protected:
@@ -142,19 +132,19 @@ protected:
 		/*
 			Now fill in train_feats and test_feats, and ground_truth
 		*/
-		train_feats = (CDenseFeatures<float64_t>*)features.copy_subset(train_idx);
-		test_feats =  (CDenseFeatures<float64_t>*)features.copy_subset(test_idx);
-		ground_truth = new CBinaryLabels(labels);
+		train_feats = features.copy_subset(train_idx)->as<CDenseFeatures<float64_t>>();
+		test_feats =  features.copy_subset(test_idx)->as<CDenseFeatures<float64_t>>();
+		ground_truth = std::make_shared<CBinaryLabels>(labels);
 
-		SG_REF(ground_truth);
+
 	}
 	void generate_data_l1()
 	{
 		generate_data_l2();
 		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
-		SG_UNREF(old_train_feats);
-		SG_REF(train_feats);
+
+
 	}
 	void generate_data_l2_simple()
 	{
@@ -171,19 +161,19 @@ protected:
 			test_data(y[i], x[i])=z[i];
 		}
 
-		train_feats = new CDenseFeatures<float64_t>(train_data);
-		test_feats = new  CDenseFeatures<float64_t>(test_data);
+		train_feats = std::make_shared<CDenseFeatures<float64_t>>(train_data);
+		test_feats = std::make_shared<CDenseFeatures<float64_t>>(test_data);
 
 		SGVector<float64_t> labels(num_samples);
 		for (index_t i = 0; i < num_samples; ++i)
 		{
 			labels[i] = (i < num_samples/2) ? 1.0 : -1.0;
 		}
-		ground_truth = new CBinaryLabels(labels);
+		ground_truth = std::make_shared<CBinaryLabels>(labels);
 
-		SG_REF(train_feats);
-		SG_REF(test_feats);
-		SG_REF(ground_truth);
+
+
+
 
 	}
 	void generate_data_l1_simple()
@@ -191,8 +181,8 @@ protected:
 		generate_data_l2_simple();
 		auto old_train_feats = train_feats;
 		train_feats = train_feats->get_transposed();
-		SG_UNREF(old_train_feats);
-		SG_REF(train_feats);
+
+
 	}
 };
 

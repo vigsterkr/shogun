@@ -121,7 +121,7 @@ public:
 	 * the network. Must contain at least one input layer. The last layer in
 	 * the array is treated as the output layer
 	 */
-	CNeuralNetwork(CDynamicObjectArray* layers);
+	CNeuralNetwork(std::shared_ptr<CDynamicObjectArray> layers);
 
 	/** Sets the layers of the network
 	 *
@@ -129,7 +129,7 @@ public:
 	 * the network. Must contain at least one input layer. The last layer in
 	 * the array is treated as the output layer
 	 */
-	virtual void set_layers(CDynamicObjectArray* layers);
+	virtual void set_layers(std::shared_ptr<CDynamicObjectArray> layers);
 
 	/** Connects layer i as input to layer j. In order for forward and
 	 * backpropagation to work correctly, i must be less that j
@@ -161,11 +161,11 @@ public:
 	virtual ~CNeuralNetwork();
 
 	/** apply machine to data in means of binary classification problem */
-	virtual CBinaryLabels* apply_binary(CFeatures* data);
+	virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data);
 	/** apply machine to data in means of regression problem */
-	virtual CRegressionLabels* apply_regression(CFeatures* data);
+	virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data);
 	/** apply machine to data in means of multiclass classification problem */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data);
+	virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data);
 
 	/** Applies the network as a feature transformation
 	 *
@@ -176,14 +176,14 @@ public:
 	 *
 	 * @return Transformed features
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* data);
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> transform(
+		std::shared_ptr<CDenseFeatures<float64_t>> data);
 
 	/** set labels
 	*
 	* @param lab labels
 	*/
-	virtual void set_labels(CLabels* lab);
+	virtual void set_labels(std::shared_ptr<CLabels> lab);
 
 	/** get classifier type
 	 *
@@ -231,7 +231,7 @@ public:
 	int32_t get_num_outputs();
 
 	/** Returns an array holding the network's layers */
-	CDynamicObjectArray* get_layers();
+	std::shared_ptr<CDynamicObjectArray> get_layers();
 
 	virtual const char* get_name() const { return "NeuralNetwork";}
 
@@ -284,7 +284,7 @@ public:
 	 *
 	 * For more details on dropout, see
 	 * [paper](http://arxiv.org/abs/1207.0580) [Hinton, 2012]
-	 * 
+	 *
 	 * @param dropout_hidden dropout probability
 	 */
 	void set_dropout_hidden(float64_t dropout_hidden)
@@ -462,7 +462,7 @@ public:
 
 protected:
 	/** trains the network */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	/** trains the network using gradient descent*/
 	virtual bool train_gradient_descent(SGMatrix<float64_t> inputs,
@@ -481,7 +481,7 @@ protected:
 	 *
 	 * @return activations of the last layer
 	 */
-	virtual SGMatrix<float64_t> forward_propagate(CFeatures* data, int32_t j=-1);
+	virtual SGMatrix<float64_t> forward_propagate(std::shared_ptr<CFeatures> data, int32_t j=-1);
 
 	/** Applies forward propagation, computes the activations of each layer up
 	 * to layer j
@@ -541,21 +541,21 @@ protected:
 	 */
 	virtual float64_t compute_error(SGMatrix<float64_t> targets);
 
-	virtual bool is_label_valid(CLabels *lab) const;
+	virtual bool is_label_valid(std::shared_ptr<CLabels >lab) const;
 
 	/** returns a pointer to layer i in the network */
-	CNeuralLayer* get_layer(int32_t i);
+	std::shared_ptr<CNeuralLayer> get_layer(int32_t i);
 
 	/** Ensures the given features are suitable for use with the network and
 	 * returns their feature matrix
 	 */
-	SGMatrix<float64_t> features_to_matrix(CFeatures* features);
+	SGMatrix<float64_t> features_to_matrix(std::shared_ptr<CFeatures> features);
 
 	/** converts the given labels into a matrix suitable for use with network
 	 *
 	 * @return matrix of size get_num_outputs()*num_labels
 	 */
-	SGMatrix<float64_t> labels_to_matrix(CLabels* labs);
+	SGMatrix<float64_t> labels_to_matrix(std::shared_ptr<CLabels> labs);
 
 private:
 	void init();
@@ -592,7 +592,7 @@ protected:
 	int32_t m_num_layers;
 
 	/** network's layers */
-	CDynamicObjectArray* m_layers;
+	std::shared_ptr<CDynamicObjectArray> m_layers;
 
 	/** Describes the connections in the network: if there's a connection from
 	 * layer i to layer j then m_adj_matrix(i,j) = 1.
@@ -630,12 +630,12 @@ protected:
 	 * initial value is False
 	 */
 	bool m_auto_quick_initialize;
-	
+
 	/** Standard deviation of the gaussian used to randomly
 	* initialize the parameters
 	*/
 	float64_t m_sigma;
-	
+
 	/** Optimization method, default is NNOM_LBFGS */
 	ENNOptimizationMethod m_optimization_method;
 

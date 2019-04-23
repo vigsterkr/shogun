@@ -44,7 +44,7 @@ public:
 	virtual const char* get_name() const;
 
 	/** transform */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 };
 }
 

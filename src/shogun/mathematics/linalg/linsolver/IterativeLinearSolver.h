@@ -39,7 +39,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<ST> b) = 0;
+	virtual SGVector<T> solve(std::shared_ptr<CLinearOperator<T>> A, SGVector<ST> b) = 0;
 
 	/** set maximum iteration limit */
 	void set_iteration_limit(index_t iteration_limit)

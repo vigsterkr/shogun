@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Philippe Tillet, Sergey Lisitsyn, Viktor Gal, Fernando Iglesias, 
+ * Authors: Philippe Tillet, Sergey Lisitsyn, Viktor Gal, Fernando Iglesias,
  *          Bjoern Esser, Soeren Sonnenburg, Saurabh Goyal
  */
 
@@ -45,7 +45,7 @@ public:
 	 * @param distance distance
 	 * @param trainlab labels for training
 	 */
-	CNearestCentroid(CDistance* distance, CLabels* trainlab);
+	CNearestCentroid(std::shared_ptr<CDistance> distance, std::shared_ptr<CLabels> trainlab);
 
 	/** Destructor
 	 */
@@ -71,7 +71,7 @@ public:
 	 *
 	 * @return Matrix containing the centroids
 	 */
-	CDenseFeatures<float64_t>* get_centroids() const{
+	std::shared_ptr<CDenseFeatures<float64_t>> get_centroids() const{
 		return m_centroids;
 	}
 
@@ -90,7 +90,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	/** Stores feature data of underlying model.
 	 *
@@ -108,7 +108,7 @@ protected:
 	float64_t m_shrinking;
 
 	///	The centroids of the trained features
-	CDenseFeatures<float64_t>* m_centroids;
+	std::shared_ptr<CDenseFeatures<float64_t>> m_centroids;
 
 	///	Tells if the classifier has been trained or not
 	bool m_is_trained;

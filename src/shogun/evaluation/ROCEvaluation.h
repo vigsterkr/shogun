@@ -48,7 +48,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
 
 	virtual EEvaluationDirection get_evaluation_direction() const
 	{
@@ -77,7 +77,7 @@ protected:
 	 * @param ground_truth labels assumed to be correct
 	 * @return auROC
 	 */
-	float64_t evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* ground_truth);
+	float64_t evaluate_roc(std::shared_ptr<CBinaryLabels> predicted, std::shared_ptr<CBinaryLabels> ground_truth);
 
 protected:
 

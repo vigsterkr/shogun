@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
  *          Roman Votyakov, Viktor Gal
  */
 
@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t CContingencyTableEvaluation::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
 {
 	REQUIRE(
 	    predicted->get_num_labels() == ground_truth->get_num_labels(),
@@ -23,7 +23,7 @@ float64_t CContingencyTableEvaluation::evaluate(CLabels* predicted, CLabels* gro
 	auto ground_truth_binary = binary_labels(ground_truth);
 
 	ground_truth->ensure_valid();
-	compute_scores(predicted_binary.get(), ground_truth_binary.get());
+	compute_scores(predicted_binary, ground_truth_binary);
 	switch (m_type)
 	{
 		case ACCURACY:
@@ -83,7 +83,7 @@ EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() con
 	return ED_MINIMIZE;
 }
 
-void CContingencyTableEvaluation::compute_scores(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
+void CContingencyTableEvaluation::compute_scores(std::shared_ptr<CBinaryLabels> predicted, std::shared_ptr<CBinaryLabels> ground_truth)
 {
 	m_TP = 0.0;
 	m_FP = 0.0;

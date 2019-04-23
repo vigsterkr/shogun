@@ -64,9 +64,9 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CVarDTCInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	CVarDTCInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
+			std::shared_ptr<CFeatures> inducing_features);
 
 	virtual ~CVarDTCInferenceMethod();
 
@@ -87,7 +87,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CVarDTCInferenceMethod object
 	 */
-	static CVarDTCInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CVarDTCInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -167,7 +167,7 @@ public:
 	 *
 	 * @param minimizer minimizer used in inference method
 	 */
-	virtual void register_minimizer(Minimizer* minimizer);
+	virtual void register_minimizer(std::shared_ptr<Minimizer> minimizer);
 
 protected:
 	/** check if members of object are valid for inference */

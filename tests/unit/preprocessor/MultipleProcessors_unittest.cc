@@ -20,9 +20,9 @@ TEST(MultipleProcessors, transform)
 	SGMatrix<float64_t> orig(data, num_features, num_vectors, false);
 	SGMatrix<float64_t> m = orig.clone();
 
-	CDenseFeatures<float64_t>* feats = new CDenseFeatures<float64_t>(m);
-	CSumOne* sum1 = new CSumOne();
-	CLogPlusOne* logp1 = new CLogPlusOne();
+	auto feats = std::make_shared<CDenseFeatures<float64_t>>(m);
+	auto sum1 = std::make_shared<CSumOne>();
+	auto logp1 = std::make_shared<CLogPlusOne>();
 	sum1->fit(feats);
 	feats = sum1->transform(feats)->as<CDenseFeatures<float64_t>>();
 
@@ -40,5 +40,5 @@ TEST(MultipleProcessors, transform)
 		}
 	}
 
-	SG_UNREF(feats);
+
 }

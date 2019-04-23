@@ -77,20 +77,20 @@ TEST(FITCInferenceMethod,get_cholesky)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.1
 	float64_t sigma=0.1;
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(sigma);
+	auto liklihood=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		   mean, labels_train, liklihood, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
@@ -149,8 +149,8 @@ TEST(FITCInferenceMethod,get_cholesky)
 	EXPECT_NEAR(L(5,5), -0.722832, 1E-5);
 
 	// clean up
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(FITCInferenceMethod,get_cholesky_sparse)
@@ -182,22 +182,22 @@ TEST(FITCInferenceMethod,get_cholesky_sparse)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 8.0 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.5
 	float64_t sigma=0.5;
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(sigma);
+	auto liklihood=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		   mean, labels_train, liklihood, inducing_features_train);
 	inf->set_scale(2.5);
 
@@ -220,8 +220,8 @@ TEST(FITCInferenceMethod,get_cholesky_sparse)
 	EXPECT_NEAR(L(2,2), -0.237840, 1E-6);
 
 	// clean up
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(FITCInferenceMethod,get_alpha)
@@ -256,20 +256,20 @@ TEST(FITCInferenceMethod,get_alpha)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.1
 	float64_t sigma=0.1;
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(sigma);
+	auto liklihood=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		   mean, labels_train, liklihood, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
@@ -293,8 +293,8 @@ TEST(FITCInferenceMethod,get_alpha)
 	EXPECT_NEAR(alpha[5], 0.29023, 1E-5);
 
 	// clean up
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(FITCInferenceMethod,get_alpha_sparse)
@@ -326,22 +326,22 @@ TEST(FITCInferenceMethod,get_alpha_sparse)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 8.0 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.5
 	float64_t sigma=0.5;
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(sigma);
+	auto liklihood=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		   mean, labels_train, liklihood, inducing_features_train);
 	inf->set_scale(2.5);
 
@@ -356,8 +356,8 @@ TEST(FITCInferenceMethod,get_alpha_sparse)
 	EXPECT_NEAR(alpha[2], -0.20836, 1E-5);
 
 	// clean up
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
@@ -392,20 +392,20 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.1
 	float64_t sigma=0.1;
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(sigma);
+	auto liklihood=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		   mean, labels_train, liklihood, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
@@ -420,8 +420,8 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood)
 	EXPECT_NEAR(nml, 0.84354, 1E-5);
 
 	// clean up
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood_sparse)
@@ -453,22 +453,22 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood_sparse)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 8.0 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 8.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.5
 	float64_t sigma=0.5;
-	CGaussianLikelihood* liklihood=new CGaussianLikelihood(sigma);
+	auto liklihood=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		   mean, labels_train, liklihood, inducing_features_train);
 	inf->set_scale(2.5);
 
@@ -482,8 +482,8 @@ TEST(FITCInferenceMethod,get_negative_log_marginal_likelihood_sparse)
 	EXPECT_NEAR(nml, 6.6776, 1E-4);
 
 	// clean up
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
@@ -518,31 +518,31 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2);
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.1
 	float64_t sigma=0.1;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, inducing_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
 	inf->set_inducing_noise(ind_noise);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -568,10 +568,10 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives)
 	EXPECT_NEAR(dnlZ_sf2, 0.55979, 1E-5);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
+
+
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
@@ -603,25 +603,25 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	lab_train[5]=0.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_train);
-	CDenseFeatures<float64_t>* inducing_features_train=new CDenseFeatures<float64_t>(
+	auto inducing_features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	float64_t ell=2.0;
 
 	// choose Gaussian kernel with sigma = 2*ell*ell = 8.0 and zero mean
 	// function
-	CGaussianKernel* kernel=new CGaussianKernel(10, 2*CMath::sq(ell));
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, 2*CMath::sq(ell));
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.5
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		   mean, labels_train, lik, inducing_features_train);
 	inf->set_scale(2.5);
 
@@ -629,11 +629,11 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	inf->set_inducing_noise(ind_noise);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -656,10 +656,10 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_sparse)
 	EXPECT_NEAR(dnlZ_sf2, 2.7023, 1E-4);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(inducing_features_train);
+
+
+
+
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
@@ -702,12 +702,12 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	lab_train[5]=2.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -723,14 +723,14 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
 	// Gaussian likelihood with sigma = 0.5
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
@@ -740,11 +740,11 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -790,10 +790,10 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel1)
 	//SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
+
+
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
@@ -847,12 +847,12 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	lab_train[5]=2.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(dim,t_dim);
@@ -874,14 +874,14 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	kernel->set_matrix_weights(weights);
 
 	float64_t mean_weight=2.0;
-	CConstMean* mean=new CConstMean(mean_weight);
+	auto mean=std::make_shared<CConstMean>(mean_weight);
 
 	// Gaussian likelihood with sigma = 0.5
 	float64_t sigma=0.5;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
@@ -891,11 +891,11 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -948,10 +948,10 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_ARD_kernel2)
 	//SGMatrix<float64_t> deriv_lat(tmp.vector, dim, m, false);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
+
+
 }
 
 TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_features)
@@ -996,12 +996,12 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	lab_train[5]=2.39475;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
-	CGaussianARDSparseKernel* kernel=new CGaussianARDSparseKernel(10);
+	auto kernel=std::make_shared<CGaussianARDSparseKernel>(10);
 	float64_t weight1=3.0;
 	float64_t weight2=2.0;
 	SGVector<float64_t> weights(2);
@@ -1009,14 +1009,14 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	weights[1]=1.0/weight2;
 	kernel->set_vector_weights(weights);
 
-	CZeroMean* mean=new CZeroMean();
+	auto mean=std::make_shared<CZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.1
 	float64_t sigma=0.1;
-	CGaussianLikelihood* lik=new CGaussianLikelihood(sigma);
+	auto lik=std::make_shared<CGaussianLikelihood>(sigma);
 
 	// specify GP regression with FITC inference
-	CFITCInferenceMethod* inf=new CFITCInferenceMethod(kernel, features_train,
+	auto inf=std::make_shared<CFITCInferenceMethod>(kernel, features_train,
 		mean, labels_train, lik, latent_features_train);
 
 	float64_t ind_noise=1e-6*CMath::sq(sigma);
@@ -1026,11 +1026,11 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	CMap<TParameter*, CSGObject*>* parameter_dictionary=new CMap<TParameter*, CSGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1065,8 +1065,8 @@ TEST(FITCInferenceMethod,get_marginal_likelihood_derivatives_for_inducing_featur
 	EXPECT_NEAR(deriv_lat(1,2),  0.069745929240874,  abs_tolorance);
 
 	// clean up
-	SG_UNREF(gradient);
-	SG_UNREF(parameter_dictionary);
-	SG_UNREF(inf);
-	SG_UNREF(latent_features_train);
+
+
+
+
 }

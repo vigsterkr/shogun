@@ -31,7 +31,6 @@
 
 #include <algorithm>
 #include <numeric>
-#include <shogun/base/some.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
@@ -64,14 +63,13 @@ TEST(WithinBlockPermutation, biased_full)
 	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
-	SG_REF(feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
 
-	auto kernel=some<CGaussianKernel>();
+
+
+	auto kernel=std::make_shared<CGaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
@@ -114,7 +112,6 @@ TEST(WithinBlockPermutation, biased_full)
 	EXPECT_NEAR(result_1, result_2, 1E-6);
 	EXPECT_NEAR(result_1, result_3, 1E-6);
 
-	SG_UNREF(feats);
 }
 
 TEST(WithinBlockPermutation, unbiased_full)
@@ -133,14 +130,13 @@ TEST(WithinBlockPermutation, unbiased_full)
 	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
-	SG_REF(feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
 
-	auto kernel=some<CGaussianKernel>();
+
+
+	auto kernel=std::make_shared<CGaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
@@ -183,7 +179,6 @@ TEST(WithinBlockPermutation, unbiased_full)
 	EXPECT_NEAR(result_1, result_2, 1E-6);
 	EXPECT_NEAR(result_1, result_3, 1E-6);
 
-	SG_UNREF(feats);
 }
 
 TEST(WithinBlockPermutation, unbiased_incomplete)
@@ -201,14 +196,13 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	std::iota(data_q.matrix, data_q.matrix+dim*n, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*n, [&n](float64_t& val) { val/=2*n; });
 
-	auto feats_p=new CDenseFeatures<float64_t>(data_p);
-	auto feats_q=new CDenseFeatures<float64_t>(data_q);
+	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
-	SG_REF(feats);
-	SG_UNREF(feats_p);
-	SG_UNREF(feats_q);
 
-	auto kernel=some<CGaussianKernel>();
+
+
+	auto kernel=std::make_shared<CGaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
@@ -251,5 +245,4 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	EXPECT_NEAR(result_1, result_2, 1E-6);
 	EXPECT_NEAR(result_1, result_3, 1E-6);
 
-	SG_UNREF(feats);
 }

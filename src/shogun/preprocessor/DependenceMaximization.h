@@ -86,7 +86,7 @@ public:
 	 * the measure on
 	 * @return the measure based on which features are selected
 	 */
-	virtual float64_t compute_measures(CFeatures* features, index_t idx);
+	virtual float64_t compute_measures(std::shared_ptr<CFeatures> features, index_t idx);
 
 	/**
 	 * Method which handles the removal of features based on removal policy.
@@ -101,7 +101,7 @@ public:
 	 * the lowest rank which corresponds to smallest measure.
 	 * @return the feature object after removal of features based on the policy
 	 */
-	virtual CFeatures* remove_feats(CFeatures* features, SGVector<index_t> ranks);
+	virtual std::shared_ptr<CFeatures> remove_feats(std::shared_ptr<CFeatures> features, SGVector<index_t> ranks);
 
 	/** @param policy feature removal policy */
 	virtual void set_policy(EFeatureRemovalPolicy policy);
@@ -122,7 +122,7 @@ public:
 	 *
 	 * @param labels the labels
 	 */
-	virtual void set_labels(CLabels* labels);
+	virtual void set_labels(std::shared_ptr<CLabels> labels);
 
 	/** @return the class name */
 	virtual const char* get_name() const
@@ -140,16 +140,16 @@ protected:
 	 * @param idx index of the dimension which is required to be removed
 	 * @return a new feature object with the specified dimension removed
 	 */
-	virtual CFeatures* create_transformed_copy(CFeatures* features, index_t idx);
+	virtual std::shared_ptr<CFeatures> create_transformed_copy(std::shared_ptr<CFeatures> features, index_t idx);
 
 	/**
 	 * The estimator for performing statistical tests for independence which
 	 * is used for computing measures
 	 */
-	CIndependenceTest* m_estimator;
+	std::shared_ptr<CIndependenceTest> m_estimator;
 
 	/** The feature for the labels */
-	CFeatures* m_labels_feats;
+	std::shared_ptr<CFeatures> m_labels_feats;
 
 private:
 	/** Register params and initialize with default values */

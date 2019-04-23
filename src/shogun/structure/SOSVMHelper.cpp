@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Shell Hu, Bjoern Esser, Thoralf Klein, Viktor Gal, Jiaolong Xu, 
+ * Authors: Shell Hu, Bjoern Esser, Thoralf Klein, Viktor Gal, Jiaolong Xu,
  *          Sanuj Sharma
  */
 
@@ -51,17 +51,17 @@ void CSOSVMHelper::init()
 	m_train_error.zero();
 }
 
-float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, CStructuredModel* model, float64_t lbda)
+float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, std::shared_ptr<CStructuredModel> model, float64_t lbda)
 {
 	float64_t hinge_losses = 0.0;
-	CStructuredLabels* labels = model->get_labels();
+	auto labels = model->get_labels();
 	int32_t N = labels->get_num_labels();
-	SG_UNREF(labels);
+
 
 	for (int32_t i = 0; i < N; i++)
 	{
 		// solve the loss-augmented inference for point i
-		CResultSet* result = model->argmax(w, i);
+		auto result = model->argmax(w, i);
 
 		// hinge loss for point i
 		float64_t hinge_loss_i = result->score;
@@ -71,7 +71,7 @@ float64_t CSOSVMHelper::primal_objective(SGVector<float64_t> w, CStructuredModel
 
 		hinge_losses += hinge_loss_i;
 
-		SG_UNREF(result);
+
 	}
 
 	return (lbda/2 * linalg::dot(w, w) + hinge_losses/N);
@@ -82,21 +82,21 @@ float64_t CSOSVMHelper::dual_objective(SGVector<float64_t> w, float64_t aloss, f
 	return (-lbda/2 * linalg::dot(w, w) + aloss);
 }
 
-float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, CStructuredModel* model, bool is_ub)
+float64_t CSOSVMHelper::average_loss(SGVector<float64_t> w, std::shared_ptr<CStructuredModel> model, bool is_ub)
 {
 	float64_t loss = 0.0;
-	CStructuredLabels* labels = model->get_labels();
+	auto labels = model->get_labels();
 	int32_t N = labels->get_num_labels();
-	SG_UNREF(labels);
+
 
 	for (int32_t i = 0; i < N; i++)
 	{
 		// solve the standard inference for point i
-		CResultSet* result = model->argmax(w, i, is_ub);
+		auto result = model->argmax(w, i, is_ub);
 
 		loss += result->delta;
 
-		SG_UNREF(result);
+
 	}
 
 	return loss / N;

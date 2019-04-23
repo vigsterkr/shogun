@@ -48,25 +48,13 @@ class KLInferenceCostFunction: public FirstOrderCostFunction
 {
 public:
         KLInferenceCostFunction():FirstOrderCostFunction() {  init(); }
-        virtual ~KLInferenceCostFunction() { SG_UNREF(m_obj); }
-        void set_target(CKLInference *obj)
+        virtual ~KLInferenceCostFunction() {  }
+        void set_target(std::shared_ptr<CKLInference>obj)
         {
-		REQUIRE(obj,"Obj must set\n");
-		if(m_obj!=obj)
-		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
+			REQUIRE(obj,"Obj must set\n");
+
 			m_obj=obj;
-		}
-        }
-        void unset_target(bool is_unref)
-	{
-		if(is_unref)
-		{
-			SG_UNREF(m_obj);
-		}
-		m_obj=NULL;
-	}
+	    }
 
         virtual float64_t get_cost()
         {
@@ -76,7 +64,7 @@ public:
                         return CMath::NOT_A_NUMBER;
                 float64_t nlml=m_obj->get_nlml_wrt_parameters();
                 return nlml;
-        
+
         }
         virtual SGVector<float64_t> obtain_variable_reference()
         {
@@ -100,10 +88,10 @@ private:
                 m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "KLInferenceCostFunction__m_derivatives",
 			"derivatives in KLInferenceCostFunction");
-		SG_ADD((CSGObject **)&m_obj, "KLInferenceCostFunction__m_obj",
+		SG_ADD((std::shared_ptr<CSGObject>*)&m_obj, "KLInferenceCostFunction__m_obj",
 			"obj in KLInferenceCostFunction");
         }
-        CKLInference *m_obj;
+        std::shared_ptr<CKLInference> m_obj;
 };
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
@@ -112,25 +100,25 @@ CKLInference::CKLInference() : CInference()
 	init();
 }
 
-CKLInference::CKLInference(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CKLInference::CKLInference(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CInference(kern, feat, m, lab, mod)
 {
 	init();
 	check_variational_likelihood(m_model);
 }
 
-void CKLInference::check_variational_likelihood(CLikelihoodModel* mod) const
+void CKLInference::check_variational_likelihood(std::shared_ptr<CLikelihoodModel> mod) const
 {
 	REQUIRE(mod, "the likelihood model must not be NULL\n")
-	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(mod);
+	auto lik= std::dynamic_pointer_cast<CVariationalGaussianLikelihood>(mod);
 	REQUIRE(lik,
 		"The provided likelihood model (%s) must support variational Gaussian inference. ",
 		"Please use a Variational Gaussian Likelihood model\n",
 		mod->get_name());
 }
 
-void CKLInference::set_model(CLikelihoodModel* mod)
+void CKLInference::set_model(std::shared_ptr<CLikelihoodModel> mod)
 {
 	check_variational_likelihood(mod);
 	CInference::set_model(mod);
@@ -156,7 +144,7 @@ void CKLInference::init()
 		"Variational parameter mu and posterior mean");
 	SG_ADD(&m_Sigma, "Sigma",
 		"Posterior covariance matrix Sigma");
-	register_minimizer(new CLBFGSMinimizer());
+	register_minimizer(std::make_shared<CLBFGSMinimizer>());
 }
 
 CKLInference::~CKLInference()
@@ -265,16 +253,16 @@ SGMatrix<float64_t> CKLInference::get_posterior_covariance()
 	return SGMatrix<float64_t>(m_Sigma);
 }
 
-CVariationalGaussianLikelihood* CKLInference::get_variational_likelihood() const
+std::shared_ptr<CVariationalGaussianLikelihood> CKLInference::get_variational_likelihood() const
 {
 	check_variational_likelihood(m_model);
-	CVariationalGaussianLikelihood* lik= dynamic_cast<CVariationalGaussianLikelihood*>(m_model);
+	auto lik= std::dynamic_pointer_cast<CVariationalGaussianLikelihood>(m_model);
 	return lik;
 }
 
 float64_t CKLInference::get_nlml_wrt_parameters()
 {
-	CVariationalGaussianLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	return get_negative_log_marginal_likelihood_helper();
 }
@@ -289,7 +277,7 @@ float64_t CKLInference::get_negative_log_marginal_likelihood()
 
 SGVector<float64_t> CKLInference::get_derivative_wrt_likelihood_model(const TParameter* param)
 {
-	CVariationalLikelihood * lik=get_variational_likelihood();
+	auto lik=get_variational_likelihood();
 	if (!lik->supports_derivative_wrt_hyperparameter())
 		return SGVector<float64_t> ();
 
@@ -334,29 +322,24 @@ SGVector<float64_t> CKLInference::get_derivative_wrt_mean(const TParameter* para
 
 float64_t CKLInference::optimization()
 {
-        KLInferenceCostFunction *cost_fun=new KLInferenceCostFunction();
-        cost_fun->set_target(this);
-	bool cleanup=false;
-	if(this->ref_count()>1)
-		cleanup=true;
+    auto cost_fun=std::make_shared<KLInferenceCostFunction>();
+    cost_fun->set_target(shared_from_this()->as<CKLInference>());
 
-	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(m_minimizer);
+	auto opt=m_minimizer->as<FirstOrderMinimizer>();
 
 	REQUIRE(opt, "FirstOrderMinimizer is required\n")
 	opt->set_cost_function(cost_fun);
 
-        float64_t nlml_opt = opt->minimize();
+	float64_t nlml_opt = opt->minimize();
 	opt->unset_cost_function(false);
-	cost_fun->unset_target(cleanup);
 
-        SG_UNREF(cost_fun);
 	return nlml_opt;
 }
 
-void CKLInference::register_minimizer(Minimizer* minimizer)
+void CKLInference::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	REQUIRE(minimizer, "Minimizer must set\n");
-	FirstOrderMinimizer* opt= dynamic_cast<FirstOrderMinimizer*>(minimizer);
+	auto opt= std::dynamic_pointer_cast<FirstOrderMinimizer>(minimizer);
 	REQUIRE(opt, "FirstOrderMinimizer is required\n");
 	CInference::register_minimizer(minimizer);
 }

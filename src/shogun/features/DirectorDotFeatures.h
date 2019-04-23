@@ -67,7 +67,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2)
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2)
 		{
 			SG_NOTIMPLEMENTED
 			return 0;
@@ -245,7 +245,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const
+		virtual ::std::shared_ptr<CFeatures> duplicate() const
 		{
 			SG_NOTIMPLEMENTED
 			return NULL;
@@ -266,7 +266,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param p preprocessor to set
 		 */
-		virtual void add_preprocessor(CPreprocessor* p)
+		virtual void add_preprocessor(std::shared_ptr<CPreprocessor> p)
 		{
 			CFeatures::add_preprocessor(p);
 		}
@@ -299,7 +299,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		virtual void load(CFile* loader)
+		virtual void load(std::shared_ptr<CFile> loader)
 		{
 			CFeatures::load(loader);
 		}
@@ -308,7 +308,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 *
 		 * @param writer File object via which data shall be saved
 		 */
-		virtual void save(CFile* writer)
+		virtual void save(std::shared_ptr<CFile> writer)
 		{
 			CFeatures::save(writer);
 		}
@@ -352,7 +352,7 @@ IGNORE_IN_CLASSLIST class CDirectorDotFeatures : public CDotFeatures
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const
+		virtual std::shared_ptr<CFeatures> copy_subset(SGVector<index_t> indices) const
 		{
 			return CFeatures::copy_subset(indices);
 		}

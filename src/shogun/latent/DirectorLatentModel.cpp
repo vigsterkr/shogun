@@ -20,13 +20,13 @@ int32_t CDirectorLatentModel::get_dim() const
 	return 0;
 }
 
-CDotFeatures* CDirectorLatentModel::get_psi_feature_vectors()
+std::shared_ptr<CDotFeatures> CDirectorLatentModel::get_psi_feature_vectors()
 {
 	SG_ERROR("Please implemement get_psi_feature_vectors() in your target language before use\n")
 	return NULL;
 }
 
-CData* CDirectorLatentModel::infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
+std::shared_ptr<CData> CDirectorLatentModel::infer_latent_variable(const SGVector<float64_t>& w, index_t idx)
 {
 	SG_ERROR("Please implemement infer_latent_variable(w, idx) in your target language before use\n")
 	return NULL;

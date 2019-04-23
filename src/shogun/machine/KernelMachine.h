@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Tejas Jogi, 
- *          Evgeniy Andreev, Evan Shelhamer, Yuyu Zhang, Chiyuan Zhang, 
- *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Thoralf Klein, 
+ * Authors: Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, Tejas Jogi,
+ *          Evgeniy Andreev, Evan Shelhamer, Yuyu Zhang, Chiyuan Zhang,
+ *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Thoralf Klein,
  *          Saurabh Goyal
  */
 
@@ -60,12 +60,12 @@ class CKernelMachine : public CMachine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		CKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
+		CKernelMachine(std::shared_ptr<CKernel> k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b);
 
 		/** copy constructor
 		 * @param machine machine having parameters to copy
 		 */
-		CKernelMachine(CKernelMachine* machine);
+		CKernelMachine(std::shared_ptr<CKernelMachine> machine);
 
 		/** destructor */
 		virtual ~CKernelMachine();
@@ -81,13 +81,13 @@ class CKernelMachine : public CMachine
 		 *
 		 * @param k kernel
 		 */
-		void set_kernel(CKernel* k);
+		void set_kernel(std::shared_ptr<CKernel> k);
 
 		/** get kernel
 		 *
 		 * @return kernel
 		 */
-		CKernel* get_kernel();
+		std::shared_ptr<CKernel> get_kernel();
 
 		/** set batch computation enabled
 		 *
@@ -209,7 +209,7 @@ class CKernelMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
 
 		/** apply kernel machine to data
 		 * for binary classification task
@@ -217,7 +217,7 @@ class CKernelMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
 
 		/** apply kernel machine to one example
 		 *
@@ -243,7 +243,7 @@ class CKernelMachine : public CMachine
 		 * @return resulting labels
 		 */
 
-		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
+		virtual std::shared_ptr<CBinaryLabels> apply_locked_binary(SGVector<index_t> indices);
 
 		/** Applies a locked machine on a set of indices. Error if machine is
 		 * not locked. Binary case
@@ -251,7 +251,7 @@ class CKernelMachine : public CMachine
 		 * @param indices index vector (of locked features) that is predicted
 		 * @return resulting labels
 		 */
-		virtual CRegressionLabels* apply_locked_regression(
+		virtual std::shared_ptr<CRegressionLabels> apply_locked_regression(
 				SGVector<index_t> indices);
 
 		/** Applies a locked machine on a set of indices. Error if machine is
@@ -272,7 +272,7 @@ class CKernelMachine : public CMachine
 		 * @param labs labels used for locking
 		 * @param features features used for locking
 		 */
-		virtual void data_lock(CLabels* labs, CFeatures* features=NULL);
+		virtual void data_lock(std::shared_ptr<CLabels> labs, std::shared_ptr<CFeatures> features=NULL);
 
 		/** Unlocks a locked machine and restores previous state */
 		virtual void data_unlock();
@@ -287,7 +287,7 @@ class CKernelMachine : public CMachine
 		 * @param data features to compute outputs
 		 * @return outputs
 		 */
-		SGVector<float64_t> apply_get_outputs(CFeatures* data);
+		SGVector<float64_t> apply_get_outputs(std::shared_ptr<CFeatures> data);
 
 		/** Stores feature data of the SV indices and sets it to the lhs of the
 		 * underlying kernel. Then, all SV indices are set to identity.
@@ -303,13 +303,13 @@ class CKernelMachine : public CMachine
 
 	protected:
 		/** kernel */
-		CKernel* kernel;
+		std::shared_ptr<CKernel> kernel;
 
 		/** is filled with pre-computed custom kernel on data lock */
-		CCustomKernel* m_custom_kernel;
+		std::shared_ptr<CCustomKernel> m_custom_kernel;
 
 		/** old kernel is stored here on data lock */
-		CKernel* m_kernel_backup;
+		std::shared_ptr<CKernel> m_kernel_backup;
 
 		/** if batch computation is enabled */
 		bool use_batch_computation;

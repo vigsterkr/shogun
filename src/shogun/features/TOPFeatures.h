@@ -76,7 +76,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @param neglin if negative HMM is of linear shape
 		 * @param poslin if positive HMM is of linear shape
 		 */
-		CTOPFeatures(int32_t size, CHMM* p, CHMM* n, bool neglin, bool poslin);
+		CTOPFeatures(int32_t size, std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n, bool neglin, bool poslin);
 
 		/** copy constructor */
 		CTOPFeatures(const CTOPFeatures &orig);
@@ -88,7 +88,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @param p positive HMM
 		 * @param n negative HMM
 		 */
-		void set_models(CHMM* p, CHMM* n);
+		void set_models(std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n);
 
 		/** set feature matrix
 		 *
@@ -108,7 +108,7 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 		 * @param hmm_idx HMM index
 		 * @return if computing was successful
 		 */
-		bool compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx);
+		bool compute_relevant_indizes(std::shared_ptr<CHMM> hmm, T_HMM_INDIZES* hmm_idx);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "TOPFeatures"; }
@@ -137,9 +137,9 @@ class CTOPFeatures : public CDenseFeatures<float64_t>
 
 	protected:
 		/** positive HMM */
-		CHMM* pos;
+		std::shared_ptr<CHMM> pos;
 		/** negative HMM */
-		CHMM* neg;
+		std::shared_ptr<CHMM> neg;
 		/** if negative HMM is a LinearHMM */
 		bool neglinear;
 		/** if positive HMM is a LinearHMM */

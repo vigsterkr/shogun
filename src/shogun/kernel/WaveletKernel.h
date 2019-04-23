@@ -52,7 +52,7 @@ class CWaveletKernel: public CDotKernel
 		 * @param Wdilation is Dilation coefficient
 		 * @param Wtranslation is Translation coefficient
 		 */
-		CWaveletKernel(CDotFeatures* l, CDotFeatures* r, int32_t size,float64_t Wdilation, float64_t Wtranslation);
+		CWaveletKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, int32_t size,float64_t Wdilation, float64_t Wtranslation);
 
 		virtual ~CWaveletKernel();
 
@@ -62,7 +62,7 @@ class CWaveletKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		virtual void cleanup();
 

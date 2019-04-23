@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Heiko Strathmann, Vladislav Horbatiuk, 
+ * Authors: Fernando Iglesias, Heiko Strathmann, Vladislav Horbatiuk,
  *          Bjoern Esser
  */
 
@@ -46,7 +46,7 @@ template< class ST > CMatrixFeatures< ST >::CMatrixFeatures(
 }
 
 /* TODO */
-template< class ST > CFeatures* CMatrixFeatures< ST >::duplicate() const
+template< class ST > std::shared_ptr<CFeatures> CMatrixFeatures< ST >::duplicate() const
 {
 	return NULL;
 }
@@ -143,9 +143,9 @@ template< class ST > void CMatrixFeatures< ST >::set_features(
 
 template< class ST > void CMatrixFeatures< ST >::init()
 {
-	SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors");
-	SG_ADD(&m_num_features, "m_num_features",
-			"Number of features per vector (optional)");
+	//SG_ADD(&m_num_vectors, "m_num_vectors", "Number of feature vectors");
+	//SG_ADD(&m_num_features, "m_num_features",
+	//		"Number of features per vector (optional)");
 	//TODO add SG_ADD for SGMatrixList
 	//SG_ADD(&m_features, "m_features", "Matrix features");
 
@@ -162,12 +162,12 @@ template< class ST > void CMatrixFeatures< ST >::cleanup()
 	m_num_features = 0;
 }
 
-template< class ST > CMatrixFeatures< ST >* CMatrixFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
+template< class ST > std::shared_ptr<CMatrixFeatures< ST >> CMatrixFeatures< ST >::obtain_from_generic(std::shared_ptr<CFeatures> base_features)
 {
 	REQUIRE(base_features->get_feature_class() == C_MATRIX,
 			"base_features must be of dynamic type CMatrixFeatures\n")
 
-	return (CMatrixFeatures< ST >*) base_features;
+	return std::dynamic_pointer_cast<CMatrixFeatures< ST >>(base_features);
 }
 
 template class CMatrixFeatures<bool>;

@@ -44,8 +44,8 @@ class CExponentialKernel: public CDotKernel
 		 * @param distance distance to be used
 		 * @param size cache size
 		 */
-		CExponentialKernel(CDotFeatures* l, CDotFeatures* r,
-			float64_t width, CDistance* distance, int32_t size);
+		CExponentialKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r,
+			float64_t width, std::shared_ptr<CDistance> distance, int32_t size);
 
 		/** destructor */
 		virtual ~CExponentialKernel();
@@ -56,7 +56,7 @@ class CExponentialKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -108,7 +108,7 @@ class CExponentialKernel: public CDotKernel
 
 	protected:
 		/** distance **/
-		CDistance* m_distance;
+		std::shared_ptr<CDistance> m_distance;
 		/** width */
 		float64_t m_width;
 };

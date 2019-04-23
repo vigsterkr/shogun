@@ -128,7 +128,7 @@ public:
 	 * @param features Input features. Should have as many features as the
 	 * number of visible units in the DBN
 	 */
-	virtual void pre_train(CDenseFeatures<float64_t>* features);
+	virtual void pre_train(std::shared_ptr<CDenseFeatures<float64_t>> features);
 
 	/** Pre-trains a single RBM
 	 *
@@ -136,7 +136,7 @@ public:
 	 * @param features Input features. Should have as many features as the total
 	 * number of visible units in the DBN
 	 */
-	virtual void pre_train(int32_t index, CDenseFeatures<float64_t>* features);
+	virtual void pre_train(int32_t index, std::shared_ptr<CDenseFeatures<float64_t>> features);
 
 	/** Trains the DBN using the variant of the wake-sleep algorithm described
 	 * in [A Fast Learning Algorithm for Deep Belief Nets, Hinton, 2006].
@@ -144,7 +144,7 @@ public:
 	 * @param features Input features. Should have as many features as the total
 	 * number of visible units in the DBN
 	 */
-	virtual void train(CDenseFeatures<float64_t>* features);
+	virtual void train(std::shared_ptr<CDenseFeatures<float64_t>> features);
 
 	/** Applies the DBN as a features transformation
 	 *
@@ -158,8 +158,8 @@ public:
 	 *
 	 * @return Mean activations of the \f$ i^{th} \f$ hidden layer
 	 */
-	virtual CDenseFeatures<float64_t>* transform(
-		CDenseFeatures<float64_t>* features, int32_t i=-1);
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> transform(
+		std::shared_ptr<CDenseFeatures<float64_t>> features, int32_t i=-1);
 
 	/** Draws samples from the marginal distribution of the visible units. The
 	 * sampling starts from the values DBN's internal state and result of the
@@ -171,7 +171,7 @@ public:
 	 *
 	 * @return Sampled states of the visible units
 	 */
-	virtual CDenseFeatures<float64_t>* sample(
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> sample(
 		int32_t num_gibbs_steps=1, int32_t batch_size=1);
 
 	/** Resets the state of the markov chain used for sampling */
@@ -189,8 +189,8 @@ public:
 	 *
 	 * @return Neural network inititialized using the DBN
 	 */
-	virtual CNeuralNetwork* convert_to_neural_network(
-		CNeuralLayer* output_layer=NULL, float64_t sigma = 0.01);
+	virtual std::shared_ptr<CNeuralNetwork> convert_to_neural_network(
+		std::shared_ptr<CNeuralLayer> output_layer=NULL, float64_t sigma = 0.01);
 
 	/** Returns the weights matrix between layer i and i+1
 	 *
@@ -225,7 +225,7 @@ protected:
 
 	/** Computes the gradients using the wake-sleep algorithm */
 	virtual void wake_sleep(SGMatrix<float64_t> data,
-		CRBM* top_rbm,
+		std::shared_ptr<CRBM> top_rbm,
 		SGMatrixList<float64_t> sleep_states,
 		SGMatrixList<float64_t> wake_states,
 		SGMatrixList<float64_t> psleep_states,
@@ -348,7 +348,7 @@ protected:
 	int32_t m_num_layers;
 
 	/** Size of each layer */
-	CDynamicArray<int32_t>* m_layer_sizes;
+	std::shared_ptr<CDynamicArray<int32_t>> m_layer_sizes;
 
 	/** States of each layer */
 	SGMatrixList<float64_t> m_states;

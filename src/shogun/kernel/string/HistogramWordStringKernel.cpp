@@ -19,28 +19,28 @@ CHistogramWordStringKernel::CHistogramWordStringKernel()
 	init();
 }
 
-CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, CPluginEstimate* pie)
+CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, std::shared_ptr<CPluginEstimate> pie)
 : CStringKernel<uint16_t>(size)
 {
 	init();
-	SG_REF(pie);
+
 	estimate=pie;
 
 }
 
 CHistogramWordStringKernel::CHistogramWordStringKernel(
-	CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, CPluginEstimate* pie)
+	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, std::shared_ptr<CPluginEstimate> pie)
 : CStringKernel<uint16_t>()
 {
 	init();
-	SG_REF(pie);
+
 	estimate=pie;
 	init(l, r);
 }
 
 CHistogramWordStringKernel::~CHistogramWordStringKernel()
 {
-	SG_UNREF(estimate);
+
 
 	SG_FREE(variance);
 	SG_FREE(mean);
@@ -55,15 +55,15 @@ CHistogramWordStringKernel::~CHistogramWordStringKernel()
 	SG_FREE(plo_lhs);
 }
 
-bool CHistogramWordStringKernel::init(CFeatures* p_l, CFeatures* p_r)
+bool CHistogramWordStringKernel::init(std::shared_ptr<CFeatures> p_l, std::shared_ptr<CFeatures> p_r)
 {
 	CStringKernel<uint16_t>::init(p_l,p_r);
-	CStringFeatures<uint16_t>* l=(CStringFeatures<uint16_t>*) p_l;
-	CStringFeatures<uint16_t>* r=(CStringFeatures<uint16_t>*) p_r;
+	auto l=std::static_pointer_cast<CStringFeatures<uint16_t>>(p_l);
+	auto r=std::static_pointer_cast<CStringFeatures<uint16_t>>(p_r);
 	ASSERT(l)
 	ASSERT(r)
 
-	SG_DEBUG("init: lhs: %ld   rhs: %ld\n", l, r)
+	SG_DEBUG("init: lhs: %ld   rhs: %ld\n", l.get(), r.get())
 	int32_t i;
 	initialized=false;
 
@@ -353,8 +353,8 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	uint16_t* avec=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bvec=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
 
@@ -382,8 +382,8 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	if (fabs(result - result2)>1e-10)
 		SG_ERROR("new=%e  old = %e  diff = %e\n", result, result2, result - result2)
 #endif
-	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }
 
@@ -410,31 +410,31 @@ void CHistogramWordStringKernel::init()
 
 	SG_ADD(&initialized, "initialized", "If kernel is initalized.");
 
-	m_parameters->add_vector(&plo_lhs, &num_lhs, "plo_lhs");
+	/*m_parameters->add_vector(&plo_lhs, &num_lhs, "plo_lhs");*/
 	watch_param("plo_lhs", &plo_lhs, &num_lhs);
 
-	m_parameters->add_vector(&plo_rhs, &num_rhs, "plo_rhs");
+	/*m_parameters->add_vector(&plo_rhs, &num_rhs, "plo_rhs");*/
 	watch_param("plo_rhs", &plo_rhs, &num_rhs);
 
-	m_parameters->add_vector(&ld_mean_lhs, &num_lhs, "ld_mean_lhs");
+	/*m_parameters->add_vector(&ld_mean_lhs, &num_lhs, "ld_mean_lhs");*/
 	watch_param("ld_mean_lhs", &ld_mean_lhs, &num_lhs);
 
-	m_parameters->add_vector(&ld_mean_rhs, &num_rhs, "ld_mean_rhs");
+	/*m_parameters->add_vector(&ld_mean_rhs, &num_rhs, "ld_mean_rhs");*/
 	watch_param("ld_mean_rhs", &ld_mean_rhs, &num_rhs);
 
-	m_parameters->add_vector(&sqrtdiag_lhs, &num_lhs, "sqrtdiag_lhs");
+	/*m_parameters->add_vector(&sqrtdiag_lhs, &num_lhs, "sqrtdiag_lhs");*/
 	watch_param("sqrtdiag_lhs", &sqrtdiag_lhs, &num_lhs);
 
-	m_parameters->add_vector(&sqrtdiag_rhs, &num_rhs, "sqrtdiag_rhs");
+	/*m_parameters->add_vector(&sqrtdiag_rhs, &num_rhs, "sqrtdiag_rhs");*/
 	watch_param("sqrtdiag_rhs", &sqrtdiag_rhs, &num_rhs);
 
-	m_parameters->add_vector(&mean, &num_params2, "mean");
+	/*m_parameters->add_vector(&mean, &num_params2, "mean");*/
 	watch_param("mean", &mean, &num_params2);
 
-	m_parameters->add_vector(&variance, &num_params2, "variance");
+	/*m_parameters->add_vector(&variance, &num_params2, "variance");*/
 	watch_param("variance", &variance, &num_params2);
 
-	SG_ADD((CSGObject**) &estimate, "estimate", "Plugin Estimate.");
+	SG_ADD((std::shared_ptr<CSGObject>*) &estimate, "estimate", "Plugin Estimate.");
 }
 
 #ifdef DEBUG_HWSK_COMPUTATION
@@ -442,8 +442,8 @@ float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
-	uint16_t* avec=((CStringFeatures<uint16_t>*) lhs)->get_feature_vector(idx_a, alen, free_avec);
-	uint16_t* bvec=((CStringFeatures<uint16_t>*) rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	uint16_t* avec=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bvec=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
 
@@ -473,8 +473,8 @@ float64_t CHistogramWordStringKernel::compute_slow(int32_t idx_a, int32_t idx_b)
 	if (initialized)
 		result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;
 
-	((CStringFeatures<uint16_t>*) lhs)->free_feature_vector(avec, idx_a, free_avec);
-	((CStringFeatures<uint16_t>*) rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }
 

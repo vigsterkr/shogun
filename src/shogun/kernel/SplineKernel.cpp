@@ -17,7 +17,7 @@ CSplineKernel::CSplineKernel() : CDotKernel()
 {
 }
 
-CSplineKernel::CSplineKernel(CDotFeatures* l, CDotFeatures* r) : CDotKernel()
+CSplineKernel::CSplineKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r) : CDotKernel()
 {
 	init(l,r);
 }
@@ -27,7 +27,7 @@ CSplineKernel::~CSplineKernel()
 	cleanup();
 }
 
-bool CSplineKernel::init(CFeatures* l, CFeatures* r)
+bool CSplineKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(l->get_feature_type()==F_DREAL)
 	ASSERT(l->get_feature_type()==r->get_feature_type())
@@ -49,8 +49,8 @@ float64_t CSplineKernel::compute(int32_t idx_a, int32_t idx_b)
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	float64_t* avec = ((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
-	float64_t* bvec = ((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	float64_t* avec = (std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
+	float64_t* bvec = (std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen == blen)
 
 	float64_t result = 0;
@@ -60,8 +60,8 @@ float64_t CSplineKernel::compute(int32_t idx_a, int32_t idx_b)
 		result += 1 + x*y + x*y*min - ((x+y)/2)*min*min + min*min*min/3;
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

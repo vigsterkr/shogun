@@ -70,7 +70,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			CDynamicObjectArray* layers);
+			std::shared_ptr<CDynamicObjectArray> layers);
 
 	/** Computes
 	 * \f[ \frac{\lambda}{N} \sum_{k=0}^{N-1} \left \| J(x_k) \right \|^2_F \f]

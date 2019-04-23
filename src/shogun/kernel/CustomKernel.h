@@ -42,7 +42,7 @@ class CCustomKernel: public CKernel
 		 * compute custom kernel from given kernel matrix
 		 * @param k kernel matrix
 		 */
-		CCustomKernel(CKernel* k);
+		CCustomKernel(std::shared_ptr<CKernel> k);
 
 		/** constructor
 		 *
@@ -89,7 +89,7 @@ class CCustomKernel: public CKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -607,10 +607,10 @@ class CCustomKernel: public CKernel
 		bool m_is_symmetric;
 
 		/** row subset stack */
-		CSubsetStack* m_row_subset_stack;
+		std::shared_ptr<CSubsetStack> m_row_subset_stack;
 
 		/** column subset stack */
-		CSubsetStack* m_col_subset_stack;
+		std::shared_ptr<CSubsetStack> m_col_subset_stack;
 
 		/** indicates whether kernel matrix is to be freed in destructor */
 		bool m_free_km;

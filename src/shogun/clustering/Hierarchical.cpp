@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
  *          Giovanni De Toni, Viktor Gal, Evan Shelhamer
  */
 
@@ -32,7 +32,7 @@ CHierarchical::CHierarchical()
 	register_parameters();
 }
 
-CHierarchical::CHierarchical(int32_t merges_, CDistance* d)
+CHierarchical::CHierarchical(int32_t merges_, std::shared_ptr<CDistance> d)
 : CDistanceMachine()
 {
 	init();
@@ -76,14 +76,14 @@ EMachineType CHierarchical::get_classifier_type()
 	return CT_HIERARCHICAL;
 }
 
-bool CHierarchical::train_machine(CFeatures* data)
+bool CHierarchical::train_machine(std::shared_ptr<CFeatures> data)
 {
 	ASSERT(distance)
 
 	if (data)
 		distance->init(data, data);
 
-	CFeatures* lhs=distance->get_lhs();
+	auto lhs=distance->get_lhs();
 	ASSERT(lhs)
 
 	int32_t num=lhs->get_num_vectors();
@@ -172,7 +172,7 @@ bool CHierarchical::train_machine(CFeatures* data)
 	ASSERT(table_size>0)
 	SG_FREE(distances);
 	SG_FREE(index);
-	SG_UNREF(lhs)
+
 
 	return true;
 }

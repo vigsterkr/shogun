@@ -57,7 +57,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @param label label to add
 		 */
-		virtual void add_label(CStructuredData* label);
+		virtual void add_label(std::shared_ptr<CStructuredData> label);
 
 		/** get labels
 		 *
@@ -65,7 +65,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return labels
 		 */
-		CDynamicObjectArray* get_labels() const;
+		std::shared_ptr<CDynamicObjectArray> get_labels() const;
 
 		/** get label object for specified index
 		 *
@@ -73,7 +73,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return label object
 		 */
-		virtual CStructuredData* get_label(int32_t idx);
+		virtual std::shared_ptr<CStructuredData> get_label(int32_t idx);
 
 		/**
 		 * set label, possible with subset. This method should be used
@@ -85,7 +85,7 @@ class CStructuredLabels : public CLabels
 		 *
 		 * @return if setting was successful
 		 */
-		virtual bool set_label(int32_t idx, CStructuredData* label);
+		virtual bool set_label(int32_t idx, std::shared_ptr<CStructuredData> label);
 
 		/** get number of labels, depending on wheter a subset is set
 		 *
@@ -113,11 +113,11 @@ class CStructuredLabels : public CLabels
 		void init();
 
 		/** ensure that the correct structured data type is used */
-		void ensure_valid_sdt(CStructuredData* label);
+		void ensure_valid_sdt(std::shared_ptr<CStructuredData> label);
 
 	protected:
 		/** the vector of labels */
-		CDynamicObjectArray* m_labels;
+		std::shared_ptr<CDynamicObjectArray> m_labels;
 
 		/** the structured data type the labels are composed of */
 		EStructuredDataType m_sdt;

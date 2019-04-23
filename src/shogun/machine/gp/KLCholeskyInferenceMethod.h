@@ -83,8 +83,8 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLCholeskyInferenceMethod(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model);
+	CKLCholeskyInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
 
 	virtual ~CKLCholeskyInferenceMethod();
 
@@ -105,7 +105,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLCholeskyInferenceMethod object
 	 */
-	static CKLCholeskyInferenceMethod* obtain_from_generic(CInference* inference);
+	static std::shared_ptr<CKLCholeskyInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
 
 	/** get alpha vector
 	 *

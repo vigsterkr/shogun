@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Yuyu Zhang, 
+ * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Yuyu Zhang,
  *          Soeren Sonnenburg, Giovanni De Toni
  */
 
@@ -42,9 +42,9 @@ namespace shogun
 		 * evaluation
 		 */
 		CMachineEvaluation(
-		    CMachine* machine, CFeatures* features, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+		    std::shared_ptr<CMachine> machine, std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels,
+		    std::shared_ptr<CSplittingStrategy> splitting_strategy,
+		    std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock = true);
 
 		/** constructor, for use with custom kernels (no features)
 		 * @param machine learning machine to use
@@ -54,9 +54,9 @@ namespace shogun
 		 * @param autolock autolock
 		 */
 		CMachineEvaluation(
-		    CMachine* machine, CLabels* labels,
-		    CSplittingStrategy* splitting_strategy,
-		    CEvaluation* evaluation_criterion, bool autolock = true);
+		    std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labels,
+		    std::shared_ptr<CSplittingStrategy> splitting_strategy,
+		    std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock = true);
 
 		virtual ~CMachineEvaluation();
 
@@ -71,10 +71,10 @@ namespace shogun
 		 *
 		 * @return result of evaluation (already SG_REF'ed)
 		 */
-		virtual CEvaluationResult* evaluate();
+		virtual std::shared_ptr<CEvaluationResult> evaluate();
 
 		/** @return underlying learning machine */
-		CMachine* get_machine() const;
+		std::shared_ptr<CMachine> get_machine() const;
 
 		/** setter for the autolock property. If true, machine will tried to be
 		 * locked before evaluation */
@@ -93,24 +93,24 @@ namespace shogun
 		 * before returning it.
 		 * @return the evaluation result
 		 */
-		virtual CEvaluationResult* evaluate_impl() = 0;
+		virtual std::shared_ptr<CEvaluationResult> evaluate_impl() = 0;
 
 		/** connect the machine instance to the signal handler */
 	protected:
 		/** Machine to be Evaluated */
-		CMachine* m_machine;
+		std::shared_ptr<CMachine> m_machine;
 
 		/** Features to be used*/
-		CFeatures* m_features;
+		std::shared_ptr<CFeatures> m_features;
 
 		/** Labels for the features */
-		CLabels* m_labels;
+		std::shared_ptr<CLabels> m_labels;
 
 		/** Splitting Strategy to be used */
-		CSplittingStrategy* m_splitting_strategy;
+		std::shared_ptr<CSplittingStrategy> m_splitting_strategy;
 
 		/** Criterion for evaluation */
-		CEvaluation* m_evaluation_criterion;
+		std::shared_ptr<CEvaluation> m_evaluation_criterion;
 
 		/** whether machine will automatically be locked before evaluation */
 		bool m_autolock;

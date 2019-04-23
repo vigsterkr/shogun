@@ -30,7 +30,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		/** default constructor  */
 		CLinearMulticlassMachine() : CMulticlassMachine(), m_features(NULL)
 		{
-			SG_ADD((CSGObject**)&m_features, "m_features", "Feature object.");
+			SG_ADD((std::shared_ptr<CSGObject>*)&m_features, "m_features", "Feature object.");
 		}
 
 		/** standard constructor
@@ -39,7 +39,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 * @param machine linear machine
 		 * @param labs labels
 		 */
-		CLinearMulticlassMachine(CMulticlassStrategy *strategy, CFeatures* features, CMachine* machine, CLabels* labs) :
+		CLinearMulticlassMachine(std::shared_ptr<CMulticlassStrategy >strategy, std::shared_ptr<CFeatures> features, std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labs) :
 			CMulticlassMachine(strategy, machine,labs), m_features(NULL)
 		{
 			set_features(features->as<CDotFeatures>());
@@ -49,7 +49,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		/** destructor */
 		virtual ~CLinearMulticlassMachine()
 		{
-			SG_UNREF(m_features);
+
 		}
 
 		/** get name */
@@ -62,17 +62,17 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @param f features
 		 */
-		void set_features(CDotFeatures* f)
+		void set_features(std::shared_ptr<CDotFeatures> f)
 		{
-			SG_REF(f);
-			SG_UNREF(m_features);
+
+
 			m_features = f;
 
 			for (index_t i=0; i<m_machines->get_num_elements(); i++)
 			{
-				auto machine = m_machines->get_element(i)->as<CLinearMachine>();
+				auto machine = m_machines->get_element<CLinearMachine>(i);
 				machine->set_features(f);
-				SG_UNREF(machine);
+
 			}
 		}
 
@@ -80,22 +80,22 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		 *
 		 * @return features
 		 */
-		CDotFeatures* get_features() const
+		std::shared_ptr<CDotFeatures> get_features() const
 		{
-			SG_REF(m_features);
+
 			return m_features;
 		}
 
 	protected:
 
 		/** init machine for train with setting features */
-		virtual bool init_machine_for_train(CFeatures* data)
+		virtual bool init_machine_for_train(std::shared_ptr<CFeatures> data)
 		{
 			if (!m_machine)
 				SG_ERROR("No machine given in Multiclass constructor\n")
 
 			if (data)
-				set_features((CDotFeatures*)data);
+				set_features(data->as<CDotFeatures>());
 
 			m_machine->as<CLinearMachine>()->set_features(m_features);
 
@@ -103,18 +103,18 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		}
 
 		/** init machines for applying with setting features */
-		virtual bool init_machines_for_apply(CFeatures* data)
+		virtual bool init_machines_for_apply(std::shared_ptr<CFeatures> data)
 		{
 			if (data)
-				set_features((CDotFeatures*)data);
+				set_features(data->as<CDotFeatures>());
 
 			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 			{
-				auto machine = m_machines->get_element(i)->as<CLinearMachine>();
+				auto machine = m_machines->get_element<CLinearMachine>(i);
 				ASSERT(m_features)
 				ASSERT(machine)
 				machine->set_features(m_features);
-				SG_UNREF(machine);
+
 			}
 
 			return true;
@@ -130,9 +130,9 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 		}
 
 		/** construct linear machine from given linear machine */
-		virtual CMachine* get_machine_from_trained(CMachine* machine) const
+		virtual std::shared_ptr<CMachine> get_machine_from_trained(std::shared_ptr<CMachine> machine) const
 		{
-			return new CLinearMachine(machine->as<CLinearMachine>());
+			return std::make_shared<CLinearMachine>(machine->as<CLinearMachine>());
 		}
 
 		/** get number of rhs feature vectors */
@@ -169,7 +169,7 @@ class CLinearMulticlassMachine : public CMulticlassMachine
 	protected:
 
 		/** features */
-		CDotFeatures* m_features;
+		std::shared_ptr<CDotFeatures> m_features;
 };
 }
 #endif

@@ -49,7 +49,7 @@ using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
-MaxCrossValidation::MaxCrossValidation(KernelManager& km, CMMD* est, const index_t& M, const index_t& K, const float64_t& alp)
+MaxCrossValidation::MaxCrossValidation(KernelManager& km, std::shared_ptr<CMMD> est, const index_t& M, const index_t& K, const float64_t& alp)
 : KernelSelection(km, est), num_runs(M), num_folds(K),  alpha(alp)
 {
 	REQUIRE(num_runs>0, "Number of runs (%d) must be positive!\n", num_runs);
@@ -87,7 +87,7 @@ void MaxCrossValidation::compute_measures()
 	SG_SDEBUG("Performing %d fold cross-validattion!\n", num_folds);
 	const auto num_kernels=kernel_mgr.num_kernels();
 
-	CQuadraticTimeMMD* quadratic_time_mmd=dynamic_cast<CQuadraticTimeMMD*>(estimator);
+	auto quadratic_time_mmd=std::dynamic_pointer_cast<CQuadraticTimeMMD>(estimator);
 	if (quadratic_time_mmd)
 	{
 		REQUIRE(estimator->get_null_approximation_method()==NAM_PERMUTATION,
@@ -105,22 +105,22 @@ void MaxCrossValidation::compute_measures()
 
 		if (kernel_mgr.same_distance_type())
 		{
-			CDistance* distance=kernel_mgr.get_distance_instance();
+			std::shared_ptr<CDistance> distance=kernel_mgr.get_distance_instance();
 			auto precomputed_distance=estimator->compute_joint_distance(distance);
 			kernel_mgr.set_precomputed_distance(precomputed_distance);
-			SG_UNREF(distance);
+
 			compute(kernel_mgr);
 			kernel_mgr.unset_precomputed_distance();
-			SG_UNREF(precomputed_distance);
+
 		}
 		else
 		{
 			auto samples_p_and_q=quadratic_time_mmd->get_p_and_q();
-			SG_REF(samples_p_and_q);
+
 
 			for (auto k=0; k<num_kernels; ++k)
 			{
-				CKernel* kernel=kernel_mgr.kernel_at(k);
+				std::shared_ptr<CKernel> kernel=kernel_mgr.kernel_at(k);
 				kernel->init(samples_p_and_q, samples_p_and_q);
 			}
 
@@ -128,11 +128,11 @@ void MaxCrossValidation::compute_measures()
 
 			for (auto k=0; k<num_kernels; ++k)
 			{
-				CKernel* kernel=kernel_mgr.kernel_at(k);
+				std::shared_ptr<CKernel> kernel=kernel_mgr.kernel_at(k);
 				kernel->remove_lhs_and_rhs();
 			}
 
-			SG_UNREF(samples_p_and_q);
+
 		}
 	}
 	else // TODO put check, this one assumes infinite data
@@ -165,7 +165,7 @@ void MaxCrossValidation::compute_measures()
 	}
 }
 
-CKernel* MaxCrossValidation::select_kernel()
+std::shared_ptr<CKernel> MaxCrossValidation::select_kernel()
 {
 	init_measures();
 	compute_measures();

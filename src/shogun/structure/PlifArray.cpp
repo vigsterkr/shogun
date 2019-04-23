@@ -29,7 +29,7 @@ CPlifArray::~CPlifArray()
 {
 }
 
-void CPlifArray::add_plif(CPlifBase* new_plif)
+void CPlifArray::add_plif(std::shared_ptr<CPlifBase> new_plif)
 {
 	ASSERT(new_plif)
 	m_array.append_element(new_plif) ;

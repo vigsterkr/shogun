@@ -16,7 +16,7 @@ CFKFeatures::CFKFeatures() : CDenseFeatures<float64_t>()
 	init();
 }
 
-CFKFeatures::CFKFeatures(int32_t size, CHMM* p, CHMM* n)
+CFKFeatures::CFKFeatures(int32_t size, std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n)
 : CDenseFeatures<float64_t>(size)
 {
 	init();
@@ -31,13 +31,13 @@ CFKFeatures::CFKFeatures(const CFKFeatures &orig)
 
 CFKFeatures::~CFKFeatures()
 {
-	SG_UNREF(pos);
-	SG_UNREF(neg);
+
+
 }
 
 float64_t CFKFeatures::deriv_a(float64_t a, int32_t dimension) const
 {
-	CStringFeatures<uint16_t> *Obs=pos->get_observations() ;
+	auto Obs=pos->get_observations() ;
 	float64_t deriv=0.0 ;
 	int32_t i=dimension ;
 
@@ -120,11 +120,11 @@ float64_t CFKFeatures::set_opt_a(float64_t a)
 	return a;
 }
 
-void CFKFeatures::set_models(CHMM* p, CHMM* n)
+void CFKFeatures::set_models(std::shared_ptr<CHMM> p, std::shared_ptr<CHMM> n)
 {
 	ASSERT(p && n)
-	SG_REF(p);
-	SG_REF(n);
+
+
 
 	pos=p;
 	neg=n;
@@ -253,7 +253,7 @@ void CFKFeatures::init()
 
 	unset_generic();
 	//TODO serialize HMMs
-	//m_parameters->add((CSGObject**) &pos, "pos", "HMM for positive class.");
-	//m_parameters->add((CSGObject**) &neg, "neg", "HMM for negative class.");
+	//m_parameters->add((std::shared_ptr<CSGObject>*) &pos, "pos", "HMM for positive class.");
+	//m_parameters->add((std::shared_ptr<CSGObject>*) &neg, "neg", "HMM for negative class.");
 	SG_ADD(&weight_a, "weight_a", "Class prior.");
 }

@@ -26,21 +26,17 @@ TEST(QDA, train_and_apply)
 		for( int j = 0 ; j < NUM ; ++j )
 			lab[i*NUM+j] = double(i);
 
-	CMulticlassLabels* labels = new CMulticlassLabels(lab);
-	CDenseFeatures< float64_t >* features = new CDenseFeatures< float64_t >(feat);
+	auto labels = std::make_shared<CMulticlassLabels>(lab);
+	auto features = std::make_shared<CDenseFeatures< float64_t >>(feat);
 
-	CQDA* qda = new CQDA(features, labels);
-	SG_REF(qda);
+	auto qda = std::make_shared<CQDA>(features, labels);
+
 	qda->train();
 
-	CMulticlassLabels* output = qda->apply()->as<CMulticlassLabels>();
-	SG_REF(output);
-
+	auto output = qda->apply()->as<CMulticlassLabels>();
 	// Test
 	for ( index_t i = 0; i < CLASSES*NUM; ++i )
 		EXPECT_EQ(output->get_label(i), labels->get_label(i));
 
-	SG_UNREF(output);
-	SG_UNREF(qda);
 }
 #endif // HAVE_LAPACK

@@ -48,11 +48,11 @@ TEST(Preprocessor, dense)
 	for (index_t i=0; i<dim*size; ++i)
 		data.matrix[i]=CMath::randn_double();
 
-	auto features = some<CDenseFeatures<float64_t>>(data);
-	auto preproc = some<CNormOne>();
+	auto features = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto preproc = std::make_shared<CNormOne>();
 	preproc->fit(features);
 
-	auto preprocessed = wrap(preproc->transform(features));
+	auto preprocessed = preproc->transform(features);
 
 	EXPECT_EQ(preprocessed->get_feature_class(), C_DENSE);
 }
@@ -78,12 +78,12 @@ TEST(Preprocessor, string)
 	}
 
 	/* create num_features 2-dimensional vectors */
-	auto features = some<CStringFeatures<uint16_t>>(strings, ALPHANUM);
-	auto preproc = some<CSortWordString>();
+	auto features = std::make_shared<CStringFeatures<uint16_t>>(strings, ALPHANUM);
+	auto preproc = std::make_shared<CSortWordString>();
 	preproc->fit(features);
 
-	auto preprocessed = wrap(preproc->transform(features));
+	auto preprocessed = preproc->transform(features);
 
-	ASSERT_NE(preprocessed.get(), (CFeatures*)NULL);
+	ASSERT_NE(preprocessed, nullptr);
 	EXPECT_EQ(preprocessed->get_feature_class(), C_STRING);
 }

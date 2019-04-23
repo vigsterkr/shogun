@@ -86,7 +86,7 @@ EPreprocessorType CDensePreprocessor<ST>::get_type() const
 }
 
 template <class ST>
-CFeatures* CDensePreprocessor<ST>::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CDensePreprocessor<ST>::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	REQUIRE(features->get_feature_class()==C_DENSE, "Provided features (%d) "
 			"has to be of C_DENSE (%d) class!\n",
@@ -96,12 +96,12 @@ CFeatures* CDensePreprocessor<ST>::transform(CFeatures* features, bool inplace)
 	if (!inplace)
 		matrix = matrix.clone();
 	auto feat_matrix = apply_to_matrix(matrix);
-	return new CDenseFeatures<ST>(feat_matrix);
+	return std::make_shared<CDenseFeatures<ST>>(feat_matrix);
 }
 
 template <class ST>
-CFeatures*
-CDensePreprocessor<ST>::inverse_transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures>
+CDensePreprocessor<ST>::inverse_transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	REQUIRE(
 		features->get_feature_class() == C_DENSE,
@@ -113,7 +113,7 @@ CDensePreprocessor<ST>::inverse_transform(CFeatures* features, bool inplace)
 	if (!inplace)
 		matrix = matrix.clone();
 	auto feat_matrix = inverse_apply_to_matrix(matrix);
-	return new CDenseFeatures<ST>(feat_matrix);
+	return std::make_shared<CDenseFeatures<ST>>(feat_matrix);
 }
 
 template <class ST>

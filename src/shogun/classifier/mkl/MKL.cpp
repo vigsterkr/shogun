@@ -236,7 +236,7 @@ public:
 #endif
 };
 
-CMKL::CMKL(CSVM* s) : CSVM()
+CMKL::CMKL(std::shared_ptr<CSVM> s) : CSVM()
 {
 	SG_DEBUG("creating MKL object %p\n", this)
 	register_params();
@@ -252,7 +252,7 @@ CMKL::~CMKL()
 	SG_DEBUG("deleting MKL object %p\n", this)
 	if (svm)
 		svm->set_callback_function(NULL, NULL);
-	SG_UNREF(svm);
+
 }
 
 void CMKL::register_params()
@@ -279,7 +279,7 @@ void CMKL::register_params()
 	SG_ADD(&mkl_block_norm, "mkl_block_norm", "mkl sparse trade-off parameter",
 			ParameterProperties::HYPER);
 
-	m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl");
+	/*m_parameters->add_vector(&beta_local, &beta_local_size, "beta_local", "subkernel weights on L1 term of elastic net mkl")*/;
 	watch_param("beta_local", &beta_local, &beta_local_size);
 
 	SG_ADD(&mkl_iterations, "mkl_iterations", "number of mkl steps");
@@ -291,9 +291,9 @@ void CMKL::register_params()
 	// Missing: self (3rd party specific, handled in clone())
 }
 
-CSGObject* CMKL::clone() const
+std::shared_ptr<CSGObject> CMKL::clone() const
 {
-	CMKL* cloned = (CMKL*) CSGObject::clone();
+	auto cloned = std::static_pointer_cast<CMKL>(CSGObject::clone());
 #ifdef USE_GLPK
 	// GLPK params
 	if (self->lp_glpk_parm != nullptr)
@@ -332,7 +332,7 @@ void CMKL::init_solver()
 #endif
 }
 
-bool CMKL::train_machine(CFeatures* data)
+bool CMKL::train_machine(std::shared_ptr<CFeatures> data)
 {
 	ASSERT(kernel)
 	ASSERT(m_labels && m_labels->get_num_labels())
@@ -356,7 +356,7 @@ bool CMKL::train_machine(CFeatures* data)
 	if (m_labels)
 		num_label = m_labels->get_num_labels();
 
-	SG_INFO("%d trainlabels (%ld)\n", num_label, m_labels)
+	SG_INFO("%d trainlabels (%ld)\n", num_label, m_labels.get())
 	if (mkl_epsilon<=0)
 		mkl_epsilon=1e-2 ;
 
@@ -449,13 +449,10 @@ bool CMKL::train_machine(CFeatures* data)
 		//but if we don't actually unref() the object we might leak memory...
 		//So as a workaround we only unref when the reference count was >1
 		//before.
-		int32_t refs=this->ref();
-		svm->set_callback_function(this, perform_mkl_step_helper);
+		svm->set_callback_function(shared_from_this()->as<CMKL>(), perform_mkl_step_helper);
 		svm->train();
 		SG_DONE()
 		svm->set_callback_function(NULL, NULL);
-		if (refs>1)
-			this->unref();
 	}
 	else
 	{
@@ -739,9 +736,10 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 
 
 		int32_t k=0;
-		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
+		auto combined_kernel = std::static_pointer_cast<CCombinedKernel>(kernel);
+		for (index_t k_idx=0; k_idx<combined_kernel->get_num_kernels(); k_idx++)
 		{
-			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
+			auto kn = combined_kernel->get_kernel(k_idx);
 			float64_t sum=0;
 			for (int32_t i=0; i<n; i++)
 			{
@@ -760,7 +758,7 @@ float64_t CMKL::compute_elasticnet_dual_objective()
 			k++;
 
 
-			SG_UNREF(kn);
+
 		}
 		// initial delta
 		del = del / std::sqrt(2 * (1 - ent_lambda));
@@ -1673,9 +1671,10 @@ float64_t CMKL::compute_mkl_dual_objective()
 
 	if (m_labels && kernel && kernel->get_kernel_type() == K_COMBINED)
 	{
-		for (index_t k_idx=0; k_idx<((CCombinedKernel*) kernel)->get_num_kernels(); k_idx++)
+		auto combined_kernel = std::static_pointer_cast<CCombinedKernel>(kernel);
+		for (index_t k_idx=0; k_idx<combined_kernel->get_num_kernels(); k_idx++)
 		{
-			CKernel* kn = ((CCombinedKernel*) kernel)->get_kernel(k_idx);
+			auto kn = combined_kernel->get_kernel(k_idx);
 			float64_t sum=0;
 			for (int32_t i=0; i<n; i++)
 			{
@@ -1693,7 +1692,7 @@ float64_t CMKL::compute_mkl_dual_objective()
 			else
 				mkl_obj += CMath::pow(sum, mkl_norm/(mkl_norm-1));
 
-			SG_UNREF(kn);
+
 		}
 
 		if (mkl_norm==1.0)

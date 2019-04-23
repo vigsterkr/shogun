@@ -41,7 +41,7 @@ CSequenceLabels::~CSequenceLabels()
 
 void CSequenceLabels::add_vector_label(SGVector< int32_t > label)
 {
-	CStructuredLabels::add_label( new CSequence(label) );
+	CStructuredLabels::add_label( std::make_shared<CSequence>(label) );
 }
 
 void CSequenceLabels::init()

@@ -39,7 +39,7 @@ namespace shogun
 			 * @param model the user defined CLatentModel object.
 			 * @param C regularization constant
 			 */
-			CLatentSVM(CLatentModel* model, float64_t C);
+			CLatentSVM(std::shared_ptr<CLatentModel> model, float64_t C);
 
 			virtual ~CLatentSVM();
 
@@ -47,7 +47,7 @@ namespace shogun
 			 *
 			 * @return resulting labels
 			 */
-			virtual CLatentLabels* apply_latent();
+			virtual std::shared_ptr<CLatentLabels> apply_latent();
 
 			using CLinearLatentMachine::apply_latent;
 

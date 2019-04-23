@@ -108,11 +108,11 @@ char* CPlif::get_plif_name() const
 	}
 }
 
-void CPlif::delete_penalty_struct(CPlif** PEN, int32_t P)
+void CPlif::delete_penalty_struct(std::vector<std::shared_ptr<CPlif>>& PEN, int32_t P)
 {
 	for (int32_t i=0; i<P; i++)
-		delete PEN[i] ;
-	SG_FREE(PEN);
+		PEN[i].reset();
+	PEN.clear();
 }
 
 float64_t CPlif::lookup_penalty_svm(

@@ -31,7 +31,7 @@ public:
 	/** constructor
 	 * @param root_task root task of the tree
 	 */
-	CTaskTree(CTask* root_task);
+	CTaskTree(std::shared_ptr<CTask> root_task);
 
 	/** destructor */
 	virtual ~CTaskTree();
@@ -56,13 +56,13 @@ public:
 	 *
 	 * @return root task of the tree
 	 */
-	CTask* get_root_task() const { SG_REF(m_root_task); return m_root_task; }
+	std::shared_ptr<CTask> get_root_task() const {  return m_root_task; }
 
 	/** set root task
 	 *
 	 * @param root_task task to set as root of the tree
 	 */
-	void set_root_task(CTask* root_task) { SG_REF(root_task); SG_UNREF(m_root_task); m_root_task = root_task; }
+	void set_root_task(std::shared_ptr<CTask> root_task) {   m_root_task = root_task; }
 
 	/** get name
 	 *
@@ -79,7 +79,7 @@ public:
 protected:
 
 	/** root task of the tree */
-	CTask* m_root_task;
+	std::shared_ptr<CTask> m_root_task;
 
 };
 

@@ -37,7 +37,7 @@ namespace shogun
 			 *
 			 * @return the copy of the given object
 			 */
-			virtual CFeatures* duplicate() const;
+			virtual std::shared_ptr<CFeatures> duplicate() const;
 
 			/** get feature type
 			 *
@@ -67,23 +67,23 @@ namespace shogun
 			 *
 			 * @param example the user defined CData
 			 */
-			bool add_sample(CData* example);
+			bool add_sample(std::shared_ptr<CData> example);
 
 			/** get latent example
 			 *
 			 * @param idx index of the required example
 			 * @return the user defined CData at the given index
 			 */
-			CData* get_sample(index_t idx);
+			std::shared_ptr<CData> get_sample(index_t idx);
 
 			/** helper method used to specialize a base class instance
 			 *
 			 * @param base_feats its dynamic type must be CLatentFeatures
 			 */
-			static CLatentFeatures* obtain_from_generic(CFeatures* base_feats);
+			static std::shared_ptr<CLatentFeatures> obtain_from_generic(std::shared_ptr<CFeatures> base_feats);
 		protected:
 			/** array of CData */
-			CDynamicObjectArray* m_samples;
+			std::shared_ptr<CDynamicObjectArray> m_samples;
 
 		private:
 			/** init function for the object */

@@ -10,13 +10,12 @@ template <class ST> CStringFileFeatures<ST>::CStringFileFeatures() : CStringFeat
 template <class ST> CStringFileFeatures<ST>::CStringFileFeatures(const char* fname, EAlphabet alpha)
 : CStringFeatures<ST>(alpha)
 {
-	file = new CMemoryMappedFile<ST>(fname);
+	file = std::make_shared<CMemoryMappedFile<ST>>(fname);
 	fetch_meta_info_from_file();
 }
 
 template <class ST> CStringFileFeatures<ST>::~CStringFileFeatures()
 {
-	SG_UNREF(file);
 	CStringFileFeatures<ST>::cleanup();
 }
 
@@ -59,19 +58,17 @@ template <class ST> void CStringFileFeatures<ST>::cleanup()
 	CStringFeatures<ST>::symbol_mask_table=NULL;
 
 	/* start with a fresh alphabet, but instead of emptying the histogram
-	 * create a new object (to leave the alphabet object alone if it is used
-	 * by others)
-	 */
-	CAlphabet* alpha=new CAlphabet(CStringFeatures<ST>::alphabet->get_alphabet());
-	SG_UNREF(CStringFeatures<ST>::alphabet);
+	* create a new object (to leave the alphabet object alone if it is used
+	* by others)
+	*/
+	auto alpha=std::make_shared<CAlphabet>(CStringFeatures<ST>::alphabet->get_alphabet());
 	CStringFeatures<ST>::alphabet=alpha;
-	SG_REF(CStringFeatures<ST>::alphabet);
 }
 
 template <class ST> void CStringFileFeatures<ST>::cleanup_feature_vector(int32_t num)
 {
 	SG_CLASS_ERROR(CStringFeatures<ST>, "Cleaning single feature vector not"
-			"supported by StringFileFeatures\n")
+		"supported by StringFileFeatures\n")
 }
 
 template <class ST> void CStringFileFeatures<ST>::fetch_meta_info_from_file(int32_t granularity)

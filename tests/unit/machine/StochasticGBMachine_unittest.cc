@@ -29,7 +29,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <shogun/base/some.h>
 #include <shogun/evaluation/MeanSquaredError.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/labels/RegressionLabels.h>
@@ -58,8 +57,8 @@ protected:
 		for (int32_t i = 0; i < num_train_samples; i++)
 			labels[i] = std::sin(mat(0, i));
 
-		train_feats = some<CDenseFeatures<float64_t>>(mat);
-		train_labels = some<CRegressionLabels>(labels);
+		train_feats = std::make_shared<CDenseFeatures<float64_t>>(mat);
+		train_labels = std::make_shared<CRegressionLabels>(labels);
 	}
 
 	void load_test_data()
@@ -89,8 +88,8 @@ protected:
 		tdata(0, 8) = 11.6910897047936668;
 		tdata(0, 9) = 2.44726557225158103;
 
-		test_feats = some<CDenseFeatures<float64_t>>(tdata);
-		test_labels = some<CRegressionLabels>(tlab);
+		test_feats = std::make_shared<CDenseFeatures<float64_t>>(tdata);
+		test_labels = std::make_shared<CRegressionLabels>(tlab);
 	}
 
 	virtual void SetUp()
@@ -101,16 +100,16 @@ protected:
 	}
 
 public:
-	Some<CDenseFeatures<float64_t>> train_feats;
-	Some<CDenseFeatures<float64_t>> test_feats;
-	Some<CRegressionLabels> train_labels;
-	Some<CRegressionLabels> test_labels;
+	std::shared_ptr<CDenseFeatures<float64_t>> train_feats;
+	std::shared_ptr<CDenseFeatures<float64_t>> test_feats;
+	std::shared_ptr<CRegressionLabels> train_labels;
+	std::shared_ptr<CRegressionLabels> test_labels;
 
 	StochasticGBMachine()
-	    : train_feats(Some<CDenseFeatures<float64_t>>::from_raw(nullptr)),
-	      test_feats(Some<CDenseFeatures<float64_t>>::from_raw(nullptr)),
-	      train_labels(Some<CRegressionLabels>::from_raw(nullptr)),
-	      test_labels(Some<CRegressionLabels>::from_raw(nullptr))
+	    : train_feats(nullptr),
+	      test_feats(nullptr),
+	      train_labels(nullptr),
+	      test_labels(nullptr)
 	{
 	}
 };
@@ -119,15 +118,15 @@ TEST_F(StochasticGBMachine, sinusoid_curve_fitting)
 {
 	SGVector<bool> ft(1);
 	ft[0]=false;
-	CCARTree* tree=new CCARTree(ft);
+	auto tree=std::make_shared<CCARTree>(ft);
 	tree->set_max_depth(2);
-	CSquaredLoss* sq=new CSquaredLoss();
+	auto sq=std::make_shared<CSquaredLoss>();
 
-	auto sgbm = some<CStochasticGBMachine>(tree, sq, 100, 0.1, 1.0);
+	auto sgbm = std::make_shared<CStochasticGBMachine>(tree, sq, 100, 0.1, 1.0);
 	sgbm->set_labels(train_labels);
 	sgbm->train(train_feats);
 
-	auto ret_labels = wrap(sgbm->apply_regression(test_feats));
+	auto ret_labels = sgbm->apply_regression(test_feats);
 	SGVector<float64_t> ret=ret_labels->get_labels();
 
 	EXPECT_NEAR(ret[0],-0.943157980,epsilon);
@@ -148,15 +147,15 @@ TEST_F(StochasticGBMachine, sinusoid_curve_fitting_subset_fraction)
 
 	SGVector<bool> ft(1);
 	ft[0] = false;
-	CCARTree* tree = new CCARTree(ft);
+	auto tree = std::make_shared<CCARTree>(ft);
 	tree->set_max_depth(2);
-	CSquaredLoss* sq = new CSquaredLoss();
+	auto sq = std::make_shared<CSquaredLoss>();
 
-	auto sgbm = some<CStochasticGBMachine>(tree, sq, 100, 0.1, fraction);
+	auto sgbm = std::make_shared<CStochasticGBMachine>(tree, sq, 100, 0.1, fraction);
 	sgbm->set_labels(train_labels);
 	sgbm->train(train_feats);
 
-	auto ret_labels = wrap(sgbm->apply_regression(test_feats));
+	auto ret_labels = sgbm->apply_regression(test_feats);
 	SGVector<float64_t> ret = ret_labels->get_labels();
 
 	EXPECT_NEAR(ret[0], -0.820852887, epsilon);

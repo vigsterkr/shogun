@@ -41,7 +41,7 @@ CTimeSeriesSplitting::CTimeSeriesSplitting() : CSplittingStrategy()
 	init();
 }
 
-CTimeSeriesSplitting::CTimeSeriesSplitting(CLabels* labels, index_t num_subsets)
+CTimeSeriesSplitting::CTimeSeriesSplitting(std::shared_ptr<CLabels> labels, index_t num_subsets)
     : CSplittingStrategy(labels, num_subsets)
 {
 	init();
@@ -51,8 +51,8 @@ void CTimeSeriesSplitting::init()
 {
 	m_rng = sg_rand;
 	m_min_subset_size = 1;
-	SG_ADD(&m_min_subset_size, "min_subset_size", 
-			"The minimum subset size for test set")
+	SG_ADD(&m_min_subset_size, "min_subset_size",
+			"The minimum subset size for test set");
 }
 
 void CTimeSeriesSplitting::build_subsets()
@@ -67,8 +67,7 @@ void CTimeSeriesSplitting::build_subsets()
 
 	for (auto i = 0; i < num_subsets; ++i)
 	{
-		CDynamicArray<index_t>* current =
-		    (CDynamicArray<index_t>*)m_subset_indices->get_element(i);
+		auto current =m_subset_indices->get_element<CDynamicArray<index_t>>(i);
 
 		if (i == num_subsets - 1)
 			split_index = indices.vlen - m_min_subset_size;
@@ -81,7 +80,7 @@ void CTimeSeriesSplitting::build_subsets()
 			current->append_element(indices.vector[k]);
 		}
 
-		SG_UNREF(current);
+
 	}
 
 	m_subset_indices->shuffle(m_rng);

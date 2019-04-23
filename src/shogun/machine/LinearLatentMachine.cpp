@@ -17,7 +17,7 @@ CLinearLatentMachine::CLinearLatentMachine()
 	init();
 }
 
-CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
+CLinearLatentMachine::CLinearLatentMachine(std::shared_ptr<CLatentModel> model, float64_t C)
 	: CLinearMachine()
 {
 	init();
@@ -33,29 +33,29 @@ CLinearLatentMachine::CLinearLatentMachine(CLatentModel* model, float64_t C)
 
 CLinearLatentMachine::~CLinearLatentMachine()
 {
-	SG_UNREF(m_model);
+
 }
 
-CLatentLabels* CLinearLatentMachine::apply_latent(CFeatures* data)
+std::shared_ptr<CLatentLabels> CLinearLatentMachine::apply_latent(std::shared_ptr<CFeatures> data)
 {
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n")
 
-	CLatentFeatures* lf = data->as<CLatentFeatures>();
+	auto lf = std::dynamic_pointer_cast<CLatentFeatures>(data);
 	m_model->set_features(lf);
 
 	return apply_latent();
 }
 
-void CLinearLatentMachine::set_model(CLatentModel* latent_model)
+void CLinearLatentMachine::set_model(std::shared_ptr<CLatentModel> latent_model)
 {
 	ASSERT(latent_model != NULL)
-	SG_REF(latent_model);
-	SG_UNREF(m_model);
+
+
 	m_model = latent_model;
 }
 
-bool CLinearLatentMachine::train_machine(CFeatures* data)
+bool CLinearLatentMachine::train_machine(std::shared_ptr<CFeatures> data)
 {
 	if (m_model == NULL)
 		SG_ERROR("LatentModel is not set!\n")

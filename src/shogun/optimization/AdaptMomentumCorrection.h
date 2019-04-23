@@ -69,7 +69,7 @@ public:
 	 * @param correction standard momentum method (eg, StandardMomentumCorrection)
 	 *
 	 */
-	virtual void set_momentum_correction(MomentumCorrection* correction);
+	virtual void set_momentum_correction(std::shared_ptr<MomentumCorrection> correction);
 
 	/*  Destructor */
 	virtual ~AdaptMomentumCorrection();
@@ -123,7 +123,7 @@ protected:
 	/** element wise rate used to discount/raise the current descend direction  */
 	SGVector<float64_t> m_descend_rate;
 	/** the standard momentum method */
-	MomentumCorrection* m_momentum_correction;
+	std::shared_ptr<MomentumCorrection> m_momentum_correction;
 	/** the adapt rate */
 	float64_t m_adapt_rate;
 	/** the minimum of the adapt rate */

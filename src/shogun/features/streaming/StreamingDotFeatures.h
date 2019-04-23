@@ -54,7 +54,7 @@ public:
 	 * @param is_labelled Whether examples are labelled or not.
 	 * @param size Number of examples to be held in the parser's "ring".
 	 */
-	CStreamingDotFeatures(CStreamingFile* file, bool is_labelled, int32_t size)
+	CStreamingDotFeatures(std::shared_ptr<CStreamingFile> file, bool is_labelled, int32_t size)
 	{
 		SG_NOTIMPLEMENTED;
 	}
@@ -81,7 +81,7 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float32_t dot(CStreamingDotFeatures* df)=0;
+	virtual float32_t dot(std::shared_ptr<CStreamingDotFeatures> df)=0;
 
 	/** compute dot product between current vector and a dense vector
 	 *

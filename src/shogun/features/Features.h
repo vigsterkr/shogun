@@ -78,7 +78,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		CFeatures(CFile* loader);
+		CFeatures(std::shared_ptr<CFile> loader);
 
 		/** duplicate feature object
 		 *
@@ -86,7 +86,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const=0;
+		virtual std::shared_ptr<CFeatures> duplicate() const=0;
 
 		virtual ~CFeatures();
 
@@ -126,7 +126,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param p preprocessor to set
 		 */
-		virtual void add_preprocessor(CPreprocessor* p);
+		virtual void add_preprocessor(std::shared_ptr<CPreprocessor> p);
 
 		/** delete preprocessor from list
 		 *
@@ -138,7 +138,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @param num index of preprocessor in list
 		 */
-		CPreprocessor* get_preprocessor(int32_t num) const;
+		std::shared_ptr<CPreprocessor> get_preprocessor(int32_t num) const;
 
 		/** get number of preprocessors
 		 *
@@ -183,20 +183,20 @@ class CFeatures : public CSGObject
 		 *
 		 * @param loader File object via which data shall be loaded
 		 */
-		virtual void load(CFile* loader);
+		virtual void load(std::shared_ptr<CFile> loader);
 
 		/** save features to file
 		 *
 		 * @param writer File object via which data shall be saved
 		 */
-		virtual void save(CFile* writer);
+		virtual void save(std::shared_ptr<CFile> writer);
 
 		/** check feature compatibility
 		 *
 		 * @param f features to check for compatibility
 		 * @return if features are compatible
 		 */
-		bool check_feature_compatibility(CFeatures* f) const;
+		bool check_feature_compatibility(std::shared_ptr<CFeatures> f) const;
 
 		/** check if features have given property
 		 *
@@ -227,7 +227,7 @@ class CFeatures : public CSGObject
 		 * @return new feature object which contains copy of data of this
 		 * instance and given ones
 		 */
-		virtual CFeatures* create_merged_copy(CList* others) const
+		virtual std::shared_ptr<CFeatures> create_merged_copy(const std::vector<std::shared_ptr<CFeatures>>& others) const
 		{
 			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n")
 			return NULL;
@@ -241,7 +241,7 @@ class CFeatures : public CSGObject
 		 * @return new feature object which contains copy of data of this
 		 * instance and of given one
 		 */
-		virtual CFeatures* create_merged_copy(CFeatures* other) const
+		virtual std::shared_ptr<CFeatures> create_merged_copy(std::shared_ptr<CFeatures> other) const
 		{
 			SG_ERROR("%s::create_merged_copy() is not yet implemented!\n")
 			return NULL;
@@ -282,7 +282,7 @@ class CFeatures : public CSGObject
 		 *
 		 * @return subset stack
 		 */
-		virtual CSubsetStack* get_subset_stack();
+		virtual std::shared_ptr<CSubsetStack> get_subset_stack();
 
 		/** method may be overwritten to update things that depend on subset */
 		virtual void subset_changed_post() {}
@@ -296,7 +296,7 @@ class CFeatures : public CSGObject
 		 * @param indices indices of feature elements to copy
 		 * @return new CFeatures instance with copies of feature data
 		 */
-		virtual CFeatures* copy_subset(SGVector<index_t> indices) const;
+		virtual std::shared_ptr<CFeatures> copy_subset(SGVector<index_t> indices) const;
 
 		/** Creates a new CFeatures instance containing only the dimensions
 		 * of the feature vector which are specified by the provided indices.
@@ -307,7 +307,7 @@ class CFeatures : public CSGObject
 		 * @param dims indices of feature dimensions to copy
 		 * @return new CFeatures instance with copies of specified features
 		 */
-		virtual CFeatures* copy_dimension_subset(SGVector<index_t> dims) const;
+		virtual std::shared_ptr<CFeatures> copy_dimension_subset(SGVector<index_t> dims) const;
 
 		/** does this class support compatible computation bewteen difference classes?
 		 * for example, this->dot(rhs_prt),
@@ -337,7 +337,7 @@ class CFeatures : public CSGObject
 		}
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CFeatures* shallow_subset_copy()
+		virtual std::shared_ptr<CFeatures> shallow_subset_copy()
 		{
 			SG_SNOTIMPLEMENTED;
 			return NULL;
@@ -355,11 +355,11 @@ class CFeatures : public CSGObject
 		int32_t cache_size;
 
 		/** list of preprocessors */
-		CDynamicObjectArray* preproc;
+		std::vector<std::shared_ptr<CPreprocessor>> preproc;
 
 	protected:
 		/** subset used for index transformations */
-		CSubsetStack* m_subset_stack;
+		std::shared_ptr<CSubsetStack> m_subset_stack;
 };
 }
 #endif

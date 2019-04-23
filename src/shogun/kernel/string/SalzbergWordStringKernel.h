@@ -36,7 +36,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param pie the plugin estimate
 		 * @param labels optional labels to set prior from
 		 */
-		CSalzbergWordStringKernel(int32_t size, CPluginEstimate* pie, CLabels* labels=NULL);
+		CSalzbergWordStringKernel(int32_t size, std::shared_ptr<CPluginEstimate> pie, std::shared_ptr<CLabels> labels=NULL);
 
 		/** constructor
 		 *
@@ -46,8 +46,8 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param labels optional labels to set prior from
 		 */
 		CSalzbergWordStringKernel(
-			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
-			CPluginEstimate *pie, CLabels* labels=NULL);
+			std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r,
+			std::shared_ptr<CPluginEstimate >pie, std::shared_ptr<CLabels> labels=NULL);
 
 		virtual ~CSalzbergWordStringKernel();
 
@@ -68,7 +68,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 *
 		 * @param labels labels to set prior probabilites from
 		 */
-		void set_prior_probs_from_labels(CLabels* labels);
+		void set_prior_probs_from_labels(std::shared_ptr<CLabels> labels);
 
 		/** initialize kernel
 		 *
@@ -76,7 +76,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();
@@ -120,7 +120,7 @@ class CSalzbergWordStringKernel: public CStringKernel<uint16_t>
 
 	protected:
 		/** the plugin estimate */
-		CPluginEstimate* estimate;
+		std::shared_ptr<CPluginEstimate> estimate;
 
 		/** mean */
 		float64_t* mean;

@@ -36,7 +36,7 @@ class CPruneVarSubMean : public CDensePreprocessor<float64_t>
 		virtual ~CPruneVarSubMean();
 
 		/// Fit preprocessor into features
-		virtual void fit(CFeatures* features);
+		virtual void fit(std::shared_ptr<CFeatures> features);
 
 		/// cleanup
 		virtual void cleanup();

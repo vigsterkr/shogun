@@ -45,9 +45,9 @@ CDependenceMaximization::CDependenceMaximization()
 
 void CDependenceMaximization::init()
 {
-	SG_ADD((CSGObject**)&m_estimator, "estimator",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_estimator, "estimator",
 			"the estimator for computing measures");
-	SG_ADD((CSGObject**)&m_labels_feats, "labels_feats",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_labels_feats, "labels_feats",
 			"the features based on labels");
 
 	m_estimator=NULL;
@@ -56,11 +56,11 @@ void CDependenceMaximization::init()
 
 CDependenceMaximization::~CDependenceMaximization()
 {
-	SG_UNREF(m_estimator);
-	SG_UNREF(m_labels_feats);
+
+
 }
 
-CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
+std::shared_ptr<CFeatures> CDependenceMaximization::create_transformed_copy(std::shared_ptr<CFeatures> features,
 		index_t idx)
 {
 	SG_DEBUG("Entering!\n");
@@ -88,13 +88,13 @@ CFeatures* CDependenceMaximization::create_transformed_copy(CFeatures* features,
 	return features->copy_dimension_subset(dims);
 }
 
-float64_t CDependenceMaximization::compute_measures(CFeatures* features,
+float64_t CDependenceMaximization::compute_measures(std::shared_ptr<CFeatures> features,
 		index_t idx)
 {
 	SG_DEBUG("Entering!\n");
 
 	// remove the dimension (feat) specified by the index idx
-	CFeatures* reduced_feats=create_transformed_copy(features, idx);
+	auto reduced_feats=create_transformed_copy(features, idx);
 	ASSERT(reduced_feats);
 
 	// perform an independence test for X\X_i ~ p and Y ~ q with
@@ -106,13 +106,13 @@ float64_t CDependenceMaximization::compute_measures(CFeatures* features,
 
 	SG_DEBUG("statistic = %f!\n", statistic);
 
-	SG_UNREF(reduced_feats);
+
 
 	SG_DEBUG("Leaving!\n");
 	return statistic;
 }
 
-CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
+std::shared_ptr<CFeatures> CDependenceMaximization::remove_feats(std::shared_ptr<CFeatures> features,
 		SGVector<index_t> argsorted)
 {
 	SG_DEBUG("Entering!\n");
@@ -149,13 +149,13 @@ CFeatures* CDependenceMaximization::remove_feats(CFeatures* features,
 		inds.display_vector("selected feats");
 
 	// copy rest of the features and SG_UNREF the original feat obj
-	CFeatures* reduced_feats=features->copy_dimension_subset(inds);
+	auto reduced_feats=features->copy_dimension_subset(inds);
 
 	// add the selected features to the subset
 	ASSERT(m_subset)
 	m_subset->add_subset(inds);
 
-	SG_UNREF(features);
+
 
 	SG_DEBUG("Leaving!\n");
 	return reduced_feats;
@@ -169,20 +169,20 @@ void CDependenceMaximization::set_policy(EFeatureRemovalPolicy policy)
 	m_policy=policy;
 }
 
-void CDependenceMaximization::set_labels(CLabels* labels)
+void CDependenceMaximization::set_labels(std::shared_ptr<CLabels> labels)
 {
 	// NULL check is handled in base class CFeatureSelection
 	CFeatureSelection<float64_t>::set_labels(labels);
 
 	// convert the CLabels object to CDenseFeatures
-	SG_UNREF(m_labels_feats);
+
 
 	SGMatrix<float64_t> labels_matrix(1, m_labels->get_num_labels());
 	for (index_t i=0; i<labels_matrix.num_cols; ++i)
 		labels_matrix.matrix[i]=m_labels->get_value(i);
 
-	m_labels_feats=new CDenseFeatures<float64_t>(labels_matrix);
-	SG_REF(m_labels_feats);
+	m_labels_feats=std::make_shared<CDenseFeatures<float64_t>>(labels_matrix);
+
 
 	// we need to set this to the estimator which is set internally
 	ASSERT(m_estimator);

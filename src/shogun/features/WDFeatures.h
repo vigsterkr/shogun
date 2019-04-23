@@ -35,7 +35,7 @@ class CWDFeatures : public CDotFeatures
 		 * @param order of wd kernel
 		 * @param from_order use first order weights from higher order weighting
 		 */
-		CWDFeatures(CStringFeatures<uint8_t>* str, int32_t order, int32_t from_order);
+		CWDFeatures(std::shared_ptr<CStringFeatures<uint8_t>> str, int32_t order, int32_t from_order);
 
 		/** copy constructor */
 		CWDFeatures(const CWDFeatures & orig);
@@ -59,7 +59,7 @@ class CWDFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -150,7 +150,7 @@ class CWDFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** get feature type
 		 *
@@ -187,7 +187,7 @@ class CWDFeatures : public CDotFeatures
 
 	protected:
 		/** stringfeatures the wdfeatures are based on*/
-		CStringFeatures<uint8_t>* strings;
+		std::shared_ptr<CStringFeatures<uint8_t>> strings;
 
 		/** degree */
 		int32_t degree;

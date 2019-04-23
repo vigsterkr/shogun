@@ -52,7 +52,7 @@ SGNDArray<float64_t> CFFSep::get_covs() const
 	return m_covs;
 }
 
-void CFFSep::fit_dense(CDenseFeatures<float64_t>* features)
+void CFFSep::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
 	ASSERT(features);
 

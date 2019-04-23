@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser, 
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser,
  *          Sergey Lisitsyn, Viktor Gal
  */
 
@@ -18,20 +18,19 @@ CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures()
 }
 
 template <class ST>
-CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(CStreamingFile* file,
+CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(std::shared_ptr<CStreamingFile> file,
 	bool is_labelled, int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(CDenseFeatures<ST>* dot_features,
+CStreamingHashedDenseFeatures<ST>::CStreamingHashedDenseFeatures(std::shared_ptr<CDenseFeatures<ST>> dot_features,
 	int32_t d, bool use_quadr, bool keep_lin_terms, float64_t* lab)
 {
 	ASSERT(dot_features);
 
-	CStreamingFileFromDenseFeatures<ST>* file =
-			new CStreamingFileFromDenseFeatures<ST>(dot_features, lab);
+	auto file = std::make_shared<CStreamingFileFromDenseFeatures<ST>>(dot_features, lab);
 	bool is_labelled = (lab != NULL);
 	int32_t size = 1024;
 
@@ -47,7 +46,7 @@ CStreamingHashedDenseFeatures<ST>::~CStreamingHashedDenseFeatures()
 }
 
 template <class ST>
-void CStreamingHashedDenseFeatures<ST>::init(CStreamingFile* file, bool is_labelled,
+void CStreamingHashedDenseFeatures<ST>::init(std::shared_ptr<CStreamingFile> file, bool is_labelled,
 	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	dim = d;
@@ -62,7 +61,7 @@ void CStreamingHashedDenseFeatures<ST>::init(CStreamingFile* file, bool is_label
 	if (file)
 	{
 		working_file = file;
-		SG_REF(working_file);
+
 		parser.init(file, is_labelled, size);
 		seekable = false;
 	}
@@ -76,13 +75,13 @@ void CStreamingHashedDenseFeatures<ST>::init(CStreamingFile* file, bool is_label
 }
 
 template <class ST>
-float32_t CStreamingHashedDenseFeatures<ST>::dot(CStreamingDotFeatures* df)
+float32_t CStreamingHashedDenseFeatures<ST>::dot(std::shared_ptr<CStreamingDotFeatures> df)
 {
 	ASSERT(df);
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(strcmp(df->get_name(),get_name())==0)
 
-	CStreamingHashedDenseFeatures<ST>* hdf = (CStreamingHashedDenseFeatures<ST>* ) df;
+	auto hdf = std::static_pointer_cast<CStreamingHashedDenseFeatures<ST>>(df);
 	return current_vector.sparse_dot(hdf->current_vector);
 }
 

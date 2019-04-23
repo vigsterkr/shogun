@@ -57,7 +57,7 @@ public:
 	 * @param n_grams the max number of tokens to consider when combining tokens
 	 * @param skips the max number of tokens to skip when combining tokens
 	 */
-	CHashedDocConverter(CTokenizer* tzer, int32_t hash_bits, bool normalize = false, int32_t n_grams = 1,
+	CHashedDocConverter(std::shared_ptr<CTokenizer> tzer, int32_t hash_bits, bool normalize = false, int32_t n_grams = 1,
 		int32_t skips = 0);
 
 	/** Destructor */
@@ -68,7 +68,7 @@ public:
 	 * @param features the strings to be hashed. Must be an instance of CStringFeatures.
 	 * @return a CSparseFeatures object containing the hashes of the strings.
 	 */
-	virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 	/** Hashes the tokens contained in document
 	 *
@@ -118,7 +118,7 @@ public:
 protected:
 
 	/** init */
-	void init(CTokenizer* tzer, int32_t d, bool normalize, int32_t n_grams, int32_t skips);
+	void init(std::shared_ptr<CTokenizer> tzer, int32_t d, bool normalize, int32_t n_grams, int32_t skips);
 
 	/** This method takes a dynamic array as an argument, sorts it and returns the number
 	 * of the distinct elements(indices here) in the array.
@@ -142,7 +142,7 @@ protected:
 	int32_t num_bits;
 
 	/** the tokenizer */
-	CTokenizer* tokenizer;
+	std::shared_ptr<CTokenizer> tokenizer;
 
 	/** whether to normalize or not */
 	bool should_normalize;

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Heiko Strathmann, Soeren Sonnenburg, Yuyu Zhang,
  *          Evangelos Anagnostopoulos, Sergey Lisitsyn
  */
 #ifndef __STREAMING_FILEFROMSTRING_H__
@@ -31,7 +31,7 @@ public:
 	 *
 	 * @param feat StringFeatures object
 	 */
-	CStreamingFileFromStringFeatures(CStringFeatures<T>* feat);
+	CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat);
 
 	/**
 	 * Constructor taking a StringFeatures object as arg
@@ -39,7 +39,7 @@ public:
 	 * @param feat StringFeatures object
 	 * @param lab Labels as float64_t*
 	 */
-	CStreamingFileFromStringFeatures(CStringFeatures<T>* feat, float64_t* lab);
+	CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat, float64_t* lab);
 
 	/**
 	 * Destructor
@@ -88,12 +88,12 @@ private:
 	/**
 	 * Initialize members to defaults
 	 */
-	void init(CStringFeatures<T>* feat=NULL);
+	void init(std::shared_ptr<CStringFeatures<T>> feat=NULL);
 
 protected:
 
 	/// StringFeatures object
-	CStringFeatures<T>* features;
+	std::shared_ptr<CStringFeatures<T>> features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
@@ -108,14 +108,14 @@ CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures()
 }
 
 template <class T>
-CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(CStringFeatures<T>* feat)
+CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat)
 	: CStreamingFileFromFeatures(feat)
 {
 	init(feat);
 }
 
 template <class T>
-CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(CStringFeatures<T>* feat, float64_t* lab)
+CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat, float64_t* lab)
 	: CStreamingFileFromFeatures(feat,lab)
 {
 	init(feat);
@@ -127,7 +127,7 @@ CStreamingFileFromStringFeatures<T>::~CStreamingFileFromStringFeatures()
 }
 
 template <class T>
-void CStreamingFileFromStringFeatures<T>::init(CStringFeatures<T>* feat)
+void CStreamingFileFromStringFeatures<T>::init(std::shared_ptr<CStringFeatures<T>> feat)
 {
 	vector_num=0;
 	features = feat;

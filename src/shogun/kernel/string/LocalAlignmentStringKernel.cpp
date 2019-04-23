@@ -88,7 +88,7 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(int32_t size)
 }
 
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
-	CStringFeatures<char>* l, CStringFeatures<char>* r,
+	std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 	float64_t opening, float64_t extension)
 : CStringKernel<char>()
 {
@@ -104,7 +104,7 @@ CLocalAlignmentStringKernel::~CLocalAlignmentStringKernel()
 	cleanup();
 }
 
-bool CLocalAlignmentStringKernel::init(CFeatures* l, CFeatures* r)
+bool CLocalAlignmentStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CStringKernel<char>::init(l, r);
 	initialized=true;
@@ -352,8 +352,8 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 	int32_t i, j;
 
 	bool free_x, free_y;
-	char* x=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_x, lx, free_x);
-	char* y=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_y, ly, free_y);
+	char* x=std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx_x, lx, free_x);
+	char* y=std::static_pointer_cast<CStringFeatures<char>>(rhs)->get_feature_vector(idx_y, ly, free_y);
 	ASSERT(x && y)
 
 	if ( (lx<1) || (ly<1) )
@@ -385,15 +385,15 @@ float64_t CLocalAlignmentStringKernel::compute(int32_t idx_x, int32_t idx_y)
 	SG_FREE(aax);
 	SG_FREE(aay);
 
-	((CStringFeatures<char>*)lhs)->free_feature_vector(x, idx_x, free_x);
-	((CStringFeatures<char>*)rhs)->free_feature_vector(y, idx_y, free_y);
+	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(x, idx_x, free_x);
+	std::static_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(y, idx_y, free_y);
 
 	return result;
 }
 
 void CLocalAlignmentStringKernel::init()
 {
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 
 	initialized=false;
 	isAA=NULL;

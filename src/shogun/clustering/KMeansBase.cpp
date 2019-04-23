@@ -23,7 +23,7 @@ CKMeansBase::CKMeansBase()
 	init();
 }
 
-CKMeansBase::CKMeansBase(int32_t k_, CDistance* d, bool use_kmpp)
+CKMeansBase::CKMeansBase(int32_t k_, std::shared_ptr<CDistance> d, bool use_kmpp)
 : CDistanceMachine()
 {
 	init();
@@ -32,7 +32,7 @@ CKMeansBase::CKMeansBase(int32_t k_, CDistance* d, bool use_kmpp)
 	use_kmeanspp=use_kmpp;
 }
 
-CKMeansBase::CKMeansBase(int32_t k_i, CDistance* d_i, SGMatrix<float64_t> centers_i)
+CKMeansBase::CKMeansBase(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i)
 : CDistanceMachine()
 {
 	init();
@@ -47,20 +47,20 @@ CKMeansBase::~CKMeansBase()
 
 void CKMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 {
-	CDenseFeatures<float64_t>* lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	dimensions=lhs->get_num_features();
 	REQUIRE(centers.num_cols == k,
 			"Expected %d initial cluster centers, got %d", k, centers.num_cols);
 	REQUIRE(centers.num_rows == dimensions,
 			"Expected %d dimensionional cluster centers, got %d", dimensions, centers.num_rows);
 	mus_initial = centers;
-	SG_UNREF(lhs);
+
 }
 
 void CKMeansBase::set_random_centers()
 {
 	mus.zero();
-	CDenseFeatures<float64_t>* lhs=
+	auto lhs=
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	int32_t lhs_size=lhs->get_num_vectors();
 
@@ -80,9 +80,6 @@ void CKMeansBase::set_random_centers()
 	}
 
 	observe<SGMatrix<float64_t>>(0, "mus");
-
-	SG_UNREF(lhs);
-
 }
 
 void CKMeansBase::compute_cluster_variances()
@@ -133,7 +130,7 @@ void CKMeansBase::compute_cluster_variances()
 	}
 }
 
-void CKMeansBase::initialize_training(CFeatures* data)
+void CKMeansBase::initialize_training(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(distance, "Distance is not provided\n")
 	REQUIRE(
@@ -150,7 +147,7 @@ void CKMeansBase::initialize_training(CFeatures* data)
 	if (data)
 		distance->init(data, data);
 
-	CDenseFeatures<float64_t>* lhs=
+	auto lhs=
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 
 	REQUIRE(lhs, "Lhs features of distance not provided");
@@ -180,7 +177,6 @@ void CKMeansBase::initialize_training(CFeatures* data)
 	{
 		set_random_centers();
 	}
-	SG_UNREF(lhs);
 }
 
 bool CKMeansBase::load(FILE* srcfile)
@@ -202,29 +198,28 @@ SGMatrix<float64_t> CKMeansBase::get_cluster_centers() const
 	if (!R.vector)
 		return SGMatrix<float64_t>();
 
-	CDenseFeatures<float64_t>* lhs=
+	auto lhs=
 		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
-	SG_UNREF(lhs);
+
 	return centers;
 }
 
 void CKMeansBase::store_model_features()
 {
 	/* set lhs of underlying distance to cluster centers */
-	CDenseFeatures<float64_t>* cluster_centers=new CDenseFeatures<float64_t>(
-			mus);
+	auto cluster_centers=std::make_shared<CDenseFeatures<float64_t>>(mus);
 
 	/* store cluster centers in lhs of distance variable */
-	CFeatures* rhs=distance->get_rhs();
+	auto rhs=distance->get_rhs();
 	distance->init(cluster_centers, rhs);
-	SG_UNREF(rhs);
+
 }
 
 SGMatrix<float64_t> CKMeansBase::kmeanspp()
 {
 	int32_t lhs_size;
-	CDenseFeatures<float64_t>* lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
 	lhs_size=lhs->get_num_vectors();
 
 	SGMatrix<float64_t> centers=SGMatrix<float64_t>(dimensions, k);
@@ -311,7 +306,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	}
 
 	distance->reset_precompute();
-	SG_UNREF(lhs);
+
 	return centers;
 }
 

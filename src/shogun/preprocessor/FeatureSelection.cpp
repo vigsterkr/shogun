@@ -54,10 +54,10 @@ void CFeatureSelection<ST>::initialize_parameters()
 		"number or percentage of features to "
 		"be removed");
 	SG_ADD(
-		(CSGObject**)&m_labels, "labels",
+		(std::shared_ptr<CSGObject>*)&m_labels, "labels",
 		"the class labels for the features");
 	SG_ADD(
-		(CSGObject**)&m_subset, "subset", "indices of selected features");
+		(std::shared_ptr<CSGObject>*)&m_subset, "subset", "indices of selected features");
 	SG_ADD_OPTIONS(
 		(machine_int_t*)&m_policy, "policy", "feature removal policy",
 		ParameterProperties::NONE,
@@ -72,14 +72,14 @@ void CFeatureSelection<ST>::initialize_parameters()
 	m_policy=N_LARGEST;
 	m_num_remove=1;
 	m_labels=NULL;
-	m_subset=new CSubsetStack();
+	m_subset=std::make_shared<CSubsetStack>();
 }
 
 template <class ST>
 CFeatureSelection<ST>::~CFeatureSelection()
 {
-	SG_UNREF(m_labels);
-	SG_UNREF(m_subset);
+
+
 }
 
 
@@ -90,7 +90,7 @@ void CFeatureSelection<ST>::cleanup()
 }
 
 template <class ST>
-CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features)
+std::shared_ptr<CFeatures> CFeatureSelection<ST>::apply_backward_elimination(std::shared_ptr<CFeatures> features)
 {
 	SG_DEBUG("Entering!\n");
 
@@ -176,7 +176,7 @@ CFeatures* CFeatureSelection<ST>::apply_backward_elimination(CFeatures* features
 }
 
 template <class ST>
-CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CFeatureSelection<ST>::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	SG_DEBUG("Entering!\n");
 
@@ -202,7 +202,7 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 	// this method makes a deep copy of the feature object and performs
 	// feature selection on it. This is already SG_REF'ed because of the
 	// implementation of clone()
-	CFeatures* feats_copy=(CFeatures*)features->clone();
+	auto feats_copy=features->clone()->as<CFeatures>();
 
 	switch (m_algorithm)
 	{
@@ -217,8 +217,8 @@ CFeatures* CFeatureSelection<ST>::transform(CFeatures* features, bool inplace)
 }
 
 template <class ST>
-CFeatures*
-CFeatureSelection<ST>::inverse_transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures>
+CFeatureSelection<ST>::inverse_transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	SG_SNOTIMPLEMENTED;
 
@@ -231,7 +231,7 @@ void CFeatureSelection<ST>::precompute()
 }
 
 template <class ST>
-void CFeatureSelection<ST>::adapt_params(CFeatures* features)
+void CFeatureSelection<ST>::adapt_params(std::shared_ptr<CFeatures> features)
 {
 }
 
@@ -253,7 +253,7 @@ SGVector<index_t> CFeatureSelection<ST>::get_selected_feats()
 }
 
 template <class ST>
-index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
+index_t CFeatureSelection<ST>::get_num_features(std::shared_ptr<CFeatures> features) const
 {
 	REQUIRE(features, "Features not initialized!\n");
 
@@ -263,21 +263,21 @@ index_t CFeatureSelection<ST>::get_num_features(CFeatures* features) const
 	{
 		case C_DENSE:
 		{
-			CDenseFeatures<ST>* d_feats=dynamic_cast<CDenseFeatures<ST>*>(features);
+			auto d_feats=features->as<CDenseFeatures<ST>>();
 			REQUIRE(d_feats, "Type mismatch for dense features!\n");
 			return d_feats->get_num_features();
 		}
 		case C_SPARSE:
 		{
-			CSparseFeatures<ST>* s_feats=dynamic_cast<CSparseFeatures<ST>*>(features);
+			auto s_feats=features->as<CSparseFeatures<ST>>();
 			REQUIRE(s_feats, "Type mismatch for sparse features!\n");
 			return s_feats->get_num_features();
 		}
 		default:
 			SG_ERROR("Number of features not available for %s!\n",
-					features->get_name());
-			break;
-	}
+			       features->get_name());
+
+		}
 
 	return 0;
 }
@@ -319,17 +319,17 @@ index_t CFeatureSelection<ST>::get_num_remove() const
 }
 
 template <class ST>
-void CFeatureSelection<ST>::set_labels(CLabels* labels)
+void CFeatureSelection<ST>::set_labels(std::shared_ptr<CLabels> labels)
 {
-	SG_REF(labels);
-	SG_UNREF(m_labels);
+
+
 	m_labels=labels;
 }
 
 template <class ST>
-CLabels* CFeatureSelection<ST>::get_labels() const
+std::shared_ptr<CLabels> CFeatureSelection<ST>::get_labels() const
 {
-	SG_REF(m_labels);
+
 	return m_labels;
 }
 

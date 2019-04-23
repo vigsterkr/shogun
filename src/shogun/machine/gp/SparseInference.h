@@ -83,9 +83,9 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSparseInference(CKernel* kernel, CFeatures* features,
-			CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model,
-			CFeatures* inducing_features);
+	CSparseInference(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
+			std::shared_ptr<CFeatures> inducing_features);
 
 	virtual ~CSparseInference();
 
@@ -105,10 +105,10 @@ public:
 	 *
 	 * @param feat features to set
 	 */
-	virtual void set_inducing_features(CFeatures* feat)
+	virtual void set_inducing_features(std::shared_ptr<CFeatures> feat)
 	{
 		REQUIRE(feat,"Input inducing features must be not empty\n");
-		CDotFeatures *lat_type=dynamic_cast<CDotFeatures *>(feat);
+		auto lat_type=std::dynamic_pointer_cast<CDotFeatures>(feat);
 		REQUIRE(lat_type, "Inducing features (%s) must be"
 			" DotFeatures or one of its subclasses\n", feat->get_name());
 		m_inducing_features=lat_type->get_computed_dot_feature_matrix();
@@ -118,13 +118,11 @@ public:
 	 *
 	 * @return features
 	 */
-	virtual CFeatures* get_inducing_features()
+	virtual std::shared_ptr<CFeatures> get_inducing_features()
 	{
 		SGMatrix<float64_t> out(m_inducing_features.matrix,
 			m_inducing_features.num_rows,m_inducing_features.num_cols,false);
-		CFeatures* inducing_features=new CDenseFeatures<float64_t>(out);
-		SG_REF(inducing_features);
-		return inducing_features;
+		return std::make_shared<CDenseFeatures<float64_t>>(out);
 	}
 
 	/** get alpha vector

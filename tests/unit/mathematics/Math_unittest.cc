@@ -399,9 +399,9 @@ TEST(CMath, permute_with_random)
 {
 	SGVector<int32_t> v(4);
 	v.range_fill(0);
-	CRandom* random = new CRandom(2);
+	auto random = std::make_shared<CRandom>(2);
 	CMath::permute(v, random);
-	SG_UNREF(random);
+	
 
 	EXPECT_EQ(v[0], 2);
 	EXPECT_EQ(v[1], 1);

@@ -26,7 +26,7 @@ CSigmoidKernel::CSigmoidKernel(int32_t size, float64_t g, float64_t c)
 }
 
 CSigmoidKernel::CSigmoidKernel(
-    CDotFeatures* l, CDotFeatures* r, int32_t size, float64_t g, float64_t c)
+    std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, int32_t size, float64_t g, float64_t c)
     : CDotKernel(size)
 {
 	init();
@@ -46,7 +46,7 @@ void CSigmoidKernel::cleanup()
 {
 }
 
-bool CSigmoidKernel::init(CFeatures* l, CFeatures* r)
+bool CSigmoidKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDotKernel::init(l, r);
 	return init_normalizer();

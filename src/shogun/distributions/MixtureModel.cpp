@@ -41,20 +41,20 @@ CMixtureModel::CMixtureModel()
 	init();
 }
 
-CMixtureModel::CMixtureModel(CDynamicObjectArray* components, SGVector<float64_t> weights)
+CMixtureModel::CMixtureModel(std::shared_ptr<CDynamicObjectArray> components, SGVector<float64_t> weights)
 {
 	init();
 	m_components=components;
-	SG_REF(components);
+
 	m_weights=weights;
 }
 
 CMixtureModel::~CMixtureModel()
 {
-	SG_UNREF(m_components);
+
 }
 
-bool CMixtureModel::train(CFeatures* data)
+bool CMixtureModel::train(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(m_components->get_num_elements()>0,"mixture componenents not specified\n")
 	REQUIRE(m_components->get_num_elements()==m_weights.vlen,"number of weights (%d) does  not"
@@ -75,18 +75,18 @@ bool CMixtureModel::train(CFeatures* data)
 	// set training points in all components of the mixture
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
-		CDistribution* comp=m_components->get_element(i)->as<CDistribution>();
+		auto comp=m_components->get_element<CDistribution>(i);
 		comp->set_features(features);
 
-		SG_UNREF(comp)
+
 	}
 
-	CDotFeatures* dotdata=dynamic_cast<CDotFeatures *>(features);
+	auto dotdata=std::dynamic_pointer_cast<CDotFeatures>(features);
 	REQUIRE(dotdata,"dynamic cast from CFeatures to CDotFeatures returned NULL")
 	int32_t num_vectors=dotdata->get_num_vectors();
 
 	// set data for EM
-	CEMMixtureModel* em=new CEMMixtureModel();
+	auto em=std::make_shared<CEMMixtureModel>();
 	em->data.alpha=SGMatrix<float64_t>(num_vectors,m_components->get_num_elements());
 	em->data.components=m_components;
 	em->data.weights=m_weights;
@@ -96,7 +96,7 @@ bool CMixtureModel::train(CFeatures* data)
 	if (!is_converged)
 		SG_WARNING("max iterations reached. No convergence yet!\n")
 
-	SG_UNREF(em)
+
 	return true;
 }
 
@@ -123,12 +123,12 @@ float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 	SGVector<float64_t> log_likelihood_component(m_components->get_num_elements());
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
-		CDistribution* ith_comp=m_components->get_element(i)->as<CDistribution>();
+		auto ith_comp=m_components->get_element<CDistribution>(i);
 		log_likelihood_component[i] =
 		    ith_comp->get_log_likelihood_example(num_example) +
 		    std::log(m_weights[i]);
 
-		SG_UNREF(ith_comp);
+
 	}
 
 	return CMath::log_sum_exp(log_likelihood_component);
@@ -144,19 +144,15 @@ void CMixtureModel::set_weights(SGVector<float64_t> weights)
 	m_weights=weights;
 }
 
-CDynamicObjectArray* CMixtureModel::get_components() const
+std::shared_ptr<CDynamicObjectArray> CMixtureModel::get_components() const
 {
-	SG_REF(m_components);
+
 	return m_components;
 }
 
-void CMixtureModel::set_components(CDynamicObjectArray* components)
+void CMixtureModel::set_components(std::shared_ptr<CDynamicObjectArray> components)
 {
-	if (m_components!=NULL)
-		SG_UNREF(m_components)
-
 	m_components=components;
-	SG_REF(m_components);
 }
 
 index_t CMixtureModel::get_num_components() const
@@ -164,11 +160,11 @@ index_t CMixtureModel::get_num_components() const
 	return m_components->get_num_elements();
 }
 
-CDistribution* CMixtureModel::get_component(index_t index) const
+std::shared_ptr<CDistribution> CMixtureModel::get_component(index_t index) const
 {
 	REQUIRE(index<get_num_components(),"index supplied (%d) is greater than total mixture components (%d)\n"
 																				,index,get_num_components())
-	return m_components->get_element(index)->as<CDistribution>();
+	return m_components->get_element<CDistribution>(index);
 }
 
 void CMixtureModel::set_max_iters(int32_t max_iters)
@@ -212,7 +208,7 @@ void CMixtureModel::init()
 	m_conv_tol=1e-8;
 	m_max_iters=1000;
 
-	SG_ADD((CSGObject**)&m_components,"m_components","components of mixture");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_components,"m_components","components of mixture");
 	SG_ADD(&m_weights,"m_weights","weights of components");
 	SG_ADD(&m_conv_tol,"m_conv_tol","convergence tolerance");
 	SG_ADD(&m_max_iters,"m_max_iters","max number of iterations");

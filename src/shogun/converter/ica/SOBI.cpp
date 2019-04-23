@@ -52,7 +52,7 @@ SGNDArray<float64_t> CSOBI::get_covs() const
 	return m_covs;
 }
 
-void CSOBI::fit_dense(CDenseFeatures<float64_t>* features)
+void CSOBI::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 

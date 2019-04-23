@@ -7,10 +7,9 @@
 /* Remove C Prefix */
 /* Feature selection framework */
 %rename(Preprocessor) CPreprocessor;
+%shared_ptr(Preprocessor)
 #%rename(DependenceMaximization) CDependenceMaximization;
 #%rename(KernelDependenceMaximization) CDependenceMaximization;
-
-%newobject shogun::CFeatureSelection::remove_feats;
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/lib/Compressor.h>

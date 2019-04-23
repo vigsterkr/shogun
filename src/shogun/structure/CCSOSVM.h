@@ -46,7 +46,7 @@ namespace shogun
 			 * @param model structured output model
 			 * @param w initial w (optional)
 			 */
-			CCCSOSVM(CStructuredModel* model, SGVector<float64_t> w = SGVector<float64_t>());
+			CCCSOSVM(std::shared_ptr<CStructuredModel> model, SGVector<float64_t> w = SGVector<float64_t>());
 
 			/** destructor */
 			virtual ~CCCSOSVM();
@@ -171,7 +171,7 @@ namespace shogun
 			virtual EMachineType get_classifier_type();
 
 		protected:
-			bool train_machine(CFeatures* data=NULL);
+			bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 		private:
 			/** find new cutting plane

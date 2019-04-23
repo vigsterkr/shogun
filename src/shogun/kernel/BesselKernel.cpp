@@ -16,35 +16,35 @@ CBesselKernel::CBesselKernel():CDistanceKernel(),order(0.0),degree(0)
 }
 
 CBesselKernel::CBesselKernel(int32_t size, float64_t v, float64_t w,
-		int32_t n, CDistance* dist) :
+		int32_t n, std::shared_ptr<CDistance> dist) :
 	CDistanceKernel(size,w,dist), order(v), degree(n)
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init();
 }
 
-CBesselKernel::CBesselKernel(CFeatures* l, CFeatures* r, float64_t v,
-		float64_t w, int32_t n, CDistance* dist, int32_t size) :
+CBesselKernel::CBesselKernel(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r, float64_t v,
+		float64_t w, int32_t n, std::shared_ptr<CDistance> dist, int32_t size) :
 	CDistanceKernel(size,w,dist), order(v), degree(n)
 {
 	init();
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	init(l,r);
 }
 
 CBesselKernel::~CBesselKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
 void CBesselKernel::cleanup()
 {
 }
 
-bool CBesselKernel::init(CFeatures* l, CFeatures* r)
+bool CBesselKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(distance)
 	CDistanceKernel::init(l,r);

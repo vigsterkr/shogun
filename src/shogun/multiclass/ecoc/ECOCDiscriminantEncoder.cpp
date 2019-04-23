@@ -8,7 +8,6 @@
 
 #include <shogun/mathematics/Math.h>
 #include <shogun/labels/BinaryLabels.h>
-#include <shogun/labels/MulticlassLabels.h>
 #include <shogun/multiclass/ecoc/ECOCDiscriminantEncoder.h>
 
 using namespace std;
@@ -21,8 +20,8 @@ CECOCDiscriminantEncoder::CECOCDiscriminantEncoder()
 
 CECOCDiscriminantEncoder::~CECOCDiscriminantEncoder()
 {
-    SG_UNREF(m_features);
-    SG_UNREF(m_labels);
+
+
 }
 
 void CECOCDiscriminantEncoder::init()
@@ -40,18 +39,16 @@ void CECOCDiscriminantEncoder::init()
     SG_ADD(&m_iterations, "iterations", "number of iterations in SFFS");
 }
 
-void CECOCDiscriminantEncoder::set_features(CFeatures *features)
+void CECOCDiscriminantEncoder::set_features(std::shared_ptr<CFeatures >features)
 {
-    SG_REF(features);
-    SG_UNREF(m_features);
+
+
     m_features = features->as<CDenseFeatures<float64_t>>();
 }
 
-void CECOCDiscriminantEncoder::set_labels(CLabels *labels)
+void CECOCDiscriminantEncoder::set_labels(std::shared_ptr<CLabels >labels)
 {
-    SG_REF(labels);
-    SG_UNREF(m_labels);
-    m_labels = labels;
+    m_labels = labels->as<CMulticlassLabels>();
 }
 
 SGMatrix<int32_t> CECOCDiscriminantEncoder::create_codebook(int32_t num_classes)
@@ -111,9 +108,9 @@ void CECOCDiscriminantEncoder::run_sffs(vector<int32_t>& part1, vector<int32_t>&
 
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
-        if (find(part1.begin(), part1.end(), ((CMulticlassLabels*) m_labels)->get_int_label(i)) != part1.end())
+        if (find(part1.begin(), part1.end(), (m_labels)->get_int_label(i)) != part1.end())
             idata1.insert(i);
-        else if (find(part2.begin(), part2.end(), ((CMulticlassLabels*) m_labels)->get_int_label(i)) != part2.end())
+        else if (find(part2.begin(), part2.end(), (m_labels)->get_int_label(i)) != part2.end())
             idata2.insert(i);
     }
 
@@ -139,7 +136,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
     // move clas from part1 to part2
     for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
     {
-        if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
+        if ((m_labels)->get_int_label(i) == clas)
         {
             idata1.erase(i);
             idata2.insert(i);
@@ -158,7 +155,7 @@ float64_t CECOCDiscriminantEncoder::sffs_iteration(float64_t MI, vector<int32_t>
         // revert changes
         for (int32_t i=0; i < m_labels->get_num_labels(); ++i)
         {
-            if (((CMulticlassLabels*) m_labels)->get_int_label(i) == clas)
+            if ((m_labels)->get_int_label(i) == clas)
             {
                 idata2.erase(i);
                 idata1.insert(i);

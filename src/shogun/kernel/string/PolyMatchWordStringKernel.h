@@ -54,7 +54,7 @@ class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param degree degree
 		 * @param inhomogene is inhomogeneous
 		 */
-		CPolyMatchWordStringKernel(CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r, int32_t degree, bool inhomogene);
+		CPolyMatchWordStringKernel(std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, int32_t degree, bool inhomogene);
 
 		virtual ~CPolyMatchWordStringKernel();
 
@@ -64,7 +64,7 @@ class CPolyMatchWordStringKernel: public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

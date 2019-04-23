@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn,
  *          Viktor Gal
  */
 
@@ -39,7 +39,7 @@ class CChiSquareDistance: public CDenseDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CChiSquareDistance(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r);
+		CChiSquareDistance(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r);
 		virtual ~CChiSquareDistance();
 
 		/** init distance
@@ -48,7 +48,7 @@ class CChiSquareDistance: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

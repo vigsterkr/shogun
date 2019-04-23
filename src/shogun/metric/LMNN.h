@@ -41,7 +41,7 @@ class CLMNN : public CSGObject
 		 * @param labels labels of the features
 		 * @param k number of target neighbours per example
 		 */
-		CLMNN(CFeatures* features, CMulticlassLabels* labels, int32_t k);
+		CLMNN(std::shared_ptr<CFeatures> features, std::shared_ptr<CMulticlassLabels> labels, int32_t k);
 
 		/** destructor */
 		virtual ~CLMNN();
@@ -70,7 +70,7 @@ class CLMNN : public CSGObject
 		 *
 		 * @return the distance M
 		 */
-		CDistance* get_distance() const;
+		std::shared_ptr<CDistance> get_distance() const;
 
 		/** get the number of target neighbours per example
 		 *
@@ -172,7 +172,7 @@ class CLMNN : public CSGObject
 		 *
 		 * @return LMNN training statistics
 		 */
-		CLMNNStatistics* get_statistics() const;
+		std::shared_ptr<CLMNNStatistics> get_statistics() const;
 
 	private:
 		/** register parameters */
@@ -183,10 +183,10 @@ class CLMNN : public CSGObject
 		SGMatrix<float64_t> m_linear_transform;
 
 		/** training features */
-		CFeatures* m_features;
+		std::shared_ptr<CFeatures> m_features;
 
 		/** training labels */
-		CLabels* m_labels;
+		std::shared_ptr<CLabels> m_labels;
 
 		/**
 		 * trade-off between pull and push forces in the objective.
@@ -234,7 +234,7 @@ class CLMNN : public CSGObject
 		bool m_diagonal;
 
 		/** training statistics, @see CLMNNStatistics */
-		CLMNNStatistics* m_statistics;
+		std::shared_ptr<CLMNNStatistics> m_statistics;
 
 }; /* class CLMNN */
 

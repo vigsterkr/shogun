@@ -80,7 +80,7 @@ public:
 	{
 	}
 
-	virtual CFeatures* transform(CFeatures* features, bool inplace) = 0;
+	virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace) = 0;
 
 	/** clean-up. should be called (if necessary) after processing */
 	virtual void cleanup()=0;

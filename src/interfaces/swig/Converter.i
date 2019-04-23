@@ -6,8 +6,5 @@
 
 %rename(EmbeddingConverter) CEmbeddingConverter;
 
-%newobject shogun::*::embed_kernel;
-%newobject shogun::*::embed_distance;
-
 %include <shogun/converter/Converter.h>
 %include <shogun/converter/EmbeddingConverter.h>

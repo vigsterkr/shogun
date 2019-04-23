@@ -61,7 +61,7 @@ CGaussian::~CGaussian()
 {
 }
 
-bool CGaussian::train(CFeatures* data)
+bool CGaussian::train(std::shared_ptr<CFeatures> data)
 {
 	// init features with data if necessary and assure type is correct
 	if (data)
@@ -71,7 +71,7 @@ bool CGaussian::train(CFeatures* data)
 		set_features(data);
 	}
 
-	CDotFeatures* dotdata=(CDotFeatures *) data;
+	auto dotdata=data->as<CDotFeatures>();
 	m_mean=dotdata->get_mean();
 	SGMatrix<float64_t> cov=dotdata->get_cov();
 	decompose_cov(cov);
@@ -108,14 +108,14 @@ float64_t CGaussian::get_log_derivative(int32_t num_param, int32_t num_example)
 float64_t CGaussian::get_log_likelihood_example(int32_t num_example)
 {
 	ASSERT(features->has_property(FP_DOT))
-	SGVector<float64_t> v=((CDotFeatures *)features)->get_computed_dot_feature_vector(num_example);
+	SGVector<float64_t> v=features->as<CDotFeatures>()->get_computed_dot_feature_vector(num_example);
 	float64_t answer=compute_log_PDF(v);
 	return answer;
 }
 
 float64_t CGaussian::update_params_em(const SGVector<float64_t> alpha_k)
 {
-	CDotFeatures* dotdata=features->as<CDotFeatures>();
+	auto dotdata=features->as<CDotFeatures>();
 	int32_t num_dim=dotdata->get_dim_feature_space();
 
 	// compute mean
@@ -440,16 +440,16 @@ SGVector<float64_t> CGaussian::sample()
 	return samp;
 }
 
-CGaussian* CGaussian::obtain_from_generic(CDistribution* distribution)
+std::shared_ptr<CGaussian> CGaussian::obtain_from_generic(std::shared_ptr<CDistribution> distribution)
 {
 	if (!distribution)
 		return NULL;
 
-	CGaussian* casted=dynamic_cast<CGaussian*>(distribution);
+	auto casted=std::dynamic_pointer_cast<CGaussian>(distribution);
 	if (!casted)
 		return NULL;
 
 	/* since an additional reference is returned */
-	SG_REF(casted);
+
 	return casted;
 }

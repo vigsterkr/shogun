@@ -18,8 +18,8 @@ CFWSOSVM::CFWSOSVM()
 }
 
 CFWSOSVM::CFWSOSVM(
-		CStructuredModel*  model,
-		CStructuredLabels* labs,
+		std::shared_ptr<CStructuredModel>  model,
+		std::shared_ptr<CStructuredLabels> labs,
 		bool do_line_search,
 		bool verbose)
 : CLinearStructuredOutputMachine(model, labs)
@@ -60,7 +60,7 @@ EMachineType CFWSOSVM::get_classifier_type()
 	return CT_FWSOSVM;
 }
 
-bool CFWSOSVM::train_machine(CFeatures* data)
+bool CFWSOSVM::train_machine(std::shared_ptr<CFeatures> data)
 {
 	SG_DEBUG("Entering CFWSOSVM::train_machine.\n");
 	if (data)
@@ -90,10 +90,10 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 	if (m_verbose)
 	{
 		if (m_helper != NULL)
-			SG_UNREF(m_helper);
 
-		m_helper = new CSOSVMHelper();
-		SG_REF(m_helper);
+
+		m_helper = std::shared_ptr<CSOSVMHelper>();
+
 	}
 
 	// Main loop
@@ -110,7 +110,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 		for (int32_t si = 0; si < N; ++si)
 		{
 			// 1) solve the loss-augmented inference for point si
-			CResultSet* result = m_model->argmax(m_w, si);
+			auto result = m_model->argmax(m_w, si);
 
 			// 2) get the subgradient
 			// psi_i(y) := phi(x_i,y_i) - phi(x_i, y_pred)
@@ -141,7 +141,7 @@ bool CFWSOSVM::train_machine(CFeatures* data)
 			w_s.add(psi_i);
 			ell_s += loss_i;
 
-			SG_UNREF(result);
+
 
 		} // end si
 

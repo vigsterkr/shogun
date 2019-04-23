@@ -14,7 +14,7 @@
 
 #include <shogun/multiclass/ecoc/ECOCEncoder.h>
 #include <shogun/features/DenseFeatures.h>
-#include <shogun/labels/Labels.h>
+#include <shogun/labels/MulticlassLabels.h>
 
 namespace shogun
 {
@@ -38,10 +38,10 @@ public:
     virtual ~CECOCDiscriminantEncoder();
 
     /** set features */
-    void set_features(CFeatures *features);
+    void set_features(std::shared_ptr<CFeatures >features);
 
     /** set labels */
-    void set_labels(CLabels *labels);
+    void set_labels(std::shared_ptr<CLabels >labels);
 
     /** set sffs iterations
      * @param iterations number of sffs iterations
@@ -78,8 +78,8 @@ protected:
 
     SGMatrix<int32_t> m_codebook;
     int32_t m_code_idx;
-    CLabels *m_labels;
-    CDenseFeatures<float64_t> *m_features;
+    std::shared_ptr<CMulticlassLabels> m_labels;
+    std::shared_ptr<CDenseFeatures<float64_t>> m_features;
     SGMatrix<float64_t> m_feats;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 };

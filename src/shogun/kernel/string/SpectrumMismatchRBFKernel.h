@@ -66,8 +66,8 @@ public:
 	 * @param max_mismatch
 	 * @param width
 	 */
-	CSpectrumMismatchRBFKernel(CStringFeatures<char>* l,
-			CStringFeatures<char>* r, int32_t size, float64_t* AA_matrix_,
+	CSpectrumMismatchRBFKernel(std::shared_ptr<CStringFeatures<char>> l,
+			std::shared_ptr<CStringFeatures<char>> r, int32_t size, float64_t* AA_matrix_,
 			int32_t nr_, int32_t nc_, int32_t degree, int32_t max_mismatch,
 			float64_t width);
 
@@ -80,7 +80,7 @@ public:
 	 * @param r features of right-hand side
 	 * @return if initializing was successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/** clean up kernel */
 	virtual void cleanup();
@@ -206,7 +206,7 @@ protected:
 
 protected:
 	/** alphabet of features */
-	CAlphabet* alphabet;
+	std::shared_ptr<CAlphabet> alphabet;
 	/** degree */
 	int32_t degree;
 	/** maximum mismatch */
@@ -220,7 +220,7 @@ protected:
 	bool initialized;
 
 	/** kernel matrix */
-	CDynamicArray<float64_t>* kernel_matrix; // 2d
+	std::shared_ptr<CDynamicArray<float64_t>> kernel_matrix; // 2d
 	/** kernel matrix length */
 	int32_t kernel_matrix_length;
 	/** target letter 0 */

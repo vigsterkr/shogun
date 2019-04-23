@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Thoralf Klein, Soeren Sonnenburg, Saloni Nigam, Sergey Lisitsyn, 
+ * Authors: Thoralf Klein, Soeren Sonnenburg, Saloni Nigam, Sergey Lisitsyn,
  *          Viktor Gal
  */
 
@@ -178,7 +178,7 @@ GET_SPARSE_VECTOR_AND_LABEL(get_long_sparse_vector_and_label, atoi, int64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_ulong_sparse_vector_and_label, atoi, uint64_t)
 GET_SPARSE_VECTOR_AND_LABEL(get_longreal_sparse_vector_and_label, atoi, floatmax_t)
 #undef GET_SPARSE_VECTOR_AND_LABEL
-	
+
 }
 
 using namespace shogun;
@@ -213,8 +213,7 @@ CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
 		if (file < 0)
 			SG_ERROR("Error opening file '%s'\n", filename)
 
-		buf = new CIOBuffer(file);
-		SG_REF(buf);
+		buf = std::make_shared<CIOBuffer>(file);
 	}
 	else
 		SG_ERROR("Error getting the file name!\n")
@@ -223,5 +222,4 @@ CStreamingFile::CStreamingFile(const char* fname, char rw) : CSGObject()
 CStreamingFile::~CStreamingFile()
 {
 	SG_FREE(filename);
-	SG_UNREF(buf);
 }

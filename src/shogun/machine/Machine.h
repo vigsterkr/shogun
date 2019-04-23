@@ -159,7 +159,7 @@ class CMachine : public CStoppableSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 #ifndef SWIG // SWIG should skip this part
 		/** Trains a locked machine on a set of indices. Error if machine is
@@ -175,30 +175,30 @@ class CMachine : public CStoppableSGObject
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL);
+		virtual std::shared_ptr<CLabels> apply(std::shared_ptr<CFeatures> data=NULL);
 
 		/** apply machine to data in means of binary classification problem */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
 		/** apply machine to data in means of regression problem */
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
 		/** apply machine to data in means of multiclass classification problem */
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
 		/** apply machine to data in means of SO classification problem */
-		virtual CStructuredLabels* apply_structured(CFeatures* data=NULL);
+		virtual std::shared_ptr<CStructuredLabels> apply_structured(std::shared_ptr<CFeatures> data=NULL);
 		/** apply machine to data in means of latent problem */
-		virtual CLatentLabels* apply_latent(CFeatures* data=NULL);
+		virtual std::shared_ptr<CLatentLabels> apply_latent(std::shared_ptr<CFeatures> data=NULL);
 
 		/** set labels
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(CLabels* lab);
+		virtual void set_labels(std::shared_ptr<CLabels> lab);
 
 		/** get labels
 		 *
 		 * @return labels
 		 */
-		virtual CLabels* get_labels();
+		virtual std::shared_ptr<CLabels> get_labels();
 
 		/** set maximum training time
 		 *
@@ -267,22 +267,22 @@ class CMachine : public CStoppableSGObject
 		 *
 		 * @param indices index vector (of locked features) that is predicted
 		 */
-		virtual CLabels* apply_locked(SGVector<index_t> indices);
+		virtual std::shared_ptr<CLabels> apply_locked(SGVector<index_t> indices);
 
 		/** applies a locked machine on a set of indices for binary problems */
-		virtual CBinaryLabels* apply_locked_binary(
+		virtual std::shared_ptr<CBinaryLabels> apply_locked_binary(
 				SGVector<index_t> indices);
 		/** applies a locked machine on a set of indices for regression problems */
-		virtual CRegressionLabels* apply_locked_regression(
+		virtual std::shared_ptr<CRegressionLabels> apply_locked_regression(
 				SGVector<index_t> indices);
 		/** applies a locked machine on a set of indices for multiclass problems */
-		virtual CMulticlassLabels* apply_locked_multiclass(
+		virtual std::shared_ptr<CMulticlassLabels> apply_locked_multiclass(
 				SGVector<index_t> indices);
 		/** applies a locked machine on a set of indices for structured problems */
-		virtual CStructuredLabels* apply_locked_structured(
+		virtual std::shared_ptr<CStructuredLabels> apply_locked_structured(
 				SGVector<index_t> indices);
 		/** applies a locked machine on a set of indices for latent problems */
-		virtual CLatentLabels* apply_locked_latent(
+		virtual std::shared_ptr<CLatentLabels> apply_locked_latent(
 				SGVector<index_t> indices);
 #endif // SWIG // SWIG should skip this part
 
@@ -294,10 +294,10 @@ class CMachine : public CStoppableSGObject
 		 * @param labs labels used for locking
 		 * @param features features used for locking
 		 */
-		virtual void data_lock(CLabels* labs, CFeatures* features);
+		virtual void data_lock(std::shared_ptr<CLabels> labs, std::shared_ptr<CFeatures> features);
 
 		/** post lock */
-		virtual void post_lock(CLabels* labs, CFeatures* features) { };
+		virtual void post_lock(std::shared_ptr<CLabels> labs, std::shared_ptr<CFeatures> features) { };
 
 		/** Unlocks a locked machine and restores previous state */
 		virtual void data_unlock();
@@ -334,20 +334,20 @@ class CMachine : public CStoppableSGObject
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL)
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL)
 		{
 			SG_ERROR(
 			    "train_machine is not yet implemented for %s!\n", get_name());
 			return false;
 		}
 
-		virtual bool train_dense(CFeatures* data)
+		virtual bool train_dense(std::shared_ptr<CFeatures> data)
 		{
 			SG_NOTIMPLEMENTED
 			return false;
 		}
 
-		virtual bool train_string(CFeatures* data)
+		virtual bool train_string(std::shared_ptr<CFeatures> data)
 		{
 			SG_NOTIMPLEMENTED
 			return false;
@@ -406,7 +406,7 @@ class CMachine : public CStoppableSGObject
 		 *
 		 * @param lab the labels being checked, guaranteed to be non-NULL
 		 */
-		virtual bool is_label_valid(CLabels *lab) const
+		virtual bool is_label_valid(std::shared_ptr<CLabels >lab) const
 		{
 			return true;
 		}
@@ -416,7 +416,7 @@ class CMachine : public CStoppableSGObject
 		float64_t m_max_train_time;
 
 		/** labels */
-		CLabels* m_labels;
+		std::shared_ptr<CLabels> m_labels;
 
 		/** solver type */
 		ESolverType m_solver_type;

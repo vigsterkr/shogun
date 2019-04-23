@@ -22,7 +22,7 @@ CLibSVR::CLibSVR()
 	solver_type=LIBSVR_EPSILON_SVR;
 }
 
-CLibSVR::CLibSVR(float64_t C, float64_t svr_param, CKernel* k, CLabels* lab,
+CLibSVR::CLibSVR(float64_t C, float64_t svr_param, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab,
 		LIBSVR_SOLVER_TYPE st)
 : CSVM()
 {
@@ -64,7 +64,7 @@ EMachineType CLibSVR::get_classifier_type()
 	return CT_LIBSVR;
 }
 
-bool CLibSVR::train_machine(CFeatures* data)
+bool CLibSVR::train_machine(std::shared_ptr<CFeatures> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -121,7 +121,7 @@ bool CLibSVR::train_machine(CFeatures* data)
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = nu;
-	param.kernel=kernel;
+	param.kernel=kernel.get();
 	param.cache_size = kernel->get_cache_size();
 	param.max_train_time = m_max_train_time;
 	param.C = get_C1();

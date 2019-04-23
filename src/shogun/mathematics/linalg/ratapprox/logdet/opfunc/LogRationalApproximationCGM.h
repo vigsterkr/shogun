@@ -42,9 +42,9 @@ public:
 	 * the number of shifts automatically
 	 */
 	CLogRationalApproximationCGM(
-		CLinearOperator<float64_t>* linear_operator,
-		CEigenSolver* eigen_solver,
-		CCGMShiftedFamilySolver* linear_solver,
+		std::shared_ptr<CLinearOperator<float64_t>> linear_operator,
+		std::shared_ptr<CEigenSolver> eigen_solver,
+		std::shared_ptr<CCGMShiftedFamilySolver> linear_solver,
 		float64_t desired_accuracy);
 
 	/** destructor */
@@ -63,7 +63,7 @@ public:
 
 private:
 	/** the linear solver for solving complex systems */
-	CCGMShiftedFamilySolver* m_linear_solver;
+	std::shared_ptr<CCGMShiftedFamilySolver> m_linear_solver;
 
 	/** initialize with default values and register params */
 	void init();

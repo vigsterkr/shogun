@@ -64,7 +64,7 @@ public:
 	 * @param ordering the ordering variant
 	 * @param coloring the coloring variant
 	 */
-	CProbingSampler(CSparseMatrixOperator<float64_t>* matrix_operator,
+	CProbingSampler(std::shared_ptr<CSparseMatrixOperator<float64_t>> matrix_operator,
 		int64_t power=1, EOrderingVariant ordering=NATURAL,
 		EColoringVariant coloring=DISTANCE_TWO);
 
@@ -99,7 +99,7 @@ public:
 
 private:
 	/** the matrix operator */
-	CSparseMatrixOperator<float64_t>* m_matrix_operator;
+	std::shared_ptr<CSparseMatrixOperator<float64_t>> m_matrix_operator;
 
 	/** power of the matrix */
 	int64_t m_power;

@@ -40,10 +40,10 @@ public:
 	 *
 	 * @param base_data its dynamic type must be CSequence
 	 */
-	static CSequence* obtain_from_generic(CStructuredData* base_data)
+	static std::shared_ptr<CSequence> obtain_from_generic(std::shared_ptr<CStructuredData> base_data)
 	{
 		if ( base_data->get_structured_data_type() == SDT_SEQUENCE )
-			return (CSequence*) base_data;
+			return std::static_pointer_cast<CSequence>(base_data);
 		else
 			SG_SERROR("base_data must be of dynamic type CSequence\n")
 

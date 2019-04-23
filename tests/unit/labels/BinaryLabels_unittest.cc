@@ -43,7 +43,7 @@ public:
 
 TEST_F(BinaryLabels, serialization)
 {
-	auto labels = some<CBinaryLabels>(10);
+	auto labels = std::make_shared<CBinaryLabels>(10);
 	SGVector<float64_t> lab = SGVector<float64_t>(labels->get_num_labels());
 	lab.random(1, 10);
 	labels->set_values(lab);
@@ -57,20 +57,20 @@ TEST_F(BinaryLabels, serialization)
 	ASSERT_TRUE(!fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_TRUE(!fs->new_writable_file(filename, &file));
-	auto fos = some<io::CFileOutputStream>(file.get());
-	auto serializer = some<io::CJsonSerializer>();
+	auto fos = std::make_shared<io::CFileOutputStream>(file.get());
+	auto serializer = std::make_unique<io::CJsonSerializer>();
 	serializer->attach(fos);
 	serializer->write(labels);
 
 	std::unique_ptr<io::RandomAccessFile> raf;
 	ASSERT_TRUE(!fs->new_random_access_file(filename, &raf));
-	auto fis = some<io::CFileInputStream>(raf.get());
-	auto deserializer = some<io::CJsonDeserializer>();
+	auto fis = std::make_shared<io::CFileInputStream>(raf.get());
+	auto deserializer = std::make_unique<io::CJsonDeserializer>();
 	deserializer->attach(fis);
 	auto deser_obj = deserializer->read_object();
 	ASSERT_TRUE(!fs->delete_file(filename));
 
-	auto new_labels = static_cast<CBinaryLabels*>(deser_obj.get());
+	auto new_labels = deser_obj->as<CBinaryLabels>();
 	ASSERT_TRUE(new_labels->get_num_labels() == 10);
 
 	float64_t eps = 1E-14;
@@ -83,7 +83,7 @@ TEST_F(BinaryLabels, serialization)
 
 TEST_F(BinaryLabels, set_values_labels_from_constructor)
 {
-	CBinaryLabels* labels = new CBinaryLabels(probabilities, threshold);
+	auto labels = std::make_shared<CBinaryLabels>(probabilities, threshold);
 
 	SGVector<float64_t> labels_vector = labels->get_labels();
 	SGVector<float64_t> values_vector = labels->get_values();
@@ -104,12 +104,12 @@ TEST_F(BinaryLabels, set_values_labels_from_constructor)
 		EXPECT_FLOAT_EQ(probabilities[i], values_vector[i]);
 	}
 
-	SG_UNREF(labels);
+
 }
 
 TEST_F(BinaryLabels, binary_labels_from_binary)
 {
-	auto labels = some<CBinaryLabels>(probabilities, 0.5);
+	auto labels = std::make_shared<CBinaryLabels>(probabilities, 0.5);
 	auto labels2 = binary_labels(labels);
 	EXPECT_EQ(labels, labels2);
 }

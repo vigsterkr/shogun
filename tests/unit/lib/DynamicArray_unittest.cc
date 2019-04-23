@@ -1,5 +1,7 @@
 #include "sg_gtest_utilities.h"
 
+#include <shogun/io/serilzation/Serializer.h>
+#include <shogun/io/serilzation/Deserializer.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/Math.h>
 
@@ -21,18 +23,17 @@ protected:
 		{
 			m_array[i] = (T)i;
 		}
-		wrapper_array = new CDynamicArray<T>(m_array, 5);
-		SG_FREE(m_array);
+		wrapper_array = std::make_shared<CDynamicArray<T>>(m_array, 5);
 	}
 	virtual void TearDown()
 	{
-		SG_UNREF(wrapper_array);
+
 	}
 	virtual ~CDynamicArrayFixture()
 	{
 	}
 
-	CDynamicArray<T>* wrapper_array;
+	std::shared_ptr<CDynamicArray<T>> wrapper_array;
 	T* m_array;
 };
 
@@ -166,4 +167,27 @@ TYPED_TEST(CDynamicArrayFixture, append_array_bool)
 	EXPECT_EQ(this->wrapper_array->get_element(0), (TypeParam)1);
 	EXPECT_EQ(this->wrapper_array->get_element(1), (TypeParam)0);
 	EXPECT_EQ(this->wrapper_array->get_element(2), (TypeParam)1);
+}
+
+TYPED_TEST(CDynamicArrayFixture, save_serializable)
+{
+	/* generate file name */
+	char filename[] = "serialization-asciiCDynamicArray.XXXXXX";
+	generate_temp_filename(filename);
+
+	io::serialize(filename, this->wrapper_array, std::make_shared<CJsonSerializer>());
+
+	auto new_array = std::make_shared<CDynamicArray<TypeParam>>();
+	io::deserialize(filename, new_array, std::make_shared<JsonDeserializer>());
+
+	ASSERT(this->wrapper_array->get_num_elements() == 5)
+	for (int32_t i = 0; i < this->wrapper_array->get_num_elements(); i++)
+	{
+		EXPECT_EQ(
+		    this->wrapper_array->get_element(i), new_array->get_element(i));
+	}
+
+
+	// FIXME: use fs
+	unlink(filename);
 }

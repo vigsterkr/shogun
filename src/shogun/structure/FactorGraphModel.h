@@ -39,7 +39,7 @@ public:
 	 * @param verbose whether output verbose information, such as energy table, slack variables etc.
 	 * NOTE: do NOT set this up when training with large data, massive printing will crash the program
 	 */
-	CFactorGraphModel(CFeatures* features, CStructuredLabels* labels,
+	CFactorGraphModel(std::shared_ptr<CFeatures> features, std::shared_ptr<CStructuredLabels> labels,
 		EMAPInferType inf_type = TREE_MAX_PROD, bool verbose = false);
 
 	/** destructor */
@@ -54,7 +54,7 @@ public:
 	 *
 	 * @param ftype pointer to new factor type
 	 */
-	void add_factor_type(CFactorType* ftype);
+	void add_factor_type(std::shared_ptr<CFactorType> ftype);
 
 	/** delete a factor type
 	 *
@@ -63,13 +63,13 @@ public:
 	void del_factor_type(const int32_t ftype_id);
 
 	/** @return pointer to the array of factor types */
-	CDynamicObjectArray* get_factor_types() const;
+	std::shared_ptr<CDynamicObjectArray> get_factor_types() const;
 
 	/** get a factor type specified by its id
 	 *
 	 * @param ftype_id factor type id
 	 */
-	CFactorType* get_factor_type(const int32_t ftype_id) const;
+	std::shared_ptr<CFactorType> get_factor_type(const int32_t ftype_id) const;
 
 	/** @return parameter mapping for all factor types */
 	SGVector<int32_t> get_global_params_mapping() const;
@@ -101,7 +101,7 @@ public:
 	 *
 	 * @return the joint feature vector
 	 */
-	virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, CStructuredData* y);
+	virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<CStructuredData> y);
 
 	/**
 	 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -116,7 +116,7 @@ public:
 	 *
 	 * @return structure with the predicted output
 	 */
-	virtual CResultSet* argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+	virtual std::shared_ptr<CResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
 
 	/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 	 *
@@ -125,7 +125,7 @@ public:
 	 *
 	 * @return loss value
 	 */
-	virtual float64_t delta_loss(CStructuredData* y1, CStructuredData* y2);
+	virtual float64_t delta_loss(std::shared_ptr<CStructuredData> y1, std::shared_ptr<CStructuredData> y2);
 
 	/** initializes the part of the model that needs to be used during training.
 	 * In this class this method is empty and it can be re-implemented for any
@@ -163,7 +163,7 @@ private:
 
 protected:
 	/** array of factor types */
-	CDynamicObjectArray* m_factor_types;
+	std::shared_ptr<CDynamicObjectArray> m_factor_types;
 
 	/** index of factor type */
 	SGVector<int32_t> m_w_map;

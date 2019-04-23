@@ -19,13 +19,13 @@
 using namespace shogun;
 
 CGMNPSVM::CGMNPSVM()
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy())
+: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>())
 {
 	init();
 }
 
-CGMNPSVM::CGMNPSVM(float64_t C, CKernel* k, CLabels* lab)
-: CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab)
+CGMNPSVM::CGMNPSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
+: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>(), C, k, lab)
 {
 	init();
 }
@@ -38,17 +38,17 @@ CGMNPSVM::~CGMNPSVM()
 void
 CGMNPSVM::init()
 {
-	m_parameters->add_matrix(&m_basealphas,
+	/*m_parameters->add_matrix(&m_basealphas,
 							 &m_basealphas_y, &m_basealphas_x,
 							 "m_basealphas",
-							 "Is the basic untransformed alpha.");
+							 "Is the basic untransformed alpha.");*/
 	watch_param(
 	    "m_basealphas", &m_basealphas, &m_basealphas_y, &m_basealphas_x);
 
 	m_basealphas = NULL, m_basealphas_y = 0, m_basealphas_x = 0;
 }
 
-bool CGMNPSVM::train_machine(CFeatures* data)
+bool CGMNPSVM::train_machine(std::shared_ptr<CFeatures> data)
 {
 	ASSERT(m_kernel)
 	ASSERT(m_labels && m_labels->get_num_labels())
@@ -73,9 +73,10 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 	SG_INFO("%d trainlabels, %d classes\n", num_data, num_classes)
 
 	float64_t* vector_y = SG_MALLOC(float64_t, num_data);
+	auto mc = multiclass_labels(m_labels);
 	for (int32_t i=0; i<num_data; i++)
 	{
-		vector_y[i] = ((CMulticlassLabels*) m_labels)->get_label(i)+1;
+		vector_y[i] = mc->get_label(i)+1;
 
 	}
 
@@ -140,7 +141,7 @@ bool CGMNPSVM::train_machine(CFeatures* data)
 		ASSERT(num_sv>0)
 		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, num_sv, all_bs[i])
 
-		CSVM* svm=new CSVM(num_sv);
+		auto svm=std::make_shared<CSVM>(num_sv);
 
 		int32_t k=0;
 		for (int32_t j=0; j<num_data; j++)

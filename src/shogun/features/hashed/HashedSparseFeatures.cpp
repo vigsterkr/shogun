@@ -25,7 +25,7 @@ CHashedSparseFeatures<ST>::CHashedSparseFeatures(int32_t size, bool use_quadr,
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(CSparseFeatures<ST>* feats, int32_t d,
+CHashedSparseFeatures<ST>::CHashedSparseFeatures(std::shared_ptr<CSparseFeatures<ST>> feats, int32_t d,
 	bool use_quadr, bool keep_lin_terms) : CDotFeatures()
 {
 	init(feats, d, use_quadr, keep_lin_terms);
@@ -35,33 +35,33 @@ template <class ST>
 CHashedSparseFeatures<ST>::CHashedSparseFeatures(SGSparseMatrix<ST> matrix, int32_t d,
 	bool use_quadr, bool keep_lin_terms) : CDotFeatures()
 {
-	CSparseFeatures<ST>* feats = new CSparseFeatures<ST>(matrix);
+	auto feats = std::make_shared<CSparseFeatures<ST>>(matrix);
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedSparseFeatures<ST>::CHashedSparseFeatures(CFile* loader, int32_t d, bool use_quadr,
+CHashedSparseFeatures<ST>::CHashedSparseFeatures(std::shared_ptr<CFile> loader, int32_t d, bool use_quadr,
 	bool keep_lin_terms) : CDotFeatures(loader)
 {
-	CSparseFeatures<ST>* feats = new CSparseFeatures<ST>();
+	auto feats = std::make_shared<CSparseFeatures<ST>>();
 	feats->load(loader);
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-void CHashedSparseFeatures<ST>::init(CSparseFeatures<ST>* feats, int32_t d, bool use_quadr,
+void CHashedSparseFeatures<ST>::init(std::shared_ptr<CSparseFeatures<ST>> feats, int32_t d, bool use_quadr,
 	bool keep_lin_terms)
 {
 	dim = d;
 	use_quadratic = use_quadr;
 	keep_linear_terms = keep_lin_terms;
 	sparse_feats = feats;
-	SG_REF(sparse_feats);
+
 
 	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features");
 	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not");
 	SG_ADD(&dim, "dim", "Dimension of new feature space");
-	SG_ADD((CSGObject** ) &sparse_feats, "sparse_feats", "Sparse features to work on");
+	SG_ADD((std::shared_ptr<CSGObject>* ) &sparse_feats, "sparse_feats", "Sparse features to work on");
 
 	set_generic<ST>();
 }
@@ -76,13 +76,13 @@ CHashedSparseFeatures<ST>::CHashedSparseFeatures(const CHashedSparseFeatures& or
 template <class ST>
 CHashedSparseFeatures<ST>::~CHashedSparseFeatures()
 {
-	SG_UNREF(sparse_feats);
+
 }
 
 template <class ST>
-CFeatures* CHashedSparseFeatures<ST>::duplicate() const
+std::shared_ptr<CFeatures> CHashedSparseFeatures<ST>::duplicate() const
 {
-	return new CHashedSparseFeatures<ST>(*this);
+	return std::make_shared<CHashedSparseFeatures>(*this);
 }
 
 template <class ST>
@@ -169,7 +169,7 @@ SGSparseVector<ST> CHashedSparseFeatures<ST>::hash_vector(SGSparseVector<ST> vec
 }
 
 template <class ST>
-float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
+float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df,
 	int32_t vec_idx2) const
 {
 	ASSERT(df)
@@ -177,7 +177,7 @@ float64_t CHashedSparseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 	ASSERT(df->get_feature_class() == get_feature_class())
 	ASSERT(strcmp(df->get_name(), get_name())==0)
 
-	CHashedSparseFeatures<ST>* feats = (CHashedSparseFeatures<ST>* ) df;
+	auto feats = std::dynamic_pointer_cast<CHashedSparseFeatures<ST>>(df);
 	SGSparseVector<ST> vec_1 = get_hashed_feature_vector(vec_idx1);
 	SGSparseVector<ST> vec_2 = feats->get_hashed_feature_vector(vec_idx2);
 

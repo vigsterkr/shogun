@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Chiyuan Zhang, Heiko Strathmann, Evgeniy Andreev,
  *          Weijie Lin, Fernando Iglesias, Bjoern Esser, Sergey Lisitsyn
  */
 
@@ -62,7 +62,7 @@ class CSVM : public CKernelMachine
 		 * @param k the Kernel object
 		 * @param lab the Label object
 		 */
-		CSVM(float64_t C, CKernel* k, CLabels* lab);
+		CSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
 		virtual ~CSVM();
 
@@ -230,7 +230,7 @@ class CSVM : public CKernelMachine
 		inline void set_loaded_status(bool loaded)
 		{
 			svm_loaded = loaded;
-		}; 
+		};
 
 		/** set callback function svm optimizers may call when they have a new
 		 * (small) set of alphas
@@ -239,8 +239,8 @@ class CSVM : public CKernelMachine
 		 * @param cb callback function
 		 *
 		 * */
-		void set_callback_function(CMKL* m, bool (*cb)
-				(CMKL* mkl, const float64_t* sumw, const float64_t suma));
+		void set_callback_function(std::shared_ptr<CMKL> m, bool (*cb)
+				(std::shared_ptr<CMKL> mkl, const float64_t* sumw, const float64_t suma));
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SVM"; }
@@ -278,10 +278,10 @@ class CSVM : public CKernelMachine
 
 		/** callback function svm optimizers may call when they have a new
 		 * (small) set of alphas */
-		bool (*callback) (CMKL* mkl, const float64_t* sumw, const float64_t suma);
+		bool (*callback) (std::shared_ptr<CMKL> mkl, const float64_t* sumw, const float64_t suma);
 		/** mkl object that svm optimizers need to pass when calling the callback
 		 * function */
-		CMKL* mkl;
+		std::shared_ptr<CMKL> mkl;
 
 	friend class CMulticlassSVM;
 };

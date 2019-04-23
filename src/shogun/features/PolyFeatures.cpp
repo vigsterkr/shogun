@@ -16,14 +16,14 @@ CPolyFeatures::CPolyFeatures() :CDotFeatures()
 	register_parameters();
 }
 
-CPolyFeatures::CPolyFeatures(CDenseFeatures<float64_t>* feat, int32_t degree, bool normalize)
+CPolyFeatures::CPolyFeatures(std::shared_ptr<CDenseFeatures<float64_t>> feat, int32_t degree, bool normalize)
 	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL),
 		m_normalization_values(NULL)
 {
 	ASSERT(feat)
 
 	m_feat = feat;
-	SG_REF(m_feat);
+
 	m_degree=degree;
 	m_normalize=normalize;
 	m_input_dimensions=feat->get_num_features();
@@ -43,7 +43,7 @@ CPolyFeatures::~CPolyFeatures()
 	SG_FREE(m_multi_index);
 	SG_FREE(m_multinomial_coefficients);
 	SG_FREE(m_normalization_values);
-	SG_UNREF(m_feat);
+
 }
 
 CPolyFeatures::CPolyFeatures(const CPolyFeatures & orig)
@@ -100,13 +100,13 @@ void CPolyFeatures::free_feature_iterator(void* iterator)
 
 
 
-float64_t CPolyFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CPolyFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
 
-	CPolyFeatures* pf=(CPolyFeatures*) df;
+	auto pf=std::static_pointer_cast<CPolyFeatures>(df);
 
 	int32_t len1;
 	bool do_free1;
@@ -203,7 +203,7 @@ void CPolyFeatures::store_normalization_values()
 	m_normalization_values=SG_MALLOC(float32_t, num_vec);
 	for (int i=0; i<num_vec; i++)
 	{
-		float64_t tmp = std::sqrt(dot(i, this, i));
+		float64_t tmp = std::sqrt(dot(i, std::dynamic_pointer_cast<std::remove_pointer_t<decltype(this)>>(shared_from_this()), i));
 		if (tmp==0)
 			// trap division by zero
 			m_normalization_values[i]=1;
@@ -369,15 +369,15 @@ int32_t CPolyFeatures::bico(int32_t n, int32_t k)
 	/* use floor to clean roundoff errors*/
 	return (int32_t) floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
 }
-CFeatures* CPolyFeatures::duplicate() const
+std::shared_ptr<CFeatures> CPolyFeatures::duplicate() const
 {
-	return new CPolyFeatures(*this);
+	return std::make_shared<CPolyFeatures>(*this);
 }
 
 void CPolyFeatures::register_parameters()
 {
 	SG_ADD(
-	    (CSGObject**)&m_feat, "features", "Features in original space.");
+	    (std::shared_ptr<CSGObject>*)&m_feat, "features", "Features in original space.");
 	SG_ADD(
 	    &m_degree, "degree", "Degree of the polynomial kernel.", ParameterProperties::HYPER);
 	SG_ADD(&m_normalize, "normalize", "Normalize?");
@@ -389,26 +389,26 @@ void CPolyFeatures::register_parameters()
 	    "Dimensions of the feature space of the polynomial kernel.");
 
 	multi_index_length=m_output_dimensions*m_degree;
-	m_parameters->add_vector(
+	/*m_parameters->add_vector(
 			&m_multi_index,
 			&multi_index_length,
 			"multi_index",
 			"Flattened matrix of all multi indices that sum do the"
-			" degree of the polynomial kernel.");
+			" degree of the polynomial kernel.");*/
 	watch_param("multi_index", &m_multi_index, &multi_index_length);
 
 	multinomial_coefficients_length=m_output_dimensions;
-	m_parameters->add_vector(&m_multinomial_coefficients,
+	/*m_parameters->add_vector(&m_multinomial_coefficients,
 			&multinomial_coefficients_length, "multinomial_coefficients",
-			"Multinomial coefficients for all multi-indices.");
+			"Multinomial coefficients for all multi-indices.");*/
 	watch_param(
 	    "multinomial_coefficients", &m_multinomial_coefficients,
 	    &multinomial_coefficients_length);
 
 	normalization_values_length=get_num_vectors();
-	m_parameters->add_vector(&m_normalization_values,
+	/*m_parameters->add_vector(&m_normalization_values,
 			&normalization_values_length, "normalization_values",
-			"Norm of each training example.");
+			"Norm of each training example.");*/
 	watch_param(
 	    "normalization_values", &m_normalization_values,
 	    &normalization_values_length);

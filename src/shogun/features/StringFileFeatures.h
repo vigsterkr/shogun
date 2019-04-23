@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Viktor Gal, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Yuyu Zhang, Viktor Gal,
  *          Evan Shelhamer, Bjoern Esser
  */
 
@@ -88,7 +88,7 @@ template <class ST> class CStringFileFeatures : public CStringFeatures<ST>
 
 	protected:
 	/** memory mapped file*/
-	CMemoryMappedFile<ST>* file;
+	std::shared_ptr<CMemoryMappedFile<ST>> file;
 };
 }
 #endif // _CSTRINGFILEFEATURES__H__

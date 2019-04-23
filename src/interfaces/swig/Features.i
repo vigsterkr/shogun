@@ -13,13 +13,6 @@
 %feature("autodoc", "get_labels(self) -> numpy 1dim array of float") get_labels;
 #endif
 
-/* These functions return new Objects */
-%newobject get_transposed();
-%newobject create_merged_copy(CFeatures* other);
-%newobject copy_subset(SGVector<index_t> indices);
-%newobject copy_dimension_subset(SGVector<index_t> indices);
-%newobject get_streamed_features(index_t num_elements);
-
 #if defined(USE_SWIG_DIRECTORS) && defined(SWIGPYTHON)
 %feature("director") shogun::CDirectorDotFeatures;
 %feature("director:except") {

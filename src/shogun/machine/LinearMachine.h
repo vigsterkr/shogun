@@ -69,7 +69,7 @@ class CLinearMachine : public CMachine
 		virtual ~CLinearMachine();
 
 		/** copy constructor */
-		CLinearMachine(CLinearMachine* machine);
+		CLinearMachine(std::shared_ptr<CLinearMachine> machine);
 
 		/** get w
 		 *
@@ -99,7 +99,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(CDotFeatures* feat);
+		virtual void set_features(std::shared_ptr<CDotFeatures> feat);
 
 		/** apply linear machine to data
 		 * for binary classification problem
@@ -107,7 +107,7 @@ class CLinearMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL);
+		virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
 
 		/** apply linear machine to data
 		 * for regression problem
@@ -115,7 +115,7 @@ class CLinearMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+		virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
 
 		/** applies to one vector */
 		virtual float64_t apply_one(int32_t vec_idx);
@@ -124,7 +124,7 @@ class CLinearMachine : public CMachine
 		 *
 		 * @return features
 		 */
-		virtual CDotFeatures* get_features();
+		virtual std::shared_ptr<CDotFeatures> get_features();
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
@@ -140,7 +140,7 @@ class CLinearMachine : public CMachine
 		 * @param data features to compute outputs
 		 * @return outputs
 		 */
-		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data);
+		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<CFeatures> data);
 
 		/** Stores feature data of underlying model. Does nothing because
 		 * Linear machines store the normal vector of the separating hyperplane
@@ -160,7 +160,7 @@ class CLinearMachine : public CMachine
 		float64_t bias;
 
 		/** features */
-		CDotFeatures* features;
+		std::shared_ptr<CDotFeatures> features;
 };
 }
 #endif

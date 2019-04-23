@@ -14,12 +14,12 @@ class NormOne : public ::testing::Test
 {
 public:
 	NormOne()
-	    : feats(Some<CDenseFeatures<float64_t>>::from_raw(nullptr)),
-	      transformer(some<CNormOne>())
+	    : feats(nullptr),
+	      transformer(std::make_shared<CNormOne>())
 	{
 		matrix = SGMatrix<float64_t>(data, num_features, num_vectors, false);
 		auto cloned_matrix = matrix.clone();
-		feats = some<CDenseFeatures<float64_t>>(cloned_matrix);
+		feats = std::make_shared<CDenseFeatures<float64_t>>(cloned_matrix);
 	}
 
 protected:
@@ -31,15 +31,15 @@ protected:
 	int32_t num_vectors = 2;
 	int32_t num_features = 3;
 
-	Some<CDenseFeatures<float64_t>> feats;
-	Some<CNormOne> transformer;
+	std::shared_ptr<CDenseFeatures<float64_t>> feats;
+	std::shared_ptr<CNormOne> transformer;
 };
 
 TEST_F(NormOne, transform)
 {
 	transformer->fit(feats);
 	feats =
-	    wrap(transformer->transform(feats)->as<CDenseFeatures<float64_t>>());
+	    transformer->transform(feats)->as<CDenseFeatures<float64_t>>();
 
 	ASSERT_EQ(feats->get_num_vectors(), num_vectors);
 

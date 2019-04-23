@@ -113,24 +113,24 @@ protected:
 		test_matrix(2,11)=186;
 		test_matrix(3,11)=56;
 
-		dense_feat=new CDenseFeatures<float64_t>(test_matrix);
+		dense_feat=std::make_shared<CDenseFeatures<float64_t>>(test_matrix);
 		for(int i=0; i<classes; ++i)
 			for(int j=0; j<num; ++j)
 					labels_vector[i*num+j]=i;
-		labels=new CMulticlassLabels(labels_vector);
+		labels=std::make_shared<CMulticlassLabels>(labels_vector);
 
-		SG_REF(dense_feat);
-		SG_REF(labels);
+
+
 	}
 
 	~FLDATest()
 	{
-		SG_UNREF(dense_feat);
-		SG_UNREF(labels);
+
+
 	}
 
-	CDenseFeatures<float64_t>* dense_feat;
-	CMulticlassLabels* labels;
+	std::shared_ptr<CDenseFeatures<float64_t>> dense_feat;
+	std::shared_ptr<CMulticlassLabels> labels;
 };
 
 
@@ -138,8 +138,8 @@ protected:
 TEST_F(FLDATest, CANVAR_FLDA_Unit_test)
 {
 
-	SG_REF(dense_feat);
-	SG_REF(labels);
+
+
 
 	// comparing outputs against BRMLtoolbox MATLAB "CannonVar.m" implementation
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
@@ -173,15 +173,15 @@ TEST_F(FLDATest, CANVAR_FLDA_Unit_test)
 	EXPECT_NEAR(0.47693388209865617,  std::abs(transformy[2]), epsilon);
 	EXPECT_NEAR(0.64405933820939687,  std::abs(transformy[3]), epsilon);
 
-	SG_UNREF(dense_feat);
-	SG_UNREF(labels);
+
+
 }
 
 TEST_F(FLDATest, CLASSIC_FLDA_Unit_test)
 {
 
-	SG_REF(dense_feat);
-	SG_REF(labels);
+
+
 
 	CFisherLDA fisherlda(1, CLASSIC_FLDA);
 	fisherlda.fit(dense_feat, labels);
@@ -213,8 +213,8 @@ TEST_F(FLDATest, CLASSIC_FLDA_Unit_test)
 	EXPECT_NEAR(0.6885872352166886, std::abs(transformy[2]), epsilon);
 	EXPECT_NEAR(0.3806852128812753, std::abs(transformy[3]), epsilon);
 
-	SG_UNREF(dense_feat);
-	SG_UNREF(labels);
+
+
 }
 
 
@@ -264,11 +264,11 @@ TEST_F(FLDATest, CANVAR_FLDA_for_D_greater_than_N )
 	labels_vector[3]=1;
 	labels_vector[4]=1;
 
-	CMulticlassLabels* l=new CMulticlassLabels(labels_vector);
-	CDenseFeatures<float64_t>* df=new CDenseFeatures<float64_t>(tm);
+	auto l=std::make_shared<CMulticlassLabels>(labels_vector);
+	auto df=std::make_shared<CDenseFeatures<float64_t>>(tm);
 
-	SG_REF(l);
-	SG_REF(df);
+
+
 
 	CFisherLDA fisherlda(1, CANVAR_FLDA);
 	fisherlda.fit(df, l);
@@ -284,6 +284,6 @@ TEST_F(FLDATest, CANVAR_FLDA_for_D_greater_than_N )
 	EXPECT_NEAR(0.600331522116284155, std::abs(transformy[4]), epsilon);
 	EXPECT_NEAR(0.332746922149909308, std::abs(transformy[5]), epsilon);
 
-	SG_UNREF(l);
-	SG_UNREF(df);
+
+
 }

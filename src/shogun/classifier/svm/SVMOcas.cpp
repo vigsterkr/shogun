@@ -33,14 +33,14 @@ CSVMOcas::CSVMOcas(E_SVM_TYPE type)
 }
 
 CSVMOcas::CSVMOcas(
-	float64_t C, CFeatures* traindat, CLabels* trainlab)
+	float64_t C, std::shared_ptr<CFeatures> traindat, std::shared_ptr<CLabels> trainlab)
 : CLinearMachine()
 {
 	init();
 	C1=C;
 	C2=C;
 
-	set_features(traindat->as<CDotFeatures>());
+	set_features(std::dynamic_pointer_cast<CDotFeatures>(traindat));
 	set_labels(trainlab);
 }
 
@@ -49,7 +49,7 @@ CSVMOcas::~CSVMOcas()
 {
 }
 
-bool CSVMOcas::train_machine(CFeatures* data)
+bool CSVMOcas::train_machine(std::shared_ptr<CFeatures> data)
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize)
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled())
@@ -60,14 +60,15 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features((CDotFeatures*) data);
+		set_features(std::static_pointer_cast<CDotFeatures>(data));
 	}
 	ASSERT(features)
 
 	int32_t num_vec=features->get_num_vectors();
 	lab = SGVector<float64_t>(num_vec);
+	auto labels = binary_labels(m_labels);
 	for (int32_t i=0; i<num_vec; i++)
-		lab[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		lab[i] = labels->get_label(i);
 
 	current_w = SGVector<float64_t>(features->get_dim_feature_space());
 	current_w.zero();
@@ -154,7 +155,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 float64_t CSVMOcas::update_W( float64_t t, void* ptr )
 {
   float64_t sq_norm_W = 0;
-  CSVMOcas* o = (CSVMOcas*) ptr;
+  auto o = (CSVMOcas*)ptr;
   uint32_t nDim = (uint32_t) o->current_w.vlen;
   float64_t* W = o->current_w.vector;
   float64_t* oldW=o->old_w;
@@ -182,8 +183,8 @@ int CSVMOcas::add_new_cut(
 	float64_t *new_col_H, uint32_t *new_cut, uint32_t cut_length,
 	uint32_t nSel, void* ptr)
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
-	CDotFeatures* f = o->features;
+	auto o = (CSVMOcas*)ptr;
+	auto f = o->features;
 	uint32_t nDim=(uint32_t) o->current_w.vlen;
 	float64_t* y = o->lab.vector;
 
@@ -267,8 +268,8 @@ int CSVMOcas::sort(float64_t* vals, float64_t* data, uint32_t size)
   ----------------------------------------------------------------------*/
 int CSVMOcas::compute_output(float64_t *output, void* ptr)
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
-	CDotFeatures* f=o->features;
+	auto o = (CSVMOcas*)ptr;
+	auto f=o->features;
 	int32_t nData=f->get_num_vectors();
 
 	float64_t* y = o->lab.vector;
@@ -293,7 +294,7 @@ void CSVMOcas::compute_W(
 	float64_t *sq_norm_W, float64_t *dp_WoldW, float64_t *alpha, uint32_t nSel,
 	void* ptr )
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
+	auto o = (CSVMOcas*)ptr;
 	uint32_t nDim= (uint32_t) o->current_w.vlen;
 	CMath::swap(o->current_w.vector, o->old_w);
 	SGVector<float64_t> W(o->current_w.vector, nDim, false);

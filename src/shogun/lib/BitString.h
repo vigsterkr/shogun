@@ -65,7 +65,6 @@ class CBitString : public CSGObject
 		~CBitString()
 		{
 			cleanup();
-			SG_UNREF(alphabet);
 		}
 
 		/** free up memory */

@@ -30,7 +30,7 @@ CHashedWDFeatures::CHashedWDFeatures() :CDotFeatures()
 	normalization_const = 0.0;
 }
 
-CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
+CHashedWDFeatures::CHashedWDFeatures(std::shared_ptr<CStringFeatures<uint8_t>> str,
 		int32_t start_order, int32_t order, int32_t from_order,
 		int32_t hash_bits) : CDotFeatures()
 {
@@ -40,14 +40,13 @@ CHashedWDFeatures::CHashedWDFeatures(CStringFeatures<uint8_t>* str,
 	ASSERT(hash_bits>0)
 	ASSERT(str)
 	ASSERT(str->have_same_length())
-	SG_REF(str);
+
 
 	strings=str;
 	string_length=str->get_max_vector_length();
 	num_strings=str->get_num_vectors();
-	CAlphabet* alpha=str->get_alphabet();
+	auto alpha=str->get_alphabet();
 	alphabet_size=alpha->get_num_symbols();
-	SG_UNREF(alpha);
 
 	degree=order;
 	start_degree=start_order;
@@ -65,14 +64,13 @@ CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 {
 
 
-	SG_REF(strings);
+
 	if (strings)
 	{
 		string_length=strings->get_max_vector_length();
 		num_strings=strings->get_num_vectors();
-		CAlphabet* alpha=strings->get_alphabet();
+		auto alpha=strings->get_alphabet();
 		alphabet_size=alpha->get_num_symbols();
-		SG_UNREF(alpha);
 	}
 	else
 	{
@@ -87,16 +85,16 @@ CHashedWDFeatures::CHashedWDFeatures(const CHashedWDFeatures& orig)
 
 CHashedWDFeatures::~CHashedWDFeatures()
 {
-	SG_UNREF(strings);
+
 	SG_FREE(wd_weights);
 }
 
-float64_t CHashedWDFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CHashedWDFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CHashedWDFeatures* wdf = (CHashedWDFeatures*) df;
+	auto wdf = std::static_pointer_cast<CHashedWDFeatures>(df);
 
 	int32_t len1, len2;
 	bool free_vec1, free_vec2;
@@ -270,9 +268,9 @@ void CHashedWDFeatures::set_normalization_const(float64_t n)
 	SG_DEBUG("normalization_const:%f\n", normalization_const)
 }
 
-CFeatures* CHashedWDFeatures::duplicate() const
+std::shared_ptr<CFeatures> CHashedWDFeatures::duplicate() const
 {
-	return new CHashedWDFeatures(*this);
+	return std::make_shared<CHashedWDFeatures>(*this);
 }
 
 

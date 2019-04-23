@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Evan Shelhamer, Yuyu Zhang, Sergey Lisitsyn,
  *          Chiyuan Zhang
  */
 
@@ -53,7 +53,7 @@ class CMinkowskiMetric: public CDenseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @param k parameter k
 		 */
-		CMinkowskiMetric(CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t k);
+		CMinkowskiMetric(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r, float64_t k);
 		virtual ~CMinkowskiMetric();
 
 		/** constructor
@@ -61,7 +61,7 @@ class CMinkowskiMetric: public CDenseDistance<float64_t>
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

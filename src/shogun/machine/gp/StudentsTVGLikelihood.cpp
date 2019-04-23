@@ -72,7 +72,7 @@ CStudentsTVGLikelihood::~CStudentsTVGLikelihood()
 void CStudentsTVGLikelihood::init_likelihood()
 {
 	set_likelihood(
-		new CStudentsTLikelihood(
+		std::make_shared<CStudentsTLikelihood>(
 		    std::exp(m_log_sigma), std::exp(m_log_df) + 1.0));
 }
 

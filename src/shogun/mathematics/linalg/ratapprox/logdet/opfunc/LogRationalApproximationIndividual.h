@@ -42,9 +42,9 @@ public:
 	 * the number of shifts automatically
 	 */
 	CLogRationalApproximationIndividual(
-		CMatrixOperator<float64_t>* linear_operator,
-		CEigenSolver* eigen_solver,
-		CLinearSolver<complex128_t, float64_t>* linear_solver,
+		std::shared_ptr<CMatrixOperator<float64_t>> linear_operator,
+		std::shared_ptr<CEigenSolver> eigen_solver,
+		std::shared_ptr<CLinearSolver<complex128_t, float64_t>> linear_solver,
 		float64_t desired_accuracy);
 
 	/** destructor */
@@ -63,7 +63,7 @@ public:
 
 private:
 	/** the linear solver for solving complex systems */
-	CLinearSolver<complex128_t, float64_t>* m_linear_solver;
+	std::shared_ptr<CLinearSolver<complex128_t, float64_t>> m_linear_solver;
 
 	/** initialize with default values and register params */
 	void init();

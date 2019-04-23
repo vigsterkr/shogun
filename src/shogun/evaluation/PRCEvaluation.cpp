@@ -16,7 +16,7 @@ CPRCEvaluation::~CPRCEvaluation()
 {
 }
 
-float64_t CPRCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t CPRCEvaluation::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())

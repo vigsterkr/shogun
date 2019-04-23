@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Tejas Jogi, Evgeniy Andreev, Soeren Sonnenburg, Yuyu Zhang, 
+ * Authors: Tejas Jogi, Evgeniy Andreev, Soeren Sonnenburg, Yuyu Zhang,
  *          Bjoern Esser
  */
 
@@ -38,7 +38,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param svs indices of examples, i.e. i's for x_i
 		 * @param b bias term
 		 */
-		CDirectorKernelMachine(CKernel* k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b)
+		CDirectorKernelMachine(std::shared_ptr<CKernel> k, const SGVector<float64_t> alphas, const SGVector<int32_t> svs, float64_t b)
 		: CKernelMachine(k, alphas, svs, b)
 		{
 		}
@@ -58,12 +58,12 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(CFeatures* data=NULL)
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL)
 		{
 			return CKernelMachine::train(data);
 		}
 
-		virtual bool train_function(CFeatures* data=NULL)
+		virtual bool train_function(std::shared_ptr<CFeatures> data=NULL)
 		{
 			SG_ERROR("Train function of Director Kernel Machine needs to be overridden.\n")
 			return false;
@@ -75,19 +75,19 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual CLabels* apply(CFeatures* data=NULL)
+		virtual ::std::shared_ptr<CLabels> apply(std::shared_ptr<CFeatures> data=NULL)
 		{
 			return CKernelMachine::apply(data);
 		}
 
 		/** apply machine to data in means of binary classification problem */
-		virtual CBinaryLabels* apply_binary(CFeatures* data=NULL)
+		virtual ::std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL)
 		{
 			return CKernelMachine::apply_binary(data);
 		}
 
 		/** apply machine to data in means of regression problem */
-		virtual CRegressionLabels* apply_regression(CFeatures* data=NULL)
+		virtual ::std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL)
 		{
 			return CKernelMachine::apply_regression(data);
 		}
@@ -109,7 +109,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(CLabels* lab)
+		virtual void set_labels(std::shared_ptr<CLabels> lab)
 		{
 			CKernelMachine::set_labels(lab);
 		}
@@ -118,7 +118,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 *
 		 * @return labels
 		 */
-		virtual CLabels* get_labels()
+		virtual std::shared_ptr<CLabels> get_labels()
 		{
 			return CKernelMachine::get_labels();
 		}
@@ -159,17 +159,17 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 *
 		 * @param indices index vector (of locked features) that is predicted
 		 */
-		virtual CLabels* apply_locked(SGVector<index_t> indices)
+		virtual std::shared_ptr<CLabels> apply_locked(SGVector<index_t> indices)
 		{
 			return CKernelMachine::apply_locked(indices);
 		}
 
-		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices)
+		virtual std::shared_ptr<CBinaryLabels> apply_locked_binary(SGVector<index_t> indices)
 		{
 			return CKernelMachine::apply_locked_binary(indices);
 		}
 
-		virtual CRegressionLabels* apply_locked_regression(
+		virtual std::shared_ptr<CRegressionLabels> apply_locked_regression(
 				SGVector<index_t> indices)
 		{
 			return CKernelMachine::apply_locked_regression(indices);
@@ -189,7 +189,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 			return CKernelMachine::apply_locked_get_output(indices);
 		}
 #endif // SWIG // SWIG should skip this part
-		
+
 		/** Locks the machine on given labels and data. After this call, only
 		 * train_locked and apply_locked may be called
 		 *
@@ -198,7 +198,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 * @param labs labels used for locking
 		 * @param features features used for locking
 		 */
-		virtual void data_lock(CLabels* labs, CFeatures* features)
+		virtual void data_lock(std::shared_ptr<CLabels> labs, std::shared_ptr<CFeatures> features)
 		{
 			CKernelMachine::data_lock(labs, features);
 		}
@@ -234,7 +234,7 @@ IGNORE_IN_CLASSLIST class CDirectorKernelMachine : public CKernelMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL)
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL)
 		{
 			return train_function(data);
 		}

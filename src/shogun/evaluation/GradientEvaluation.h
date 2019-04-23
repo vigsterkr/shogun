@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Roman Votyakov, 
+ * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Roman Votyakov,
  *          Yuyu Zhang, Giovanni De Toni
  */
 
@@ -34,8 +34,9 @@ public:
 	 * @param evaluation_criterion evaluation criterion to use
 	 * @param autolock whether machine should be auto-locked before evaluation
 	 */
-	CGradientEvaluation(CMachine* machine, CFeatures* features, CLabels* labels,
-			CEvaluation* evaluation_criterion, bool autolock=true);
+	CGradientEvaluation(std::shared_ptr<CMachine> machine,
+		std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels,
+		std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock=true);
 
 	virtual ~CGradientEvaluation();
 
@@ -49,10 +50,10 @@ public:
 	*
 	* @param diff differentiable function
 	*/
-	inline void set_function(CDifferentiableFunction* diff)
+	inline void set_function(std::shared_ptr<CDifferentiableFunction> diff)
 	{
-		SG_REF(diff);
-		SG_UNREF(m_diff);
+
+
 		m_diff=diff;
 	}
 
@@ -60,9 +61,9 @@ public:
 	*
 	* @return differentiable function
 	*/
-	inline CDifferentiableFunction* get_function()
+	inline std::shared_ptr<CDifferentiableFunction> get_function()
 	{
-		SG_REF(m_diff);
+
 		return m_diff;
 	}
 
@@ -74,17 +75,17 @@ private:
 	 *
 	 * @return GradientResult containing value and gradient
 	 */
-	virtual CEvaluationResult* evaluate_impl();
+	virtual std::shared_ptr<CEvaluationResult> evaluate_impl();
 
 	/** updates parameter dictionary of differentiable function */
 	void update_parameter_dictionary();
 
 private:
 	/** differentiable function */
-	CDifferentiableFunction* m_diff;
+	std::shared_ptr<CDifferentiableFunction> m_diff;
 
 	/** parameter dictionary of differentiable function */
-	CMap<TParameter*, CSGObject*>*  m_parameter_dictionary;
+	std::shared_ptr<CMap<TParameter*, CSGObject*>>  m_parameter_dictionary;
 };
 }
 #endif /* CGRADIENTEVALUATION_H_ */

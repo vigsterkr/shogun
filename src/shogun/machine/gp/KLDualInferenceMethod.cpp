@@ -56,14 +56,14 @@ class KLDualInferenceMethodCostFunction: public FirstOrderCostFunction
 friend class CKLDualInferenceMethodMinimizer;
 public:
 	KLDualInferenceMethodCostFunction():FirstOrderCostFunction() {  init(); }
-	virtual ~KLDualInferenceMethodCostFunction() { SG_UNREF(m_obj); }
-	void set_target(CKLDualInferenceMethod *obj)
+	virtual ~KLDualInferenceMethodCostFunction() {  }
+	void set_target(std::shared_ptr<CKLDualInferenceMethod >obj)
 	{
 		REQUIRE(obj, "Obj must set\n");
 		if(m_obj != obj)
 		{
-			SG_REF(obj);
-			SG_UNREF(m_obj);
+
+
 			m_obj=obj;
 		}
 	}
@@ -71,7 +71,7 @@ public:
 	{
 		if(is_unref)
 		{
-			SG_UNREF(m_obj);
+
 		}
 		m_obj=NULL;
 	}
@@ -107,11 +107,11 @@ private:
 		m_derivatives = SGVector<float64_t>();
 		SG_ADD(&m_derivatives, "KLDualInferenceMethodCostFunction__m_derivatives",
 			"derivatives in KLDualInferenceMethodCostFunction");
-		SG_ADD((CSGObject **)&m_obj, "KLDualInferenceMethodCostFunction__m_obj",
+		SG_ADD((std::shared_ptr<CSGObject>*)&m_obj, "KLDualInferenceMethodCostFunction__m_obj",
 			"obj in KLDualInferenceMethodCostFunction");
 	}
-	CKLDualInferenceMethod *m_obj;
-	CDualVariationalGaussianLikelihood* get_dual_variational_likelihood() const
+	std::shared_ptr<CKLDualInferenceMethod >m_obj;
+	std::shared_ptr<CDualVariationalGaussianLikelihood> get_dual_variational_likelihood() const
 	{
 		REQUIRE(m_obj,"Object not set\n");
 		return m_obj->get_dual_variational_likelihood();
@@ -168,8 +168,8 @@ float64_t CKLDualInferenceMethodMinimizer::evaluate(void *obj, const float64_t *
 	float64_t *gradient, const int dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CKLDualInferenceMethodMinimizer * obj_prt
-		= static_cast<CKLDualInferenceMethodMinimizer *>(obj);
+	auto obj_prt
+		= (CKLDualInferenceMethodMinimizer*)obj;
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 
@@ -190,18 +190,18 @@ float64_t CKLDualInferenceMethodMinimizer::adjust_step(void *obj, const float64_
 	const float64_t *direction, const int dim, const float64_t step)
 {
 	/* Note that parameters = parameters_pre_iter - step * gradient_pre_iter */
-	CKLDualInferenceMethodMinimizer * obj_prt
-		= static_cast<CKLDualInferenceMethodMinimizer *>(obj);
+	auto obj_prt
+		= (CKLDualInferenceMethodMinimizer*)obj;
 
 	REQUIRE(obj_prt, "The instance object passed to L-BFGS optimizer should not be NULL\n");
 
 	float64_t *non_const_direction=const_cast<float64_t *>(direction);
 	SGVector<float64_t> sg_direction(non_const_direction, dim, false);
 
-	KLDualInferenceMethodCostFunction* fun=dynamic_cast<KLDualInferenceMethodCostFunction*>(obj_prt->m_fun);
+	auto fun=std::dynamic_pointer_cast<KLDualInferenceMethodCostFunction>(obj_prt->m_fun);
 	REQUIRE(fun, "The cost function must be KLDualInferenceMethodCostFunction\n");
 
-	CDualVariationalGaussianLikelihood* lik=fun->get_dual_variational_likelihood();
+	auto lik=fun->get_dual_variational_likelihood();
 
 	float64_t adjust_stp=lik->adjust_step_wrt_dual_parameter(sg_direction, step);
 	return adjust_stp;
@@ -212,15 +212,15 @@ CKLDualInferenceMethod::CKLDualInferenceMethod() : CKLInference()
 	init();
 }
 
-CKLDualInferenceMethod::CKLDualInferenceMethod(CKernel* kern,
-		CFeatures* feat, CMeanFunction* m, CLabels* lab, CLikelihoodModel* mod)
+CKLDualInferenceMethod::CKLDualInferenceMethod(std::shared_ptr<CKernel> kern,
+		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
 		: CKLInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CKLDualInferenceMethod> CKLDualInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -230,8 +230,8 @@ CKLDualInferenceMethod* CKLDualInferenceMethod::obtain_from_generic(
 		SG_SERROR("Provided inference is not of type CKLDualInferenceMethod!\n");
 	}
 
-	SG_REF(inference);
-	return (CKLDualInferenceMethod*)inference;
+
+	return inference->as<CKLDualInferenceMethod>();
 }
 
 SGVector<float64_t> CKLDualInferenceMethod::get_alpha()
@@ -247,30 +247,29 @@ CKLDualInferenceMethod::~CKLDualInferenceMethod()
 {
 }
 
-void CKLDualInferenceMethod::check_dual_inference(CLikelihoodModel* mod) const
+void CKLDualInferenceMethod::check_dual_inference(std::shared_ptr<CLikelihoodModel> mod) const
 {
-	CDualVariationalGaussianLikelihood * lik=dynamic_cast<CDualVariationalGaussianLikelihood *>(mod);
+	auto lik=mod->as<CDualVariationalGaussianLikelihood>();
 	REQUIRE(lik,
 		"The provided likelihood model is not a variational dual Likelihood model.\n");
 }
 
-void CKLDualInferenceMethod::set_model(CLikelihoodModel* mod)
+void CKLDualInferenceMethod::set_model(std::shared_ptr<CLikelihoodModel> mod)
 {
 	check_dual_inference(mod);
 	CKLInference::set_model(mod);
 }
 
-CDualVariationalGaussianLikelihood* CKLDualInferenceMethod::get_dual_variational_likelihood() const
+std::shared_ptr<CDualVariationalGaussianLikelihood> CKLDualInferenceMethod::get_dual_variational_likelihood() const
 {
 	check_dual_inference(m_model);
-	CDualVariationalGaussianLikelihood * lik=dynamic_cast<CDualVariationalGaussianLikelihood *>(m_model);
-	return lik;
+	return m_model->as<CDualVariationalGaussianLikelihood>();
 }
 
-void CKLDualInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CKLDualInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
-	CKLDualInferenceMethodMinimizer* opt=dynamic_cast<CKLDualInferenceMethodMinimizer*>(minimizer);
-	REQUIRE(opt,"The minimizer must be an instance of CKLDualInferenceMethodMinimizer\n"); 
+	auto opt=minimizer->as<CKLDualInferenceMethodMinimizer>();
+	REQUIRE(opt,"The minimizer must be an instance of CKLDualInferenceMethodMinimizer\n");
 	CInference::register_minimizer(minimizer);
 }
 
@@ -289,13 +288,13 @@ void CKLDualInferenceMethod::init()
 		"whether the lambda (m_W) is valid or not");
 
 	m_is_dual_valid=false;
-	register_minimizer(new CKLDualInferenceMethodMinimizer());
+	register_minimizer(std::make_shared<CKLDualInferenceMethodMinimizer>());
 }
 
 bool CKLDualInferenceMethod::precompute()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
+	auto lik= get_dual_variational_likelihood();
 	Map<VectorXd> eigen_W(m_W.vector, m_W.vlen);
 
 	lik->set_dual_parameters(m_W, m_labels);
@@ -348,7 +347,7 @@ float64_t CKLDualInferenceMethod::get_dual_objective_wrt_parameters()
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_alpha.vlen);
 	Map<MatrixXd> eigen_L(m_L.matrix, m_L.num_rows, m_L.num_cols);
 
-	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
+	auto lik= get_dual_variational_likelihood();
 
 	float64_t a=SGVector<float64_t>::sum(lik->get_dual_objective_value());
 	float64_t result=0.5*eigen_alpha.dot(eigen_mu-eigen_mean)+a;
@@ -369,7 +368,7 @@ void CKLDualInferenceMethod::get_gradient_of_dual_objective_wrt_parameters(SGVec
 
 	Map<VectorXd> eigen_gradient(gradient.vector, gradient.vlen);
 
-	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
+	auto lik= get_dual_variational_likelihood();
 
 	TParameter* lambda_param=lik->m_parameters->get_parameter("lambda");
 	SGVector<float64_t>d_lambda=lik->get_dual_first_derivative(lambda_param);
@@ -377,7 +376,7 @@ void CKLDualInferenceMethod::get_gradient_of_dual_objective_wrt_parameters(SGVec
 
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
 	Map<VectorXd> eigen_s2(m_s2.vector, m_s2.vlen);
-eigen_gradient=-eigen_mu-0.5*eigen_s2+eigen_d_lambda;
+	eigen_gradient=-eigen_mu-0.5*eigen_s2+eigen_d_lambda;
 }
 
 float64_t CKLDualInferenceMethod::get_nlml_wrapper(SGVector<float64_t> alpha, SGVector<float64_t> mu, SGMatrix<float64_t> L)
@@ -390,9 +389,9 @@ float64_t CKLDualInferenceMethod::get_nlml_wrapper(SGVector<float64_t> alpha, SG
 	Map<VectorXd> eigen_mu(mu.vector, mu.vlen);
 	Map<VectorXd> eigen_mean(mean.vector, mean.vlen);
 
-	CDualVariationalGaussianLikelihood *lik=get_dual_variational_likelihood();
+	auto lik=get_dual_variational_likelihood();
 
-	SGVector<float64_t>lab=((CBinaryLabels*)m_labels)->get_labels();
+	SGVector<float64_t>lab=m_labels->as<CBinaryLabels>()->get_labels();
 	Map<VectorXd> eigen_lab(lab.vector, lab.vlen);
 
 	float64_t a=SGVector<float64_t>::sum(lik->get_variational_expection());
@@ -414,7 +413,7 @@ float64_t CKLDualInferenceMethod::get_nlml_wrapper(SGVector<float64_t> alpha, SG
 
 float64_t CKLDualInferenceMethod::get_negative_log_marginal_likelihood_helper()
 {
-	CDualVariationalGaussianLikelihood *lik=get_dual_variational_likelihood();
+	auto lik=get_dual_variational_likelihood();
 	bool status = lik->set_variational_distribution(m_mu, m_s2, m_labels);
 	if (status)
 		return get_nlml_wrapper(m_alpha, m_mu, m_L);
@@ -459,7 +458,7 @@ void CKLDualInferenceMethod::update_alpha()
 	float64_t nlml_def=0;
 
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
-	CDualVariationalGaussianLikelihood *lik= get_dual_variational_likelihood();
+	auto lik= get_dual_variational_likelihood();
 
 	if (m_alpha.vlen == m_labels->get_num_labels())
 	{
@@ -540,20 +539,17 @@ void CKLDualInferenceMethod::update_alpha()
 
 float64_t CKLDualInferenceMethod::optimization()
 {
-	CKLDualInferenceMethodMinimizer *minimizer=dynamic_cast<CKLDualInferenceMethodMinimizer*>(m_minimizer);
-	REQUIRE(minimizer,"The minimizer must be an instance of KLDualInferenceMethodMinimizer\n"); 
-        KLDualInferenceMethodCostFunction* cost_fun=new  KLDualInferenceMethodCostFunction();
-	cost_fun->set_target(this);
+	auto minimizer=m_minimizer->as<CKLDualInferenceMethodMinimizer>();
+	REQUIRE(minimizer,"The minimizer must be an instance of KLDualInferenceMethodMinimizer\n");
+    auto cost_fun=std::make_shared<KLDualInferenceMethodCostFunction>();
+	cost_fun->set_target(shared_from_this()->as<CKLDualInferenceMethod>());
 	bool cleanup=false;
-
-	if(this->ref_count()>1)
-		cleanup=true;
 
 	minimizer->set_cost_function(cost_fun);
 	float64_t nlml_opt = minimizer->minimize();
 	minimizer->unset_cost_function(false);
-	cost_fun->unset_target(cleanup);
-	SG_UNREF(cost_fun);
+	//cost_fun->unset_target(cleanup);
+
 	return nlml_opt;
 }
 

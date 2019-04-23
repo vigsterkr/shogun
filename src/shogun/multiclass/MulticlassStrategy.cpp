@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Heiko Strathmann, Soeren Sonnenburg, Shell Hu, 
+ * Authors: Chiyuan Zhang, Heiko Strathmann, Soeren Sonnenburg, Shell Hu,
  *          Sergey Lisitsyn
  */
 
@@ -35,23 +35,23 @@ void CMulticlassStrategy::init()
 	m_num_classes=0;
 
 	SG_ADD(
-	    (CSGObject**)&m_rejection_strategy, "rejection_strategy",
+	    (std::shared_ptr<CSGObject>*)&m_rejection_strategy, "rejection_strategy",
 	    "Strategy of rejection");
 	SG_ADD(&m_num_classes, "num_classes", "Number of classes");
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&m_prob_heuris, "prob_heuris",
 	    "Probability estimation heuristics", ParameterProperties::NONE,
 	    SG_OPTIONS(PROB_HEURIS_NONE, OVA_NORM, OVA_SOFTMAX, OVO_PRICE, OVO_HASTIE,
-	    OVO_HAMAMURA))
+	    OVO_HAMAMURA));
 }
 
-void CMulticlassStrategy::train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
+void CMulticlassStrategy::train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels)
 {
 	if (m_train_labels != NULL)
 		SG_ERROR("Stop the previous training task before starting a new one!")
-	SG_REF(train_labels);
+
 	m_train_labels=train_labels;
-	SG_REF(orig_labels);
+
 	m_orig_labels=orig_labels;
 	m_train_iter=0;
 }
@@ -64,8 +64,8 @@ SGVector<int32_t> CMulticlassStrategy::train_prepare_next()
 
 void CMulticlassStrategy::train_stop()
 {
-	SG_UNREF(m_train_labels);
-	SG_UNREF(m_orig_labels);
+
+
     m_train_labels = NULL;
     m_orig_labels = NULL;
 }

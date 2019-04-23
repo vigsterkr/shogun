@@ -62,9 +62,9 @@ CRBM::CRBM(int32_t num_hidden, int32_t num_visible,
 
 CRBM::~CRBM()
 {
-	SG_UNREF(m_visible_group_sizes);
-	SG_UNREF(m_visible_group_types);
-	SG_UNREF(m_visible_state_offsets);
+
+
+
 }
 
 void CRBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
@@ -105,7 +105,7 @@ void CRBM::set_batch_size(int32_t batch_size)
 	reset_chain();
 }
 
-void CRBM::train(CDenseFeatures<float64_t>* features)
+void CRBM::train(std::shared_ptr<CDenseFeatures<float64_t>> features)
 {
 	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
 	REQUIRE(features->get_num_features()==m_num_visible,
@@ -192,7 +192,7 @@ void CRBM::sample(int32_t num_gibbs_steps,
 	}
 }
 
-CDenseFeatures< float64_t >* CRBM::sample_group(int32_t V,
+std::shared_ptr<CDenseFeatures< float64_t >> CRBM::sample_group(int32_t V,
 	int32_t num_gibbs_steps, int32_t batch_size)
 {
 	REQUIRE(V<m_num_visible_groups,
@@ -207,11 +207,11 @@ CDenseFeatures< float64_t >* CRBM::sample_group(int32_t V,
 		for (int32_t j=0; j<m_batch_size; j++)
 			result(i,j) = visible_state(i+offset,j);
 
-	return new CDenseFeatures<float64_t>(result);
+	return std::make_shared<CDenseFeatures<float64_t>>(result);
 }
 
 void CRBM::sample_with_evidence(
-	int32_t E, CDenseFeatures< float64_t >* evidence, int32_t num_gibbs_steps)
+	int32_t E, std::shared_ptr<CDenseFeatures< float64_t >> evidence, int32_t num_gibbs_steps)
 {
 	REQUIRE(E<m_num_visible_groups,
 		"Visible group index (%i) out of bounds (%i)\n", E, m_num_visible);
@@ -244,8 +244,8 @@ void CRBM::sample_with_evidence(
 	}
 }
 
-CDenseFeatures< float64_t >* CRBM::sample_group_with_evidence(int32_t V,
-	int32_t E, CDenseFeatures< float64_t >* evidence, int32_t num_gibbs_steps)
+std::shared_ptr<CDenseFeatures< float64_t >> CRBM::sample_group_with_evidence(int32_t V,
+	int32_t E, std::shared_ptr<CDenseFeatures< float64_t >> evidence, int32_t num_gibbs_steps)
 {
 	REQUIRE(V<m_num_visible_groups,
 		"Visible group index (%i) out of bounds (%i)\n", V, m_num_visible);
@@ -261,7 +261,7 @@ CDenseFeatures< float64_t >* CRBM::sample_group_with_evidence(int32_t V,
 		for (int32_t j=0; j<m_batch_size; j++)
 			result(i,j) = visible_state(i+offset,j);
 
-	return new CDenseFeatures<float64_t>(result);
+	return std::make_shared<CDenseFeatures<float64_t>>(result);
 }
 
 void CRBM::reset_chain()
@@ -617,12 +617,12 @@ void CRBM::init()
 	m_num_hidden = 0;
 	m_num_visible = 0;
 	m_num_visible_groups = 0;
-	m_visible_group_sizes = new CDynamicArray<int32_t>();
-	SG_REF(m_visible_group_sizes);
-	m_visible_group_types = new CDynamicArray<int32_t>();
-	SG_REF(m_visible_group_types);
-	m_visible_state_offsets = new CDynamicArray<int32_t>();
-	SG_REF(m_visible_state_offsets);
+	m_visible_group_sizes = std::make_shared<CDynamicArray<int32_t>>();
+
+	m_visible_group_types = std::make_shared<CDynamicArray<int32_t>>();
+
+	m_visible_state_offsets = std::make_shared<CDynamicArray<int32_t>>();
+
 	m_num_params = 0;
 	m_batch_size = 0;
 
@@ -654,13 +654,13 @@ void CRBM::init()
 	    &m_num_visible_groups, "num_visible_groups",
 	    "Number of Visible Unit Groups");
 	SG_ADD(
-	    (CSGObject**)&m_visible_group_sizes, "visible_group_sizes",
+	    (std::shared_ptr<CSGObject>*)&m_visible_group_sizes, "visible_group_sizes",
 	    "Sizes of Visible Unit Groups");
 	SG_ADD(
-	    (CSGObject**)&m_visible_group_types, "visible_group_types",
+	    (std::shared_ptr<CSGObject>*)&m_visible_group_types, "visible_group_types",
 	    "Types of Visible Unit Groups");
 	SG_ADD(
-	    (CSGObject**)&m_visible_state_offsets, "visible_group_index_offsets",
+	    (std::shared_ptr<CSGObject>*)&m_visible_state_offsets, "visible_group_index_offsets",
 	    "State Index offsets of Visible Unit Groups");
 
 	SG_ADD(&m_num_params, "num_params", "Number of Parameters");

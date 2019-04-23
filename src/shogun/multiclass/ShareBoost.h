@@ -32,7 +32,7 @@ public:
 	CShareBoost();
 
 	/** constructor */
-	CShareBoost(CDenseFeatures<float64_t> *features, CMulticlassLabels *labs, int32_t num_nonzero_feas);
+	CShareBoost(std::shared_ptr<CDenseFeatures<float64_t> >features, std::shared_ptr<CMulticlassLabels >labs, int32_t num_nonzero_feas);
 
     /** destructor */
 	virtual ~CShareBoost() {}
@@ -47,7 +47,7 @@ public:
 	int32_t get_num_nonzero_feas() const { return m_nonzero_feas; }
 
 	/** assign features */
-	void set_features(CFeatures *f);
+	void set_features(std::shared_ptr<CFeatures >f);
 
 	/** get active set */
 	SGVector<int32_t> get_activeset();
@@ -56,7 +56,7 @@ public:
 protected:
 
 	/** train machine */
-	virtual bool train_machine(CFeatures* data = NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 private:
 	void init_sb_params(); ///< init machine parameters

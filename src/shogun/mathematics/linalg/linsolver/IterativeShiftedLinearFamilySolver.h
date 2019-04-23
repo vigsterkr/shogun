@@ -49,7 +49,7 @@ public:
 	 * @param b the vector of the system
 	 * @return the solution vector
 	 */
-	virtual SGVector<T> solve(CLinearOperator<T>* A, SGVector<T> b) = 0;
+	virtual SGVector<T> solve(std::shared_ptr<CLinearOperator<T>> A, SGVector<T> b) = 0;
 
 	/**
 	 * abstract method that solves the shifted family of linear systems, multiples
@@ -63,7 +63,7 @@ public:
 	 * shift
 	 */
 	virtual SGVector<ST> solve_shifted_weighted(
-		CLinearOperator<T>* A, SGVector<T> b, SGVector<ST> shifts,
+		std::shared_ptr<CLinearOperator<T>> A, SGVector<T> b, SGVector<ST> shifts,
 		SGVector<ST> weights, bool negate) = 0;
 
 	/** @return object name */

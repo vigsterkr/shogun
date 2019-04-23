@@ -12,20 +12,20 @@ using namespace shogun;
 
 CIndexBlockGroup::CIndexBlockGroup() : CIndexBlockRelation()
 {
-	m_blocks = new CList(true);
+	m_blocks = std::make_shared<CList>(true);
 }
 
 CIndexBlockGroup::~CIndexBlockGroup()
 {
-	SG_UNREF(m_blocks);
+
 }
 
-void CIndexBlockGroup::add_block(CIndexBlock* block)
+void CIndexBlockGroup::add_block(std::shared_ptr<CIndexBlock> block)
 {
 	m_blocks->push(block);
 }
 
-void CIndexBlockGroup::remove_block(CIndexBlock* block)
+void CIndexBlockGroup::remove_block(std::shared_ptr<CIndexBlock> block)
 {
 	SG_NOTIMPLEMENTED
 }
@@ -37,16 +37,15 @@ SGVector<index_t> CIndexBlockGroup::get_SLEP_ind()
 	SG_DEBUG("Number of sub-blocks = %d\n", n_sub_blocks)
 	SGVector<index_t> ind(n_sub_blocks+1);
 
-	CIndexBlock* iterator = (CIndexBlock*)(m_blocks->get_first_element());
+	auto iterator = std::dynamic_pointer_cast<CIndexBlock>(m_blocks->get_first_element());
 	ind[0] = 0;
 	int32_t i = 0;
 	do
 	{
 		ind[i+1] = iterator->get_max_index();
-		SG_UNREF(iterator);
 		i++;
 	}
-	while ((iterator = (CIndexBlock*)m_blocks->get_next_element()) != NULL);
+	while ((iterator = std::dynamic_pointer_cast<CIndexBlock>(m_blocks->get_next_element())) != NULL);
 	//ind.display_vector("ind");
 
 	return ind;

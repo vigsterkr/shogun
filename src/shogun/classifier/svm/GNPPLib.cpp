@@ -36,7 +36,7 @@ CGNPPLib::CGNPPLib()
 }
 
 CGNPPLib::CGNPPLib(
-	float64_t* vector_y, CKernel* kernel, int32_t num_data, float64_t reg_const)
+	float64_t* vector_y, std::shared_ptr<CKernel> kernel, int32_t num_data, float64_t reg_const)
 : CSGObject()
 {
   m_reg_const = reg_const;

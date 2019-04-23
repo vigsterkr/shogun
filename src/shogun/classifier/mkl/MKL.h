@@ -85,19 +85,19 @@ class CMKL : public CSVM
 		 *
 		 * @param s SVM to use as constraint generator in MKL SIP
 		 */
-		CMKL(CSVM* s=NULL);
+		CMKL(std::shared_ptr<CSVM> s=NULL);
 
 		/** Destructor
 		 */
 		virtual ~CMKL();
 
-		virtual CSGObject* clone() const;
+		virtual std::shared_ptr<CSGObject> clone() const;
 
 		/** SVM to use as constraint generator in MKL SIP
 		 *
 		 * @param s svm
 		 */
-		inline void set_constraint_generator(CSVM* s)
+		inline void set_constraint_generator(std::shared_ptr<CSVM> s)
 		{
 			set_svm(s);
 		}
@@ -106,10 +106,10 @@ class CMKL : public CSVM
 		 *
 		 * @param s svm
 		 */
-		inline void set_svm(CSVM* s)
+		inline void set_svm(std::shared_ptr<CSVM> s)
 		{
-			SG_REF(s);
-			SG_UNREF(svm);
+			
+			
 			svm=s;
 		}
 
@@ -117,9 +117,9 @@ class CMKL : public CSVM
 		 *
 		 * @return svm
 		 */
-		inline CSVM* get_svm()
+		inline std::shared_ptr<CSVM> get_svm()
 		{
-			SG_REF(svm);
+			
 			return svm;
 		}
 
@@ -226,7 +226,7 @@ class CMKL : public CSVM
 		 * @param sumw vector of 1/2*alpha'*K_j*alpha for each kernel j
 		 * @param suma scalar sum_i alpha_i etc.
 		 */
-		static bool perform_mkl_step_helper (CMKL* mkl,
+		static bool perform_mkl_step_helper (std::shared_ptr<CMKL> mkl,
 				const float64_t* sumw, const float64_t suma)
 		{
 			return mkl->perform_mkl_step(sumw, suma);
@@ -256,7 +256,7 @@ class CMKL : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 		/** check run before starting training (to e.g. check if labeling is
 		 * two-class labeling in classification case
@@ -402,7 +402,7 @@ class CMKL : public CSVM
 
 	protected:
 		/** wrapper SVM */
-		CSVM* svm;
+		std::shared_ptr<CSVM> svm;
 		/** C_mkl */
 		float64_t C_mkl;
 		/** norm used in mkl must be > 0 */

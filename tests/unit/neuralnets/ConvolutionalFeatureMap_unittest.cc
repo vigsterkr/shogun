@@ -55,7 +55,7 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = i;
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
 	// two channels
@@ -63,10 +63,10 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
 		x2[i] = float64_t(i)/8;
 
-	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	auto input2 = std::make_shared<CNeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 	layers->append_element(input2);
 
@@ -102,7 +102,7 @@ TEST(ConvolutionalFeatureMap, compute_activations)
 		for (int32_t j=0; j<A.num_cols; j++)
 			EXPECT_NEAR(ref[i+j*w*h], A(i+map_index*w*h,j), 1.0e-15);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
@@ -124,7 +124,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = i;
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
 	// two channels
@@ -132,10 +132,10 @@ TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
 		x2[i] = float64_t(i)/8;
 
-	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	auto input2 = std::make_shared<CNeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 	layers->append_element(input2);
 
@@ -168,7 +168,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_with_stride)
 		for (int32_t j=0; j<A.num_cols; j++)
 			EXPECT_NEAR(ref[i+j*w_out*h_out], A(i+map_index*w_out*h_out,j), 1.0e-15);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_activations_logistic)
@@ -185,7 +185,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = i;
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
 	// two channels
@@ -193,10 +193,10 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
 		x2[i] = float64_t(i)/8;
 
-	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	auto input2 = std::make_shared<CNeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 	layers->append_element(input2);
 
@@ -231,7 +231,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_logistic)
 		for (int32_t j=0; j<A.num_cols; j++)
 			EXPECT_NEAR(ref[i+j*w*h], A(i+map_index*w*h,j), 1.0e-5);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
@@ -248,7 +248,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = i;
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
 	// two channels
@@ -256,10 +256,10 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
 		x2[i] = float64_t(i)/8;
 
-	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	auto input2 = std::make_shared<CNeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 	layers->append_element(input2);
 
@@ -294,7 +294,7 @@ TEST(ConvolutionalFeatureMap, compute_activations_rectified_linear)
 		for (int32_t j=0; j<A.num_cols; j++)
 			EXPECT_NEAR(ref[i+j*w*h], A(i+map_index*w*h,j), 1.0e-15);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
@@ -313,7 +313,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = CMath::random(-10.0,10.0);
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
 	// two channels
@@ -321,10 +321,10 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
 		x2[i] = CMath::random(-10.0,10.0);
 
-	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	auto input2 = std::make_shared<CNeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 	layers->append_element(input2);
 
@@ -381,7 +381,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients)
 	for (int32_t i=0; i<PG.vlen; i++)
 		EXPECT_NEAR(PG_numerical[i], PG[i], 1e-5);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
@@ -405,7 +405,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = CMath::random(-10.0,10.0);
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
 	// two channels
@@ -413,10 +413,10 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	for (int32_t i=0; i<x2.num_rows*x2.num_cols; i++)
 		x2[i] = CMath::random(-10.0,10.0);
 
-	CNeuralInputLayer* input2 = new CNeuralInputLayer (x2.num_rows);
+	auto input2 = std::make_shared<CNeuralInputLayer> (x2.num_rows);
 	input2->set_batch_size(x2.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 	layers->append_element(input2);
 
@@ -473,7 +473,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_with_stride)
 	for (int32_t i=0; i<PG.vlen; i++)
 		EXPECT_NEAR(PG_numerical[i], PG[i], 1e-5);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
@@ -490,10 +490,10 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = CMath::random(-10.0,10.0);
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 
 	SGVector<int32_t> input_indices(1);
@@ -547,7 +547,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_logistic)
 	for (int32_t i=0; i<PG.vlen; i++)
 		EXPECT_NEAR(PG_numerical[i], PG[i], 1e-5);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
@@ -564,10 +564,10 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	for (int32_t i=0; i<x1.num_rows*x1.num_cols; i++)
 		x1[i] = CMath::random(-10.0,10.0);
 
-	CNeuralInputLayer* input1 = new CNeuralInputLayer (x1.num_rows);
+	auto input1 = std::make_shared<CNeuralInputLayer> (x1.num_rows);
 	input1->set_batch_size(x1.num_cols);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 
 	SGVector<int32_t> input_indices(1);
@@ -621,7 +621,7 @@ TEST(ConvolutionalFeatureMap, compute_parameter_gradients_rectified_linear)
 	for (int32_t i=0; i<PG.vlen; i++)
 		EXPECT_NEAR(PG_numerical[i], PG[i], 1e-5);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, compute_input_gradients)
@@ -636,11 +636,11 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 
 	CMath::init_random(100);
 
-	CNeuralLinearLayer* input1 = new CNeuralLinearLayer (w*h);
+	auto input1 = std::make_shared<CNeuralLinearLayer> (w*h);
 	input1->set_batch_size(b);
 
 	// two channels
-	CNeuralLinearLayer* input2 = new CNeuralLinearLayer (2*w*h);
+	auto input2 = std::make_shared<CNeuralLinearLayer> (2*w*h);
 	input2->set_batch_size(b);
 
 	for (int32_t i=0; i<input1->get_num_neurons()*b; i++)
@@ -649,7 +649,7 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	for (int32_t i=0; i<input2->get_num_neurons()*b; i++)
 		input2->get_activations()[i] = CMath::random(-10.0,10.0);
 
-	CDynamicObjectArray* layers = new CDynamicObjectArray();
+	auto layers = std::make_shared<CDynamicObjectArray>();
 	layers->append_element(input1);
 	layers->append_element(input2);
 
@@ -729,7 +729,7 @@ TEST(ConvolutionalFeatureMap, compute_input_gradients)
 	for (int32_t i=0; i<IG2.num_rows*IG2.num_cols; i++)
 		EXPECT_NEAR(IG2[i], input2->get_activation_gradients()[i], 1e-5);
 
-	SG_UNREF(layers);
+	
 }
 
 TEST(ConvolutionalFeatureMap, pool_activations)

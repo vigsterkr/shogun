@@ -72,26 +72,22 @@ int32_t CManifoldSculpting::get_max_iteration() const
 	return m_max_iteration;
 }
 
-CFeatures* CManifoldSculpting::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CManifoldSculpting::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
-	CDenseFeatures<float64_t>* feats = (CDenseFeatures<float64_t>*)features;
-	SG_REF(feats);
-	CDistance* euclidean_distance =
-	new CEuclideanDistance(feats, feats);
+	auto feats = std::static_pointer_cast<CDenseFeatures<float64_t>>(features);
+
+	auto euclidean_distance =
+		std::make_shared<CEuclideanDistance>(feats, feats);
 
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.squishing_rate = m_squishing_rate;
 	parameters.max_iteration = m_max_iteration;
-	parameters.features = feats;
-	parameters.distance = euclidean_distance;
+	parameters.features = feats.get();
+	parameters.distance = euclidean_distance.get();
 
 	parameters.method = SHOGUN_MANIFOLD_SCULPTING;
 	parameters.target_dimension = m_target_dim;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-
-	SG_UNREF(euclidean_distance);
-
-	return embedding;
+	return tapkee_embed(parameters);
 }
 

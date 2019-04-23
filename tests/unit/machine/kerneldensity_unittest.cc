@@ -47,10 +47,10 @@ TEST(KernelDensity,gaussian_kernel_with_euclidean_distance)
 	data(1,2)=0;
 	data(1,3)=2;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
 
 
-	CKernelDensity* k=new CKernelDensity();
+	auto k=std::make_shared<CKernelDensity>();
 	k->train(feats);
 
 	SGMatrix<float64_t> test(2,5);
@@ -65,7 +65,7 @@ TEST(KernelDensity,gaussian_kernel_with_euclidean_distance)
 	test(0,4)=1;
 	test(1,4)=0;
 
-	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
+	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
 	SGVector<float64_t> res=k->get_log_density(testfeats);
 
 	EXPECT_NEAR(res[0],-2.83787706,1e-8);
@@ -74,9 +74,9 @@ TEST(KernelDensity,gaussian_kernel_with_euclidean_distance)
 	EXPECT_NEAR(res[3],-2.90409623,1e-8);
 	EXPECT_NEAR(res[4],-2.90409623,1e-8);
 
-	SG_UNREF(testfeats);
-	SG_UNREF(feats);
-	SG_UNREF(k);
+
+
+
 }
 
 TEST(KernelDensity,gaussian_kernel_with_manhattan_distance)
@@ -91,10 +91,10 @@ TEST(KernelDensity,gaussian_kernel_with_manhattan_distance)
 	data(1,2)=0;
 	data(1,3)=2;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
 
 
-	CKernelDensity* k=new CKernelDensity(1.0, K_GAUSSIAN, D_MANHATTAN);
+	auto k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_MANHATTAN);
 	k->train(feats);
 
 	SGMatrix<float64_t> test(2,5);
@@ -109,7 +109,7 @@ TEST(KernelDensity,gaussian_kernel_with_manhattan_distance)
 	test(0,4)=1;
 	test(1,4)=0;
 
-	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
+	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
 	SGVector<float64_t> res=k->get_log_density(testfeats);
 
 	EXPECT_NEAR(res[0],-3.83787706,1e-8);
@@ -118,9 +118,9 @@ TEST(KernelDensity,gaussian_kernel_with_manhattan_distance)
 	EXPECT_NEAR(res[3],-3.01287431,1e-8);
 	EXPECT_NEAR(res[4],-3.01287431,1e-8);
 
-	SG_UNREF(testfeats);
-	SG_UNREF(feats);
-	SG_UNREF(k);
+
+
+
 }
 
 TEST(KernelDensity,dual_tree)
@@ -135,10 +135,10 @@ TEST(KernelDensity,dual_tree)
 	data(1,2)=0;
 	data(1,3)=2;
 
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
 
 
-	CKernelDensity* k=new CKernelDensity(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL);
+	auto k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL);
 	k->train(feats);
 
 	SGMatrix<float64_t> test(2,5);
@@ -153,7 +153,7 @@ TEST(KernelDensity,dual_tree)
 	test(0,4)=1;
 	test(1,4)=0;
 
-	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
+	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
 	SGVector<float64_t> res=k->get_log_density(testfeats);
 
 	EXPECT_NEAR(res[0],-2.83787706,1e-8);
@@ -162,9 +162,9 @@ TEST(KernelDensity,dual_tree)
 	EXPECT_NEAR(res[3],-2.90409623,1e-8);
 	EXPECT_NEAR(res[4],-2.90409623,1e-8);
 
-	SG_UNREF(testfeats);
-	SG_UNREF(feats);
-	SG_UNREF(k);
+
+
+
 }
 
 TEST(KernelDensity,dual_tree_single_tree_equivalence)
@@ -173,26 +173,26 @@ TEST(KernelDensity,dual_tree_single_tree_equivalence)
 
 	SGMatrix<float64_t> data(5,100);
 	sg_rand->fill_array_oo(data.matrix,500);
-	CDenseFeatures<float64_t>* feats=new CDenseFeatures<float64_t>(data);
+	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
 
 	SGMatrix<float64_t> test(5,20);
 	sg_rand->fill_array_oo(test.matrix,100);
-	CDenseFeatures<float64_t>* testfeats=new CDenseFeatures<float64_t>(test);
+	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
 
 
-	CKernelDensity* k=new CKernelDensity(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL,5);
+	auto k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL,5);
 	k->train(feats);
 	SGVector<float64_t> res_dual=k->get_log_density(testfeats,2);
 
-	SG_UNREF(k);
-	k=new CKernelDensity(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_SINGLE,5);
+
+	k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_SINGLE,5);
 	k->train(feats);
 	SGVector<float64_t> res_single=k->get_log_density(testfeats);
 
 	for (int32_t i=0;i<res_dual.vlen;i++)
 		EXPECT_NEAR(res_dual[i],res_single[i],1e-8);
 
-	SG_UNREF(testfeats);
-	SG_UNREF(feats);
-	SG_UNREF(k);
+
+
+
 }

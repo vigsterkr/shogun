@@ -33,21 +33,21 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_dense(CFeatures* data)
+		virtual bool train_dense(std::shared_ptr<CFeatures> data)
 		{
 			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())
 			{
 			case F_DREAL:
 				return this_casted->template train_machine_templated<float64_t>(
-				    data->as<CDenseFeatures<float64_t>>());
+				    std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(data));
 			case F_SHORTREAL:
 				return this_casted->template train_machine_templated<float32_t>(
-				    data->as<CDenseFeatures<float32_t>>());
+				    std::dynamic_pointer_cast<CDenseFeatures<float32_t>>(data));
 			case F_LONGREAL:
 				return this_casted
 				    ->template train_machine_templated<floatmax_t>(
-				        data->as<CDenseFeatures<floatmax_t>>());
+				        std::dynamic_pointer_cast<CDenseFeatures<floatmax_t>>(data));
 			default:
 				SG_SERROR(
 				    "Training with %s of provided type %s is not "
@@ -83,7 +83,7 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_string(CFeatures* data)
+		virtual bool train_string(std::shared_ptr<CFeatures> data)
 		{
 			auto this_casted = this->template as<P>();
 			switch (data->get_feature_type())

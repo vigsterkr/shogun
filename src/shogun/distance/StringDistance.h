@@ -30,7 +30,7 @@ template <class ST> class CStringDistance : public CDistance
 		/* when training data is supplied as both l and r do_init
 		 * should be true
 		*/
-		virtual bool init(CFeatures* l, CFeatures* r)
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 		{
 			CDistance::init(l,r);
 

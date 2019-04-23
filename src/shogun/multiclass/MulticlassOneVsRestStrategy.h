@@ -41,7 +41,7 @@ public:
 	virtual ~CMulticlassOneVsRestStrategy() {}
 
 	/** start training */
-	virtual void train_start(CMulticlassLabels *orig_labels, CBinaryLabels *train_labels)
+	virtual void train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels)
 	{
 		CMulticlassStrategy::train_start(orig_labels, train_labels);
 	}

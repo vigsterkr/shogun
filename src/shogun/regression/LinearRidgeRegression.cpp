@@ -20,7 +20,7 @@ CLinearRidgeRegression::CLinearRidgeRegression()
 }
 
 CLinearRidgeRegression::CLinearRidgeRegression(
-    float64_t tau, CDenseFeatures<float64_t>* data, CLabels* lab)
+    float64_t tau, std::shared_ptr<CDenseFeatures<float64_t>> data, std::shared_ptr<CLabels> lab)
     : CDenseRealDispatch<CLinearRidgeRegression, CLinearMachine>()
 {
 	init();
@@ -42,7 +42,7 @@ void CLinearRidgeRegression::init()
 
 template <typename T>
 bool CLinearRidgeRegression::train_machine_templated(
-    const CDenseFeatures<T>* feats)
+    std::shared_ptr<const CDenseFeatures<T>> feats)
 {
 	auto N = feats->get_num_vectors();
 	auto D = feats->get_num_features();

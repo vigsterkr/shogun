@@ -36,7 +36,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			sqrtdiag_rhs(NULL), num_sqrtdiag_rhs(0),
 			use_optimized_diagonal_computation(use_opt_diag)
 		{
-			m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
+			/*m_parameters->add_vector(&sqrtdiag_lhs, &num_sqrtdiag_lhs, "sqrtdiag_lhs",
 							  "sqrt(K(x,x)) for left hand side examples.");
 			watch_param("sqrtdiag_lhs", &sqrtdiag_lhs, &num_sqrtdiag_lhs);
 
@@ -46,7 +46,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 
 			SG_ADD(&use_optimized_diagonal_computation,
 					"use_optimized_diagonal_computation",
-					"flat if optimized diagonal computation is used");
+					"flat if optimized diagonal computation is used");*/
 		}
 
 		/** default destructor */
@@ -66,8 +66,8 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			ASSERT(num_sqrtdiag_lhs>0)
 			ASSERT(num_sqrtdiag_rhs>0)
 
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
@@ -130,10 +130,11 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
+					auto cwk = k->as<CCommWordStringKernel>();
 					if (use_optimized_diagonal_computation)
-						v[i]=sqrt(((CCommWordStringKernel*) k)->compute_diag(i));
+						v[i]=sqrt(cwk->compute_diag(i));
 					else
-						v[i]=sqrt(((CCommWordStringKernel*) k)->compute_helper(i,i, true));
+						v[i]=sqrt(cwk->compute_helper(i,i, true));
 				}
 				else
 					v[i]=sqrt(k->compute(i,i));

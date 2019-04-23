@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Roman Votyakov, Evan Shelhamer, Sergey Lisitsyn, 
+ * Authors: Soeren Sonnenburg, Roman Votyakov, Evan Shelhamer, Sergey Lisitsyn,
  *          Wu Lin
  */
 
@@ -26,7 +26,7 @@ CGaussianShiftKernel::CGaussianShiftKernel(
 }
 
 CGaussianShiftKernel::CGaussianShiftKernel(
-	CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r, float64_t w, int32_t ms, int32_t ss,
+	std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r, float64_t w, int32_t ms, int32_t ss,
 	int32_t size)
 : CGaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {
@@ -44,9 +44,9 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 	bool afree, bfree;
 
 	float64_t* avec=
-		((CDenseFeatures<float64_t>*) lhs)->get_feature_vector(idx_a, alen, afree);
+		lhs->as<CDenseFeatures<float64_t>>()->get_feature_vector(idx_a, alen, afree);
 	float64_t* bvec=
-		((CDenseFeatures<float64_t>*) rhs)->get_feature_vector(idx_b, blen, bfree);
+		rhs->as<CDenseFeatures<float64_t>>()->get_feature_vector(idx_b, blen, bfree);
 	ASSERT(alen==blen)
 
 	float64_t result = 0.0 ;
@@ -68,8 +68,8 @@ float64_t CGaussianShiftKernel::compute(int32_t idx_a, int32_t idx_b)
 		result += exp(-sum/get_width())/(2*s) ;
 	}
 
-	((CDenseFeatures<float64_t>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CDenseFeatures<float64_t>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	lhs->as<CDenseFeatures<float64_t>>()->free_feature_vector(avec, idx_a, afree);
+	rhs->as<CDenseFeatures<float64_t>>()->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

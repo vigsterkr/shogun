@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Chiyuan Zhang, Shell Hu, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Chiyuan Zhang, Shell Hu, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Bjoern Esser, Sanuj Sharma
  */
 
@@ -24,12 +24,14 @@ CMulticlassOneVsRestStrategy::CMulticlassOneVsRestStrategy(EProbHeuristicType pr
 
 SGVector<int32_t> CMulticlassOneVsRestStrategy::train_prepare_next()
 {
+	auto mc_orig = multiclass_labels(m_orig_labels);
+	auto binary_train = binary_labels(m_train_labels);
 	for (int32_t i=0; i < m_orig_labels->get_num_labels(); ++i)
 	{
-		if (((CMulticlassLabels*) m_orig_labels)->get_int_label(i)==m_train_iter)
-			((CBinaryLabels*) m_train_labels)->set_label(i, +1.0);
+		if (mc_orig->get_int_label(i)==m_train_iter)
+			binary_train->set_label(i, +1.0);
 		else
-			((CBinaryLabels*) m_train_labels)->set_label(i, -1.0);
+			binary_train->set_label(i, -1.0);
 	}
 
 	// increase m_train_iter *after* setting labels

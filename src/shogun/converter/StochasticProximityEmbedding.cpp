@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn, 
+ * Authors: Fernando Iglesias, Soeren Sonnenburg, Sergey Lisitsyn,
  *          Chiyuan Zhang, Heiko Strathmann, Bjoern Esser
  */
 
@@ -104,16 +104,16 @@ const char * CStochasticProximityEmbedding::get_name() const
 	return "StochasticProximityEmbedding";
 }
 
-CFeatures*
-CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures>
+CStochasticProximityEmbedding::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	if ( !features )
 		SG_ERROR("Features are required to apply SPE\n")
 
 	// Shorthand for the DenseFeatures
-	CDenseFeatures< float64_t >* simple_features =
-		(CDenseFeatures< float64_t >*) features;
-	SG_REF(features);
+	auto simple_features =
+		std::static_pointer_cast<CDenseFeatures<float64_t>>(features);
+
 
 	// Get and check the number of vectors
 	int32_t N = simple_features->get_num_vectors();
@@ -126,14 +126,14 @@ CStochasticProximityEmbedding::transform(CFeatures* features, bool inplace)
 			 "the number of updates (%d)\n", N, m_nupdates);
 
 	m_distance->init(simple_features, simple_features);
-	CDenseFeatures< float64_t >* embedding = embed_distance(m_distance);
+	auto embedding = embed_distance(m_distance);
 	m_distance->remove_lhs_and_rhs();
 
-	SG_UNREF(features);
-	return (CFeatures*)embedding;
+
+	return embedding;
 }
 
-CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDistance* distance)
+std::shared_ptr<CDenseFeatures< float64_t >> CStochasticProximityEmbedding::embed_distance(std::shared_ptr<CDistance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
@@ -141,10 +141,9 @@ CDenseFeatures< float64_t >* CStochasticProximityEmbedding::embed_distance(CDist
 	parameters.target_dimension = m_target_dim;
 	parameters.spe_num_updates = m_nupdates;
 	parameters.spe_tolerance = m_tolerance;
-	parameters.distance = distance;
+	parameters.distance = distance.get();
 	parameters.spe_global_strategy = (m_strategy==SPE_GLOBAL);
 	parameters.max_iteration = m_max_iteration;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	return tapkee_embed(parameters);
 }
 

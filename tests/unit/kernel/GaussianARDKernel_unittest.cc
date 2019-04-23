@@ -75,19 +75,19 @@ TEST(GaussianARDKernel_scalar,get_kernel_matrix)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
 
 	float64_t ell=2.0;
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<CGaussianARDKernel>(10);
 	float64_t weight=0.5;
 	kernel->set_scalar_weights(weight/ell);
 
 	float64_t ell2=ell/weight;
-	CGaussianKernel* kernel2=new CGaussianKernel(10, 2*ell2*ell2);
+	auto kernel2=std::make_shared<CGaussianKernel>(10, 2*ell2*ell2);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
@@ -119,10 +119,10 @@ TEST(GaussianARDKernel_scalar,get_kernel_matrix)
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
+
 }
 
 TEST(GaussianARDKernel_scalar,get_parameter_gradient)
@@ -158,19 +158,19 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
 
 	float64_t ell=4.0;
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<CGaussianARDKernel>(10);
 	float64_t weight=1.0;
 	kernel->set_scalar_weights(weight/ell);
 
 	float64_t ell2=ell/weight;
-	CGaussianKernel* kernel2=new CGaussianKernel(10, 2*ell2*ell2);
+	auto kernel2=std::make_shared<CGaussianKernel>(10, 2*ell2*ell2);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
@@ -204,10 +204,10 @@ TEST(GaussianARDKernel_scalar,get_parameter_gradient)
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
+
 }
 
 TEST(GaussianARDKernel_vector,get_kernel_matrix)
@@ -243,11 +243,11 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	lat_feat_train(1,1)=2;
 	lat_feat_train(1,2)=-5;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
 
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<CGaussianARDKernel>(10);
 
 	float64_t weight1=6.0;
 	float64_t weight2=3.0;
@@ -256,8 +256,8 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	weights[1]=1.0/weight2;
 	kernel->set_vector_weights(weights);
 
-	SG_REF(latent_features_train)
-	SG_REF(features_train)
+
+
 	kernel->init(features_train, latent_features_train);
 
 	//result from GPML 3.5
@@ -341,9 +341,9 @@ TEST(GaussianARDKernel_vector,get_kernel_matrix)
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(latent_features_train)
-	SG_UNREF(features_train)
+
+
+
 }
 
 TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
@@ -372,10 +372,10 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	lat_feat_train2(1,1)=2;
 	lat_feat_train2(1,2)=-5;
 
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
-	CDenseFeatures<float64_t>* latent_features_train2=new CDenseFeatures<float64_t>(lat_feat_train2);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
+	auto latent_features_train2=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train2);
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<CGaussianARDKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -390,8 +390,8 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
-	SG_REF(latent_features_train)
-	SG_REF(latent_features_train2)
+
+
 
 	kernel->init(latent_features_train, latent_features_train2);
 	//result from GPML 3.5
@@ -421,9 +421,9 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix1)
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(latent_features_train)
-	SG_UNREF(latent_features_train2)
+
+
+
 }
 
 TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
@@ -459,11 +459,11 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 	lat_feat_train(1,1)=2;
 	lat_feat_train(1,2)=-5;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
 
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<CGaussianARDKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -478,8 +478,8 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
-	SG_REF(latent_features_train)
-	SG_REF(features_train)
+
+
 	kernel->init(features_train, latent_features_train);
 
 	//result from GPML 3.5
@@ -562,9 +562,9 @@ TEST(GaussianARDKernel_matrix,get_kernel_matrix2)
 	EXPECT_NEAR(mat(2,2),  1.000000000000000,  abs_tolerance);
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(latent_features_train)
-	SG_UNREF(features_train)
+
+
+
 }
 
 TEST(GaussianARDKernel,get_kernel_diagonal)
@@ -600,10 +600,10 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
 
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<CGaussianARDKernel>(10);
 
 	int32_t t_dim=2;
 	SGMatrix<float64_t> weights(t_dim,dim);
@@ -618,8 +618,8 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 	weights(1,1)=weight4;
 	kernel->set_matrix_weights(weights);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 
@@ -646,9 +646,9 @@ TEST(GaussianARDKernel,get_kernel_diagonal)
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
 }
 
 TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
@@ -684,19 +684,19 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	lat_feat_train(1,1)=2.00000;
 	lat_feat_train(1,2)=-5.00000;
 
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CDenseFeatures<float64_t>* latent_features_train=new CDenseFeatures<float64_t>(lat_feat_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
+	auto latent_features_train=std::make_shared<CDenseFeatures<float64_t>>(lat_feat_train);
 
 	float64_t ell=4.0;
-	CExponentialARDKernel* kernel=new CGaussianARDKernel(10);
+	auto kernel=std::make_shared<CGaussianARDKernel>(10);
 	float64_t weight=1.0;
 	kernel->set_scalar_weights(weight/ell);
 
 	float64_t ell2=ell/weight;
-	CGaussianKernel* kernel2=new CGaussianKernel(10, 2*ell2*ell2);
+	auto kernel2=std::make_shared<CGaussianKernel>(10, 2*ell2*ell2);
 
-	SG_REF(features_train)
-	SG_REF(latent_features_train)
+
+
 
 	kernel->init(features_train, latent_features_train);
 	kernel2->init(features_train, latent_features_train);
@@ -724,8 +724,8 @@ TEST(GaussianARDKernel,get_parameter_gradient_diagonal)
 	}
 
 	// cleanup
-	SG_UNREF(kernel);
-	SG_UNREF(kernel2);
-	SG_UNREF(features_train)
-	SG_UNREF(latent_features_train)
+
+
+
+
 }

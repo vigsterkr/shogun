@@ -38,6 +38,8 @@
 #include <shogun/multiclass/tree/CARTreeNodeData.h>
 #include <shogun/features/DenseFeatures.h>
 
+#include <vector>
+
 namespace shogun
 {
 
@@ -102,7 +104,7 @@ public:
 	/** set labels - automagically switch machine problem type based on type of labels supplied
 	 * @param lab labels
 	 */
-	virtual void set_labels(CLabels* lab);
+	virtual void set_labels(std::shared_ptr<CLabels> lab);
 
 	/** get name
 	 * @return class name CARTree
@@ -123,19 +125,19 @@ public:
 	 * @param lab labels supplied
 	 * @return true for valid labels, false for invalid labels
 	 */
-	virtual bool is_label_valid(CLabels* lab) const;
+	virtual bool is_label_valid(std::shared_ptr<CLabels> lab) const;
 
 	/** classify data using Classification Tree
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
-	virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+	virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
 
 	/** Get regression labels using Regression Tree
 	 * @param data data whose regression output is needed
 	 * @return Regression output for various test vectors
 	 */
-	virtual CRegressionLabels* apply_regression(CFeatures* data=NULL);
+	virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
 
 	/** uses test dataset to choose best pruned subtree
 	 *
@@ -143,7 +145,7 @@ public:
 	 * @param gnd_truth test labels
 	 * @param weights weights of data points
 	 */
-	void prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabels* gnd_truth, SGVector<float64_t> weights=SGVector<float64_t>());
+	void prune_using_test_dataset(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<CLabels> gnd_truth, SGVector<float64_t> weights=SGVector<float64_t>());
 
 	/** set weights of data points
 	 * @param w vector of weights
@@ -228,7 +230,7 @@ public:
 	 */
 	void set_label_epsilon(float64_t epsilon);
 
-	void pre_sort_features(CFeatures* data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
+	void pre_sort_features(std::shared_ptr<CFeatures> data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
 	void set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
@@ -237,7 +239,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
 	/** CARTtrain - recursive CART training method
 	 *
@@ -247,7 +249,7 @@ protected:
 	 * @param level current tree depth
 	 * @return pointer to the root of the CART subtree
 	 */
-	virtual CBinaryTreeMachineNode<CARTreeNodeData>* CARTtrain(CDenseFeatures<float64_t>* data, const SGVector<float64_t>& weights, CDenseLabels* labels, int32_t level);
+	virtual std::shared_ptr<CBinaryTreeMachineNode<CARTreeNodeData>> CARTtrain(std::shared_ptr<CDenseFeatures<float64_t>> data, const SGVector<float64_t>& weights, std::shared_ptr<CDenseLabels> labels, int32_t level);
 
 	/** modify labels for compute_best_attribute
 	 *
@@ -270,7 +272,7 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<CDenseLabels> labels,
 		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing,
 		index_t &count_left, index_t &count_right, index_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
 
@@ -361,14 +363,14 @@ protected:
 	 * @param current root of current subtree
 	 * @return classification/regression labels of input data
 	 */
-	CLabels* apply_from_current_node(CDenseFeatures<float64_t>* feats, bnode_t* current);
+	std::shared_ptr<CLabels> apply_from_current_node(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<bnode_t> current);
 
 	/** prune by cross validation
 	 *
 	 * @param data training data
 	 * @param folds the integer V for V-fold cross validation
 	 */
-	void prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_t folds);
+	void prune_by_cross_validation(std::shared_ptr<CDenseFeatures<float64_t>> data, int32_t folds);
 
 	/** computes error in classification/regression
 	 * for classification it eveluates weight_missclassified/total_weight
@@ -379,34 +381,34 @@ protected:
 	 * @param weights weights associated with the labels
 	 * @return error evaluated
 	 */
-	float64_t compute_error(CLabels* labels, CLabels* reference, SGVector<float64_t> weights) const;
+	float64_t compute_error(std::shared_ptr<CLabels> labels, std::shared_ptr<CLabels> reference, SGVector<float64_t> weights) const;
 
 	/** cost-complexity pruning
 	 *
 	 * @param tree the tree to be pruned
 	 * @return CDynamicObjectArray of pruned trees
 	 */
-	CDynamicObjectArray* prune_tree(CTreeMachine<CARTreeNodeData>* tree);
+	std::shared_ptr<CDynamicObjectArray> prune_tree(std::shared_ptr<CTreeMachine<CARTreeNodeData>> tree);
 
 	/** recursively finds alpha corresponding to weakest link(s)
 	 *
 	 * @param node the root of subtree whose weakest link it finds
 	 * @return alpha value corresponding to the weakest link in subtree
 	 */
-	float64_t find_weakest_alpha(bnode_t* node) const;
+	float64_t find_weakest_alpha(std::shared_ptr<bnode_t> node) const;
 
 	/** recursively cuts weakest link(s) in a tree
 	 *
 	 * @param node the root of subtree whose weakest link it cuts
 	 * @param alpha alpha value corresponding to weakest link
 	 */
-	void cut_weakest_link(bnode_t* node, float64_t alpha);
+	void cut_weakest_link(std::shared_ptr<bnode_t> node, float64_t alpha);
 
 	/** recursively forms base case $ft_1$f tree from $ft_max$f during pruning
 	 *
 	 * @param node the root of current subtree
 	 */
-	void form_t1(bnode_t* node);
+	void form_t1(std::shared_ptr<bnode_t> node);
 
 	/** initializes members of class */
 	void init();
@@ -457,7 +459,7 @@ protected:
 	EProblemType m_mode;
 
 	/** stores \f$\alpha_k\f$ values evaluated in cost-complexity pruning **/
-	CDynamicArray<float64_t>* m_alphas;
+	std::vector<float64_t> m_alphas;
 
 	/** max allowed depth of tree **/
 	int32_t m_max_depth;

@@ -23,15 +23,15 @@ int32_t CIndexFeatures::get_num_vectors() const
 	return m_subset_stack->has_subsets() ? m_subset_stack->get_size() : num_vectors;
 }
 
-CFeatures* CIndexFeatures::duplicate() const
+std::shared_ptr<CFeatures> CIndexFeatures::duplicate() const
 {
-	CIndexFeatures* indexfeature_dup =
-			new CIndexFeatures(m_feature_index.clone());
+	auto indexfeature_dup =
+			std::make_shared<CIndexFeatures>(m_feature_index.clone());
 	if (m_subset_stack != NULL)
 	{
-		SG_UNREF(indexfeature_dup->m_subset_stack);
-		indexfeature_dup->m_subset_stack=new CSubsetStack(*m_subset_stack);
-		SG_REF(indexfeature_dup->m_subset_stack);
+
+		indexfeature_dup->m_subset_stack=std::make_shared<CSubsetStack>(*m_subset_stack);
+
 	}
 	return indexfeature_dup;
 }

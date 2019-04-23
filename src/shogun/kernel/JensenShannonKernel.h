@@ -42,7 +42,7 @@ class CJensenShannonKernel: public CDotKernel
 		 * @param size cache size
 		 */
 		CJensenShannonKernel(
-			CDenseFeatures<float64_t>* l, CDenseFeatures<float64_t>* r,
+			std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r,
 			int32_t size=10);
 
 		virtual ~CJensenShannonKernel();
@@ -53,7 +53,7 @@ class CJensenShannonKernel: public CDotKernel
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** return what type of kernel we are
 		 *

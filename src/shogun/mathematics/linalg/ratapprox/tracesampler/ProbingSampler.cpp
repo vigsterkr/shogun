@@ -32,7 +32,7 @@ CProbingSampler::CProbingSampler() : CTraceSampler()
 }
 
 CProbingSampler::CProbingSampler(
-	CSparseMatrixOperator<float64_t>* matrix_operator, int64_t power,
+	std::shared_ptr<CSparseMatrixOperator<float64_t>> matrix_operator, int64_t power,
 	EOrderingVariant ordering, EColoringVariant coloring)
 	: CTraceSampler(matrix_operator->get_dimension())
 {
@@ -42,8 +42,6 @@ CProbingSampler::CProbingSampler(
 	m_matrix_operator=matrix_operator;
 	m_ordering=ordering;
 	m_coloring=coloring;
-
-	SG_REF(m_matrix_operator);
 }
 
 void CProbingSampler::init()
@@ -54,6 +52,7 @@ void CProbingSampler::init()
 	m_coloring=DISTANCE_TWO;
 	m_is_precomputed=false;
 
+/*
 	SG_ADD(&m_coloring_vector, "coloring_vector", "the coloring vector generated"
 		" from coloring");
 
@@ -62,13 +61,13 @@ void CProbingSampler::init()
 	SG_ADD(&m_is_precomputed, "is_precomputed",
 		"flag that is true if already precomputed");
 
-	SG_ADD((CSGObject**)&m_matrix_operator, "matrix_operator",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_matrix_operator, "matrix_operator",
 		"the sparse-matrix linear opeator for coloring");
+		*/
 }
 
 CProbingSampler::~CProbingSampler()
 {
-	SG_UNREF(m_matrix_operator);
 }
 
 void CProbingSampler::set_coloring_vector(SGVector<int32_t> coloring_vector)

@@ -15,21 +15,21 @@ CSphericalKernel::CSphericalKernel(): CKernel(0), distance(NULL)
 	set_sigma(1.0);
 }
 
-CSphericalKernel::CSphericalKernel(int32_t size, float64_t sig, CDistance* dist)
+CSphericalKernel::CSphericalKernel(int32_t size, float64_t sig, std::shared_ptr<CDistance> dist)
 : CKernel(size), distance(dist)
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	register_params();
 	set_sigma(sig);
 }
 
 CSphericalKernel::CSphericalKernel(
-	CFeatures *l, CFeatures *r, float64_t sig, CDistance* dist)
+	std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t sig, std::shared_ptr<CDistance> dist)
 : CKernel(10), distance(dist)
 {
 	ASSERT(distance)
-	SG_REF(distance);
+	
 	register_params();
 	set_sigma(sig);
 	init(l, r);
@@ -38,10 +38,10 @@ CSphericalKernel::CSphericalKernel(
 CSphericalKernel::~CSphericalKernel()
 {
 	cleanup();
-	SG_UNREF(distance);
+	
 }
 
-bool CSphericalKernel::init(CFeatures* l, CFeatures* r)
+bool CSphericalKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	ASSERT(distance)
 	CKernel::init(l,r);

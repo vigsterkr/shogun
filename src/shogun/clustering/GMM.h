@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Alesis Novik, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Alesis Novik, Sergey Lisitsyn, Heiko Strathmann,
  *          Evgeniy Andreev, Evan Shelhamer, Wuwei Lin, Yori Zwols
  */
 #ifndef _GMM_H__
@@ -47,7 +47,7 @@ class CGMM : public CDistribution
 		 * @param coefficients mixing coefficients
 		 * @param copy true if should be copied
 		 */
-		CGMM(std::vector<CGaussian*> components, SGVector<float64_t> coefficients,
+		CGMM(std::vector<std::shared_ptr<CGaussian>> components, SGVector<float64_t> coefficients,
 				bool copy=false);
 		virtual ~CGMM();
 
@@ -60,7 +60,7 @@ class CGMM : public CDistribution
 		 *
 		 * @return true
 		 */
-		virtual bool train(CFeatures* data=NULL);
+		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
 
 		/** learn model using EM
 		 *
@@ -114,7 +114,7 @@ class CGMM : public CDistribution
 		 * @param index index of component
 		 * @return component at index
 		 */
-		CDistribution* get_component(index_t index) const;
+		std::shared_ptr<CDistribution> get_component(index_t index) const;
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -189,13 +189,13 @@ class CGMM : public CDistribution
 		 *
 		 * @return components
 		 */
-		virtual std::vector<CGaussian*> get_comp();
+		virtual std::vector<std::shared_ptr<CGaussian>> get_comp();
 
 		/** set components
 		 *
 		 * @param components Gaussian components
 		 */
-		virtual void set_comp(std::vector<CGaussian*> components);
+		virtual void set_comp(std::vector<std::shared_ptr<CGaussian>> components);
 
 		/** sample from model
 		 *
@@ -239,7 +239,7 @@ class CGMM : public CDistribution
 
 	protected:
 		/** Mixture components */
-		std::vector<CGaussian*> m_components;
+		std::vector<std::shared_ptr<CGaussian>> m_components;
 		/** Mixture coefficients */
 		SGVector<float64_t> m_coefficients;
 };

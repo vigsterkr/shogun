@@ -39,7 +39,7 @@ template <class ST> class CStringPreprocessor : public CPreprocessor
 		 * @param features the string input features
 		 * @return the result feature object after applying the preprocessor
 		 */
-		virtual CFeatures* transform(CFeatures* features, bool inplace = true);
+		virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
 
 		/// apply preproc on single feature vector
 		virtual ST* apply_to_string(ST* f, int32_t &len)=0;

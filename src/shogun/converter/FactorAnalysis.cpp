@@ -54,15 +54,15 @@ float64_t CFactorAnalysis::get_epsilon() const
 	return m_epsilon;
 }
 
-CFeatures* CFactorAnalysis::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CFactorAnalysis::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.max_iteration = m_max_iteration;
-	parameters.features = (CDotFeatures*)features;
+	parameters.features = (CDotFeatures*)features.get();
 	parameters.fa_epsilon = m_epsilon;
 	parameters.method = SHOGUN_FACTOR_ANALYSIS;
 	parameters.target_dimension = m_target_dim;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	return embedding;
+	return tapkee_embed(parameters);
+
 }
 

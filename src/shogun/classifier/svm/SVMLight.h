@@ -56,7 +56,7 @@ int32_t    *index;
 /** number of training documents */
 int32_t    totdoc;
 /** kernel */
-CKernel* kernel;
+std::shared_ptr<CKernel> kernel;
 
 /* the following values are not written to file */
 /** leave-one-out estimates */
@@ -234,7 +234,7 @@ class CSVMLight : public CSVM
    * @param k kernel
    * @param lab labels
    */
-  CSVMLight(float64_t C, CKernel* k, CLabels* lab);
+  CSVMLight(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
   virtual ~CSVMLight();
 
   /** init SVM */
@@ -646,7 +646,7 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 
  protected:
   /** model */

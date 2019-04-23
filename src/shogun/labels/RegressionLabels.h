@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Saurabh Mahindre, Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang, 
+ * Authors: Saurabh Mahindre, Soeren Sonnenburg, Evgeniy Andreev, Yuyu Zhang,
  *          Chiyuan Zhang, Fernando Iglesias, Sergey Lisitsyn
  */
 
@@ -50,7 +50,7 @@ class CRegressionLabels : public CDenseLabels
 		 *
 		 * @param loader File object via which to load data
 		 */
-		CRegressionLabels(CFile* loader);
+		CRegressionLabels(std::shared_ptr<CFile> loader);
 
 		/** get label type
 		 *
@@ -64,15 +64,15 @@ class CRegressionLabels : public CDenseLabels
 		/** shallow-copy of the labels object
 		 * @see CLabels::duplicate
 		 */
-		virtual CLabels* duplicate() const;
+		virtual std::shared_ptr<CLabels> duplicate() const;
 
 #ifndef SWIG // SWIG should skip this part
-		virtual CLabels* shallow_subset_copy();
+		virtual std::shared_ptr<CLabels> shallow_subset_copy();
 #endif
 };
 
 #ifndef SWIG
-Some<CRegressionLabels> regression_labels(CLabels* orig);
+std::shared_ptr<CRegressionLabels> regression_labels(std::shared_ptr<CLabels> orig);
 #endif // SWIG
 }
 #endif

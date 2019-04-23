@@ -27,7 +27,7 @@ class CGNPPSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGNPPSVM(float64_t C, CKernel* k, CLabels* lab);
+		CGNPPSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
 
 		virtual ~CGNPPSVM();
 
@@ -49,7 +49,7 @@ class CGNPPSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 };
 }
 #endif

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Yuyu Zhang, Bjoern Esser,
  *          Viktor Gal
  */
 
@@ -70,7 +70,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param size cache size
 		 */
 		CCommWordStringKernel(
-			CStringFeatures<uint16_t>* l, CStringFeatures<uint16_t>* r,
+			std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r,
 			bool use_sign=false, int32_t size=10);
 
 		virtual ~CCommWordStringKernel();
@@ -81,7 +81,7 @@ class CCommWordStringKernel : public CStringKernel<uint16_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

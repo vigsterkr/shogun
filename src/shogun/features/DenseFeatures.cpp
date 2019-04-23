@@ -8,7 +8,6 @@
  *          Christopher Goldsworthy
  */
 
-#include <shogun/base/some.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/preprocessor/DensePreprocessor.h>
 #include <shogun/io/SGIO.h>
@@ -48,9 +47,9 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(const CDenseFeatures & ori
 
 	if (orig.m_subset_stack != NULL)
 	{
-		SG_UNREF(m_subset_stack);
-		m_subset_stack=new CSubsetStack(*orig.m_subset_stack);
-		SG_REF(m_subset_stack);
+
+		m_subset_stack=std::make_shared<CSubsetStack>(*orig.m_subset_stack);
+
 	}
 }
 
@@ -67,14 +66,14 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(ST* src, int32_t num_feat,
 	init();
 	set_feature_matrix(SGMatrix<ST>(src, num_feat, num_vec));
 }
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(CFile* loader) :
+template<class ST> CDenseFeatures<ST>::CDenseFeatures(std::shared_ptr<CFile> loader) :
 		CDotFeatures()
 {
 	init();
 	load(loader);
 }
 
-template<class ST> CDenseFeatures<ST>::CDenseFeatures(CDotFeatures* features) :
+template<class ST> CDenseFeatures<ST>::CDenseFeatures(std::shared_ptr<CDotFeatures> features) :
 		CDotFeatures()
 {
 	init();
@@ -96,9 +95,9 @@ template<class ST> CDenseFeatures<ST>::CDenseFeatures(CDotFeatures* features) :
 	num_vectors = num_vec;
 }
 
-template<class ST> CFeatures* CDenseFeatures<ST>::duplicate() const
+template<class ST> std::shared_ptr<CFeatures> CDenseFeatures<ST>::duplicate() const
 {
-	return new CDenseFeatures<ST>(*this);
+	return std::make_shared<CDenseFeatures>(*this);
 }
 
 template<class ST> CDenseFeatures<ST>::~CDenseFeatures()
@@ -109,7 +108,7 @@ template<class ST> CDenseFeatures<ST>::~CDenseFeatures()
 template<class ST> void CDenseFeatures<ST>::free_features()
 {
 	free_feature_matrix();
-	SG_UNREF(feature_cache);
+
 }
 
 template<class ST> void CDenseFeatures<ST>::free_feature_matrix()
@@ -333,13 +332,13 @@ ST* CDenseFeatures<ST>::get_feature_matrix(
 	return feature_matrix.matrix;
 }
 
-template<class ST> CDenseFeatures<ST>* CDenseFeatures<ST>::get_transposed()
+template<class ST> std::shared_ptr<CDenseFeatures<ST>> CDenseFeatures<ST>::get_transposed()
 {
 	int32_t num_feat;
 	int32_t num_vec;
-	ST* fm = get_transposed(num_feat, num_vec);
+	auto fm = get_transposed(num_feat, num_vec);
 
-	return new CDenseFeatures<ST>(fm, num_feat, num_vec);
+	return std::make_shared<CDenseFeatures>(fm, num_feat, num_vec);
 }
 
 template<class ST> ST* CDenseFeatures<ST>::get_transposed(int32_t &num_feat, int32_t &num_vec)
@@ -393,10 +392,10 @@ template<class ST> void CDenseFeatures<ST>::initialize_cache()
 
 	if (num_features && num_vectors)
 	{
-		SG_UNREF(feature_cache);
-		feature_cache = new CCache<ST>(get_cache_size(), num_features,
+
+		feature_cache = std::make_shared<CCache<ST>>(get_cache_size(), num_features,
 				num_vectors);
-		SG_REF(feature_cache);
+
 	}
 }
 
@@ -404,13 +403,13 @@ template<class ST> EFeatureClass CDenseFeatures<ST>::get_feature_class() const  
 
 template<class ST> int32_t CDenseFeatures<ST>::get_dim_feature_space() const { return num_features; }
 
-template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
+template<class ST> float64_t CDenseFeatures<ST>::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df,
 		int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CDenseFeatures<ST>* sf = (CDenseFeatures<ST>*) df;
+	auto sf = std::static_pointer_cast<CDenseFeatures<ST>>(df);
 
 	int32_t len1, len2;
 	bool free1, free2;
@@ -522,7 +521,7 @@ template<class ST> void CDenseFeatures<ST>::free_feature_iterator(void* iterator
 	SG_FREE(it);
 }
 
-template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> indices) const
+template<class ST> std::shared_ptr<CFeatures> CDenseFeatures<ST>::copy_subset(SGVector<index_t> indices) const
 {
 	SGMatrix<ST> feature_matrix_copy(num_features, indices.vlen);
 
@@ -534,13 +533,11 @@ template<class ST> CFeatures* CDenseFeatures<ST>::copy_subset(SGVector<index_t> 
 				num_features*sizeof(ST));
 	}
 
-	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
-	SG_REF(result);
-	return result;
+	return std::make_shared<CDenseFeatures>(feature_matrix_copy);
 }
 
 template<class ST>
-CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) const
+std::shared_ptr<CFeatures> CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) const
 {
 	SG_DEBUG("Entering!\n");
 
@@ -562,22 +559,19 @@ CFeatures* CDenseFeatures<ST>::copy_dimension_subset(SGVector<index_t> dims) con
 		}
 	}
 
-	CFeatures* result=new CDenseFeatures(feature_matrix_copy);
-	SG_REF(result);
-
 	SG_DEBUG("Leaving!\n");
-	return result;
+	return std::make_shared<CDenseFeatures>(feature_matrix_copy);
 }
 
 template<class ST>
-CFeatures* CDenseFeatures<ST>::shallow_subset_copy()
+std::shared_ptr<CFeatures> CDenseFeatures<ST>::shallow_subset_copy()
 {
-	CFeatures* shallow_copy_features=NULL;
+	std::shared_ptr<CFeatures> shallow_copy_features=NULL;
 
 	SG_SDEBUG("Using underlying feature matrix with %d dimensions and %d feature vectors!\n", num_features, num_vectors);
 	SGMatrix<ST> shallow_copy_matrix(feature_matrix);
-	shallow_copy_features=new CDenseFeatures<ST>(shallow_copy_matrix);
-	SG_REF(shallow_copy_features);
+	shallow_copy_features=std::make_shared<CDenseFeatures>(shallow_copy_matrix);
+
 	if (m_subset_stack->has_subsets())
 		shallow_copy_features->add_subset(m_subset_stack->get_last_subset()->get_subset_idx());
 
@@ -691,7 +685,7 @@ template<> float64_t CDenseFeatures<float64_t>::dense_dot(
 	return result;
 }
 
-template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
+template<class ST> bool CDenseFeatures<ST>::is_equal(std::shared_ptr<CDenseFeatures> rhs)
 {
 	if ( num_features != rhs->num_features || num_vectors != rhs->num_vectors )
 		return false;
@@ -726,32 +720,24 @@ template<class ST> bool CDenseFeatures<ST>::is_equal(CDenseFeatures* rhs)
 }
 
 template <class ST>
-CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
+std::shared_ptr<CFeatures> CDenseFeatures<ST>::create_merged_copy(const std::vector<std::shared_ptr<CFeatures>>& others) const
 {
 	SG_DEBUG("Entering.\n");
 
-	REQUIRE(others!=nullptr, "The list of other feature instances is not initialized!\n");
-
-	auto current=others->get_first_element();
+	REQUIRE(others.size() > 0, "The list of other feature instances is not initialized!\n");
 	auto total_num_vectors=get_num_vectors();
-	auto unref_required=others->get_delete_data();
 
-	while (current!=nullptr)
+	for (auto current: others)
 	{
-		auto casted = dynamic_cast<const CDenseFeatures<ST>*>(current);
+		auto casted = current->as<CDenseFeatures<ST>>();
 
-		REQUIRE(casted!=nullptr, "Provided object's type (%s) must match own type (%s)!\n",
+		REQUIRE(casted, "Provided object's type (%s) must match own type (%s)!\n",
 				current->get_name(), get_name());
 		REQUIRE(num_features==casted->num_features,
 				"Provided feature object has different dimension (%d) than this one (%d)!\n",
 				casted->num_features, num_features);
 
 		total_num_vectors+=casted->get_num_vectors();
-
-		if (unref_required)
-			SG_UNREF(current);
-
-		current=others->get_next_element();
 	}
 
 	SGMatrix<ST> data(num_features, total_num_vectors);
@@ -759,36 +745,26 @@ CFeatures* CDenseFeatures<ST>::create_merged_copy(CList* others) const
 	copy_feature_matrix(data, num_copied);
 	num_copied+=get_num_vectors();
 
-	current=others->get_first_element();
-
-	while (current!=nullptr)
+	for (auto current: others)
 	{
-		auto casted = static_cast<const CDenseFeatures<ST>*>(current);
+		auto casted = current->as<CDenseFeatures<ST>>();
 		casted->copy_feature_matrix(data, num_copied);
 		num_copied+=casted->get_num_vectors();
-
-		if (unref_required)
-			SG_UNREF(current);
-
-		current=others->get_next_element();
 	}
 
-	auto result=new CDenseFeatures<ST>(data);
-
 	SG_DEBUG("Leaving.\n");
-	return result;
+	return std::make_shared<CDenseFeatures>(data);
 }
 
 template <class ST>
-CFeatures* CDenseFeatures<ST>::create_merged_copy(CFeatures* other) const
+std::shared_ptr<CFeatures> CDenseFeatures<ST>::create_merged_copy(std::shared_ptr<CFeatures> other) const
 {
-	auto list=some<CList>();
-	list->append_element(other);
-	return create_merged_copy(list);
+	std::vector<std::shared_ptr<CFeatures>> v {other};
+	return create_merged_copy(v);
 }
 
 template<class ST>
-void CDenseFeatures<ST>::load(CFile* loader)
+void CDenseFeatures<ST>::load(std::shared_ptr<CFile> loader)
 {
 	SGMatrix<ST> matrix;
 	matrix.load(loader);
@@ -796,17 +772,17 @@ void CDenseFeatures<ST>::load(CFile* loader)
 }
 
 template<class ST>
-void CDenseFeatures<ST>::save(CFile* writer)
+void CDenseFeatures<ST>::save(std::shared_ptr<CFile> writer)
 {
 	feature_matrix.save(writer);
 }
 
-template< class ST > CDenseFeatures< ST >* CDenseFeatures< ST >::obtain_from_generic(CFeatures* const base_features)
+template< class ST > std::shared_ptr<CDenseFeatures< ST >> CDenseFeatures< ST >::obtain_from_generic(std::shared_ptr<CFeatures> base_features)
 {
 	REQUIRE(base_features->get_feature_class() == C_DENSE,
 			"base_features must be of dynamic type CDenseFeatures\n")
 
-	return (CDenseFeatures< ST >*) base_features;
+	return std::static_pointer_cast<CDenseFeatures< ST >>(base_features);
 }
 
 template <typename ST>

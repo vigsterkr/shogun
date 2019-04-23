@@ -231,8 +231,8 @@ TEST(SparseMatrixOperator, get_sparsity_structure)
 	CSparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
 	CSparseMatrixOperator<float64_t> op(sm);
-	CSparseMatrixOperator<bool>* b_op
-		=static_cast<CSparseMatrixOperator<bool>*>(op);
+	auto b_op
+		=(CSparseMatrixOperator<bool>*)(op);
 
 	SparseMatrix<bool, RowMajor, int32_t> sp
 		=EigenSparseUtil<bool>::toEigenSparse(b_op->get_matrix_operator());
@@ -265,7 +265,7 @@ TEST(SparseMatrixOperator, get_sparsity_structure)
 			EXPECT_EQ(sp_struct1->m_ptr[i][j], sp_struct2->m_ptr[i][j]);
 	}
 
-	SG_UNREF(b_op);
+
 	delete sp_struct1;
 	delete sp_struct2;
 }

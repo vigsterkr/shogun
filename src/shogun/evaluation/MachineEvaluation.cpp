@@ -23,9 +23,9 @@ CMachineEvaluation::CMachineEvaluation()
 	init();
 }
 
-CMachineEvaluation::CMachineEvaluation(CMachine* machine, CFeatures* features,
-		CLabels* labels, CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterion, bool autolock)
+CMachineEvaluation::CMachineEvaluation(std::shared_ptr<CMachine> machine, std::shared_ptr<CFeatures> features,
+		std::shared_ptr<CLabels> labels, std::shared_ptr<CSplittingStrategy> splitting_strategy,
+		std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock)
 {
 	init();
 
@@ -36,16 +36,16 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CFeatures* features,
 	m_evaluation_criterion = evaluation_criterion;
 	m_autolock = autolock;
 
-	SG_REF(m_machine);
-	SG_REF(m_features);
-	SG_REF(m_labels);
-	SG_REF(m_splitting_strategy);
-	SG_REF(m_evaluation_criterion);
+
+
+
+
+
 }
 
-CMachineEvaluation::CMachineEvaluation(CMachine* machine, CLabels* labels,
-		CSplittingStrategy* splitting_strategy,
-		CEvaluation* evaluation_criterion, bool autolock)
+CMachineEvaluation::CMachineEvaluation(std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labels,
+		std::shared_ptr<CSplittingStrategy> splitting_strategy,
+		std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock)
 {
 	init();
 
@@ -55,19 +55,19 @@ CMachineEvaluation::CMachineEvaluation(CMachine* machine, CLabels* labels,
 	m_evaluation_criterion = evaluation_criterion;
 	m_autolock = autolock;
 
-	SG_REF(m_machine);
-	SG_REF(m_labels);
-	SG_REF(m_splitting_strategy);
-	SG_REF(m_evaluation_criterion);
+
+
+
+
 }
 
 CMachineEvaluation::~CMachineEvaluation()
 {
-	SG_UNREF(m_machine);
-	SG_UNREF(m_features);
-	SG_UNREF(m_labels);
-	SG_UNREF(m_splitting_strategy);
-	SG_UNREF(m_evaluation_criterion);
+
+
+
+
+
 }
 
 void CMachineEvaluation::init()
@@ -96,7 +96,7 @@ void CMachineEvaluation::init()
 
 }
 
-CEvaluationResult* CMachineEvaluation::evaluate()
+std::shared_ptr<CEvaluationResult> CMachineEvaluation::evaluate()
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name())
 
@@ -116,7 +116,7 @@ CEvaluationResult* CMachineEvaluation::evaluate()
 	    get_name());
 
 	auto sub = connect_to_signal_handler();
-	CEvaluationResult* result = evaluate_impl();
+	auto result = evaluate_impl();
 	sub.unsubscribe();
 	reset_computation_variables();
 
@@ -124,9 +124,9 @@ CEvaluationResult* CMachineEvaluation::evaluate()
 	return result;
 };
 
-CMachine* CMachineEvaluation::get_machine() const
+std::shared_ptr<CMachine> CMachineEvaluation::get_machine() const
 {
-	SG_REF(m_machine);
+
 	return m_machine;
 }
 

@@ -189,18 +189,18 @@ public:
 	 * @param f f(x)
 	 * @param g g(x)
 	 */
-	CProductFunction(CFunction* f, CFunction* g)
+	CProductFunction(std::shared_ptr<CFunction> f, std::shared_ptr<CFunction> g)
 	{
-		SG_REF(f);
-		SG_REF(g);
+
+
 		m_f=f;
 		m_g=g;
 	}
 
 	virtual ~CProductFunction()
 	{
-		SG_UNREF(m_f);
-		SG_UNREF(m_g);
+
+
 	}
 
 	/** returns value of the function at given point
@@ -216,9 +216,9 @@ public:
 
 private:
 	/** function f(x) */
-	CFunction* m_f;
+	std::shared_ptr<CFunction> m_f;
 	/**	function g(x) */
-	CFunction* m_g;
+	std::shared_ptr<CFunction> m_g;
 };
 
 /** Class of the f(x)=x */
@@ -290,26 +290,26 @@ CStudentsTLikelihood::~CStudentsTLikelihood()
 {
 }
 
-CStudentsTLikelihood* CStudentsTLikelihood::obtain_from_generic(
-		CLikelihoodModel* lik)
+std::shared_ptr<CStudentsTLikelihood> CStudentsTLikelihood::obtain_from_generic(
+		std::shared_ptr<CLikelihoodModel> lik)
 {
 	ASSERT(lik!=NULL);
 
 	if (lik->get_model_type()!=LT_STUDENTST)
 		SG_SERROR("Provided likelihood is not of type CStudentsTLikelihood!\n")
 
-	SG_REF(lik);
-	return (CStudentsTLikelihood*)lik;
+
+	return lik->as<CStudentsTLikelihood>();
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_predictive_means(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	return SGVector<float64_t>(mu);
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_predictive_variances(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	SGVector<float64_t> result(s2);
 	Map<VectorXd> eigen_result(result.vector, result.vlen);
@@ -325,7 +325,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_predictive_variances(
 	return result;
 }
 
-SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(const CLabels* lab,
+SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(std::shared_ptr<const CLabels> lab,
 		SGVector<float64_t> func) const
 {
 	// check the parameters
@@ -340,7 +340,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(const CLabels* l
 	SGVector<float64_t> r(func.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CRegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	float64_t df=get_degrees_freedom();
@@ -361,7 +361,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_f(const CLabels* l
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
-		const CLabels* lab, SGVector<float64_t> func, index_t i) const
+		std::shared_ptr<const CLabels> lab, SGVector<float64_t> func, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -376,7 +376,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	SGVector<float64_t> r(func.vlen);
 	Map<VectorXd> eigen_r(r.vector, r.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CRegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute r=y-f, r2=r.^2
@@ -419,7 +419,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_probability_derivative_f(
 	return r;
 }
 
-SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* lab,
+SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(std::shared_ptr<const CLabels> lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
 	// check the parameters
@@ -434,7 +434,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* la
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CRegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute r=y-f and r2=(y-f).^2
@@ -485,7 +485,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_first_derivative(const CLabels* la
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* lab,
+SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(std::shared_ptr<const CLabels> lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
 	// check the parameters
@@ -500,7 +500,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* l
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CRegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute r=y-f and r2=(y-f).^2
@@ -541,7 +541,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_second_derivative(const CLabels* l
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* lab,
+SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(std::shared_ptr<const CLabels> lab,
 		SGVector<float64_t> func, const TParameter* param) const
 {
 	// check the parameters
@@ -556,7 +556,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 
 	Map<VectorXd> eigen_f(func.vector, func.vlen);
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CRegressionLabels>()->get_labels();
 	Map<VectorXd> eigen_y(y.vector, y.vlen);
 
 	// compute r=y-f and r2=(y-f).^2
@@ -597,7 +597,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_third_derivative(const CLabels* la
 }
 
 SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
-		SGVector<float64_t> mu, SGVector<float64_t> s2, const CLabels* lab) const
+		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const CLabels> lab) const
 {
 	SGVector<float64_t> y;
 
@@ -610,7 +610,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 		REQUIRE(lab->get_label_type()==LT_REGRESSION,
 				"Labels must be type of CRegressionLabels\n")
 
-		y=((CRegressionLabels*)lab)->get_labels();
+		y=lab->as<CRegressionLabels>()->get_labels();
 	}
 	else
 	{
@@ -623,17 +623,17 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 	}
 
 	// create an object of normal pdf
-	CNormalPDF* f=new CNormalPDF();
+	auto f=std::make_shared<CNormalPDF>();
 
 	// create an object of Student's t pdf
-	CStudentsTPDF* g=new CStudentsTPDF();
+	auto g=std::make_shared<CStudentsTPDF>();
 
 	g->set_nu(get_degrees_freedom());
 	g->set_sigma(std::exp(m_log_sigma));
 
 	// create an object of product of Student's-t pdf and normal pdf
-	CProductFunction* h=new CProductFunction(f, g);
-	SG_REF(h);
+	auto h=std::make_shared<CProductFunction>(f, g);
+
 
 	// compute probabilities using numerical integration
 	SGVector<float64_t> r(mu.vlen);
@@ -656,7 +656,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 #endif //USE_GPL_SHOGUN
 	}
 
-	SG_UNREF(h);
+
 
 	for (index_t i=0; i<r.vlen; i++)
 		r[i] = std::log(r[i]);
@@ -665,7 +665,7 @@ SGVector<float64_t> CStudentsTLikelihood::get_log_zeroth_moments(
 }
 
 float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -677,21 +677,21 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 			"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CRegressionLabels>()->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	auto f = std::make_shared<CNormalPDF>(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
-	CStudentsTPDF* g =
-		new CStudentsTPDF(std::exp(m_log_sigma), get_degrees_freedom(), y[i]);
+	auto g =
+		std::make_shared<CStudentsTPDF>(std::exp(m_log_sigma), get_degrees_freedom(), y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
-	CProductFunction* h=new CProductFunction(f, g);
+	auto h=std::make_shared<CProductFunction>(f, g);
 
 	// create an object of k(x)=x*N(x|mu,sigma)*t(x|mu,sigma,nu)
-	CProductFunction* k=new CProductFunction(new CLinearFunction(), h);
-	SG_REF(k);
+	auto k=std::make_shared<CProductFunction>(std::make_shared<CLinearFunction>(), h);
+
 
 	float64_t Ex=0;
 #ifdef USE_GPL_SHOGUN
@@ -706,13 +706,13 @@ float64_t CStudentsTLikelihood::get_first_moment(SGVector<float64_t> mu,
 #else
 			SG_ERROR("StudentsT likelihood moments only supported under GPL.\n")
 #endif //USE_GPL_SHOGUN
-	SG_UNREF(k);
+
 
 	return Ex;
 }
 
 float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
-		SGVector<float64_t> s2, const CLabels *lab, index_t i) const
+		SGVector<float64_t> s2, std::shared_ptr<const CLabels >lab, index_t i) const
 {
 	// check the parameters
 	REQUIRE(lab, "Labels are required (lab should not be NULL)\n")
@@ -724,25 +724,25 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 	REQUIRE(lab->get_label_type()==LT_REGRESSION,
 			"Labels must be type of CRegressionLabels\n")
 
-	SGVector<float64_t> y=((CRegressionLabels*)lab)->get_labels();
+	SGVector<float64_t> y=lab->as<CRegressionLabels>()->get_labels();
 
 	// create an object of normal pdf
-	CNormalPDF* f = new CNormalPDF(mu[i], std::sqrt(s2[i]));
+	auto f = std::make_shared<CNormalPDF>(mu[i], std::sqrt(s2[i]));
 
 	// create an object of Student's t pdf
-	CStudentsTPDF* g =
-		new CStudentsTPDF(std::exp(m_log_sigma), get_degrees_freedom(), y[i]);
+	auto g =
+		std::make_shared<CStudentsTPDF>(std::exp(m_log_sigma), get_degrees_freedom(), y[i]);
 
 	// create an object of h(x)=N(x|mu,sigma)*t(x|mu,sigma,nu)
-	CProductFunction* h=new CProductFunction(f, g);
+	auto h=std::make_shared<CProductFunction>(f, g);
 
 	// create an object of k(x)=x*N(x|mu,sigma)*t(x|mu,sigma,nu)
-	CProductFunction* k=new CProductFunction(new CLinearFunction(), h);
-	SG_REF(k);
+	auto k=std::make_shared<CProductFunction>(std::make_shared<CLinearFunction>(), h);
+
 
 	// create an object of p(x)=x^2*N(x|mu,sigma^2)*t(x|mu,sigma,nu)
-	CProductFunction* p=new CProductFunction(new CQuadraticFunction(), h);
-	SG_REF(p);
+	auto p=std::make_shared<CProductFunction>(std::make_shared<CQuadraticFunction>(), h);
+
 
 	float64_t Ex=0;
 	float64_t Ex2=0;
@@ -762,8 +762,8 @@ float64_t CStudentsTLikelihood::get_second_moment(SGVector<float64_t> mu,
 #else
 	SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN
-	SG_UNREF(k);
-	SG_UNREF(p);
+
+
 
 	// return 2nd moment: Var[x]=E[x^2]-E[x]^2
 	return Ex2-CMath::sq(Ex);

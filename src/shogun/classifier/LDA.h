@@ -1,8 +1,8 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Michele Mazzoni, Heiko Strathmann, 
- *          Fernando Iglesias, Sergey Lisitsyn, Abhijeet Kislay, Bjoern Esser, 
+ * Authors: Soeren Sonnenburg, Michele Mazzoni, Heiko Strathmann,
+ *          Fernando Iglesias, Sergey Lisitsyn, Abhijeet Kislay, Bjoern Esser,
  *          Christopher Goldsworthy, Sanuj Sharma
  */
 
@@ -126,8 +126,8 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * [default = BDC-SVD]
 		 */
 		CLDA(
-		    float64_t gamma, CDenseFeatures<float64_t>* traindat,
-		    CLabels* trainlab, ELDAMethod method = AUTO_LDA,
+		    float64_t gamma, std::shared_ptr<CDenseFeatures<float64_t>> traindat,
+		    std::shared_ptr<CLabels> trainlab, ELDAMethod method = AUTO_LDA,
 		    bool bdc_svd = true);
 		virtual ~CLDA();
 
@@ -154,7 +154,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 */
 		template <typename ST, typename U = typename std::enable_if_t<
 		                           std::is_floating_point<ST>::value>>
-		bool train_machine_templated(CDenseFeatures<ST>* data);
+		bool train_machine_templated(std::shared_ptr<CDenseFeatures<ST>> data);
 
 		/**
 		 * Train the machine with the svd-based solver (@see CFisherLDA).
@@ -162,7 +162,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_svd(CDenseFeatures<ST>* data);
+		bool solver_svd(std::shared_ptr<CDenseFeatures<ST>> data);
 
 		/**
 		 * Train the machine with the classic method based on the cholesky
@@ -171,7 +171,7 @@ class CLDA : public CDenseRealDispatch<CLDA, CLinearMachine>
 		 * @param labels labels for training data
 		 */
 		template <typename ST>
-		bool solver_classic(CDenseFeatures<ST>* data);
+		bool solver_classic(std::shared_ptr<CDenseFeatures<ST>> data);
 
 	protected:
 

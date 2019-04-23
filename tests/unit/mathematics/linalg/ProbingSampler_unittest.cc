@@ -37,14 +37,14 @@ TEST(ProbingSampler, get_coloring_vector)
 	for (int32_t i=0; i<size; i+=4)
 		m(size-1,i)=2.0;
 
-	CSparseMatrixOperator<float64_t>* op
-		=new CSparseMatrixOperator<float64_t>(m);
-	SG_REF(op);
+	auto op
+		=std::make_shared<CSparseMatrixOperator<float64_t>>(m);
+
 
 	// get the sparsity structure and use coloring to get coloring
-	SparsityStructure* sp_str=op->get_sparsity_structure(max_pow);
+	auto sp_str=op->get_sparsity_structure(max_pow);
 
-	GraphColoringInterface* Color=new GraphColoringInterface(SRC_MEM_ADOLC,
+	auto Color=new GraphColoringInterface(SRC_MEM_ADOLC,
 		sp_str->m_ptr, sp_str->m_num_rows);
 	Color->Coloring("NATURAL", "DISTANCE_ONE");
 
@@ -59,7 +59,7 @@ TEST(ProbingSampler, get_coloring_vector)
 	}
 
 	// get the coloring vector using probing sampler
-	CProbingSampler* sampler=new CProbingSampler(op, max_pow);
+	auto sampler=std::make_shared<CProbingSampler>(op, max_pow);
 	sampler->precompute();
 
 	SGVector<int32_t> sg_coloring=sampler->get_coloring_vector();
@@ -72,8 +72,8 @@ TEST(ProbingSampler, get_coloring_vector)
 
 	delete Color;
 	delete sp_str;
-	SG_UNREF(sampler);
-	SG_UNREF(op);
+
+
 }
 
 TEST(ProbingSampler, probing_samples_big_diag_matrix)
@@ -84,8 +84,8 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	// create a sparse matrix
 	const index_t size=10000;
 	SGSparseMatrix<float64_t> sm(size, size);
-	CSparseMatrixOperator<float64_t>* op=new CSparseMatrixOperator<float64_t>(sm);
-	SG_REF(op);
+	auto op=std::make_shared<CSparseMatrixOperator<float64_t>>(sm);
+
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
@@ -96,8 +96,8 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	}
 	op->set_diagonal(diag);
 
-	CProbingSampler* trace_sampler=new CProbingSampler(op);
-	SG_REF(trace_sampler);
+	auto trace_sampler=std::make_shared<CProbingSampler>(op);
+
 	trace_sampler->precompute();
 
 	// test coloring stuffs
@@ -114,8 +114,8 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	EXPECT_GT((sample_1-sample_2).norm(), 0.0);
 
 
-	SG_UNREF(trace_sampler);
-	SG_UNREF(op);
+
+
 }
 
 TEST(ProbingSampler, mean_variance)
@@ -130,10 +130,10 @@ TEST(ProbingSampler, mean_variance)
 	for (index_t i=0; i<size-1; ++i)
 		m(i+1,i)=1;
 
-	CSparseMatrixOperator<float64_t>* A=new CSparseMatrixOperator<float64_t>(m);
-	SG_REF(A);
+	auto A=std::make_shared<CSparseMatrixOperator<float64_t>>(m);
 
-	CProbingSampler* trace_sampler=new CProbingSampler(A);
+
+	auto trace_sampler=std::make_shared<CProbingSampler>(A);
 	trace_sampler->precompute();
 
 	index_t num_samples=trace_sampler->get_num_samples();
@@ -144,7 +144,7 @@ TEST(ProbingSampler, mean_variance)
 		EXPECT_NEAR(CStatistics::variance(sample), 1.0/num_samples, 0.01);
 	}
 
-	SG_UNREF(trace_sampler);
-	SG_UNREF(A);
+
+
 }
 #endif // HAVE_COLPACK

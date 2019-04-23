@@ -17,7 +17,7 @@ TEST(MajorityVote, combine_matrix)
 	SGMatrix<float64_t> ensemble_matrix(num_vectors, num_classifiers);
 	SGVector<float64_t> expected(num_vectors);
 	SGVector<float64_t> w(num_classifiers);
-	CMajorityVote* mv = new CMajorityVote();
+	auto mv = std::make_shared<CMajorityVote>();
 
 	expected.zero();
 	w.set_const(1.0);
@@ -30,13 +30,13 @@ TEST(MajorityVote, combine_matrix)
 	for (index_t i = 0; i < cv.vlen; ++i)
 		EXPECT_DOUBLE_EQ(expected[i], cv[i]);
 
-	SG_UNREF(mv);
+	
 }
 
 TEST(MajorityVote, binary_combine_vector)
 {
 	int32_t num_classifiers = 50;
-	CMajorityVote* mv = new CMajorityVote();
+	auto mv = std::make_shared<CMajorityVote>();
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<index_t> expected(2);
 	int64_t max = 0;
@@ -60,13 +60,13 @@ TEST(MajorityVote, binary_combine_vector)
 	float64_t combined_label = mv->combine(v);
 	EXPECT_EQ(max_label, combined_label);
 
-	SG_UNREF(mv);
+	
 }
 
 TEST(MajorityVote, multiclass_combine_vector)
 {
 	int32_t num_classifiers = 10;
-	CMajorityVote* mv = new CMajorityVote();
+	auto mv = std::make_shared<CMajorityVote>();
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<index_t> hist(3);
 
@@ -89,5 +89,5 @@ TEST(MajorityVote, multiclass_combine_vector)
 
 	EXPECT_EQ(max_label, c);
 
-	SG_UNREF(mv);
+	
 }

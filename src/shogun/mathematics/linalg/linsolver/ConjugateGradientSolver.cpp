@@ -38,7 +38,7 @@ CConjugateGradientSolver::~CConjugateGradientSolver()
 }
 
 SGVector<float64_t> CConjugateGradientSolver::solve(
-	CLinearOperator<float64_t>* A, SGVector<float64_t> b)
+	std::shared_ptr<CLinearOperator<float64_t>> A, SGVector<float64_t> b)
 {
 	SG_DEBUG("CConjugateGradientSolve::solve(): Entering..\n");
 

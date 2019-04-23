@@ -20,18 +20,14 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(int32_t size)
 }
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGSparseMatrix<ST> sparse)
-: CDotFeatures(0), feature_cache(NULL)
+: CSparseFeatures(0)
 {
-	init();
-
 	set_sparse_feature_matrix(sparse);
 }
 
 template<class ST> CSparseFeatures<ST>::CSparseFeatures(SGMatrix<ST> dense)
-: CDotFeatures(0), feature_cache(NULL)
+: CSparseFeatures(0)
 {
-	init();
-
 	set_full_feature_matrix(dense);
 }
 
@@ -42,26 +38,24 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(const CSparseFeatures & 
 	init();
 
 	m_subset_stack=orig.m_subset_stack;
-	SG_REF(m_subset_stack);
+
 }
 
 template <class ST>
-CSparseFeatures<ST>::CSparseFeatures(CDenseFeatures<ST>* dense)
-	: CDotFeatures(0), feature_cache(NULL)
+CSparseFeatures<ST>::CSparseFeatures(std::shared_ptr<CDenseFeatures<ST>> dense)
+	: CSparseFeatures(0)
 {
-	init();
-
 	SGMatrix<ST> fm=dense->get_feature_matrix();
 	ASSERT(fm.matrix && fm.num_cols>0 && fm.num_rows>0)
 	set_full_feature_matrix(fm);
 }
 
-template<> CSparseFeatures<complex128_t>::CSparseFeatures(CDenseFeatures<complex128_t>* dense)
+template<> CSparseFeatures<complex128_t>::CSparseFeatures(std::shared_ptr<CDenseFeatures<complex128_t>> dense)
 {
 	SG_NOTIMPLEMENTED;
 }
 
-template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
+template<class ST> CSparseFeatures<ST>::CSparseFeatures(std::shared_ptr<CFile> loader)
 : CDotFeatures(), feature_cache(NULL)
 {
 	init();
@@ -71,12 +65,12 @@ template<class ST> CSparseFeatures<ST>::CSparseFeatures(CFile* loader)
 
 template<class ST> CSparseFeatures<ST>::~CSparseFeatures()
 {
-	SG_UNREF(feature_cache);
+
 }
 
-template<class ST> CFeatures* CSparseFeatures<ST>::duplicate() const
+template<class ST> std::shared_ptr<CFeatures> CSparseFeatures<ST>::duplicate() const
 {
-	return new CSparseFeatures<ST>(*this);
+	return std::make_shared<CSparseFeatures>(*this);
 }
 
 template<class ST> ST CSparseFeatures<ST>::get_feature(int32_t num, int32_t index) const
@@ -234,12 +228,12 @@ template<class ST> SGSparseMatrix<ST> CSparseFeatures<ST>::get_sparse_feature_ma
 	return sparse_feature_matrix;
 }
 
-template<class ST> CSparseFeatures<ST>* CSparseFeatures<ST>::get_transposed()
+template<class ST> std::shared_ptr<CSparseFeatures<ST>> CSparseFeatures<ST>::get_transposed()
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("Not allowed with subset\n");
 
-	return new CSparseFeatures<ST>(sparse_feature_matrix.get_transposed());
+	return std::make_shared<CSparseFeatures>(sparse_feature_matrix.get_transposed());
 }
 
 template<class ST> void CSparseFeatures<ST>::set_sparse_feature_matrix(SGSparseMatrix<ST> sm)
@@ -286,7 +280,7 @@ template<class ST> SGMatrix<ST> CSparseFeatures<ST>::get_full_feature_matrix()
 template<class ST> void CSparseFeatures<ST>::free_sparse_features()
 {
 	free_sparse_feature_matrix();
-	SG_UNREF(feature_cache);
+
 }
 
 template<class ST> void CSparseFeatures<ST>::free_sparse_feature_matrix()
@@ -368,8 +362,8 @@ template<> float64_t* CSparseFeatures<complex128_t>::compute_squared(float64_t* 
 }
 
 template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
-		CSparseFeatures<float64_t>* lhs, float64_t* sq_lhs, int32_t idx_a,
-		CSparseFeatures<float64_t>* rhs, float64_t* sq_rhs, int32_t idx_b)
+		std::shared_ptr<CSparseFeatures<float64_t>> lhs, float64_t* sq_lhs, int32_t idx_a,
+		std::shared_ptr<CSparseFeatures<float64_t>> rhs, float64_t* sq_rhs, int32_t idx_b)
 {
 	int32_t i,j;
 	ASSERT(lhs)
@@ -421,8 +415,8 @@ template<class ST> float64_t CSparseFeatures<ST>::compute_squared_norm(
 		}
 	}
 
-	((CSparseFeatures<float64_t>*) lhs)->free_feature_vector(idx_a);
-	((CSparseFeatures<float64_t>*) rhs)->free_feature_vector(idx_b);
+	lhs->free_feature_vector(idx_a);
+	rhs->free_feature_vector(idx_b);
 
 	return CMath::abs(result);
 }
@@ -433,12 +427,12 @@ template<class ST> int32_t CSparseFeatures<ST>::get_dim_feature_space() const
 }
 
 template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
-		CDotFeatures* df, int32_t vec_idx2) const
+		std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CSparseFeatures<ST>* sf = (CSparseFeatures<ST>*) df;
+	auto sf = std::dynamic_pointer_cast<CSparseFeatures<ST>>(df);
 
 	SGSparseVector<ST> avec=get_sparse_feature_vector(vec_idx1);
 	SGSparseVector<ST> bvec=sf->get_sparse_feature_vector(vec_idx2);
@@ -451,7 +445,7 @@ template<class ST> float64_t CSparseFeatures<ST>::dot(int32_t vec_idx1,
 }
 
 template<> float64_t CSparseFeatures<complex128_t>::dot(int32_t vec_idx1,
-		CDotFeatures* df, int32_t vec_idx2) const
+		std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	SG_NOTIMPLEMENTED;
 	return 0.0;
@@ -542,7 +536,7 @@ template<class ST> void CSparseFeatures<ST>::free_feature_iterator(void* iterato
 	delete ((sparse_feature_iterator*) iterator);
 }
 
-template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t> indices) const
+template<class ST> std::shared_ptr<CFeatures> CSparseFeatures<ST>::copy_subset(SGVector<index_t> indices) const
 {
 	SGSparseMatrix<ST> matrix_copy=SGSparseMatrix<ST>(get_dim_feature_space(),
 			indices.vlen);
@@ -560,8 +554,7 @@ template<class ST> CFeatures* CSparseFeatures<ST>::copy_subset(SGVector<index_t>
 		free_sparse_feature_vector(index);
 	}
 
-	CFeatures* result=new CSparseFeatures<ST>(matrix_copy);
-	return result;
+	return std::make_shared<CSparseFeatures>(matrix_copy);
 }
 
 template<class ST> SGSparseVectorEntry<ST>* CSparseFeatures<ST>::compute_sparse_feature_vector(int32_t num,
@@ -582,16 +575,16 @@ template<class ST> void CSparseFeatures<ST>::init()
 {
 	set_generic<ST>();
 
-	m_parameters->add_vector(&sparse_feature_matrix.sparse_matrix, &sparse_feature_matrix.num_vectors,
+	/*m_parameters->add_vector(&sparse_feature_matrix.sparse_matrix, &sparse_feature_matrix.num_vectors,
 			"sparse_feature_matrix",
-			"Array of sparse vectors.");
+			"Array of sparse vectors.");*/
 	watch_param(
 		"sparse_feature_matrix", &sparse_feature_matrix.sparse_matrix,
 		&sparse_feature_matrix.num_vectors);
 	watch_param("sparse_feature_matrix.num_features",  &sparse_feature_matrix.num_features);
 
-	m_parameters->add(&sparse_feature_matrix.num_features, "sparse_feature_matrix.num_features",
-			"Total number of features.");
+	/*m_parameters->add(&sparse_feature_matrix.num_features, "sparse_feature_matrix.num_features",
+			"Total number of features.");*/
 }
 
 #define GET_FEATURE_TYPE(sg_type, f_type)									\
@@ -615,7 +608,7 @@ GET_FEATURE_TYPE(floatmax_t, F_LONGREAL)
 GET_FEATURE_TYPE(complex128_t, F_ANY)
 #undef GET_FEATURE_TYPE
 
-template<class ST> void CSparseFeatures<ST>::load(CFile* loader)
+template<class ST> void CSparseFeatures<ST>::load(std::shared_ptr<CFile> loader)
 {
 	remove_all_subsets();
 	ASSERT(loader)
@@ -623,7 +616,7 @@ template<class ST> void CSparseFeatures<ST>::load(CFile* loader)
 	sparse_feature_matrix.load(loader);
 }
 
-template<class ST> SGVector<float64_t> CSparseFeatures<ST>::load_with_labels(CLibSVMFile* loader)
+template<class ST> SGVector<float64_t> CSparseFeatures<ST>::load_with_labels(std::shared_ptr<CLibSVMFile> loader)
 {
 	remove_all_subsets();
 	ASSERT(loader)
@@ -631,7 +624,7 @@ template<class ST> SGVector<float64_t> CSparseFeatures<ST>::load_with_labels(CLi
 	return sparse_feature_matrix.load_with_labels(loader);
 }
 
-template<class ST> void CSparseFeatures<ST>::save(CFile* writer)
+template<class ST> void CSparseFeatures<ST>::save(std::shared_ptr<CFile> writer)
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("Not allowed with subset\n");
@@ -639,7 +632,7 @@ template<class ST> void CSparseFeatures<ST>::save(CFile* writer)
 	sparse_feature_matrix.save(writer);
 }
 
-template<class ST> void CSparseFeatures<ST>::save_with_labels(CLibSVMFile* writer, SGVector<float64_t> labels)
+template<class ST> void CSparseFeatures<ST>::save_with_labels(std::shared_ptr<CLibSVMFile> writer, SGVector<float64_t> labels)
 {
 	if (m_subset_stack->has_subsets())
 		SG_ERROR("Not allowed with subset\n");

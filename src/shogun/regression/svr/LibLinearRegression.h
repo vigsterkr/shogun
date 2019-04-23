@@ -52,7 +52,7 @@ class CLibLinearRegression : public CLinearMachine
 		 * @param features features
 		 * @param labs labels
 		 */
-		CLibLinearRegression(float64_t C, CDotFeatures* features, CLabels* labs);
+		CLibLinearRegression(float64_t C, std::shared_ptr<CDotFeatures> features, std::shared_ptr<CLabels> labs);
 
 		/** destructor */
 		virtual ~CLibLinearRegression();
@@ -147,7 +147,7 @@ class CLibLinearRegression : public CLinearMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 private:
 		/** solve svr with l1 or l2 loss */

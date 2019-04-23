@@ -35,7 +35,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @param machine machine
 		 * @param labels labels
 		 */
-		CMulticlassMachine(CMulticlassStrategy* strategy, CMachine* machine, CLabels* labels);
+		CMulticlassMachine(std::shared_ptr<CMulticlassStrategy> strategy, std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labels);
 
 		/** destructor */
 		virtual ~CMulticlassMachine();
@@ -44,7 +44,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(CLabels* lab);
+		virtual void set_labels(std::shared_ptr<CLabels> lab);
 
 		/** set machine
 		 *
@@ -52,7 +52,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @param machine machine to set
 		 * @return if setting was successful
 		 */
-		inline bool set_machine(int32_t num, CMachine* machine)
+		inline bool set_machine(int32_t num, std::shared_ptr<CMachine> machine)
 		{
 			ASSERT(num<m_machines->get_num_elements() && num>=0)
 			if (machine != NULL && !is_acceptable_machine(machine))
@@ -67,16 +67,16 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 * @param num index of machine to get
 		 * @return SVM at number num
 		 */
-		inline CMachine* get_machine(int32_t num) const
+		inline std::shared_ptr<CMachine> get_machine(int32_t num) const
 		{
-			return (CMachine*) m_machines->get_element_safe(num);
+			return m_machines->get_element_safe<CMachine>(num);
 		}
 
 		/** get outputs of i-th submachine
 		 * @param i number of submachine
 		 * @return outputs
 		 */
-		virtual CBinaryLabels* get_submachine_outputs(int32_t i);
+		virtual std::shared_ptr<CBinaryLabels> get_submachine_outputs(int32_t i);
 
 		/** get output of i-th submachine for num-th vector
 		 * @param i number of submachine
@@ -89,13 +89,13 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 *
 		 * @return resulting labels
 		 */
-		virtual CMulticlassLabels* apply_multiclass(CFeatures* data=NULL);
+		virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
 
 		/** classify all examples with multiple output
 		 *
 		 * @return resulting labels
 		 */
-		virtual CMultilabelLabels* apply_multilabel_output(CFeatures* data=NULL, int32_t n_outputs=5);
+		virtual std::shared_ptr<CMultilabelLabels> apply_multilabel_output(std::shared_ptr<CFeatures> data=NULL, int32_t n_outputs=5);
 
 		/** classify one example
 		 * @param vec_idx
@@ -107,9 +107,9 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 *
 		 * @return multiclass type one vs one etc
 		 */
-		inline CMulticlassStrategy* get_multiclass_strategy() const
+		inline std::shared_ptr<CMulticlassStrategy> get_multiclass_strategy() const
 		{
-			SG_REF(m_multiclass_strategy);
+
 			return m_multiclass_strategy;
 		}
 
@@ -117,7 +117,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 *
 		 * @return rejection strategy
 		 */
-		inline CRejectionStrategy* get_rejection_strategy() const
+		inline std::shared_ptr<CRejectionStrategy> get_rejection_strategy() const
 		{
 			return m_multiclass_strategy->get_rejection_strategy();
 		}
@@ -126,7 +126,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		 *
 		 * @param rejection_strategy rejection strategy to be set
 		 */
-		inline void set_rejection_strategy(CRejectionStrategy* rejection_strategy)
+		inline void set_rejection_strategy(std::shared_ptr<CRejectionStrategy> rejection_strategy)
 		{
 			m_multiclass_strategy->set_rejection_strategy(rejection_strategy);
 		}
@@ -159,19 +159,19 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		void clear_machines();
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 		/** abstract init machine for training method */
-		virtual bool init_machine_for_train(CFeatures* data) = 0;
+		virtual bool init_machine_for_train(std::shared_ptr<CFeatures> data) = 0;
 
 		/** abstract init machines for applying method */
-		virtual bool init_machines_for_apply(CFeatures* data) = 0;
+		virtual bool init_machines_for_apply(std::shared_ptr<CFeatures> data) = 0;
 
 		/** check whether machine is ready */
 		virtual bool is_ready() = 0;
 
 		/** obtain machine from trained one */
-		virtual CMachine* get_machine_from_trained(CMachine* machine) const = 0;
+		virtual std::shared_ptr<CMachine> get_machine_from_trained(std::shared_ptr<CMachine> machine) const = 0;
 
 		/** get num rhs vectors */
 		virtual int32_t get_num_rhs_vectors() const = 0;
@@ -186,7 +186,7 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 		virtual void remove_machine_subset() = 0;
 
 		/** whether the machine is acceptable in set_machine */
-		virtual bool is_acceptable_machine(CMachine *machine)
+		virtual bool is_acceptable_machine(std::shared_ptr<CMachine >machine)
 		{
 			return true;
 		}
@@ -198,10 +198,10 @@ class CMulticlassMachine : public CBaseMulticlassMachine
 
 	protected:
 		/** type of multiclass strategy */
-		CMulticlassStrategy *m_multiclass_strategy;
+		std::shared_ptr<CMulticlassStrategy >m_multiclass_strategy;
 
 		/** machine */
-		CMachine* m_machine;
+		std::shared_ptr<CMachine> m_machine;
 };
 }
 #endif

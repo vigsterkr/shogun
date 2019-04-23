@@ -44,7 +44,7 @@ CPeriodicKernel::CPeriodicKernel(float64_t ls, float64_t p, int32_t s) : CDotKer
 	set_period(p);
 }
 
-CPeriodicKernel::CPeriodicKernel(CDotFeatures* l, CDotFeatures* r, float64_t ls,
+CPeriodicKernel::CPeriodicKernel(std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, float64_t ls,
 	float64_t p, int32_t s) : CDotKernel(s)
 {
 	init();
@@ -54,7 +54,7 @@ CPeriodicKernel::CPeriodicKernel(CDotFeatures* l, CDotFeatures* r, float64_t ls,
 }
 
 void CPeriodicKernel::precompute_squared_helper(SGVector<float64_t>& buf,
-	CDotFeatures* df)
+	std::shared_ptr<CDotFeatures> df)
 {
 	int32_t num_vec=df->get_num_vectors();
 	buf=SGVector<float64_t>(num_vec);
@@ -63,7 +63,7 @@ void CPeriodicKernel::precompute_squared_helper(SGVector<float64_t>& buf,
 		buf[i]=df->dot(i,df, i);
 }
 
-bool CPeriodicKernel::init(CFeatures* l, CFeatures* r)
+bool CPeriodicKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDotKernel::init(l, r);
 	precompute_squared();
@@ -87,7 +87,7 @@ void CPeriodicKernel::precompute_squared()
 	if (!lhs || !rhs)
 		return;
 
-	CDotFeatures* dotlhs=dynamic_cast<CDotFeatures*>(lhs);
+	auto dotlhs=std::dynamic_pointer_cast<CDotFeatures>(lhs);
 	REQUIRE(dotlhs!=NULL, "Left-hand-side features must be of type CDotFeatures\n")
 
 	precompute_squared_helper(m_sq_lhs, dotlhs);
@@ -96,7 +96,7 @@ void CPeriodicKernel::precompute_squared()
 		m_sq_rhs=m_sq_lhs;
 	else
 	{
-		CDotFeatures *dotrhs=dynamic_cast<CDotFeatures*>(rhs);
+		auto dotrhs=std::dynamic_pointer_cast<CDotFeatures>(rhs);
 		REQUIRE(dotrhs!=NULL, "Left-hand-side features must be of type CDotFeatures\n")
 
 		precompute_squared_helper(m_sq_rhs, dotrhs);

@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann, 
+ * Authors: Soeren Sonnenburg, Sergey Lisitsyn, Heiko Strathmann,
  *          Chinmay Kousik, Leon Kuchenbecker
  */
 
@@ -14,7 +14,7 @@ CROCEvaluation::~CROCEvaluation()
 {
 }
 
-float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
+float64_t CROCEvaluation::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
 {
 	REQUIRE(predicted, "No predicted labels provided.\n");
 	REQUIRE(ground_truth, "No ground truth labels provided.\n");
@@ -27,10 +27,10 @@ float64_t CROCEvaluation::evaluate(CLabels* predicted, CLabels* ground_truth)
 	    "Given ground truth labels (%d) must be binary (%d).\n",
 	    ground_truth->get_label_type(), LT_BINARY);
 
-	return evaluate_roc((CBinaryLabels*)predicted,(CBinaryLabels*)ground_truth);
+	return evaluate_roc(binary_labels(predicted),binary_labels(ground_truth));
 }
 
-float64_t CROCEvaluation::evaluate_roc(CBinaryLabels* predicted, CBinaryLabels* ground_truth)
+float64_t CROCEvaluation::evaluate_roc(std::shared_ptr<CBinaryLabels> predicted, std::shared_ptr<CBinaryLabels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_num_labels()==ground_truth->get_num_labels())

@@ -61,7 +61,7 @@ class CUWedgeSep: public CICAConverter
 		/** init */
 		void init();
 
-		virtual void fit_dense(CDenseFeatures<float64_t>* features);
+		virtual void fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features);
 
 	private:
 

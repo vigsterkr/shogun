@@ -54,14 +54,14 @@ protected:
 	 * @param ex the example being decided
 	 * @return true if should go left, false otherwise
 	 */
-	virtual bool which_subtree(bnode_t *node, SGVector<float32_t> ex);
+	virtual bool which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex);
 
 private:
 	/** depth of subtree
 	 * @param node pointer to the subtree root
 	 * @return the depth of the subtree
 	 */
-	int32_t tree_depth(bnode_t *node);
+	int32_t tree_depth(std::shared_ptr<bnode_t> node);
 
 	/** trade-off parameter for tree balance */
 	float64_t m_alpha;

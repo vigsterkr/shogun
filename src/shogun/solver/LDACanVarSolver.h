@@ -68,7 +68,7 @@ namespace shogun
 
 	public:
 		LDACanVarSolver(
-		    CDenseFeatures<T>* features, CMulticlassLabels* labels,
+		    std::shared_ptr<CDenseFeatures<T>> features, std::shared_ptr<CMulticlassLabels> labels,
 		    index_t num_dim, float64_t gamma = 0.0, bool bdc_svd = true,
 		    float64_t threshold = 0.01)
 		    : LDASolver<T>(features, labels, gamma)

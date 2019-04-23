@@ -85,11 +85,11 @@ TEST(MulticlassStrategy,rescale_ova_hastie)
 	SGVector<float64_t> labels(3);
 	labels.range_fill(0);
 
-	CMulticlassLabels *orig_labels = new CMulticlassLabels(labels);
-	SG_REF(orig_labels);
+	auto orig_labels = std::make_shared<CMulticlassLabels>(labels);
 
-	CBinaryLabels *train_labels = new CBinaryLabels(2);
-	SG_REF(train_labels);
+
+	auto train_labels = std::make_shared<CBinaryLabels>(2);
+
 
 	ovo.train_start(orig_labels, train_labels);
 	for (int32_t i=0; i<3; i++)
@@ -109,8 +109,8 @@ TEST(MulticlassStrategy,rescale_ova_hastie)
 	EXPECT_NEAR(scores[1],0.3333333333333333,1E-5);
 	EXPECT_NEAR(scores[2],0.3333333333333333,1E-5);
 
-	SG_UNREF(orig_labels);
-	SG_UNREF(train_labels);
+
+
 }
 
 TEST(MulticlassStrategy,rescale_ova_hamamura)

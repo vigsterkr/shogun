@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Jacob Walker, Heiko Strathmann, Evgeniy Andreev, 
+ * Authors: Soeren Sonnenburg, Jacob Walker, Heiko Strathmann, Evgeniy Andreev,
  *          Bjoern Esser, Leon Kuchenbecker
  */
 
@@ -27,21 +27,21 @@ CModelSelectionParameters::CModelSelectionParameters(const char* node_name)
 }
 
 CModelSelectionParameters::CModelSelectionParameters(const char* node_name,
-		CSGObject* sgobject)
+		std::shared_ptr<CSGObject> sgobject)
 {
 	init();
 
 	m_node_name=node_name;
 	m_sgobject=sgobject;
-	SG_REF(sgobject);
+
 }
 
 void CModelSelectionParameters::init()
 {
 	m_node_name=NULL;
 	m_sgobject=NULL;
-	m_child_nodes=new CDynamicObjectArray();
-	SG_REF(m_child_nodes);
+	m_child_nodes=std::make_shared<CDynamicObjectArray>();
+
 	m_value_type=MSPT_NONE;
 	m_values=NULL;
 	m_values_length=0;
@@ -51,13 +51,13 @@ void CModelSelectionParameters::init()
 
 CModelSelectionParameters::~CModelSelectionParameters()
 {
-	SG_UNREF(m_child_nodes);
-	SG_UNREF(m_sgobject);
+
+
 
 	delete_values();
 }
 
-void CModelSelectionParameters::append_child(CModelSelectionParameters* child)
+void CModelSelectionParameters::append_child(std::shared_ptr<CModelSelectionParameters> child)
 {
 	/* only possible if there are no values set */
 	if (m_values)
@@ -188,7 +188,7 @@ void CModelSelectionParameters::build_values(EMSParamType value_type, void* min,
 	}
 }
 
-CParameterCombination* CModelSelectionParameters::get_single_combination(
+std::shared_ptr<CParameterCombination> CModelSelectionParameters::get_single_combination(
 		bool is_rand)
 {
 	/* If this is a value node, then randomly pick a value from the built
@@ -229,7 +229,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 				(param_vect)[j] = ((float64_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
-			watch_param(m_node_name, &param_vect, m_vector_length);
+			/*watch_param(m_node_name, &param_vect, m_vector_length)*/;
 
 			break;
 		}
@@ -257,7 +257,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 				(param_vect)[j] = ((int32_t*)m_values)[i];
 			}
 			p->add_vector(&param_vect, m_vector_length, m_node_name);
-			watch_param(m_node_name, &param_vect, m_vector_length);
+			/*watch_param(m_node_name, &param_vect, m_vector_length)*/;
 
 			break;
 		}
@@ -275,10 +275,10 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 			break;
 		}
 
-		return new CParameterCombination(p);
+		return std::make_shared<CParameterCombination>(p);
 	}
 
-	CParameterCombination* new_root=NULL;
+	std::shared_ptr<CParameterCombination> new_root=NULL;
 
 	/*Complain if we have a bad node*/
 	if (!((m_sgobject && m_node_name) || (!m_node_name && !m_sgobject)))
@@ -291,23 +291,24 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		if (m_sgobject)
 		{
 			Parameter* p=new Parameter();
-			p->add(&m_sgobject, m_node_name);
-		new_root = new CParameterCombination(p);
+			//FIXME
+			//p->add(&m_sgobject, m_node_name);
+			new_root = std::make_shared<CParameterCombination>(p);
 		}
 
 		else
-			new_root = new CParameterCombination();
+			new_root = std::make_shared<CParameterCombination>();
 
 		for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
 		{
-			CModelSelectionParameters* current =
-					(CModelSelectionParameters*)m_child_nodes->get_element(i);
+			auto current =
+				m_child_nodes->get_element<CModelSelectionParameters>(i);
 
-			CParameterCombination* c = current->get_single_combination(is_rand);
+			auto c = current->get_single_combination(is_rand);
 
 			new_root->append_child(c);
 
-			SG_UNREF(current);
+
 		}
 
 		return new_root;
@@ -320,13 +321,14 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 		if (m_sgobject)
 		{
 			Parameter* p = new Parameter();
-			p->add(&m_sgobject, m_node_name);
-			return new CParameterCombination(p);
+			//FIXME
+			//p->add(&m_sgobject, m_node_name);
+			return std::make_shared<CParameterCombination>(p);
 		}
 
 		else
 		{
-			new_root = new CParameterCombination();
+			new_root = std::make_shared<CParameterCombination>();
 			return new_root;
 		}
 	}
@@ -335,7 +337,7 @@ CParameterCombination* CModelSelectionParameters::get_single_combination(
 
 
 
-CDynamicObjectArray* CModelSelectionParameters::get_combinations(
+std::shared_ptr<CDynamicObjectArray> CModelSelectionParameters::get_combinations(
 		index_t num_prefix)
 {
 	char* prefix=SG_MALLOC(char, num_prefix+1);
@@ -345,7 +347,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 
 	SG_DEBUG("%s------>entering CModelSelectionParameters::get_combinations() "
 			"for \"%s\"\n", prefix, m_node_name ? m_node_name : "root");
-	CDynamicObjectArray* result=new CDynamicObjectArray();
+	auto result=std::make_shared<CDynamicObjectArray>();
 
 	/* value case: node with values and no children.
 	 * build trees of Parameter instances which each contain one value
@@ -375,7 +377,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 				break;
 			}
 
-			result->append_element(new CParameterCombination(p));
+			result->append_element(std::make_shared<CParameterCombination>(p));
 		}
 
 		SG_DEBUG("%s------>leaving CModelSelectionParameters::get_combinations()"
@@ -404,8 +406,8 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
-			CModelSelectionParameters* current=
-					(CModelSelectionParameters*)m_child_nodes->get_element(i);
+			auto current=
+					m_child_nodes->get_element<CModelSelectionParameters>(i);
 
 			/* split children with values and children with other */
 			if (current->m_values)
@@ -413,7 +415,7 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 			else
 				non_value_children.append_element(current);
 
-			SG_UNREF(current);
+
 		}
 
 		/* extract all tree sets of all value children */
@@ -421,33 +423,34 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		for (index_t i=0; i<value_children.get_num_elements(); ++i)
 		{
 			/* recursively get all combinations in a new array */
-			CModelSelectionParameters* value_child=
-					(CModelSelectionParameters*)value_children.get_element(i);
+			auto value_child=
+					value_children.get_element<CModelSelectionParameters>(i);
 			value_node_sets.append_element(value_child->get_combinations(
 					num_prefix+1));
-			SG_UNREF(value_child);
+
 		}
 
 		/* build product of all these tree sets */
 
 		/* new root node is needed for new trees, depends on current case */
-		CParameterCombination* new_root=NULL;
+		std::shared_ptr<CParameterCombination> new_root=NULL;
 		if (m_sgobject)
 		{
 			Parameter* p=new Parameter();
-			p->add(&m_sgobject, m_node_name);
-			new_root=new CParameterCombination(p);
+			//FIXME
+			//p->add(&m_sgobject, m_node_name);
+			new_root=std::make_shared<CParameterCombination>(p);
 		}
 		else
-			new_root=new CParameterCombination();
+			new_root=std::make_shared<CParameterCombination>();
 
-		SG_REF(new_root);
 
-		CDynamicObjectArray* value_combinations=
+
+		auto value_combinations=
 				CParameterCombination::leaf_sets_multiplication(value_node_sets,
 						new_root);
 
-		SG_UNREF(new_root);
+
 
 		if (!non_value_children.get_num_elements())
 			*result=*value_combinations;
@@ -457,22 +460,21 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		{
 			/* extract all tree sets of non-value nodes */
 //			SG_PRINT("%sextracting combinations of non-value nodes\n", prefix)
-			CDynamicObjectArray* non_value_combinations=
-					new CDynamicObjectArray();
+			auto non_value_combinations=
+					std::make_shared<CDynamicObjectArray>();
 			for (index_t i=0; i<non_value_children.get_num_elements(); ++i)
 			{
 				/* recursively get all combinations in a new array */
-				CModelSelectionParameters* non_value_child=
-						(CModelSelectionParameters*)
-						non_value_children.get_element(i);
+				auto non_value_child=
+						non_value_children.get_element<CModelSelectionParameters>(i);
 
 //				SG_PRINT("%s\tcurrent non-value child\n", prefix)
 //				non_value_child->print_tree(num_prefix+1);
 
-				CDynamicObjectArray* current_combination=
+				auto current_combination=
 						non_value_child->get_combinations(num_prefix+2);
 				non_value_combinations->append_element(current_combination);
-				SG_UNREF(non_value_child);
+
 
 //				SG_PRINT("%s\tcombinations of non-value nodes:\n", prefix)
 //				for (index_t j=0; j<current_combination->get_num_elements(); ++j)
@@ -498,28 +500,29 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 				if (m_sgobject)
 				{
 					Parameter* p=new Parameter();
-					p->add(&m_sgobject, m_node_name);
-					new_root=new CParameterCombination(p);
+					//FIXME
+					//p->add(&(ms_sgobject.get()), m_node_name);
+					new_root=std::make_shared<CParameterCombination>(p);
 				}
 				else
-					new_root=new CParameterCombination();
+					new_root=std::make_shared<CParameterCombination>();
 
-				CDynamicObjectArray* non_value_products=
+				auto non_value_products=
 						CParameterCombination::non_value_tree_multiplication(
 								non_value_combinations, new_root);
 
-				SG_UNREF(new_root);
 
-				SG_UNREF(non_value_combinations);
+
+
 				non_value_combinations=non_value_products;
 
 				/* append all non-value combinations to result */
 				for (index_t i=0; i<non_value_combinations->get_num_elements(); ++i)
 				{
-					CParameterCombination* current=(CParameterCombination*)
-							non_value_combinations->get_element(i);
+					auto current=
+							non_value_combinations->get_element<CParameterCombination>(i);
 					result->append_element(current);
-					SG_UNREF(current);
+
 				}
 			}
 			else
@@ -530,54 +533,53 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 				if (m_sgobject)
 				{
 					Parameter* p=new Parameter();
-					p->add(&m_sgobject, m_node_name);
-					new_root=new CParameterCombination(p);
+					//FIXME
+					//p->add(&(ms_sgobject.get()), m_node_name);
+					new_root=std::make_shared<CParameterCombination>(p);
 				}
 				else
-					new_root=new CParameterCombination();
+					new_root=std::make_shared<CParameterCombination>();
 
-				CDynamicObjectArray* non_value_products=
+				auto non_value_products=
 						CParameterCombination::non_value_tree_multiplication(
 								non_value_combinations, new_root);
 
-				SG_UNREF(new_root);
 
-				SG_UNREF(non_value_combinations);
+
+
 				non_value_combinations=non_value_products;
 
 				for (index_t i=0; i<value_combinations->get_num_elements(); ++i)
 				{
-					CParameterCombination* current_value_tree=
-							(CParameterCombination*)
-							value_combinations->get_element(i);
+					auto current_value_tree=
+							value_combinations->get_element<CParameterCombination>(i);
 
 					for (index_t j=0; j
 							<non_value_combinations->get_num_elements(); ++j)
 				{
-						CParameterCombination* current_non_value_tree=
-								(CParameterCombination*)
-								non_value_combinations->get_element(j);
+						auto current_non_value_tree=
+								non_value_combinations->get_element<CParameterCombination>(j);
 
 						/* copy current value tree and add all childs of non-
 						 * value combination. Then add new node to result */
-						CParameterCombination* value_copy=
+						auto value_copy=
 								current_value_tree->copy_tree();
 
 						value_copy->merge_with(current_non_value_tree);
 						result->append_element(value_copy);
 
-						SG_UNREF(current_non_value_tree);
+
 					}
 
-					SG_UNREF(current_value_tree);
+
 				}
 			}
 
 			/* clean up*/
-			SG_UNREF(non_value_combinations);
+
 		}
 
-		SG_UNREF(value_combinations);
+
 	}
 	else
 	{
@@ -587,8 +589,9 @@ CDynamicObjectArray* CModelSelectionParameters::get_combinations(
 		if (m_sgobject)
 		{
 			Parameter* p=new Parameter();
-			p->add(&m_sgobject, m_node_name);
-			result->append_element(new CParameterCombination(p));
+			//FIXME
+			//p->add(&(ms_sgobject.get()), m_node_name);
+			result->append_element(std::make_shared<CParameterCombination>(p));
 		}
 	}
 
@@ -629,10 +632,10 @@ void CModelSelectionParameters::print_tree(int prefix_num)
 		/* cast safe because only CModelSelectionParameters are added to list */
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
-			CModelSelectionParameters* child=
-					(CModelSelectionParameters*)m_child_nodes->get_element(i);
+			auto child=
+				m_child_nodes->get_element<CModelSelectionParameters>(i);
 			child->print_tree(prefix_num+1);
-			SG_UNREF(child);
+
 		}
 	}
 	else

@@ -1,9 +1,9 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn, 
- *          Michele Mazzoni, Bjoern Esser, Fernando Iglesias, Abhijeet Kislay, 
- *          Viktor Gal, Evan Shelhamer, Giovanni De Toni, 
+ * Authors: Soeren Sonnenburg, Heiko Strathmann, Sergey Lisitsyn,
+ *          Michele Mazzoni, Bjoern Esser, Fernando Iglesias, Abhijeet Kislay,
+ *          Viktor Gal, Evan Shelhamer, Giovanni De Toni,
  *          Christopher Goldsworthy
  */
 #include <shogun/lib/config.h>
@@ -31,18 +31,14 @@ CLDA::CLDA(float64_t gamma, ELDAMethod method, bool bdc_svd)
 }
 
 CLDA::CLDA(
-    float64_t gamma, CDenseFeatures<float64_t>* traindat, CLabels* trainlab,
+    float64_t gamma, std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab,
     ELDAMethod method, bool bdc_svd)
     : CDenseRealDispatch<CLDA, CLinearMachine>(), m_gamma(gamma)
 {
 	init();
 
 	features = traindat;
-	SG_REF(features)
-
 	m_labels = trainlab;
-	SG_REF(trainlab)
-
 	m_method = method;
 	m_gamma = gamma;
 	m_bdc_svd = bdc_svd;
@@ -69,7 +65,7 @@ CLDA::~CLDA()
 }
 
 template <typename ST, typename U>
-bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
+bool CLDA::train_machine_templated(std::shared_ptr<CDenseFeatures<ST>> data)
 {
 	index_t num_feat = data->get_num_features();
 	index_t num_vec = data->get_num_vectors();
@@ -83,7 +79,7 @@ bool CLDA::train_machine_templated(CDenseFeatures<ST>* data)
 }
 
 template <typename ST>
-bool CLDA::solver_svd(CDenseFeatures<ST>* data)
+bool CLDA::solver_svd(std::shared_ptr<CDenseFeatures<ST>> data)
 {
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(
@@ -120,7 +116,7 @@ bool CLDA::solver_svd(CDenseFeatures<ST>* data)
 }
 
 template <typename ST>
-bool CLDA::solver_classic(CDenseFeatures<ST>* data)
+bool CLDA::solver_classic(std::shared_ptr<CDenseFeatures<ST>> data)
 {
 	auto labels = multiclass_labels(m_labels);
 	REQUIRE(

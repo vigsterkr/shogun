@@ -125,36 +125,36 @@ public:
 		}
 
 		// shogun representation of features and labels
-		features_train = new CDenseFeatures<float64_t>(feat_train);
-		labels_train = new CBinaryLabels(lab_train);
-		features_test = new CDenseFeatures<float64_t>(feat_test);
-		SG_REF(features_train);
-		SG_REF(labels_train);
-		SG_REF(features_test);
+		features_train = std::make_shared<CDenseFeatures><float64_t>(feat_train);
+		labels_train = std::make_shared<CBinaryLabels>(lab_train);
+		features_test = std::make_shared<CDenseFeatures><float64_t>(feat_test);
+		
+		
+		
 
 		// choose Gaussian kernel with sigma = 2 and zero mean function
-		kernel = new CGaussianKernel(10, 2);
-		mean = new CZeroMean();
+		kernel = std::make_shared<CGaussianKernel>(10, 2);
+		mean = std::make_shared<CZeroMean>();
 
-		SG_REF(kernel);
-		SG_REF(mean);
+		
+		
 	}
 
 	virtual void TearDown()
 	{
-		SG_UNREF(features_train);
-		SG_UNREF(labels_train);
-		SG_UNREF(features_test);
-		SG_UNREF(kernel);
-		SG_UNREF(mean);
+		
+		
+		
+		
+		
 	}
 	const index_t m = 25;
 	const index_t n = 10;
-	CFeatures* features_train;
-	CBinaryLabels* labels_train;
-	CFeatures* features_test;
-	CGaussianKernel* kernel;
-	CZeroMean* mean;
+	std::shared_ptr<CFeatures> features_train;
+	std::shared_ptr<CBinaryLabels> labels_train;
+	std::shared_ptr<CFeatures> features_test;
+	std::shared_ptr<CGaussianKernel> kernel;
+	std::shared_ptr<CZeroMean> mean;
 };
 
 class GaussianProcessClassificationUsingSingleLaplaceWithLBFGS
@@ -166,13 +166,13 @@ public:
 		GaussianProcessClassification::SetUp();
 
 		// probit likelihood
-		CProbitLikelihood* likelihood = new CProbitLikelihood();
+		auto likelihood = std::make_shared<CProbitLikelihood>();
 
 		// specify GP classification with SingleLaplace inference
-		CSingleLaplaceInferenceMethod* inf = new CSingleLaplaceInferenceMethod(
+		CSingleLaplaceInferenceMethod* inf = std::make_shared<CSingleLaplaceInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 		ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE;
-		CLBFGSMinimizer* opt = new CLBFGSMinimizer();
+		auto opt = std::make_shared<CLBFGSMinimizer>();
 		opt->set_lbfgs_parameters(
 		    m, max_linesearch, linesearch, max_iterations, delta, past,
 		    epsilon);
@@ -185,7 +185,7 @@ public:
 	virtual void TearDown()
 	{
 		GaussianProcessClassification::TearDown();
-		SG_UNREF(gpc);
+		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;
@@ -195,7 +195,7 @@ public:
 	const float64_t delta = 1e-15;
 	const int past = 0;
 	const float64_t epsilon = 1e-15;
-	CGaussianProcessClassification* gpc;
+	std::shared_ptr<CGaussianProcessClassification> gpc;
 };
 
 class GaussianProcessClassificationUsingKLCovariance
@@ -207,9 +207,9 @@ public:
 		GaussianProcessClassification::SetUp();
 
 		// probit likelihood
-		CLogitVGLikelihood* likelihood = new CLogitVGLikelihood();
+		auto likelihood = std::make_shared<CLogitVGLikelihood>();
 
-		CKLCovarianceInferenceMethod* inf = new CKLCovarianceInferenceMethod(
+		CKLCovarianceInferenceMethod* inf = std::make_shared<CKLCovarianceInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
@@ -219,11 +219,11 @@ public:
 	virtual void TearDown()
 	{
 		GaussianProcessClassification::TearDown();
-		SG_UNREF(gpc);
+		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;
-	CGaussianProcessClassification* gpc;
+	std::shared_ptr<CGaussianProcessClassification> gpc;
 };
 
 class GaussianProcessClassificationUsingKLCholesky
@@ -235,9 +235,9 @@ public:
 		GaussianProcessClassification::SetUp();
 
 		// probit likelihood
-		CLogitVGLikelihood* likelihood = new CLogitVGLikelihood();
+		auto likelihood = std::make_shared<CLogitVGLikelihood>();
 
-		CKLCholeskyInferenceMethod* inf = new CKLCholeskyInferenceMethod(
+		CKLCholeskyInferenceMethod* inf = std::make_shared<CKLCholeskyInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
@@ -247,11 +247,11 @@ public:
 	virtual void TearDown()
 	{
 		GaussianProcessClassification::TearDown();
-		SG_UNREF(gpc);
+		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;
-	CGaussianProcessClassification* gpc;
+	std::shared_ptr<CGaussianProcessClassification> gpc;
 };
 
 class GaussianProcessClassificationUsingKLDiagonal
@@ -263,9 +263,9 @@ public:
 		GaussianProcessClassification::SetUp();
 
 		// probit likelihood
-		CLogitVGLikelihood* likelihood = new CLogitVGLikelihood();
+		auto likelihood = std::make_shared<CLogitVGLikelihood>();
 
-		CKLDiagonalInferenceMethod* inf = new CKLDiagonalInferenceMethod(
+		CKLDiagonalInferenceMethod* inf = std::make_shared<CKLDiagonalInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
@@ -275,11 +275,11 @@ public:
 	virtual void TearDown()
 	{
 		GaussianProcessClassification::TearDown();
-		SG_UNREF(gpc);
+		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;
-	CGaussianProcessClassification* gpc;
+	std::shared_ptr<CGaussianProcessClassification> gpc;
 };
 
 class GaussianProcessClassificationUsingKLDual
@@ -291,9 +291,9 @@ public:
 		GaussianProcessClassification::SetUp();
 
 		// probit likelihood
-		CLogitDVGLikelihood* likelihood = new CLogitDVGLikelihood();
+		auto likelihood = std::make_shared<CLogitDVGLikelihood>();
 
-		CKLDualInferenceMethod* inf = new CKLDualInferenceMethod(
+		CKLDualInferenceMethod* inf = std::make_shared<CKLDualInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
@@ -304,11 +304,11 @@ public:
 	{
 		GaussianProcessClassification::TearDown();
 
-		SG_UNREF(gpc);
+		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;
-	CGaussianProcessClassification* gpc;
+	std::shared_ptr<CGaussianProcessClassification> gpc;
 };
 
 #if defined HAVE_NLOPT
@@ -321,13 +321,13 @@ public:
 		GaussianProcessClassification::SetUp();
 
 		// probit likelihood
-		CProbitLikelihood* likelihood = new CProbitLikelihood();
-		SG_REF(likelihood);
+		auto likelihood = std::make_shared<CProbitLikelihood>();
+		
 
 		// specify GP classification with SingleLaplace inference
-		CSingleLaplaceInferenceMethod* inf = new CSingleLaplaceInferenceMethod(
+		CSingleLaplaceInferenceMethod* inf = std::make_shared<CSingleLaplaceInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
-		FirstOrderMinimizer* opt = new CNLOPTMinimizer();
+		FirstOrderMinimizer* opt = std::make_shared<CNLOPTMinimizer>();
 		inf->register_minimizer(opt);
 
 		// train gaussian process classifier
@@ -337,11 +337,11 @@ public:
 	virtual void TearDown()
 	{
 		GaussianProcessClassification::TearDown();
-		SG_UNREF(gpc);
+		
 	}
 	float64_t abs_tolerance;
 	const float64_t rel_tolerance = 1e-2;
-	CGaussianProcessClassification* gpc;
+	std::shared_ptr<CGaussianProcessClassification> gpc;
 };
 #endif // HAVE_NLOPT
 
@@ -385,13 +385,13 @@ public:
 
 		// shogun representation of features and labels
 		CDenseFeatures<float64_t>* features_train =
-		    new CDenseFeatures<float64_t>(feat_train);
+		    std::make_shared<CDenseFeatures><float64_t>(feat_train);
 		CDenseFeatures<float64_t>* latent_features_train =
-		    new CDenseFeatures<float64_t>(lat_feat_train);
-		CBinaryLabels* labels_train = new CBinaryLabels(lab_train);
+		    std::make_shared<CDenseFeatures><float64_t>(lat_feat_train);
+		CBinaryLabels* labels_train = std::make_shared<CBinaryLabels>(lab_train);
 
 		// choose Gaussian kernel with sigma = 2 and zero mean function
-		CGaussianARDSparseKernel* kernel = new CGaussianARDSparseKernel(10);
+		auto kernel = std::make_shared<CGaussianARDSparseKernel>(10);
 		int32_t t_dim = 2;
 		SGMatrix<float64_t> weights(t_dim, dim);
 		// the weights is a lower triangular matrix
@@ -406,16 +406,16 @@ public:
 		kernel->set_matrix_weights(weights);
 
 		float64_t mean_weight = 2.0;
-		CConstMean* mean = new CConstMean(mean_weight);
+		auto mean = std::make_shared<CConstMean>(mean_weight);
 
-		CLogitLikelihood* lik = new CLogitLikelihood();
+		auto lik = std::make_shared<CLogitLikelihood>();
 
 		// specify GP regression with FITC inference
 		CSingleFITCLaplaceInferenceMethod* inf =
 		    new CSingleFITCLaplaceInferenceMethod(
 		        kernel, features_train, mean, labels_train, lik,
 		        latent_features_train);
-		SG_UNREF(latent_features_train);
+		
 
 		float64_t ind_noise = 1e-6;
 		inf->set_inducing_noise(ind_noise);
@@ -435,7 +435,7 @@ public:
 		feat_test(1, 2) = 2.3546;
 		feat_test(1, 3) = -0.46;
 
-		features_test = new CDenseFeatures<float64_t>(feat_test);
+		features_test = std::make_shared<CDenseFeatures><float64_t>(feat_test);
 
 		gpc = new CGaussianProcessClassification(inf);
 
@@ -445,24 +445,24 @@ public:
 
 	virtual void TearDown()
 	{
-		SG_UNREF(gpc);
+		
 	}
 	const index_t n = 6;
 	const index_t dim = 2;
 	const index_t m = 3;
 	const float64_t rel_tolorance = 1e-2;
 	float64_t abs_tolorance;
-	CGaussianProcessClassification* gpc;
-	CDenseFeatures<float64_t>* features_test;
+	std::shared_ptr<CGaussianProcessClassification> gpc;
+	std::shared_ptr<CDenseFeatures<float64_t>> features_test;
 };
 
 TEST_F(GaussianProcessClassification, get_mean_vector)
 {
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
+	CSingleLaplaceInferenceMethod* inf=std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train Gaussian process binary classifier
@@ -498,16 +498,16 @@ TEST_F(GaussianProcessClassification, get_mean_vector)
 	EXPECT_NEAR(mean_vector[23], 0.113007, 1E-6);
 	EXPECT_NEAR(mean_vector[24], 0.041654, 1E-6);
 
-	SG_UNREF(gpc);
+	
 }
 
 TEST_F(GaussianProcessClassification, get_variance_vector)
 {
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
+	CSingleLaplaceInferenceMethod* inf=std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -543,16 +543,16 @@ TEST_F(GaussianProcessClassification, get_variance_vector)
 	EXPECT_NEAR(variance_vector[23], 0.98723, 1E-5);
 	EXPECT_NEAR(variance_vector[24], 0.99826, 1E-5);
 
-	SG_UNREF(gpc);
+	
 }
 
 TEST_F(GaussianProcessClassification, get_probabilities)
 {
 	// probit likelihood
-	CProbitLikelihood* likelihood=new CProbitLikelihood();
+	auto likelihood=std::make_shared<CProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	CSingleLaplaceInferenceMethod* inf=new CSingleLaplaceInferenceMethod(kernel,
+	CSingleLaplaceInferenceMethod* inf=std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
@@ -588,24 +588,24 @@ TEST_F(GaussianProcessClassification, get_probabilities)
 	EXPECT_NEAR(probabilities[23], 0.55650, 1E-5);
 	EXPECT_NEAR(probabilities[24], 0.52083, 1E-5);
 
-	SG_UNREF(gpc);
+	
 }
 
 TEST_F(GaussianProcessClassification, apply_preprocessor_and_binary)
 {
-	CRescaleFeatures* preproc=new CRescaleFeatures();
+	auto preproc=std::make_shared<CRescaleFeatures>();
 	preproc->fit(features_train);
 
 	features_train = preproc->transform(features_train);
-	SG_REF(features_train)
+	
 
 	features_test = preproc->transform(features_test);
-	SG_REF(features_test);
+	
 
 	// logit likelihood
-	CLogitLikelihood* likelihood=new CLogitLikelihood();
+	auto likelihood=std::make_shared<CLogitLikelihood>();
 
-	CEPInferenceMethod* inf=new CEPInferenceMethod(kernel, features_train,
+	CEPInferenceMethod* inf=std::make_shared<CEPInferenceMethod>(kernel, features_train,
 			mean, labels_train, likelihood);
 
 	inf->set_scale(1.5);
@@ -644,8 +644,8 @@ TEST_F(GaussianProcessClassification, apply_preprocessor_and_binary)
 	EXPECT_EQ(p[23], 1);
 	EXPECT_EQ(p[24], 1);
 
-	SG_UNREF(prediction);
-	SG_UNREF(gpc);
+	
+	
 }
 
 TEST_F(
@@ -1999,23 +1999,23 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_mean_vector)
 	feat_test(1, 9)=2;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CMulticlassLabels* labels_train=new CMulticlassLabels();
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	auto labels_train=std::make_shared<CMulticlassLabels>();
 	labels_train->set_int_labels(lab_train);
 
 	const float64_t ell=1.210875895826508;
 	// choose Gaussian kernel with width = 2*ell^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, ell*ell*2.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, ell*ell*2.0);
+	auto mean=std::make_shared<CZeroMean>();
 
-	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
+	auto likelihood=std::make_shared<CSoftMaxLikelihood>();
 	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale = std::sqrt(497.3965463400368);
 	inf->set_scale(scale);
 
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+	CDenseFeatures<float64_t>* features_test=std::make_shared<CDenseFeatures><float64_t>(feat_test);
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -2070,7 +2070,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_mean_vector)
 	abs_tolerance = CMath::get_abs_tolerance(0.262537147766292, rel_tolerance);
 	EXPECT_NEAR(mean_matrix(1,9),  0.262537147766292,  abs_tolerance);
 
-	SG_UNREF(gpc);
+	
 }
 
 TEST(GaussianProcessClassificationUsingMultiLaplace, get_variance_vector)
@@ -2143,23 +2143,23 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_variance_vector)
 	feat_test(1, 9)=2;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CMulticlassLabels* labels_train=new CMulticlassLabels();
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	auto labels_train=std::make_shared<CMulticlassLabels>();
 	labels_train->set_int_labels(lab_train);
 
 	const float64_t ell=1.210875895826508;
 	// choose Gaussian kernel with width = 2*ell^2 and zero mean function
-	CGaussianKernel* kernel=new CGaussianKernel(10, ell*ell*2.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, ell*ell*2.0);
+	auto mean=std::make_shared<CZeroMean>();
 
-	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
+	auto likelihood=std::make_shared<CSoftMaxLikelihood>();
 	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale = std::sqrt(497.3965463400368);
 	inf->set_scale(scale);
 
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+	CDenseFeatures<float64_t>* features_test=std::make_shared<CDenseFeatures><float64_t>(feat_test);
 
 	// train gaussian process classifier
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
@@ -2215,7 +2215,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_variance_vector)
 	abs_tolerance = CMath::get_abs_tolerance(0.197173723102423, rel_tolerance);
 	EXPECT_NEAR(variance_matrix(1,9),  0.197173723102423,  abs_tolerance);
 
-	SG_UNREF(gpc);
+	
 }
 
 TEST(GaussianProcessClassificationUsingMultiLaplace, apply_multiclass)
@@ -2255,23 +2255,23 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, apply_multiclass)
 	feat_test(1,2)=0.0023812;
 
 	// shogun representation of features and labels
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(feat_train);
-	CMulticlassLabels* labels_train=new CMulticlassLabels();
+	CDenseFeatures<float64_t>* features_train=std::make_shared<CDenseFeatures><float64_t>(feat_train);
+	auto labels_train=std::make_shared<CMulticlassLabels>();
 	labels_train->set_int_labels(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
 	const float64_t ell=0.829123236069650;
-	CGaussianKernel* kernel=new CGaussianKernel(10, ell*ell*2.0);
-	CZeroMean* mean=new CZeroMean();
+	auto kernel=std::make_shared<CGaussianKernel>(10, ell*ell*2.0);
+	auto mean=std::make_shared<CZeroMean>();
 
-	CSoftMaxLikelihood* likelihood=new CSoftMaxLikelihood();
+	auto likelihood=std::make_shared<CSoftMaxLikelihood>();
 	CMultiLaplaceInferenceMethod* inf=new CMultiLaplaceInferenceMethod(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale = std::sqrt(5.114014937226176);
 	inf->set_scale(scale);
 
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(feat_test);
+	CDenseFeatures<float64_t>* features_test=std::make_shared<CDenseFeatures><float64_t>(feat_test);
 
 	CGaussianProcessClassification* gpc=new CGaussianProcessClassification(inf);
 	gpc->train();
@@ -2283,8 +2283,8 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, apply_multiclass)
 	EXPECT_EQ(p[1], 1);
 	EXPECT_EQ(p[2], 2);
 
-	SG_UNREF(gpc);
-	SG_UNREF(prediction);
+	
+	
 }
 
 #if defined HAVE_NLOPT

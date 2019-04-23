@@ -17,41 +17,41 @@ CLineReader::CLineReader()
 {
 	init();
 
-	m_buffer=new CCircularBuffer();
+	m_buffer=std::make_shared<CCircularBuffer>();
 }
 
-CLineReader::CLineReader(FILE* stream, CTokenizer* tokenizer)
+CLineReader::CLineReader(FILE* stream, std::shared_ptr<CTokenizer> tokenizer)
 {
 	init();
 
 	m_stream=stream;
 	m_max_token_length=10*1024*1024;
 
-	SG_REF(tokenizer);
+	
 	m_tokenizer=tokenizer;
 
-	m_buffer=new CCircularBuffer(m_max_token_length);
+	m_buffer=std::make_shared<CCircularBuffer>(m_max_token_length);
 	m_buffer->set_tokenizer(m_tokenizer);
 }
 
-CLineReader::CLineReader(int32_t max_token_length, FILE* stream, CTokenizer* tokenizer)
+CLineReader::CLineReader(int32_t max_token_length, FILE* stream, std::shared_ptr<CTokenizer> tokenizer)
 {
 	init();
 
 	m_stream=stream;
 	m_max_token_length=max_token_length;
 
-	SG_REF(tokenizer);
+	
 	m_tokenizer=tokenizer;
 
-	m_buffer=new CCircularBuffer(m_max_token_length);
+	m_buffer=std::make_shared<CCircularBuffer>(m_max_token_length);
 	m_buffer->set_tokenizer(m_tokenizer);
 }
 
 CLineReader::~CLineReader()
 {
-	SG_UNREF(m_tokenizer);
-	SG_UNREF(m_buffer);
+	
+	
 }
 
 bool CLineReader::has_next()
@@ -107,10 +107,10 @@ void CLineReader::reset()
 	m_buffer->clear();
 }
 
-void CLineReader::set_tokenizer(CTokenizer* tokenizer)
+void CLineReader::set_tokenizer(std::shared_ptr<CTokenizer> tokenizer)
 {
-	SG_REF(tokenizer);
-	SG_UNREF(m_tokenizer);
+	
+	
 	m_tokenizer=tokenizer;
 
 	m_buffer->set_tokenizer(tokenizer);

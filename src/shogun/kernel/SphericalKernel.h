@@ -42,7 +42,7 @@ class CSphericalKernel: public CKernel
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance
 	 */
-	CSphericalKernel(int32_t size, float64_t sigma, CDistance* dist);
+	CSphericalKernel(int32_t size, float64_t sigma, std::shared_ptr<CDistance> dist);
 
 	/** constructor
 	 *
@@ -51,7 +51,7 @@ class CSphericalKernel: public CKernel
 	 * @param sigma kernel parameter sigma
 	 * @param dist distance
 	 */
-	CSphericalKernel(CFeatures *l, CFeatures *r, float64_t sigma, CDistance* dist);
+	CSphericalKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t sigma, std::shared_ptr<CDistance> dist);
 
 	/** initialize kernel with features
 	 *
@@ -59,7 +59,7 @@ class CSphericalKernel: public CKernel
 	 * @param r features of right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
 
 	/**
 	 * @return kernel type
@@ -108,7 +108,7 @@ private:
 protected:
 
 	/** distance */
-	CDistance* distance;
+	std::shared_ptr<CDistance> distance;
 
 	/** width */
 	float64_t sigma;

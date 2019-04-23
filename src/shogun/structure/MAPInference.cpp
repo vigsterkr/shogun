@@ -19,7 +19,7 @@ CMAPInference::CMAPInference() : CSGObject()
 	init();
 }
 
-CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
+CMAPInference::CMAPInference(std::shared_ptr<CFactorGraph> fg, EMAPInferType inference_method)
 	: CSGObject()
 {
 	init();
@@ -30,13 +30,13 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 	switch(inference_method)
 	{
 		case TREE_MAX_PROD:
-			m_infer_impl = new CTreeMaxProduct(fg);
+			m_infer_impl = std::make_shared<CTreeMaxProduct>(fg);
 			break;
 		case GRAPH_CUT:
-			m_infer_impl = new CGraphCut(fg);
+			m_infer_impl = std::make_shared<CGraphCut>(fg);
 			break;
 		case GEMPLP:
-			m_infer_impl = new CGEMPLP(fg);
+			m_infer_impl = std::make_shared<CGEMPLP>(fg);
 			break;
 		case LOOPY_MAX_PROD:
 			SG_ERROR("%s::CMAPInference(): LoopyMaxProduct has not been implemented!\n",
@@ -56,22 +56,22 @@ CMAPInference::CMAPInference(CFactorGraph* fg, EMAPInferType inference_method)
 			break;
 	}
 
-	SG_REF(m_infer_impl);
-	SG_REF(m_fg);
+
+
 }
 
 CMAPInference::~CMAPInference()
 {
-	SG_UNREF(m_infer_impl);
-	SG_UNREF(m_outputs);
-	SG_UNREF(m_fg);
+
+
+
 }
 
 void CMAPInference::init()
 {
-	SG_ADD((CSGObject**)&m_fg, "fg", "factor graph");
-	SG_ADD((CSGObject**)&m_outputs, "outputs", "Structured outputs");
-	SG_ADD((CSGObject**)&m_infer_impl, "infer_impl", "Inference implementation");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_fg, "fg", "factor graph");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_outputs, "outputs", "Structured outputs");
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_infer_impl, "infer_impl", "Inference implementation");
 	SG_ADD(&m_energy, "energy", "Minimized energy");
 
 	m_outputs = NULL;
@@ -87,16 +87,16 @@ void CMAPInference::inference()
 	m_energy = m_infer_impl->inference(assignment);
 
 	// create structured output, with default normalized hamming loss
-	SG_UNREF(m_outputs);
+
 	SGVector<float64_t> loss_weights(m_fg->get_num_vars());
 	SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0 / loss_weights.vlen);
-	m_outputs = new CFactorGraphObservation(assignment, loss_weights); // already ref() in constructor
-	SG_REF(m_outputs);
+	m_outputs = std::make_shared<CFactorGraphObservation>(assignment, loss_weights); // already ref() in constructor
+
 }
 
-CFactorGraphObservation* CMAPInference::get_structured_outputs() const
+std::shared_ptr<CFactorGraphObservation> CMAPInference::get_structured_outputs() const
 {
-	SG_REF(m_outputs);
+
 	return m_outputs;
 }
 
@@ -112,7 +112,7 @@ CMAPInferImpl::CMAPInferImpl() : CSGObject()
 	register_parameters();
 }
 
-CMAPInferImpl::CMAPInferImpl(CFactorGraph* fg)
+CMAPInferImpl::CMAPInferImpl(std::shared_ptr<CFactorGraph> fg)
 	: CSGObject()
 {
 	register_parameters();
@@ -125,7 +125,7 @@ CMAPInferImpl::~CMAPInferImpl()
 
 void CMAPInferImpl::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_fg, "fg",
+	SG_ADD((std::shared_ptr<CSGObject>*)&m_fg, "fg",
 		"Factor graph pointer");
 
 	m_fg = NULL;

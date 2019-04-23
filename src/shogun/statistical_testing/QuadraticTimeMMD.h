@@ -113,7 +113,7 @@ public:
 	 *
 	 * @param samples_from_p Samples from p.
 	 */
-	virtual void set_p(CFeatures* samples_from_p);
+	virtual void set_p(std::shared_ptr<CFeatures> samples_from_p);
 
 	/**
 	 * Method that initializes/replaces samples from q. It will invalidate
@@ -123,7 +123,7 @@ public:
 	 *
 	 * @param samples_from_p Samples from q.
 	 */
-	virtual void set_q(CFeatures* samples_from_q);
+	virtual void set_q(std::shared_ptr<CFeatures> samples_from_q);
 
 	/**
 	 * Method that creates a merged copy of CFeatures instance from both
@@ -133,7 +133,7 @@ public:
 	 *
 	 * @return The merged samples.
 	 */
-	CFeatures* get_p_and_q();
+	std::shared_ptr<CFeatures> get_p_and_q();
 
 	/**
 	 * Method that sets the kernel instance to be used. If a CCustomKernel is
@@ -146,7 +146,7 @@ public:
 	 *
 	 * @param kernel The kernel instance.
 	 */
-	virtual void set_kernel(CKernel* kernel);
+	virtual void set_kernel(std::shared_ptr<CKernel> kernel);
 
 	/**
 	 * Method that learns/selects the kernel from a set of provided kernel
@@ -214,7 +214,7 @@ public:
 	 *
 	 * @return An internal instance of CMultiKernelQuadraticTimeMMD.
 	 */
-	CMultiKernelQuadraticTimeMMD* multikernel();
+	std::shared_ptr<CMultiKernelQuadraticTimeMMD> multikernel();
 
 	/**
 	 * Method that sets the number of eigenvalues to be used when spectral estimation

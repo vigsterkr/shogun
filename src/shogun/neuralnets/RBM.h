@@ -171,7 +171,7 @@ public:
 	 * @param features Input features. Should have as many features as there
 	 * are visible units in the RBM.
 	 */
-	virtual void train(CDenseFeatures<float64_t>* features);
+	virtual void train(std::shared_ptr<CDenseFeatures<float64_t>> features);
 
 	/** Draws samples from the marginal distribution of the visible units using
 	 * Gibbs sampling. The sampling starts from the values in the RBM's
@@ -194,7 +194,7 @@ public:
 	 *
 	 * @return Sampled states of group V
 	 */
-	virtual CDenseFeatures<float64_t>* sample_group(
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> sample_group(
 			int32_t V,
 			int32_t num_gibbs_steps=1, int32_t batch_size=1);
 
@@ -208,7 +208,7 @@ public:
 	 * @param num_gibbs_steps Number of Gibbs sampling steps
 	 */
 	virtual void sample_with_evidence(
-			int32_t E, CDenseFeatures<float64_t>* evidence,
+			int32_t E, std::shared_ptr<CDenseFeatures<float64_t>> evidence,
 			int32_t num_gibbs_steps=1);
 
 	/** Draws Samples from \f$ P(V|E=evidence) \f$ where \f$ E \f$ is one of
@@ -223,9 +223,9 @@ public:
 	 *
 	 * @return Sampled states of group V
 	 */
-	virtual CDenseFeatures<float64_t>* sample_group_with_evidence(
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> sample_group_with_evidence(
 			int32_t V,
-			int32_t E, CDenseFeatures<float64_t>* evidence,
+			int32_t E, std::shared_ptr<CDenseFeatures<float64_t>> evidence,
 			int32_t num_gibbs_steps=1);
 
 	/** Resets the state of the markov chain used for sampling, which is stored
@@ -308,9 +308,9 @@ public:
 		SGMatrix<float64_t> buffer = SGMatrix<float64_t>());
 
 	/** Returns the states of the visible unit as CDenseFeatures<float64_t> */
-	virtual CDenseFeatures<float64_t>* visible_state_features()
+	virtual std::shared_ptr<CDenseFeatures<float64_t>> visible_state_features()
 	{
-		return new CDenseFeatures<float64_t>(visible_state);
+		return std::make_shared<CDenseFeatures<float64_t>>(visible_state);
 	}
 
 	/** Returns the parameter vector of the RBM */
@@ -446,13 +446,13 @@ protected:
 	int32_t m_num_visible_groups;
 
 	/** Type of each visible unit group */
-	CDynamicArray<int32_t>* m_visible_group_types;
+	std::shared_ptr<CDynamicArray<int32_t>> m_visible_group_types;
 
 	/** Size of each visible unit group */
-	CDynamicArray<int32_t>* m_visible_group_sizes;
+	std::shared_ptr<CDynamicArray<int32_t>> m_visible_group_sizes;
 
 	/** Row offsets for accessing the states of each visible unit groups */
-	CDynamicArray<int32_t>* m_visible_state_offsets;
+	std::shared_ptr<CDynamicArray<int32_t>> m_visible_state_offsets;
 
 	/** Number of parameters */
 	int32_t m_num_params;

@@ -62,7 +62,7 @@ float64_t CICAConverter::get_tol() const
 	return tol;
 }
 
-void CICAConverter::fit(CFeatures* features)
+void CICAConverter::fit(std::shared_ptr<CFeatures> features)
 {
 	REQUIRE(features, "Features are not provided\n");
 	REQUIRE(
@@ -72,14 +72,14 @@ void CICAConverter::fit(CFeatures* features)
 	    features->get_feature_type() == F_DREAL,
 	    "ICA converters only work with real features\n");
 
-	fit_dense(static_cast<CDenseFeatures<float64_t>*>(features));
+	fit_dense(std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(features));
 }
 
-CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CICAConverter::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	REQUIRE(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
 
-	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	auto X = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(features)->get_feature_matrix();
 	if (!inplace)
 		X = X.clone();
 
@@ -91,18 +91,18 @@ CFeatures* CICAConverter::transform(CFeatures* features, bool inplace)
 	// Unmix
 	EX = C.inverse() * EX;
 
-	return new CDenseFeatures<float64_t>(X);
+	return std::make_shared<CDenseFeatures<float64_t>>(X);
 }
 
-CFeatures* CICAConverter::inverse_transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CICAConverter::inverse_transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	REQUIRE(m_mixing_matrix.matrix, "ICAConverter has not been fitted.\n");
 
-	auto X = features->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	auto X = std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(features)->get_feature_matrix();
 	if (!inplace)
 		X = X.clone();
 
 	linalg::matrix_prod(m_mixing_matrix, X, X);
 
-	return new CDenseFeatures<float64_t>(X);
+	return std::make_shared<CDenseFeatures<float64_t>>(X);
 }

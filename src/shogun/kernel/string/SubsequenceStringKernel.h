@@ -72,7 +72,7 @@ public:
 	 * @param maxlen maximum length of the subsequence
 	 * @param lambda the penalty parameter
 	 */
-	CSubsequenceStringKernel(CStringFeatures<char>* lhs, CStringFeatures<char>* rhs,
+	CSubsequenceStringKernel(std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 		int32_t maxlen, float64_t lambda);
 
 	/** destructor */
@@ -85,7 +85,7 @@ public:
 	 * @param rhs features of right-hand side
 	 * @return true if initialization was successful, false otherwise
 	 */
-	virtual bool init(CFeatures* lhs, CFeatures* rhs);
+	virtual bool init(std::shared_ptr<CFeatures> lhs, std::shared_ptr<CFeatures> rhs);
 
 	/** clean up kernel */
 	virtual void cleanup();

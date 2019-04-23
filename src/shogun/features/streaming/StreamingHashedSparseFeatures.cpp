@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser, 
+ * Authors: Evangelos Anagnostopoulos, Heiko Strathmann, Bjoern Esser,
  *          Sergey Lisitsyn, Viktor Gal
  */
 
@@ -19,20 +19,19 @@ CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures()
 }
 
 template <class ST>
-CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CStreamingFile* file,
+CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(std::shared_ptr<CStreamingFile> file,
 	bool is_labelled, int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	init(file, is_labelled, size, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(CSparseFeatures<ST>* dot_features,
+CStreamingHashedSparseFeatures<ST>::CStreamingHashedSparseFeatures(std::shared_ptr<CSparseFeatures<ST>> dot_features,
 	int32_t d, bool use_quadr, bool keep_lin_terms, float64_t* lab)
 {
 	ASSERT(dot_features);
 
-	CStreamingFileFromSparseFeatures<ST>* file =
-			new CStreamingFileFromSparseFeatures<ST>(dot_features, lab);
+	auto file = std::make_shared<CStreamingFileFromSparseFeatures<ST>>(dot_features, lab);
 	bool is_labelled = (lab != NULL);
 	int32_t size = 1024;
 
@@ -48,7 +47,7 @@ CStreamingHashedSparseFeatures<ST>::~CStreamingHashedSparseFeatures()
 }
 
 template <class ST>
-void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labelled,
+void CStreamingHashedSparseFeatures<ST>::init(std::shared_ptr<CStreamingFile> file, bool is_labelled,
 	int32_t size, int32_t d, bool use_quadr, bool keep_lin_terms)
 {
 	dim = d;
@@ -64,7 +63,7 @@ void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labe
 	if (file)
 	{
 		working_file = file;
-		SG_REF(working_file);
+
 		parser.init(file, is_labelled, size);
 		seekable = false;
 	}
@@ -78,13 +77,13 @@ void CStreamingHashedSparseFeatures<ST>::init(CStreamingFile* file, bool is_labe
 }
 
 template <class ST>
-float32_t CStreamingHashedSparseFeatures<ST>::dot(CStreamingDotFeatures* df)
+float32_t CStreamingHashedSparseFeatures<ST>::dot(std::shared_ptr<CStreamingDotFeatures> df)
 {
 	ASSERT(df);
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(strcmp(df->get_name(),get_name())==0)
 
-	CStreamingHashedSparseFeatures<ST>* hdf = (CStreamingHashedSparseFeatures<ST>* ) df;
+	auto hdf = std::static_pointer_cast<CStreamingHashedSparseFeatures<ST>>(df);
 	return current_vector.sparse_dot(hdf->current_vector);
 }
 

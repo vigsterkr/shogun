@@ -26,7 +26,7 @@ CExplicitSpecFeatures::CExplicitSpecFeatures() :CDotFeatures()
 }
 
 
-CExplicitSpecFeatures::CExplicitSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
+CExplicitSpecFeatures::CExplicitSpecFeatures(std::shared_ptr<CStringFeatures<uint16_t>> str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str)
 
@@ -57,12 +57,12 @@ int32_t CExplicitSpecFeatures::get_dim_feature_space() const
 	return spec_size;
 }
 
-float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CExplicitSpecFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CExplicitSpecFeatures* sf = (CExplicitSpecFeatures*) df;
+	auto sf = std::static_pointer_cast<CExplicitSpecFeatures>(df);
 
 	ASSERT(vec_idx1 < num_strings)
 	ASSERT(vec_idx2 < sf->num_strings)
@@ -103,7 +103,7 @@ void CExplicitSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, 
 	}
 }
 
-void CExplicitSpecFeatures::obtain_kmer_spectrum(CStringFeatures<uint16_t>* str)
+void CExplicitSpecFeatures::obtain_kmer_spectrum(std::shared_ptr<CStringFeatures<uint16_t>> str)
 {
 	k_spectrum= SG_MALLOC(float64_t*, num_strings);
 
@@ -144,9 +144,9 @@ void CExplicitSpecFeatures::delete_kmer_spectrum()
 	k_spectrum=NULL;
 }
 
-CFeatures* CExplicitSpecFeatures::duplicate() const
+std::shared_ptr<CFeatures> CExplicitSpecFeatures::duplicate() const
 {
-	return new CExplicitSpecFeatures(*this);
+	return std::make_shared<CExplicitSpecFeatures>(*this);
 }
 
 

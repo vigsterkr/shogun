@@ -77,7 +77,7 @@ InitPerKernel KernelManager::kernel_at(index_t i)
 	return InitPerKernel(m_kernels[i]);
 }
 
-CKernel* KernelManager::kernel_at(index_t i) const
+std::shared_ptr<CKernel> KernelManager::kernel_at(index_t i) const
 {
 	SG_SDEBUG("Entering!\n");
 	REQUIRE(i<num_kernels(),
@@ -86,18 +86,18 @@ CKernel* KernelManager::kernel_at(index_t i) const
 	if (m_precomputed_kernels[i]==nullptr)
 	{
 		SG_SDEBUG("Leaving!\n");
-		return m_kernels[i].get();
+		return m_kernels[i];
 	}
 	SG_SDEBUG("Precomputed kernel exists!\n");
 	SG_SDEBUG("Leaving!\n");
-	return m_precomputed_kernels[i].get();
+	return m_precomputed_kernels[i];
 }
 
-void KernelManager::push_back(CKernel* kernel)
+void KernelManager::push_back(std::shared_ptr<CKernel> kernel)
 {
 	SG_SDEBUG("Entering!\n");
-	SG_REF(kernel);
-	m_kernels.push_back(std::shared_ptr<CKernel>(kernel, [](CKernel* ptr) { SG_UNREF(ptr); }));
+
+	m_kernels.push_back(kernel);
 	m_precomputed_kernels.push_back(nullptr);
 	SG_SDEBUG("Leaving!\n");
 }
@@ -116,14 +116,14 @@ void KernelManager::precompute_kernel_at(index_t i)
 	REQUIRE(i<num_kernels(),
 			"Value of i (%d) should be between 0 and %d, inclusive!",
 			i, num_kernels()-1);
-	auto kernel=m_kernels[i].get();
+	auto kernel=m_kernels[i];
 	if (kernel->get_kernel_type()!=K_CUSTOM)
 	{
 		// TODO give option to use different policies to precompute the kernel matrix
 		// this one here is default setting : use shogun's pthread parallelism to compute
 		// the kernel matrix.
 		SGMatrix<float32_t> kernel_matrix=kernel->get_kernel_matrix<float32_t>();
-		m_precomputed_kernels[i]=std::shared_ptr<CCustomKernel>(new CCustomKernel(kernel_matrix));
+		m_precomputed_kernels[i]=std::make_shared<CCustomKernel>(kernel_matrix);
 		SG_SDEBUG("Kernel type %s is precomputed and replaced internally with %s!\n",
 			kernel->get_name(), m_precomputed_kernels[i]->get_name());
 	}
@@ -148,7 +148,7 @@ bool KernelManager::same_distance_type() const
 	EDistanceType distance_type=D_UNKNOWN;
 	for (auto i=0; i<num_kernels(); ++i)
 	{
-		CShiftInvariantKernel* shift_invariant_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel_at(i));
+		auto shift_invariant_kernel=kernel_at(i)->as<CShiftInvariantKernel>();
 		if (shift_invariant_kernel!=nullptr)
 		{
 			auto current_distance_type=shift_invariant_kernel->get_distance_type();
@@ -176,22 +176,22 @@ bool KernelManager::same_distance_type() const
 	return same;
 }
 
-CDistance* KernelManager::get_distance_instance() const
+std::shared_ptr<CDistance> KernelManager::get_distance_instance() const
 {
 	REQUIRE(same_distance_type(), "Distance types for all the kernels are not the same!\n");
 
-	CDistance* distance=nullptr;
-	CShiftInvariantKernel* kernel_0=dynamic_cast<CShiftInvariantKernel*>(kernel_at(0));
+	std::shared_ptr<CDistance> distance=nullptr;
+	auto kernel_0=kernel_at(0)->as<CShiftInvariantKernel>();
 	REQUIRE(kernel_0, "Kernel (%s) must be of CShiftInvariantKernel type!\n", kernel_at(0)->get_name());
 	if (kernel_0->get_distance_type()==D_EUCLIDEAN)
 	{
-		auto euclidean_distance=new CEuclideanDistance();
+		auto euclidean_distance=std::make_shared<CEuclideanDistance>();
 		euclidean_distance->set_disable_sqrt(true);
 		distance=euclidean_distance;
 	}
 	else if (kernel_0->get_distance_type()==D_MANHATTAN)
 	{
-		auto manhattan_distance=new CManhattanMetric();
+		auto manhattan_distance=std::make_shared<CManhattanMetric>();
 		distance=manhattan_distance;
 	}
 	else
@@ -201,13 +201,13 @@ CDistance* KernelManager::get_distance_instance() const
 	return distance;
 }
 
-void KernelManager::set_precomputed_distance(CCustomDistance* distance) const
+void KernelManager::set_precomputed_distance(std::shared_ptr<CCustomDistance> distance) const
 {
 	REQUIRE(distance!=nullptr, "Distance instance cannot be null!\n");
 	for (auto i=0; i<num_kernels(); ++i)
 	{
-		CKernel* kernel=kernel_at(i);
-		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
+		std::shared_ptr<CKernel> kernel=kernel_at(i);
+		auto shift_inv_kernel=kernel->as<CShiftInvariantKernel>();
 		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n", kernel->get_name());
 		shift_inv_kernel->m_precomputed_distance=distance;
 		shift_inv_kernel->num_lhs=distance->get_num_vec_lhs();
@@ -219,8 +219,8 @@ void KernelManager::unset_precomputed_distance() const
 {
 	for (auto i=0; i<num_kernels(); ++i)
 	{
-		CKernel* kernel=kernel_at(i);
-		CShiftInvariantKernel* shift_inv_kernel=dynamic_cast<CShiftInvariantKernel*>(kernel);
+		std::shared_ptr<CKernel> kernel=kernel_at(i);
+		auto shift_inv_kernel=kernel->as<CShiftInvariantKernel>();
 		REQUIRE(shift_inv_kernel!=nullptr, "Kernel instance (was %s) must be of CShiftInvarintKernel type!\n", kernel->get_name());
 		shift_inv_kernel->m_precomputed_distance=nullptr;
 		shift_inv_kernel->num_lhs=0;

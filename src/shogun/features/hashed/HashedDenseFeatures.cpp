@@ -25,7 +25,7 @@ CHashedDenseFeatures<ST>::CHashedDenseFeatures(int32_t size, bool use_quadr, boo
 }
 
 template <class ST>
-CHashedDenseFeatures<ST>::CHashedDenseFeatures(CDenseFeatures<ST>* feats, int32_t d,
+CHashedDenseFeatures<ST>::CHashedDenseFeatures(std::shared_ptr<CDenseFeatures<ST>> feats, int32_t d,
 	bool use_quadr, bool keep_lin_terms) : CDotFeatures()
 {
 	init(feats, d, use_quadr, keep_lin_terms);
@@ -35,7 +35,7 @@ template <class ST>
 CHashedDenseFeatures<ST>::CHashedDenseFeatures(SGMatrix<ST> matrix, int32_t d, bool use_quadr,
 	bool keep_lin_terms) : CDotFeatures()
 {
-	CDenseFeatures<ST>* feats = new CDenseFeatures<ST>(matrix);
+	auto feats = std::make_shared<CDenseFeatures<ST>>(matrix);
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
@@ -43,33 +43,33 @@ template <class ST>
 CHashedDenseFeatures<ST>::CHashedDenseFeatures(ST* src, int32_t num_feat, int32_t num_vec,
 	int32_t d, bool use_quadr, bool keep_lin_terms) : CDotFeatures()
 {
-	CDenseFeatures<ST>* feats = new CDenseFeatures<ST>(src, num_feat, num_vec);
+	auto feats = std::make_shared<CDenseFeatures<ST>>(src, num_feat, num_vec);
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-CHashedDenseFeatures<ST>::CHashedDenseFeatures(CFile* loader, int32_t d, bool use_quadr,
+CHashedDenseFeatures<ST>::CHashedDenseFeatures(std::shared_ptr<CFile> loader, int32_t d, bool use_quadr,
 	bool keep_lin_terms) : CDotFeatures(loader)
 {
-	CDenseFeatures<ST>* feats = new CDenseFeatures<ST>();
+	auto feats = std::make_shared<CDenseFeatures<ST>>();
 	feats->load(loader);
 	init(feats, d, use_quadr, keep_lin_terms);
 }
 
 template <class ST>
-void CHashedDenseFeatures<ST>::init(CDenseFeatures<ST>* feats, int32_t d, bool use_quadr,
+void CHashedDenseFeatures<ST>::init(std::shared_ptr<CDenseFeatures<ST>> feats, int32_t d, bool use_quadr,
 	bool keep_lin_terms)
 {
 	dim = d;
 	dense_feats = feats;
-	SG_REF(dense_feats);
+
 	use_quadratic = use_quadr;
 	keep_linear_terms = keep_lin_terms;
 
 	SG_ADD(&use_quadratic, "use_quadratic", "Whether to use quadratic features");
 	SG_ADD(&keep_linear_terms, "keep_linear_terms", "Whether to keep the linear terms or not");
 	SG_ADD(&dim, "dim", "Dimension of new feature space");
-	SG_ADD((CSGObject** ) &dense_feats, "dense_feats", "Dense features to work on");
+	SG_ADD((std::shared_ptr<CSGObject>* ) &dense_feats, "dense_feats", "Dense features to work on");
 
 	set_generic<ST>();
 }
@@ -84,13 +84,13 @@ CHashedDenseFeatures<ST>::CHashedDenseFeatures(const CHashedDenseFeatures& orig)
 template <class ST>
 CHashedDenseFeatures<ST>::~CHashedDenseFeatures()
 {
-	SG_UNREF(dense_feats);
+
 }
 
 template <class ST>
-CFeatures* CHashedDenseFeatures<ST>::duplicate() const
+std::shared_ptr<CFeatures> CHashedDenseFeatures<ST>::duplicate() const
 {
-	return new CHashedDenseFeatures<ST>(*this);
+	return std::make_shared<CHashedDenseFeatures>(*this);
 }
 
 template <class ST>
@@ -100,7 +100,7 @@ int32_t CHashedDenseFeatures<ST>::get_dim_feature_space() const
 }
 
 template <class ST>
-float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
+float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df,
 	int32_t vec_idx2) const
 {
 	ASSERT(df)
@@ -108,12 +108,12 @@ float64_t CHashedDenseFeatures<ST>::dot(int32_t vec_idx1, CDotFeatures* df,
 	ASSERT(df->get_feature_class() == get_feature_class())
 	ASSERT(strcmp(df->get_name(), get_name())==0)
 
-	CHashedDenseFeatures<ST>* feats = (CHashedDenseFeatures<ST>* ) df;
+	auto feats = std::static_pointer_cast<CHashedDenseFeatures<ST>>(df);
 	ASSERT(feats->get_dim_feature_space() == get_dim_feature_space())
 
 	SGSparseVector<ST> vec_1 = get_hashed_feature_vector(vec_idx1);
 
-	bool same_vec = (df == this) && (vec_idx1 == vec_idx2);
+	bool same_vec = (df.get() == this) && (vec_idx1 == vec_idx2);
 	SGSparseVector<ST> vec_2 = same_vec ? vec_1 : feats->get_hashed_feature_vector(vec_idx2);
 	float64_t result = vec_1.sparse_dot(vec_2);
 

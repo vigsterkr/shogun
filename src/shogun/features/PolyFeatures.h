@@ -33,7 +33,7 @@ class CPolyFeatures : public CDotFeatures
 		 * @param degree degree of the polynomial kernel
 		 * @param normalize normalize kernel
 		 */
-		CPolyFeatures(CDenseFeatures<float64_t>* feat, int32_t degree, bool normalize);
+		CPolyFeatures(std::shared_ptr<CDenseFeatures<float64_t>> feat, int32_t degree, bool normalize);
 
 		virtual ~CPolyFeatures();
 
@@ -83,13 +83,13 @@ class CPolyFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const;
 
 		/** duplicate feature object
 		 *
 		 * @return feature object
 		 */
-		CFeatures* duplicate() const;
+		std::shared_ptr<CFeatures> duplicate() const;
 
 		/**
 		 *
@@ -211,7 +211,7 @@ class CPolyFeatures : public CDotFeatures
 	protected:
 
 		/** features in original space*/
-		CDenseFeatures<float64_t>* m_feat;
+		std::shared_ptr<CDenseFeatures<float64_t>> m_feat;
 		/** degree of the polynomial kernel */
 		int32_t m_degree;
 		/** normalize */

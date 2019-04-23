@@ -48,7 +48,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return the loss matrix
 		 */
-		virtual SGMatrix< float64_t > loss_matrix(CSequence* label_seq) = 0;
+		virtual SGMatrix< float64_t > loss_matrix(std::shared_ptr<CSequence> label_seq) = 0;
 
 		/**
 		 * computes the loss between two sequences of labels using the Hamming loss
@@ -59,7 +59,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return the Hamming loss
 		 */
-		virtual float64_t loss(CSequence* label_seq_lhs, CSequence* label_seq_rhs) = 0;
+		virtual float64_t loss(std::shared_ptr<CSequence> label_seq_lhs, std::shared_ptr<CSequence> label_seq_rhs) = 0;
 
 		/**
 		 * arranges the emission parameters of the weight vector into a vector
@@ -85,7 +85,7 @@ class CStateModel : public CSGObject
 		 * @param num_feats number of features
 		 * @param num_plif_nodes number of nodes in the PLiFs
 		 */
-		virtual void reshape_emission_params(CDynamicObjectArray* plif_matrix,
+		virtual void reshape_emission_params(std::shared_ptr<CDynamicObjectArray> plif_matrix,
 			SGVector< float64_t > w, int32_t num_feats, int32_t num_plif_nodes) = 0;
 
 		/**
@@ -106,7 +106,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return state sequence
 		 */
-		virtual SGVector< int32_t > labels_to_states(CSequence* label_seq) const = 0;
+		virtual SGVector< int32_t > labels_to_states(std::shared_ptr<CSequence> label_seq) const = 0;
 
 		/** translates state sequence to label sequence
 		 *
@@ -114,7 +114,7 @@ class CStateModel : public CSGObject
 		 *
 		 * @return label sequence
 		 */
-		virtual CSequence* states_to_labels(SGVector< int32_t > state_seq) const = 0;
+		virtual std::shared_ptr<CSequence> states_to_labels(SGVector< int32_t > state_seq) const = 0;
 
 		/**
 		 * reshapes the transition and emission weights into a vector (the joint

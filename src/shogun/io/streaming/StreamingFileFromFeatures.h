@@ -44,7 +44,7 @@ public:
 	 *
 	 * @param feat features object
 	 */
-	CStreamingFileFromFeatures(CFeatures* feat);
+	CStreamingFileFromFeatures(std::shared_ptr<CFeatures> feat);
 
 	/**
 	 * Constructor taking a CFeatures object and labels as arguments
@@ -52,7 +52,7 @@ public:
 	 * @param feat features object
 	 * @param lab labels as float64_t*
 	 */
-	CStreamingFileFromFeatures(CFeatures* feat, float64_t* lab);
+	CStreamingFileFromFeatures(std::shared_ptr<CFeatures> feat, float64_t* lab);
 
 	/**
 	 * Destructor
@@ -64,7 +64,7 @@ public:
 	 *
 	 * @param feat features object as argument
 	 */
-	virtual void set_features(CFeatures* feat)
+	virtual void set_features(std::shared_ptr<CFeatures> feat)
 	{
 		ASSERT(feat)
 		features=feat;
@@ -92,7 +92,7 @@ public:
 protected:
 
 	/// Features object
-	CFeatures* features;
+	std::shared_ptr<CFeatures> features;
 
 	/// Labels (if applicable)
 	float64_t* labels;

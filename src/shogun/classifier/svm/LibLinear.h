@@ -77,7 +77,7 @@ namespace shogun
 		 * @param traindat training features
 		 * @param trainlab training labels
 		 */
-		CLibLinear(float64_t C, CDotFeatures* traindat, CLabels* trainlab);
+		CLibLinear(float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab);
 
 		/** destructor */
 		virtual ~CLibLinear();
@@ -220,7 +220,7 @@ namespace shogun
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 	private:
 		/** set up parameters */

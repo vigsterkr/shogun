@@ -33,14 +33,14 @@ public:
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 */
-	void best_map(CLabels* predicted, CLabels* ground_truth);
+	void best_map(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
 
 	/** evaluate labels
 	 * @param predicted labels for evaluating
 	 * @param ground_truth labels assumed to be correct
 	 * @return evaluation result
 	 */
-	virtual float64_t evaluate(CLabels* predicted, CLabels* ground_truth) = 0;
+	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth) = 0;
 protected:
 	/** find number of matches in the two labels sequence.
 	 *

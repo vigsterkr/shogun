@@ -30,8 +30,8 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
 		 */
 		CFirstElementKernelNormalizer() : CKernelNormalizer(), scale(1.0)
 		{
-			SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
-			    ParameterProperties::HYPER);
+			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
+			    ParameterProperties::HYPER)*/;
 		}
 
 		/** default destructor */
@@ -43,8 +43,8 @@ class CFirstElementKernelNormalizer : public CKernelNormalizer
          * @param k kernel */
 		virtual bool init(CKernel* k)
 		{
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 			k->lhs=old_lhs;
 			k->rhs=old_lhs;
 

@@ -63,7 +63,7 @@ public:
 	 * @param num_bags number of trees in forest
 	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees
 	 */
-	CRandomForest(CFeatures* features, CLabels* labels, int32_t num_bags=10, int32_t num_rand_feats=0);
+	CRandomForest(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** constructor
 	 *
@@ -73,7 +73,7 @@ public:
 	 * @param num_bags number of trees in forest
 	 * @param num_rand_feats number of attributes chosen randomly during node split in candidate trees
 	 */
-	CRandomForest(CFeatures* features, CLabels* labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
+	CRandomForest(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels, SGVector<float64_t> weights, int32_t num_bags=10, int32_t num_rand_feats=0);
 
 	/** destructor */
 	virtual ~CRandomForest();
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @param machine the machine to use for bagging
 	 */
-	virtual void set_machine(CMachine* machine);
+	virtual void set_machine(std::shared_ptr<CMachine> machine);
 
 	/** set weights
 	 *
@@ -140,13 +140,13 @@ public:
 
 protected:
 
-	virtual bool train_machine(CFeatures* data=NULL);
+	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
 	/** sets parameters of CARTree - sets machine labels and weights here
 	 *
 	 * @param m machine
 	 * @param idx indices of training vectors chosen in current bag
 	 */
-	virtual void set_machine_parameters(CMachine* m, SGVector<index_t> idx);
+	virtual void set_machine_parameters(std::shared_ptr<CMachine> m, SGVector<index_t> idx);
 
 private:
 	/** initialize parameters */

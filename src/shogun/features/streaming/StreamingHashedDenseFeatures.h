@@ -41,7 +41,7 @@ public:
 	 * @param use_quadr whether to use quadratic features or not
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 */
-	CStreamingHashedDenseFeatures(CStreamingFile* file, bool is_labelled, int32_t size,
+	CStreamingHashedDenseFeatures(std::shared_ptr<CStreamingFile> file, bool is_labelled, int32_t size,
 			 int32_t d = 512, bool use_quadr = false, bool keep_lin_terms = true);
 
 	/**
@@ -59,7 +59,7 @@ public:
 	 * @param keep_lin_terms whether to maintain the linear terms in the computations
 	 * @param lab labels (optional)
 	 */
-	CStreamingHashedDenseFeatures(CDenseFeatures<ST>* dot_features, int32_t d = 512,
+	CStreamingHashedDenseFeatures(std::shared_ptr<CDenseFeatures<ST>> dot_features, int32_t d = 512,
 			bool use_quadr = false, bool keep_lin_terms = true, float64_t* lab = NULL);
 
 	/** Destructor */
@@ -71,7 +71,7 @@ public:
 	 * @param df StreamingDotFeatures (of same kind) to compute
 	 * dot product with
 	 */
-	virtual float32_t dot(CStreamingDotFeatures* df);
+	virtual float32_t dot(std::shared_ptr<CStreamingDotFeatures> df);
 
 	/** compute dot product between current vector and a dense vector
 	 *
@@ -197,7 +197,7 @@ public:
 	SGSparseVector<ST> get_vector();
 
 private:
-	void init(CStreamingFile* file, bool is_labelled, int32_t size,
+	void init(std::shared_ptr<CStreamingFile> file, bool is_labelled, int32_t size,
 		int32_t d, bool use_quadr, bool keep_lin_terms);
 
 protected:

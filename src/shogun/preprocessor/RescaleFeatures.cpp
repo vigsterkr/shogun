@@ -21,7 +21,7 @@ CRescaleFeatures::~CRescaleFeatures()
 	cleanup();
 }
 
-void CRescaleFeatures::fit(CFeatures* features)
+void CRescaleFeatures::fit(std::shared_ptr<CFeatures> features)
 {
 	if (m_fitted)
 		cleanup();

@@ -30,7 +30,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 		 * @param features features
 		 * @param labs labels
 		 */
-		CMulticlassOCAS(float64_t C, CFeatures* features, CLabels* labs);
+		CMulticlassOCAS(float64_t C, std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labs);
 
 		/** destructor */
 		virtual ~CMulticlassOCAS();
@@ -109,7 +109,7 @@ class CMulticlassOCAS : public CLinearMulticlassMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 		/** update W */
 		static float64_t msvm_update_W(float64_t t, void* user_data);

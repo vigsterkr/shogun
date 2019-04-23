@@ -45,13 +45,13 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 			: CKernelNormalizer(), ktrain_row_means(NULL), num_ktrain(0),
 			ktest_row_means(NULL),	num_ktest(0)
 		{
-			m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
-					"num_ktrain", "Train row means.");
-			watch_param("num_ktrain", &ktrain_row_means, &num_ktrain);
+			/*m_parameters->add_vector(&ktrain_row_means, &num_ktrain,
+					"num_ktrain", "Train row means.")*/;
+			/*watch_param("num_ktrain", &ktrain_row_means, &num_ktrain)*/;
 
-			m_parameters->add_vector(&ktest_row_means, &num_ktest,
-					"num_ktest","Test row means.");
-			watch_param("num_ktest", &ktest_row_means, &num_ktest);
+			/*m_parameters->add_vector(&ktest_row_means, &num_ktest,
+					"num_ktest","Test row means.")*/;
+			/*watch_param("num_ktest", &ktest_row_means, &num_ktest)*/;
 		}
 
 		/** default destructor */
@@ -71,8 +71,8 @@ class CZeroMeanCenterKernelNormalizer : public CKernelNormalizer
 			ASSERT(num_lhs>0)
 			ASSERT(num_rhs>0)
 
-			CFeatures* old_lhs=k->lhs;
-			CFeatures* old_rhs=k->rhs;
+			auto old_lhs=k->lhs;
+			auto old_rhs=k->rhs;
 
 			/* compute mean for each row of the train matrix*/
 			k->lhs=old_lhs;

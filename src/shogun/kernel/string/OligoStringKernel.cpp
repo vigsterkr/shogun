@@ -29,7 +29,7 @@ COligoStringKernel::COligoStringKernel(int32_t cache_sz, int32_t kmer_len, float
 }
 
 COligoStringKernel::COligoStringKernel(
-		CStringFeatures<char>* l, CStringFeatures<char>* r,
+		std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
 		int32_t kmer_len, float64_t w)
 : CStringKernel<char>()
 {
@@ -52,14 +52,14 @@ void COligoStringKernel::cleanup()
 	CKernel::cleanup();
 }
 
-bool COligoStringKernel::init(CFeatures* l, CFeatures* r)
+bool COligoStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	cleanup();
 
 	CStringKernel<char>::init(l,r);
 	int32_t max_len=CMath::max(
-			((CStringFeatures<char>*) l)->get_max_vector_length(),
-			((CStringFeatures<char>*) r)->get_max_vector_length()
+			std::static_pointer_cast<CStringFeatures<char>>(l)->get_max_vector_length(),
+			std::static_pointer_cast<CStringFeatures<char>>(r)->get_max_vector_length()
 			);
 
 	REQUIRE(k>0, "k must be >0\n")
@@ -282,16 +282,16 @@ float64_t COligoStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_a, free_b;
-	char* avec=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, alen, free_a);
-	char* bvec=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, blen, free_b);
+	char* avec=std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_a);
+	char* bvec=std::static_pointer_cast<CStringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_b);
 	std::vector< std::pair<int32_t, float64_t> > aenc;
 	std::vector< std::pair<int32_t, float64_t> > benc;
 	encodeOligo(std::string(avec, alen), k, "ACGT", aenc);
 	encodeOligo(std::string(bvec, alen), k, "ACGT", benc);
 	//float64_t result=kernelOligo(aenc, benc);
 	float64_t result=kernelOligoFast(aenc, benc);
-	((CStringFeatures<char>*) lhs)->free_feature_vector(avec, idx_a, free_a);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(bvec, idx_b, free_b);
+	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_a);
+	std::static_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_b);
 	return result;
 }
 
@@ -300,7 +300,7 @@ void COligoStringKernel::init()
 	k=0;
 	width=0.0;
 
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 
 	SG_ADD(&k, "k", "K-mer length.", ParameterProperties::HYPER);
 	SG_ADD(&width, "width", "Width of Gaussian.", ParameterProperties::HYPER);

@@ -44,13 +44,13 @@ TEST(LibSVR,epsilon_svr_apply)
 	feat_test[4]=1.9;
 
 	/* shogun representation */
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
+	auto features_test=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_test);
 
-	CGaussianKernel* kernel=new CGaussianKernel(rbf_width);
+	auto kernel=std::make_shared<CGaussianKernel>(rbf_width);
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR;
@@ -58,7 +58,7 @@ TEST(LibSVR,epsilon_svr_apply)
 	svm->train();
 
 	/* predict */
-	CRegressionLabels* predicted_labels =
+	auto predicted_labels =
 	    svm->apply(features_test)->as<CRegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
@@ -72,8 +72,8 @@ TEST(LibSVR,epsilon_svr_apply)
 	EXPECT_EQ(svm->get_num_support_vectors(), 5);
 
 	 /* clean up */
-	SG_UNREF(predicted_labels);
-	SG_UNREF(svm);
+
+
 }
 
 TEST(LibSVR,nu_svr_apply)
@@ -109,13 +109,13 @@ TEST(LibSVR,nu_svr_apply)
 	feat_test[4]=1.9;
 
 	/* shogun representation */
-	CRegressionLabels* labels_train=new CRegressionLabels(lab_train);
-	CDenseFeatures<float64_t>* features_train=new CDenseFeatures<float64_t>(
+	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
+	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_train);
-	CDenseFeatures<float64_t>* features_test=new CDenseFeatures<float64_t>(
+	auto features_test=std::make_shared<CDenseFeatures<float64_t>>(
 			feat_test);
 
-	CGaussianKernel* kernel=new CGaussianKernel(rbf_width);
+	auto kernel=std::make_shared<CGaussianKernel>(rbf_width);
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_NU_SVR;
@@ -123,7 +123,7 @@ TEST(LibSVR,nu_svr_apply)
 	svm->train();
 
 	/* predict */
-	CRegressionLabels* predicted_labels =
+	auto predicted_labels =
 	    svm->apply(features_test)->as<CRegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
@@ -137,6 +137,6 @@ TEST(LibSVR,nu_svr_apply)
 	EXPECT_EQ(svm->get_num_support_vectors(), 3);
 
 	 /* clean up */
-	SG_UNREF(predicted_labels);
-	SG_UNREF(svm);
+
+
 }

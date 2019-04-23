@@ -37,7 +37,7 @@ class CCustomMahalanobisDistance : public CRealDistance
 		 * @param r features of right hand side
 		 * @param m Mahalanobis matrix used to compute distances
 		 */
-		CCustomMahalanobisDistance(CFeatures* l, CFeatures* r, SGMatrix<float64_t> m);
+		CCustomMahalanobisDistance(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r, SGMatrix<float64_t> m);
 
 		/** destructor */
 		virtual ~CCustomMahalanobisDistance();

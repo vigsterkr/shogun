@@ -48,7 +48,7 @@ CNeuralLayer(num_neurons)
 {
 }
 
-void CNeuralLinearLayer::initialize_neural_layer(CDynamicObjectArray* layers,
+void CNeuralLinearLayer::initialize_neural_layer(std::shared_ptr<CDynamicObjectArray> layers,
 		SGVector< int32_t > input_indices)
 {
 	CNeuralLayer::initialize_neural_layer(layers, input_indices);
@@ -73,7 +73,7 @@ void CNeuralLinearLayer::initialize_parameters(SGVector<float64_t> parameters,
 }
 
 void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
-		CDynamicObjectArray* layers)
+		std::shared_ptr<CDynamicObjectArray> layers)
 {
 	float64_t* biases = parameters.vector;
 
@@ -88,8 +88,8 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 	int32_t weights_index_offset = m_num_neurons;
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
-		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->get_element(m_input_indices[l]);
+		auto layer =
+			layers->get_element<CNeuralLayer>(m_input_indices[l]);
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		weights_index_offset += m_num_neurons*layer->get_num_neurons();
@@ -99,14 +99,14 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 				layer->get_num_neurons(), m_batch_size);
 
 		A += W*X;
-		SG_UNREF(layer);
+
 	}
 }
 
 void CNeuralLinearLayer::compute_gradients(
 		SGVector<float64_t> parameters,
 		SGMatrix<float64_t> targets,
-		CDynamicObjectArray* layers,
+		std::shared_ptr<CDynamicObjectArray> layers,
 		SGVector<float64_t> parameter_gradients)
 {
 	compute_local_gradients(targets);
@@ -132,8 +132,8 @@ void CNeuralLinearLayer::compute_gradients(
 	int32_t weights_index_offset = m_num_neurons;
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
-		CNeuralLayer* layer =
-			(CNeuralLayer*)layers->get_element(m_input_indices[l]);
+		auto layer =
+			layers->get_element<CNeuralLayer>(m_input_indices[l]);
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		float64_t* weight_gradients = parameter_gradients.vector +
@@ -155,7 +155,7 @@ void CNeuralLinearLayer::compute_gradients(
 		// compute input gradients
 		if (!layer->is_input())
 			IG += W.transpose()*LG;
-		SG_UNREF(layer);
+
 	}
 
 	if (contraction_coefficient != 0)

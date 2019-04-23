@@ -64,8 +64,8 @@ CEPInferenceMethod::CEPInferenceMethod()
 	init();
 }
 
-CEPInferenceMethod::CEPInferenceMethod(CKernel* kernel, CFeatures* features,
-		CMeanFunction* mean, CLabels* labels, CLikelihoodModel* model)
+CEPInferenceMethod::CEPInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
+		std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model)
 		: CInference(kernel, features, mean, labels, model)
 {
 	init();
@@ -75,7 +75,7 @@ CEPInferenceMethod::~CEPInferenceMethod()
 {
 }
 
-void CEPInferenceMethod::register_minimizer(Minimizer* minimizer)
+void CEPInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
         SG_WARNING("The method does not require a minimizer. The provided minimizer will not be used.\n");
 }
@@ -88,8 +88,8 @@ void CEPInferenceMethod::init()
 	m_fail_on_non_convergence=true;
 }
 
-CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
-		CInference* inference)
+std::shared_ptr<CEPInferenceMethod> CEPInferenceMethod::obtain_from_generic(
+		std::shared_ptr<CInference> inference)
 {
 	if (inference==NULL)
 		return NULL;
@@ -97,8 +97,8 @@ CEPInferenceMethod* CEPInferenceMethod::obtain_from_generic(
 	if (inference->get_inference_type()!=INF_EP)
 		SG_SERROR("Provided inference is not of type CEPInferenceMethod!\n")
 
-	SG_REF(inference);
-	return (CEPInferenceMethod*)inference;
+
+	return inference->as<CEPInferenceMethod>();
 }
 
 float64_t CEPInferenceMethod::get_negative_log_marginal_likelihood()

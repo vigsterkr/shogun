@@ -28,8 +28,6 @@
  * either expressed or implied, of the Shogun Development Team.
  */
 
-#include <vector>
-
 #include <shogun/lib/View.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/eigen3.h>
@@ -70,10 +68,10 @@ CCARTree::CCARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32
 
 CCARTree::~CCARTree()
 {
-	SG_UNREF(m_alphas);
+
 }
 
-void CCARTree::set_labels(CLabels* lab)
+void CCARTree::set_labels(std::shared_ptr<CLabels> lab)
 {
 	if (lab->get_label_type()==LT_MULTICLASS)
 		set_machine_problem_type(PT_MULTICLASS);
@@ -82,8 +80,8 @@ void CCARTree::set_labels(CLabels* lab)
 	else
 		SG_ERROR("label type supplied is not supported\n")
 
-	SG_REF(lab);
-	SG_UNREF(m_labels);
+
+
 	m_labels=lab;
 }
 
@@ -92,7 +90,7 @@ void CCARTree::set_machine_problem_type(EProblemType mode)
 	m_mode=mode;
 }
 
-bool CCARTree::is_label_valid(CLabels* lab) const
+bool CCARTree::is_label_valid(std::shared_ptr<CLabels> lab) const
 {
 	if (m_mode==PT_MULTICLASS && lab->get_label_type()==LT_MULTICLASS)
 		return true;
@@ -102,33 +100,27 @@ bool CCARTree::is_label_valid(CLabels* lab) const
 		return false;
 }
 
-CMulticlassLabels* CCARTree::apply_multiclass(CFeatures* data)
+std::shared_ptr<CMulticlassLabels> CCARTree::apply_multiclass(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
 	// apply multiclass starting from root
-	bnode_t* current=dynamic_cast<bnode_t*>(get_root());
+	auto current=get_root()->as<bnode_t>();
 
 	REQUIRE(current, "Tree machine not yet trained.\n");
-	CLabels* ret=apply_from_current_node(data->as<CDenseFeatures<float64_t>>(), current);
-
-	SG_UNREF(current);
-	return ret->as<CMulticlassLabels>();
+	return apply_from_current_node(data->as<CDenseFeatures<float64_t>>(), current)->as<CMulticlassLabels>();
 }
 
-CRegressionLabels* CCARTree::apply_regression(CFeatures* data)
+std::shared_ptr<CRegressionLabels> CCARTree::apply_regression(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
 	// apply regression starting from root
-	bnode_t* current=dynamic_cast<bnode_t*>(get_root());
-	CLabels* ret=apply_from_current_node(dynamic_cast<CDenseFeatures<float64_t>*>(data), current);
-
-	SG_UNREF(current);
-	return ret->as<CRegressionLabels>();
+	auto current=get_root()->as<bnode_t>();
+	return apply_from_current_node(data->as<CDenseFeatures<float64_t>>(), current)->as<CRegressionLabels>();
 }
 
-void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabels* gnd_truth, SGVector<float64_t> weights)
+void CCARTree::prune_using_test_dataset(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<CLabels> gnd_truth, SGVector<float64_t> weights)
 {
 	if (weights.vlen==0)
 	{
@@ -136,19 +128,17 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 		linalg::set_const(weights, 1.0);
 	}
 
-	CDynamicObjectArray* pruned_trees=prune_tree(this);
+	auto pruned_trees=prune_tree(shared_from_this()->as<CCARTree>());
 
 	int32_t min_index=0;
 	float64_t min_error=CMath::MAX_REAL_NUMBER;
-	for (int32_t i=0;i<m_alphas->get_num_elements();++i)
+	for (int32_t i=0;i<m_alphas.size();++i)
 	{
-		CSGObject* element=pruned_trees->get_element(i);
-		if (element == nullptr)
+		auto root=pruned_trees->get_element<bnode_t>(i);
+		if (root == nullptr)
 			SG_ERROR("%d element is NULL\n",i);
 
-		bnode_t* root = dynamic_cast<bnode_t*>(element);
-
-		CLabels* labels=apply_from_current_node(feats, root);
+		auto labels=apply_from_current_node(feats, root);
 		float64_t error=compute_error(labels,gnd_truth,weights);
 		if (error<min_error)
 		{
@@ -156,19 +146,14 @@ void CCARTree::prune_using_test_dataset(CDenseFeatures<float64_t>* feats, CLabel
 			min_error=error;
 		}
 
-		SG_UNREF(labels);
-		SG_UNREF(element);
+
 	}
 
-	CSGObject* element=pruned_trees->get_element(min_index);
-	if (element == nullptr)
+	auto root=pruned_trees->get_element<bnode_t>(min_index);
+	if (root == nullptr)
 		SG_ERROR("%d element is NULL\n",min_index);
-
-	bnode_t* root = dynamic_cast<bnode_t*>(element);
 	this->set_root(root);
 
-	SG_UNREF(pruned_trees);
-	SG_UNREF(element);
 }
 
 void CCARTree::set_weights(SGVector<float64_t> w)
@@ -244,7 +229,7 @@ void CCARTree::set_label_epsilon(float64_t ep)
 	m_label_epsilon=ep;
 }
 
-bool CCARTree::train_machine(CFeatures* data)
+bool CCARTree::train_machine(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data,"Data required for training\n")
 	REQUIRE(data->get_feature_class()==C_DENSE,"Dense data required for training\n")
@@ -300,7 +285,7 @@ void CCARTree::set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<i
 	m_sorted_indices=sorted_indices;
 }
 
-void CCARTree::pre_sort_features(CFeatures* data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices)
+void CCARTree::pre_sort_features(std::shared_ptr<CFeatures> data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices)
 {
 	SGMatrix<float64_t> mat=(data)->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
 	sorted_feats = SGMatrix<float64_t>(mat.num_cols, mat.num_rows);
@@ -320,12 +305,12 @@ void CCARTree::pre_sort_features(CFeatures* data, SGMatrix<float64_t>& sorted_fe
 
 }
 
-CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<float64_t>* data, const SGVector<float64_t>& weights, CDenseLabels* labels, int32_t level)
+std::shared_ptr<CBinaryTreeMachineNode<CARTreeNodeData>> CCARTree::CARTtrain(std::shared_ptr<CDenseFeatures<float64_t>> data, const SGVector<float64_t>& weights, std::shared_ptr<CDenseLabels> labels, int32_t level)
 {
 	REQUIRE(labels,"labels have to be supplied\n");
 	REQUIRE(data,"data matrix has to be supplied\n");
 
-	bnode_t* node=new bnode_t();
+	auto node=std::make_shared<bnode_t>();
 	auto labels_vec = labels->get_labels();
 	auto mat = data->get_feature_matrix();
 	auto num_feats=mat.num_rows;
@@ -421,12 +406,11 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<floa
 	SGVector<index_t> indices(num_vecs);
 	if (m_pre_sort)
 	{
-		CSubsetStack* subset_stack = data->get_subset_stack();
+		auto subset_stack = data->get_subset_stack();
 		if (subset_stack->has_subsets())
 			indices=(subset_stack->get_last_subset())->get_subset_idx();
 		else
 			linalg::range_fill(indices);
-		SG_UNREF(subset_stack);
 		best_attribute=compute_best_attribute(m_sorted_features,weights,labels,left,right,left_final,num_missing_final,c_left,c_right,0,indices);
 	}
 	else
@@ -482,13 +466,13 @@ CBinaryTreeMachineNode<CARTreeNodeData>* CCARTree::CARTtrain(CDenseFeatures<floa
 	// left child
 	auto feats_train = view(data, subsetl);
 	auto labels_train = view(labels, subsetl);
-	bnode_t* left_child =
+	auto left_child =
 	    CARTtrain(feats_train, weightsl, labels_train, level + 1);
 
 	// right child
 	feats_train = view(data, subsetr);
 	labels_train = view(labels, subsetr);
-	bnode_t* right_child =
+	auto right_child =
 	    CARTtrain(feats_train, weightsr, labels_train, level + 1);
 
 	// set node parameters
@@ -527,7 +511,7 @@ SGVector<float64_t> CCARTree::get_unique_labels(const SGVector<float64_t>& label
 	return ulabels;
 }
 
-index_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+index_t CCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<CDenseLabels> labels,
 	SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing_final, index_t &count_left,
 	index_t &count_right, index_t subset_size, const SGVector<index_t>& active_indices)
 {
@@ -1087,7 +1071,7 @@ float64_t CCARTree::least_squares_deviation(const SGVector<float64_t>& feats, co
 	return dev/total_weight;
 }
 
-CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bnode_t* current)
+std::shared_ptr<CLabels> CCARTree::apply_from_current_node(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<bnode_t> current)
 {
 	auto num_vecs=feats->get_num_vectors();
 	REQUIRE(num_vecs>0, "No data provided in apply\n");
@@ -1096,13 +1080,13 @@ CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bno
 	for (index_t i=0;i<num_vecs;++i)
 	{
 		auto sample=feats->get_feature_vector(i);
-		bnode_t* node=current;
-		SG_REF(node);
+		auto node=current;
+
 
 		// until leaf is reached
 		while(node->data.num_leaves!=1)
 		{
-			bnode_t* leftchild=node->left();
+			auto leftchild=node->left();
 
 			if (m_nominal[node->data.attribute_id])
 			{
@@ -1119,13 +1103,13 @@ CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bno
 
 				if (flag)
 				{
-					SG_UNREF(node);
+
 					node=leftchild;
-					SG_REF(leftchild);
+
 				}
 				else
 				{
-					SG_UNREF(node);
+
 					node=node->right();
 				}
 			}
@@ -1133,36 +1117,34 @@ CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bno
 			{
 				if (sample[node->data.attribute_id]<=leftchild->data.transit_into_values[0])
 				{
-					SG_UNREF(node);
+
 					node=leftchild;
-					SG_REF(leftchild);
+
 				}
 				else
 				{
-					SG_UNREF(node);
+
 					node=node->right();
 				}
 			}
 
-			SG_UNREF(leftchild);
+
 		}
 
 		labels[i]=node->data.node_label;
-		SG_UNREF(node);
+
 	}
 
 	switch(m_mode)
 	{
 		case PT_MULTICLASS:
 		{
-			CMulticlassLabels* mlabels=new CMulticlassLabels(labels);
-			return mlabels;
+			return std::make_shared<CMulticlassLabels>(labels);
 		}
 
 		case PT_REGRESSION:
 		{
-			CRegressionLabels* rlabels=new CRegressionLabels(labels);
-			return rlabels;
+			return std::make_shared<CRegressionLabels>(labels);
 		}
 
 		default:
@@ -1172,7 +1154,7 @@ CLabels* CCARTree::apply_from_current_node(CDenseFeatures<float64_t>* feats, bno
 	return NULL;
 }
 
-void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_t folds)
+void CCARTree::prune_by_cross_validation(std::shared_ptr<CDenseFeatures<float64_t>> data, int32_t folds)
 {
 	auto num_vecs=data->get_num_vectors();
 
@@ -1212,12 +1194,12 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 			subset_weights[j]=m_weights[train_indices.at(j)];
 
 		// train with training subset
-		bnode_t* root = CARTtrain(feats_train, subset_weights, labels_train, 0);
+		auto root = CARTtrain(feats_train, subset_weights, labels_train, 0);
 
 		// prune trained tree
-		CTreeMachine<CARTreeNodeData>* tmax=new CTreeMachine<CARTreeNodeData>();
+		auto tmax=std::make_shared<CTreeMachine<CARTreeNodeData>>();
 		tmax->set_root(root);
-		CDynamicObjectArray* pruned_trees=prune_tree(tmax);
+		auto pruned_trees=prune_tree(tmax);
 
 		subset=SGVector<int32_t>(test_indices.data(),test_indices.size(),false);
 		feats_train = view(data, subset);
@@ -1227,44 +1209,36 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 			subset_weights[j]=m_weights[test_indices.at(j)];
 
 		// calculate R_CV values for each alpha_k using test subset and store them
-		num_alphak[i]=m_alphas->get_num_elements();
-		for (int32_t j=0;j<m_alphas->get_num_elements();++j)
+		num_alphak[i]=m_alphas.size();
+		for (int32_t j=0;j<m_alphas.size();++j)
 		{
-			alphak.push_back(m_alphas->get_element(j));
-			CSGObject* jth_element=pruned_trees->get_element(j);
-			bnode_t* current_root=NULL;
-			if (jth_element!=NULL)
-				current_root=dynamic_cast<bnode_t*>(jth_element);
-			else
+			alphak.push_back(m_alphas[j]);
+			auto current_root=pruned_trees->get_element<bnode_t>(j);
+			if (!current_root)
 				SG_ERROR("%d element is NULL which should not be",j);
 
-			CLabels* labels =
+			auto labels =
 			    apply_from_current_node(feats_train, current_root);
 			float64_t error =
 			    compute_error(labels, labels_train, subset_weights);
 			r_cv.push_back(error);
-			SG_UNREF(labels);
-			SG_UNREF(jth_element);
 		}
-
-		SG_UNREF(tmax);
-		SG_UNREF(pruned_trees);
 	}
 
 	// prune the original T_max
-	CDynamicObjectArray* pruned_trees=prune_tree(this);
+	auto pruned_trees=prune_tree(shared_from_this()->as<CCARTree>());
 
 	// find subtree with minimum R_cv
 	int32_t min_index=-1;
 	float64_t min_r_cv=CMath::MAX_REAL_NUMBER;
-	for (int32_t i=0;i<m_alphas->get_num_elements();++i)
+	for (int32_t i=0;i<m_alphas.size();++i)
 	{
 		float64_t alpha=0.;
-		if (i==m_alphas->get_num_elements()-1)
-			alpha=m_alphas->get_element(i)+1;
+		if (i==m_alphas.size()-1)
+			alpha=m_alphas[i]+1;
 		else
 			alpha = std::sqrt(
-			    m_alphas->get_element(i) * m_alphas->get_element(i + 1));
+			    m_alphas[i] * m_alphas[i + 1]);
 
 		float64_t rv=0.;
 		int32_t base=0;
@@ -1294,25 +1268,20 @@ void CCARTree::prune_by_cross_validation(CDenseFeatures<float64_t>* data, int32_
 		}
 	}
 
-	CSGObject* element=pruned_trees->get_element(min_index);
-	bnode_t* best_tree_root=NULL;
-	if (element==nullptr)
+	auto best_tree_root=pruned_trees->get_element<bnode_t>(min_index);
+	if (best_tree_root==nullptr)
 		SG_ERROR("%d element is NULL which should not be",min_index);
-
-	best_tree_root=dynamic_cast<bnode_t*>(element);
 	this->set_root(best_tree_root);
 
-	SG_UNREF(element);
-	SG_UNREF(pruned_trees);
 }
 
-float64_t CCARTree::compute_error(CLabels* labels, CLabels* reference, SGVector<float64_t> weights) const
+float64_t CCARTree::compute_error(std::shared_ptr<CLabels> labels, std::shared_ptr<CLabels> reference, SGVector<float64_t> weights) const
 {
 	REQUIRE(labels,"input labels cannot be NULL");
 	REQUIRE(reference,"reference labels cannot be NULL")
 
-	CDenseLabels* gnd_truth = reference->as<CDenseLabels>();
-	CDenseLabels* result = labels->as<CDenseLabels>();
+	auto gnd_truth = reference->as<CDenseLabels>();
+	auto result = labels->as<CDenseLabels>();
 
 	float64_t denom=linalg::sum(weights);
 	float64_t numer=0.;
@@ -1344,62 +1313,51 @@ float64_t CCARTree::compute_error(CLabels* labels, CLabels* reference, SGVector<
 	return 0.;
 }
 
-CDynamicObjectArray* CCARTree::prune_tree(CTreeMachine<CARTreeNodeData>* tree)
+std::shared_ptr<CDynamicObjectArray> CCARTree::prune_tree(std::shared_ptr<CTreeMachine<CARTreeNodeData>> tree)
 {
 	REQUIRE(tree, "Tree not provided for pruning.\n");
 
-	CDynamicObjectArray* trees=new CDynamicObjectArray();
-	SG_UNREF(m_alphas);
-	m_alphas=new CDynamicArray<float64_t>();
-	SG_REF(m_alphas);
+	auto trees=std::make_shared<CDynamicObjectArray>();
 
 	// base tree alpha_k=0
-	m_alphas->push_back(0);
-	CTreeMachine<CARTreeNodeData>* t1=tree->clone_tree();
-	SG_REF(t1);
-	node_t* t1root=t1->get_root();
-	bnode_t* t1_root=NULL;
-	if (t1root!=NULL)
-		t1_root=dynamic_cast<bnode_t*>(t1root);
-	else
+	m_alphas.clear();
+	m_alphas.push_back(0);
+	auto t1=tree->clone_tree();
+
+	auto t1root=t1->get_root();
+	if (t1root==NULL)
 		SG_ERROR("t1_root is NULL. This is not expected\n")
 
+	auto t1_root=t1root->as<bnode_t>();
 	form_t1(t1_root);
 	trees->push_back(t1_root);
 	while(t1_root->data.num_leaves>1)
 	{
-		CTreeMachine<CARTreeNodeData>* t2=t1->clone_tree();
-		SG_REF(t2);
+		auto t2=t1->clone_tree();
 
-		node_t* t2root=t2->get_root();
-		bnode_t* t2_root=NULL;
-		if (t2root!=NULL)
-			t2_root=dynamic_cast<bnode_t*>(t2root);
-		else
+		auto t2root=t2->get_root();
+		if (t2root==NULL)
 			SG_ERROR("t1_root is NULL. This is not expected\n")
+		auto t2_root=t2root->as<bnode_t>();
 
 		float64_t a_k=find_weakest_alpha(t2_root);
-		m_alphas->push_back(a_k);
+		m_alphas.push_back(a_k);
 		cut_weakest_link(t2_root,a_k);
 		trees->push_back(t2_root);
 
-		SG_UNREF(t1);
-		SG_UNREF(t1_root);
 		t1=t2;
 		t1_root=t2_root;
 	}
 
-	SG_UNREF(t1);
-	SG_UNREF(t1_root);
 	return trees;
 }
 
-float64_t CCARTree::find_weakest_alpha(bnode_t* node) const
+float64_t CCARTree::find_weakest_alpha(std::shared_ptr<bnode_t> node) const
 {
 	if (node->data.num_leaves!=1)
 	{
-		bnode_t* left=node->left();
-		bnode_t* right=node->right();
+		auto left=node->left();
+		auto right=node->right();
 
 		SGVector<float64_t> weak_links(3);
 		weak_links[0]=find_weakest_alpha(left);
@@ -1407,15 +1365,15 @@ float64_t CCARTree::find_weakest_alpha(bnode_t* node) const
 		weak_links[2]=(node->data.weight_minus_node-node->data.weight_minus_branch)/node->data.total_weight;
 		weak_links[2]/=(node->data.num_leaves-1.0);
 
-		SG_UNREF(left);
-		SG_UNREF(right);
+
+
 		return *std::min_element(weak_links.begin(), weak_links.end());
 	}
 
 	return CMath::MAX_REAL_NUMBER;
 }
 
-void CCARTree::cut_weakest_link(bnode_t* node, float64_t alpha)
+void CCARTree::cut_weakest_link(std::shared_ptr<bnode_t> node, float64_t alpha)
 {
 	if (node->data.num_leaves==1)
 		return;
@@ -1426,31 +1384,31 @@ void CCARTree::cut_weakest_link(bnode_t* node, float64_t alpha)
 	{
 		node->data.num_leaves=1;
 		node->data.weight_minus_branch=node->data.weight_minus_node;
-		CDynamicObjectArray* children=new CDynamicObjectArray();
+		auto children=std::make_shared<CDynamicObjectArray>();
 		node->set_children(children);
 
-		SG_UNREF(children);
+
 	}
 	else
 	{
-		bnode_t* left=node->left();
-		bnode_t* right=node->right();
+		auto left=node->left();
+		auto right=node->right();
 		cut_weakest_link(left,alpha);
 		cut_weakest_link(right,alpha);
 		node->data.num_leaves=left->data.num_leaves+right->data.num_leaves;
 		node->data.weight_minus_branch=left->data.weight_minus_branch+right->data.weight_minus_branch;
 
-		SG_UNREF(left);
-		SG_UNREF(right);
+
+
 	}
 }
 
-void CCARTree::form_t1(bnode_t* node)
+void CCARTree::form_t1(std::shared_ptr<bnode_t> node)
 {
 	if (node->data.num_leaves!=1)
 	{
-		bnode_t* left=node->left();
-		bnode_t* right=node->right();
+		auto left=node->left();
+		auto right=node->right();
 
 		form_t1(left);
 		form_t1(right);
@@ -1460,14 +1418,14 @@ void CCARTree::form_t1(bnode_t* node)
 		if (node->data.weight_minus_node==node->data.weight_minus_branch)
 		{
 			node->data.num_leaves=1;
-			CDynamicObjectArray* children=new CDynamicObjectArray();
+			auto children=std::make_shared<CDynamicObjectArray>();
 			node->set_children(children);
 
-			SG_UNREF(children);
+
 		}
 
-		SG_UNREF(left);
-		SG_UNREF(right);
+
+
 	}
 }
 
@@ -1481,8 +1439,7 @@ void CCARTree::init()
 	m_weights_set=false;
 	m_apply_cv_pruning=false;
 	m_folds=5;
-	m_alphas=new CDynamicArray<float64_t>();
-	SG_REF(m_alphas);
+
 	m_max_depth=0;
 	m_min_node_size=0;
 	m_label_epsilon=1e-7;

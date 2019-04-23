@@ -43,7 +43,7 @@ CKRRNystrom::CKRRNystrom() : CKernelRidgeRegression()
 	init();
 }
 
-CKRRNystrom::CKRRNystrom(float64_t tau, int32_t m, CKernel* k, CLabels* lab)
+CKRRNystrom::CKRRNystrom(float64_t tau, int32_t m, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
 : CKernelRidgeRegression(tau, k, lab)
 {
 	init();
@@ -73,7 +73,7 @@ SGVector<int32_t> CKRRNystrom::subsample_indices()
 	return col;
 }
 
-bool CKRRNystrom::train_machine(CFeatures* data)
+bool CKRRNystrom::train_machine(std::shared_ptr<CFeatures> data)
 {
 	REQUIRE(data, "No features provided.\n");
 

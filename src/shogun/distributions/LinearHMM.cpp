@@ -19,7 +19,7 @@ CLinearHMM::CLinearHMM() : CDistribution()
 	init();
 }
 
-CLinearHMM::CLinearHMM(CStringFeatures<uint16_t>* f)
+CLinearHMM::CLinearHMM(std::shared_ptr<CStringFeatures<uint16_t>> f)
 : CDistribution()
 {
 	init();
@@ -46,7 +46,7 @@ CLinearHMM::~CLinearHMM()
 	SG_FREE(log_transition_probs);
 }
 
-bool CLinearHMM::train(CFeatures* data)
+bool CLinearHMM::train(std::shared_ptr<CFeatures> data)
 {
 	if (data)
 	{
@@ -67,20 +67,19 @@ bool CLinearHMM::train(CFeatures* data)
 	for (i=0; i< num_params; i++)
 		int_transition_probs[i]=0;
 
+	auto sf = std::static_pointer_cast<CStringFeatures<uint16_t>>(features);
 	for (vec=0; vec<features->get_num_vectors(); vec++)
 	{
 		int32_t len;
 		bool free_vec;
 
-		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-			get_feature_vector(vec, len, free_vec);
+		uint16_t* vector=sf->get_feature_vector(vec, len, free_vec);
 
 		//just count the symbols per position -> transition_probsogram
 		for (int32_t feat=0; feat<len ; feat++)
 			int_transition_probs[feat*num_symbols+vector[feat]]++;
 
-		((CStringFeatures<uint16_t>*) features)->
-			free_feature_vector(vector, vec, free_vec);
+		sf->free_feature_vector(vector, vec, free_vec);
 	}
 
 	//trade memory for speed
@@ -93,19 +92,16 @@ bool CLinearHMM::train(CFeatures* data)
 		{
 			float64_t sum=0;
 			int32_t offs=i*num_symbols+
-				((CStringFeatures<uint16_t> *) features)->
-					get_masked_symbols((uint16_t)j,(uint8_t) 254);
+				sf->get_masked_symbols((uint16_t)j,(uint8_t) 254);
 			int32_t original_num_symbols=(int32_t)
-				((CStringFeatures<uint16_t> *) features)->
-					get_original_num_symbols();
+				sf->get_original_num_symbols();
 
 			for (int32_t k=0; k<original_num_symbols; k++)
 				sum+=int_transition_probs[offs+k];
 
 			transition_probs[i*num_symbols+j]=
 				(int_transition_probs[i*num_symbols+j]+pseudo_count)/
-				(sum+((CStringFeatures<uint16_t> *) features)->
-					get_original_num_symbols()*pseudo_count);
+				(sum+sf->get_original_num_symbols()*pseudo_count);
 			log_transition_probs[i*num_symbols+j]=
 				log(transition_probs[i*num_symbols+j]);
 		}
@@ -127,18 +123,16 @@ bool CLinearHMM::train(
 	for (i=0; i< num_params; i++)
 		int_transition_probs[i]=0;
 
+	auto sf = std::static_pointer_cast<CStringFeatures<uint16_t>>(features);
 	for (vec=0; vec<num_indizes; vec++)
 	{
 		int32_t len;
 		bool free_vec;
 
 		ASSERT(indizes[vec]>=0 &&
-			indizes[vec]<((CStringFeatures<uint16_t>*) features)->
-				get_num_vectors());
-		uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-			get_feature_vector(indizes[vec], len, free_vec);
-		((CStringFeatures<uint16_t>*) features)->
-			free_feature_vector(vector, indizes[vec], free_vec);
+			indizes[vec]<sf->get_num_vectors());
+		uint16_t* vector=sf->get_feature_vector(indizes[vec], len, free_vec);
+		sf->free_feature_vector(vector, indizes[vec], free_vec);
 
 		//just count the symbols per position -> transition_probsogram
 		//
@@ -156,19 +150,16 @@ bool CLinearHMM::train(
 		{
 			float64_t sum=0;
 			int32_t original_num_symbols=(int32_t)
-				((CStringFeatures<uint16_t> *) features)->
-					get_original_num_symbols();
+				sf->get_original_num_symbols();
 			for (int32_t k=0; k<original_num_symbols; k++)
 			{
 				sum+=int_transition_probs[i*num_symbols+
-					((CStringFeatures<uint16_t>*) features)->
-						get_masked_symbols((uint16_t)j,(uint8_t) 254)+k];
+					sf->get_masked_symbols((uint16_t)j,(uint8_t) 254)+k];
 			}
 
 			transition_probs[i*num_symbols+j]=
 				(int_transition_probs[i*num_symbols+j]+pseudo)/
-				(sum+((CStringFeatures<uint16_t>*) features)->
-					get_original_num_symbols()*pseudo);
+				(sum+sf->get_original_num_symbols()*pseudo);
 			log_transition_probs[i*num_symbols+j]=
 				log(transition_probs[i*num_symbols+j]);
 		}
@@ -192,12 +183,11 @@ float64_t CLinearHMM::get_log_likelihood_example(int32_t num_example)
 {
 	int32_t len;
 	bool free_vec;
-	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-		get_feature_vector(num_example, len, free_vec);
+	auto sf = std::static_pointer_cast<CStringFeatures<uint16_t>>(features);
+	uint16_t* vector=sf->get_feature_vector(num_example, len, free_vec);
 	float64_t result=get_log_likelihood_example(vector, len);
 
-	((CStringFeatures<uint16_t>*) features)->
-		free_feature_vector(vector, num_example, free_vec);
+	sf->free_feature_vector(vector, num_example, free_vec);
 
 	return result;
 }
@@ -216,13 +206,12 @@ float64_t CLinearHMM::get_likelihood_example(int32_t num_example)
 {
 	int32_t len;
 	bool free_vec;
-	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-		get_feature_vector(num_example, len, free_vec);
+	auto sf = std::static_pointer_cast<CStringFeatures<uint16_t>>(features);
+	uint16_t* vector=sf->get_feature_vector(num_example, len, free_vec);
 
 	float64_t result=get_likelihood_example(vector, len);
 
-	((CStringFeatures<uint16_t>*) features)->
-		free_feature_vector(vector, num_example, free_vec);
+	sf->free_feature_vector(vector, num_example, free_vec);
 
 	return result;
 }
@@ -231,8 +220,8 @@ float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	int32_t len;
 	bool free_vec;
-	uint16_t* vector=((CStringFeatures<uint16_t>*) features)->
-		get_feature_vector(num_example, len, free_vec);
+	auto sf = std::static_pointer_cast<CStringFeatures<uint16_t>>(features);
+	uint16_t* vector=sf->get_feature_vector(num_example, len, free_vec);
 	float64_t result=0;
 	int32_t position=num_param/num_symbols;
 	ASSERT(position>=0 && position<len)
@@ -240,8 +229,7 @@ float64_t CLinearHMM::get_log_derivative(int32_t num_param, int32_t num_example)
 
 	if (vector[position]==sym && transition_probs[num_param]!=0)
 		result=1.0/transition_probs[num_param];
-	((CStringFeatures<uint16_t>*) features)->
-		free_feature_vector(vector, num_example, free_vec);
+	sf->free_feature_vector(vector, num_example, free_vec);
 
 	return result;
 }

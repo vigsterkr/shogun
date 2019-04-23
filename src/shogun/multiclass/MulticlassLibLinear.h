@@ -44,7 +44,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 		 * @param features features
 		 * @param labs labels
 		 */
-		CMulticlassLibLinear(float64_t C, CDotFeatures* features, CLabels* labs);
+		CMulticlassLibLinear(float64_t C, std::shared_ptr<CDotFeatures> features, std::shared_ptr<CLabels> labs);
 
 		/** destructor */
 		virtual ~CMulticlassLibLinear();
@@ -142,7 +142,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
 
 		/** obtain regularizer (w0) matrix */
 		virtual SGMatrix<float64_t> obtain_regularizer_matrix() const;

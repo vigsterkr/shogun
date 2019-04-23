@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg, 
+ * Authors: Jacob Walker, Heiko Strathmann, Sergey Lisitsyn, Soeren Sonnenburg,
  *          Leon Kuchenbecker, Yuyu Zhang, Roman Votyakov
  */
 
@@ -58,7 +58,7 @@ public:
 	 *
 	 * @param obj object to build parameter combination
 	 */
-	CParameterCombination(CSGObject* obj);
+	CParameterCombination(std::shared_ptr<CSGObject> obj);
 
 	/** destructor also recursively destroys complete tree (SG_UNREF of child
 	 * nodes)
@@ -86,19 +86,19 @@ public:
 	 *
 	 * @param machine learning machine to apply parameter tree to
 	 */
-	void apply_to_machine(CMachine* machine) const;
+	void apply_to_machine(std::shared_ptr<CMachine> machine) const;
 
 	/** appends a child to this node
 	 *
 	 * @param child child to append
 	 */
-	void append_child(CParameterCombination* child);
+	void append_child(std::shared_ptr<CParameterCombination> child);
 
 	/** Adds (copies of) all children of given node
 	 *
 	 * @param node (copies of) children of given node are added to this one
 	 */
-	void merge_with(CParameterCombination* node);
+	void merge_with(std::shared_ptr<CParameterCombination> node);
 
 	/** Copies the complete tree of this node. Note that nodes are actually
 	 * copied. If this is a parameter node, a NEW Parameter instance to the same
@@ -106,7 +106,7 @@ public:
 	 *
 	 * @return copy of the tree with this node as root as described above
 	 */
-	CParameterCombination* copy_tree() const;
+	std::shared_ptr<CParameterCombination> copy_tree() const;
 
 	/** Takes a set of sets of leafs nodes (!) and produces a set of instances
 	 * of this class that contain every combination of the parameters in the leaf
@@ -120,9 +120,9 @@ public:
 	 * trees
 	 * @result result set of tree combinations
 	 */
-	static CDynamicObjectArray* leaf_sets_multiplication(
+	static std::shared_ptr<CDynamicObjectArray> leaf_sets_multiplication(
 			const CDynamicObjectArray& sets,
-			const CParameterCombination* new_root);
+			std::shared_ptr<const CParameterCombination> new_root);
 
 	/** Sets specific parameter to specified value.
 	 *
@@ -160,8 +160,8 @@ public:
 
 		for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
 		{
-			CParameterCombination* child = (CParameterCombination*)
-					m_child_nodes->get_element(i);
+			auto child =
+					m_child_nodes->get_element<CParameterCombination>(i);
 
 			if (!match)
 				 result |= child->set_parameter(name, value, parent, index);
@@ -169,7 +169,7 @@ public:
 			else
 				 result |= child->set_parameter_helper(name, value, index);
 
-			SG_UNREF(child);
+
 
 		}
 
@@ -215,12 +215,12 @@ public:
 	 *
 	 * @param param_combination its dynamic type must be CParameterCombination
 	 */
-	static CParameterCombination* obtain_from_generic(
-			CSGObject* param_combination)
+	static std::shared_ptr<CParameterCombination> obtain_from_generic(
+			std::shared_ptr<CSGObject> param_combination)
 	{
 		if (param_combination)
 		{
-			CParameterCombination* casted = dynamic_cast<CParameterCombination*>(param_combination);
+			auto casted = param_combination->as<CParameterCombination>();
 			REQUIRE(casted, "Error, provided object of class \"%s\" is not a subclass of"
 					" CParameterCombination!\n",
 					param_combination->get_name());
@@ -243,14 +243,14 @@ public:
 	 * @param values_map map, which contains parameters and its values
 	 */
 	virtual void build_parameter_values_map(
-			CMap<TParameter*, SGVector<float64_t> >* values_map);
+			std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> values_map);
 
 	/** builds map, which contains parameters and its parents
 	 *
 	 * @param parent_map map, which contains parameters and its parents
 	 */
 	virtual void build_parameter_parent_map(
-			CMap<TParameter*, CSGObject*>* parent_map);
+			std::shared_ptr<CMap<TParameter*, CSGObject*>> parent_map);
 
 protected:
 	/** Takes a set of sets of (non-value) trees and returns a set with all
@@ -263,9 +263,9 @@ protected:
 	 * @return set of trees with the given root as root and all combinations
 	 * of the trees in the sets as children
 	 */
-	static CDynamicObjectArray* non_value_tree_multiplication(
-				const CDynamicObjectArray* sets,
-				const CParameterCombination* new_root);
+	static std::shared_ptr<CDynamicObjectArray> non_value_tree_multiplication(
+				std::shared_ptr<const CDynamicObjectArray> sets,
+				std::shared_ptr<const CParameterCombination> new_root);
 
 	/** Takes a set of sets of trees and extracts all trees with a given name.
 	 * Assumes that in a (inner) set, all trees have the same name on their
@@ -275,8 +275,8 @@ protected:
 	 * @param desired_name tree with this name is searched
 	 * @return set of trees with the desired name
 	 */
-	static CDynamicObjectArray* extract_trees_with_name(
-			const CDynamicObjectArray* sets, const char* desired_name);
+	static std::shared_ptr<CDynamicObjectArray> extract_trees_with_name(
+			std::shared_ptr<const CDynamicObjectArray> sets, const char* desired_name);
 
 	/** Gets parameter by name in current node.
 	 *
@@ -323,7 +323,7 @@ protected:
 	Parameter* m_param;
 
 	/** child parameters */
-	CDynamicObjectArray* m_child_nodes;
+	std::shared_ptr<CDynamicObjectArray> m_child_nodes;
 
 	/** total length of the parameters in combination */
 	uint32_t m_parameters_length;

@@ -49,7 +49,7 @@ TEST(DataFetcher, full_data)
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
 	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
+	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	DataFetcher fetcher(feats_p);
 
@@ -57,10 +57,9 @@ TEST(DataFetcher, full_data)
 	auto curr=fetcher.next();
 	ASSERT_TRUE(curr!=nullptr);
 
-	auto tmp=dynamic_cast<feat_type*>(curr);
+	auto tmp=curr->as<feat_type>();
 	ASSERT_TRUE(tmp!=nullptr);
 
-	SG_UNREF(curr);
 
 	curr=fetcher.next();
 	ASSERT_TRUE(curr==nullptr);
@@ -78,7 +77,7 @@ TEST(DataFetcher, block_data)
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
 	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
+	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	DataFetcher fetcher(feats_p);
 
@@ -91,11 +90,10 @@ TEST(DataFetcher, block_data)
 	ASSERT_TRUE(curr!=nullptr);
 	while (curr!=nullptr)
 	{
-		auto tmp=dynamic_cast<feat_type*>(curr);
+		auto tmp=curr->as<feat_type>();
 		ASSERT_TRUE(tmp!=nullptr);
 		ASSERT_TRUE(tmp->get_num_vectors()==blocksize*num_blocks_per_burst);
 
-		SG_UNREF(curr);
 		curr=fetcher.next();
 	}
 	fetcher.end();
@@ -112,7 +110,7 @@ TEST(DataFetcher, reset_functionality)
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
 	using feat_type=CDenseFeatures<float64_t>;
-	auto feats_p=new feat_type(data_p);
+	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	DataFetcher fetcher(feats_p);
 
@@ -120,10 +118,9 @@ TEST(DataFetcher, reset_functionality)
 	auto curr=fetcher.next();
 	ASSERT_TRUE(curr!=nullptr);
 
-	auto tmp=dynamic_cast<feat_type*>(curr);
+	auto tmp=curr->as<feat_type>();
 	ASSERT_TRUE(tmp!=nullptr);
 
-	SG_UNREF(curr);
 
 	curr=fetcher.next();
 	ASSERT_TRUE(curr==nullptr);
@@ -138,10 +135,9 @@ TEST(DataFetcher, reset_functionality)
 	ASSERT_TRUE(curr!=nullptr);
 	while (curr!=nullptr)
 	{
-		tmp=dynamic_cast<feat_type*>(curr);
+		tmp=curr->as<feat_type>();
 		ASSERT_TRUE(tmp!=nullptr);
 		ASSERT_TRUE(tmp->get_num_vectors()==blocksize*num_blocks_per_burst);
-		SG_UNREF(curr);
 		curr=fetcher.next();
 	}
 	fetcher.end();

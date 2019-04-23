@@ -26,11 +26,11 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures()
 	spec_weights = 0;
 }
 
-CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(CStringFeatures<uint16_t>* str, bool normalize) : CDotFeatures()
+CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(std::shared_ptr<CStringFeatures<uint16_t>> str, bool normalize) : CDotFeatures()
 {
 	ASSERT(str)
 	strings=str;
-	SG_REF(strings)
+
 	normalization_factors=NULL;
 	spec_weights=NULL;
 	num_strings = str->get_num_vectors();
@@ -50,7 +50,8 @@ void CImplicitWeightedSpecFeatures::compute_normalization_const()
 	float64_t* factors=SG_MALLOC(float64_t, num_strings);
 
 	for (int32_t i=0; i<num_strings; i++)
-		factors[i] = 1.0 / std::sqrt(dot(i, this, i));
+		factors[i] = 1.0 / std::sqrt(dot(i,
+			std::dynamic_pointer_cast<std::remove_pointer_t<decltype(this)>>(shared_from_this()), i));
 
 	normalization_factors=factors;
 	//CMath::display_vector(normalization_factors, num_strings, "n");
@@ -93,22 +94,22 @@ CImplicitWeightedSpecFeatures::CImplicitWeightedSpecFeatures(const CImplicitWeig
 	alphabet_size(orig.alphabet_size), spec_size(orig.spec_size)
 {
 	SG_NOTIMPLEMENTED
-	SG_REF(strings);
+
 }
 
 CImplicitWeightedSpecFeatures::~CImplicitWeightedSpecFeatures()
 {
-	SG_UNREF(strings);
+
 	SG_FREE(spec_weights);
 	SG_FREE(normalization_factors);
 }
 
-float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const
+float64_t CImplicitWeightedSpecFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	CImplicitWeightedSpecFeatures* sf = (CImplicitWeightedSpecFeatures*) df;
+	auto sf = std::static_pointer_cast<CImplicitWeightedSpecFeatures>(df);
 
 	ASSERT(vec_idx1 < num_strings)
 	ASSERT(vec_idx2 < sf->get_num_vectors())
@@ -237,9 +238,9 @@ void CImplicitWeightedSpecFeatures::add_to_dense_vec(float64_t alpha, int32_t ve
 	strings->free_feature_vector(vec, vec_idx1, free_vec1);
 }
 
-CFeatures* CImplicitWeightedSpecFeatures::duplicate() const
+std::shared_ptr<CFeatures> CImplicitWeightedSpecFeatures::duplicate() const
 {
-	return new CImplicitWeightedSpecFeatures(*this);
+	return std::make_shared<CImplicitWeightedSpecFeatures>(*this);
 }
 
 int32_t CImplicitWeightedSpecFeatures::get_dim_feature_space() const

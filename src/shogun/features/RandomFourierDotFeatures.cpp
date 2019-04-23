@@ -17,7 +17,7 @@ CRandomFourierDotFeatures::CRandomFourierDotFeatures()
 	init(NOT_SPECIFIED, SGVector<float64_t>());
 }
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
+CRandomFourierDotFeatures::CRandomFourierDotFeatures(std::shared_ptr<CDotFeatures> features,
 	int32_t D, KernelName kernel_name, SGVector<float64_t> params)
 : CRandomKitchenSinksDotFeatures(features, D)
 {
@@ -25,7 +25,7 @@ CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
 	random_coeff = generate_random_coefficients();
 }
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
+CRandomFourierDotFeatures::CRandomFourierDotFeatures(std::shared_ptr<CDotFeatures> features,
 	int32_t D, KernelName kernel_name, SGVector<float64_t> params,
 	SGMatrix<float64_t> coeff)
 : CRandomKitchenSinksDotFeatures(features, D, coeff)
@@ -33,7 +33,7 @@ CRandomFourierDotFeatures::CRandomFourierDotFeatures(CDotFeatures* features,
 	init(kernel_name, params);
 }
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures(CFile* loader)
+CRandomFourierDotFeatures::CRandomFourierDotFeatures(std::shared_ptr<CFile> loader)
 {
 	SG_NOTIMPLEMENTED;
 }
@@ -64,9 +64,9 @@ CRandomFourierDotFeatures::~CRandomFourierDotFeatures()
 		    ParameterProperties::NONE, SG_OPTIONS(GAUSSIAN, NOT_SPECIFIED));
 	}
 
-CFeatures* CRandomFourierDotFeatures::duplicate() const
+std::shared_ptr<CFeatures> CRandomFourierDotFeatures::duplicate() const
 {
-	return new CRandomFourierDotFeatures(*this);
+	return std::make_shared<CRandomFourierDotFeatures>(*this);
 }
 
 const char* CRandomFourierDotFeatures::get_name() const

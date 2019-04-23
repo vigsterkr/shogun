@@ -74,7 +74,7 @@ struct TAPKEE_PARAMETERS_FOR_SHOGUN
 	CDotFeatures* features;
 };
 
-CDenseFeatures<float64_t>* tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
+std::shared_ptr<CDenseFeatures<float64_t>> tapkee_embed(const TAPKEE_PARAMETERS_FOR_SHOGUN& parameters);
 }
 
 #endif

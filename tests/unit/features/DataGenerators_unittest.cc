@@ -19,7 +19,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example1)
 	float64_t angle=CMath::PI/4;
 	index_t num_samples=50000;
 
-	CGaussianBlobsDataGenerator* gen=new CGaussianBlobsDataGenerator(num_blobs,
+	auto gen=std::make_shared<CGaussianBlobsDataGenerator>(num_blobs,
 			distance, epsilon, angle);
 
 	/* two dimensional samples */
@@ -45,12 +45,12 @@ TEST(GaussianBlobsDataGenerator,get_next_example1)
 	EXPECT_NEAR(cov(0,1), 0.5, accuracy);
 	EXPECT_NEAR(cov(1,0), 0.5, accuracy);
 	EXPECT_NEAR(cov(1,1), 1.5, accuracy);
-	
+
 	/* mean is supposed to do [0, 0] */
 	EXPECT_LE(CMath::abs(mean[0]-0), accuracy);
 	EXPECT_LE(CMath::abs(mean[1]-0), accuracy);
-	
-	SG_UNREF(gen);
+
+
 }
 
 TEST(GaussianBlobsDataGenerator,get_next_example2)
@@ -61,7 +61,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example2)
 	float64_t angle=CMath::PI/4;
 	index_t num_samples=50000;
 
-	CGaussianBlobsDataGenerator* gen=new CGaussianBlobsDataGenerator(num_blobs,
+	auto gen=std::make_shared<CGaussianBlobsDataGenerator>(num_blobs,
 			distance, epsilon, angle);
 
 	/* and another one */
@@ -93,7 +93,7 @@ TEST(GaussianBlobsDataGenerator,get_next_example2)
 	EXPECT_LE(CMath::abs(mean2[0]-3), accuracy);
 	EXPECT_LE(CMath::abs(mean2[1]-3), accuracy);
 
-	SG_UNREF(gen);
+
 }
 
 TEST(MeanShiftDataGenerator,get_next_example)
@@ -102,7 +102,7 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	index_t mean_shift=100;
 	index_t num_runs=1000;
 
-	CMeanShiftDataGenerator* gen=new CMeanShiftDataGenerator(mean_shift,
+	auto gen=std::make_shared<CMeanShiftDataGenerator>(mean_shift,
 			dimension, 0);
 
 	SGVector<float64_t> avg(dimension);
@@ -128,8 +128,8 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	}
 
 	/* draw whole matrix and test that too */
-	CDenseFeatures<float64_t>* features=
-			(CDenseFeatures<float64_t>*)gen->get_streamed_features(num_runs);
+	auto features=
+			gen->get_streamed_features(num_runs)->as<CDenseFeatures<float64_t>>();
 	avg=SGVector<float64_t>(dimension);
 
 	for (index_t i=0; i<dimension; ++i)
@@ -146,7 +146,7 @@ TEST(MeanShiftDataGenerator,get_next_example)
 	for (index_t i=1; i<dimension; ++i)
 		ASSERT(avg[i]<0.5 && avg[i]>-0.5);
 
-	SG_UNREF(features);
 
-	SG_UNREF(gen);
+
+
 }

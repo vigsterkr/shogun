@@ -33,7 +33,7 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @param str stringfeatures (of bytes)
 		 */
-		CSNPFeatures(CStringFeatures<uint8_t>* str);
+		CSNPFeatures(std::shared_ptr<CStringFeatures<uint8_t>> str);
 
 		/** copy constructor */
 		CSNPFeatures(const CSNPFeatures & orig);
@@ -57,7 +57,7 @@ class CSNPFeatures : public CDotFeatures
 		 * @param df DotFeatures (of same kind) to compute dot product with
 		 * @param vec_idx2 index of second vector
 		 */
-		virtual float64_t dot(int32_t vec_idx1, CDotFeatures* df, int32_t vec_idx2) const;
+		virtual float64_t dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const;
 
 		/** compute dot product between vector1 and a dense vector
 		 *
@@ -119,7 +119,7 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @return feature object
 		 */
-		virtual CFeatures* duplicate() const;
+		virtual std::shared_ptr<CFeatures> duplicate() const;
 
 		/** get feature type
 		 *
@@ -175,7 +175,7 @@ class CSNPFeatures : public CDotFeatures
 		 *
 		 * @param snp optionally compute base string for snp too
 		 */
-		void obtain_base_strings(CSNPFeatures* snp=NULL);
+		void obtain_base_strings(std::shared_ptr<CSNPFeatures> snp=NULL);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SNPFeatures"; }
@@ -187,7 +187,7 @@ class CSNPFeatures : public CDotFeatures
 		/**
 		 * compute 2x3 histogram table
 		 */
-		static SGMatrix<float64_t> get_2x3_table(CSNPFeatures* pos, CSNPFeatures* neg);
+		static SGMatrix<float64_t> get_2x3_table(std::shared_ptr<CSNPFeatures> pos, std::shared_ptr<CSNPFeatures> neg);
 
 	private:
 		/** determine minor and major base strings from current strings
@@ -200,7 +200,7 @@ class CSNPFeatures : public CDotFeatures
 
 	protected:
 		/** stringfeatures the wdfeatures are based on*/
-		CStringFeatures<uint8_t>* strings;
+		std::shared_ptr<CStringFeatures<uint8_t>> strings;
 
 		/** length of string in vector */
 		int32_t string_length;

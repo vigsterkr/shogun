@@ -31,7 +31,7 @@ CPolyKernel::CPolyKernel(int32_t size, int32_t d, float64_t c, float64_t gamma)
 }
 
 CPolyKernel::CPolyKernel(
-    CDotFeatures* l, CDotFeatures* r, int32_t d, float64_t c, float64_t gamma,
+    std::shared_ptr<CDotFeatures> l, std::shared_ptr<CDotFeatures> r, int32_t d, float64_t c, float64_t gamma,
     int32_t size)
     : CDotKernel(size)
 {
@@ -49,7 +49,7 @@ CPolyKernel::~CPolyKernel()
 	cleanup();
 }
 
-bool CPolyKernel::init(CFeatures* l, CFeatures* r)
+bool CPolyKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 {
 	CDotKernel::init(l, r);
 	return init_normalizer();
@@ -71,7 +71,7 @@ void CPolyKernel::init()
 	degree = 0;
 	m_c = 0.0;
 	m_gamma = 1.0;
-	set_normalizer(new CSqrtDiagKernelNormalizer());
+	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
 	SG_ADD(
 	    &degree, "degree", "Degree of polynomial kernel",
 	    ParameterProperties::HYPER);

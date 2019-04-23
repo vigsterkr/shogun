@@ -49,7 +49,7 @@ void CRandomCARTree::set_feature_subset_size(index_t size)
 	m_randsubset_size=size;
 }
 
-index_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, CDenseLabels* labels,
+index_t CRandomCARTree::compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<CDenseLabels> labels,
 	SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing_final, index_t &count_left,
 	index_t &count_right, index_t subset_size, const SGVector<index_t>& active_indices)
 

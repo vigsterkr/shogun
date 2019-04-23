@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer, 
+ * Authors: Sergey Lisitsyn, Soeren Sonnenburg, Evan Shelhamer,
  *          Heiko Strathmann
  */
 
@@ -74,18 +74,17 @@ const char* CLocallyLinearEmbedding::get_name() const
 	return "LocallyLinearEmbedding";
 }
 
-CFeatures* CLocallyLinearEmbedding::transform(CFeatures* features, bool inplace)
+std::shared_ptr<CFeatures> CLocallyLinearEmbedding::transform(std::shared_ptr<CFeatures> features, bool inplace)
 {
 	// oh my let me dirty cast it
-	CKernel* kernel = new CLinearKernel((CDotFeatures*)features,(CDotFeatures*)features);
+	auto dot_feats = std::static_pointer_cast<CDotFeatures>(features);
+	auto kernel = std::make_shared<CLinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_LOCALLY_LINEAR_EMBEDDING;
 	parameters.target_dimension = m_target_dim;
-	parameters.kernel = kernel;
-	CDenseFeatures<float64_t>* embedding = tapkee_embed(parameters);
-	SG_UNREF(kernel);
-	return embedding;
+	parameters.kernel = kernel.get();
+	return tapkee_embed(parameters);
 }
 
