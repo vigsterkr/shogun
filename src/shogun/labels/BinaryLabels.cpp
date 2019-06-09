@@ -14,16 +14,16 @@
 
 using namespace shogun;
 
-CBinaryLabels::CBinaryLabels() : CDenseLabels()
+BinaryLabels::BinaryLabels() : DenseLabels()
 {
 }
 
-CBinaryLabels::CBinaryLabels(int32_t num_labels) : CDenseLabels(num_labels)
+BinaryLabels::BinaryLabels(int32_t num_labels) : DenseLabels(num_labels)
 {
 }
 
 #if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
-CBinaryLabels::CBinaryLabels(SGVector<int32_t> src) : CDenseLabels()
+BinaryLabels::BinaryLabels(SGVector<int32_t> src) : DenseLabels()
 {
 	SGVector<float64_t> values(src.vlen);
 	for (int32_t i = 0; i < values.vlen; i++)
@@ -34,7 +34,7 @@ CBinaryLabels::CBinaryLabels(SGVector<int32_t> src) : CDenseLabels()
 	set_values(values);
 }
 
-CBinaryLabels::CBinaryLabels(SGVector<int64_t> src) : CDenseLabels()
+BinaryLabels::BinaryLabels(SGVector<int64_t> src) : DenseLabels()
 {
 	SGVector<float64_t> values(src.vlen);
 	for (int32_t i = 0; i < values.vlen; i++)
@@ -46,7 +46,7 @@ CBinaryLabels::CBinaryLabels(SGVector<int64_t> src) : CDenseLabels()
 }
 #endif
 
-CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDenseLabels()
+BinaryLabels::BinaryLabels(SGVector<float64_t> src, float64_t threshold) : DenseLabels()
 {
 	SGVector<float64_t> labels(src.vlen);
 	for (int32_t i = 0; i < labels.vlen; i++)
@@ -57,13 +57,13 @@ CBinaryLabels::CBinaryLabels(SGVector<float64_t> src, float64_t threshold) : CDe
 	set_values(src);
 }
 
-CBinaryLabels::CBinaryLabels(std::shared_ptr<CFile > loader) : CDenseLabels(loader)
+BinaryLabels::BinaryLabels(std::shared_ptr<File > loader) : DenseLabels(loader)
 {
 }
 
-bool CBinaryLabels::is_valid() const
+bool BinaryLabels::is_valid() const
 {
-	if (!CDenseLabels::is_valid())
+	if (!DenseLabels::is_valid())
 		return false;
 
 	int32_t subset_size = get_num_labels();
@@ -76,27 +76,27 @@ bool CBinaryLabels::is_valid() const
 	return true;
 }
 
-void CBinaryLabels::ensure_valid(const char* context)
+void BinaryLabels::ensure_valid(const char* context)
 {
 	REQUIRE(is_valid(), "Binary Labels must be -1 or +1!\n");
 }
 
-ELabelType CBinaryLabels::get_label_type() const
+ELabelType BinaryLabels::get_label_type() const
 {
 	return LT_BINARY;
 }
 
-void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
+void BinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 {
-	SG_DEBUG("entering CBinaryLabels::scores_to_probabilities()\n")
+	SG_DEBUG("entering BinaryLabels::scores_to_probabilities()\n")
 
 	REQUIRE(m_current_values.vector, "%s::scores_to_probabilities() requires "
 	        "values vector!\n", get_name());
 
 	if (a == 0 && b == 0)
 	{
-		CStatistics::SigmoidParamters params =
-		        CStatistics::fit_sigmoid(m_current_values);
+		Statistics::SigmoidParamters params =
+		        Statistics::fit_sigmoid(m_current_values);
 		a = params.a;
 		b = params.b;
 	}
@@ -112,13 +112,13 @@ void CBinaryLabels::scores_to_probabilities(float64_t a, float64_t b)
 		                          : 1.0 / (1 + std::exp(fApB));
 	}
 
-	SG_DEBUG("leaving CBinaryLabels::scores_to_probabilities()\n")
+	SG_DEBUG("leaving BinaryLabels::scores_to_probabilities()\n")
 }
 
-std::shared_ptr<CLabels> CBinaryLabels::shallow_subset_copy()
+std::shared_ptr<Labels> BinaryLabels::shallow_subset_copy()
 {
 	SGVector<float64_t> shallow_copy_vector(m_labels);
-	auto shallow_copy_labels=std::make_shared<CBinaryLabels>(m_labels.size());
+	auto shallow_copy_labels=std::make_shared<BinaryLabels>(m_labels.size());
 
 
 	shallow_copy_labels->set_labels(shallow_copy_vector);
@@ -128,19 +128,19 @@ std::shared_ptr<CLabels> CBinaryLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-CBinaryLabels::CBinaryLabels(const CDenseLabels& dense) : CDenseLabels(dense)
+BinaryLabels::BinaryLabels(const DenseLabels& dense) : DenseLabels(dense)
 {
 	ensure_valid();
 }
 
-std::shared_ptr<CLabels> CBinaryLabels::duplicate() const
+std::shared_ptr<Labels> BinaryLabels::duplicate() const
 {
-	return std::make_shared<CBinaryLabels>(*this);
+	return std::make_shared<BinaryLabels>(*this);
 }
 
 namespace shogun
 {
-	std::shared_ptr<CBinaryLabels> binary_labels(std::shared_ptr<CLabels> orig)
+	std::shared_ptr<BinaryLabels> binary_labels(std::shared_ptr<Labels> orig)
 	{
 		REQUIRE(orig, "No labels provided.\n");
 		try
@@ -148,7 +148,7 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_BINARY:
-				return std::static_pointer_cast<CBinaryLabels>(orig);
+				return std::static_pointer_cast<BinaryLabels>(orig);
 			default:
 				SG_SNOTIMPLEMENTED
 			}

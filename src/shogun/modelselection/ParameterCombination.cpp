@@ -14,19 +14,19 @@
 using namespace shogun;
 using namespace std;
 
-CParameterCombination::CParameterCombination()
+ParameterCombination::ParameterCombination()
 {
 	init();
 }
 
-CParameterCombination::CParameterCombination(Parameter* param)
+ParameterCombination::ParameterCombination(Parameter* param)
 {
 	init();
 
 	m_param=param;
 }
 
-CParameterCombination::CParameterCombination(std::shared_ptr<CSGObject> obj)
+ParameterCombination::ParameterCombination(std::shared_ptr<SGObject> obj)
 {
 	init();
 
@@ -46,7 +46,7 @@ CParameterCombination::CParameterCombination(std::shared_ptr<CSGObject> obj)
 				p->add_vector((float64_t**)param->m_parameter, type.m_length_y,
 						param->m_name);
 
-				m_child_nodes->append_element(std::make_shared<CParameterCombination>(p));
+				m_child_nodes->append_element(std::make_shared<ParameterCombination>(p));
 				m_parameters_length+=*(type.m_length_y);
 			}
 			else if (type.m_ctype==CT_SGMATRIX || type.m_ctype==CT_MATRIX)
@@ -55,7 +55,7 @@ CParameterCombination::CParameterCombination(std::shared_ptr<CSGObject> obj)
 				p->add_matrix((float64_t**)param->m_parameter, type.m_length_y,
 					type.m_length_x, param->m_name);
 
-				m_child_nodes->append_element(std::make_shared<CParameterCombination>(p));
+				m_child_nodes->append_element(std::make_shared<ParameterCombination>(p));
 				m_parameters_length+=type.get_num_elements();
 			}
 			else if (type.m_ctype==CT_SCALAR)
@@ -63,7 +63,7 @@ CParameterCombination::CParameterCombination(std::shared_ptr<CSGObject> obj)
 				Parameter* p=new Parameter();
 				p->add((float64_t*)param->m_parameter, param->m_name);
 
-				m_child_nodes->append_element(std::make_shared<CParameterCombination>(p));
+				m_child_nodes->append_element(std::make_shared<ParameterCombination>(p));
 				m_parameters_length++;
 			}
 			else
@@ -92,15 +92,15 @@ CParameterCombination::CParameterCombination(std::shared_ptr<CSGObject> obj)
 		{
 			if (type.m_ctype==CT_SCALAR)
 			{
-				auto child=*((CSGObject**)(param->m_parameter));
+				auto child=*((SGObject**)(param->m_parameter));
 
 				if (child->m_gradient_parameters->get_num_parameters()>0)
 				{
 					//FIXME
 					//auto comb=std::make_shared<CParameterCombination>(child);
-					std::shared_ptr<CParameterCombination> comb;
+					std::shared_ptr<ParameterCombination> comb;
 					comb->m_param=new Parameter();
-					comb->m_param->add((CSGObject**)(param->m_parameter),
+					comb->m_param->add((SGObject**)(param->m_parameter),
 							param->m_name);
 
 					m_child_nodes->append_element(comb);
@@ -115,28 +115,28 @@ CParameterCombination::CParameterCombination(std::shared_ptr<CSGObject> obj)
 	}
 }
 
-void CParameterCombination::init()
+void ParameterCombination::init()
 {
 	m_parameters_length=0;
 	m_param=NULL;
-	m_child_nodes=std::make_shared<CDynamicObjectArray>();
+	m_child_nodes=std::make_shared<DynamicObjectArray>();
 
 
-	/*SG_ADD((CSGObject**)&m_child_nodes, "child_nodes", "Children of this node")*/;
+	/*SG_ADD((SGObject**)&m_child_nodes, "child_nodes", "Children of this node")*/;
 }
 
-CParameterCombination::~CParameterCombination()
+ParameterCombination::~ParameterCombination()
 {
 	delete m_param;
 
 }
 
-void CParameterCombination::append_child(std::shared_ptr<CParameterCombination> child)
+void ParameterCombination::append_child(std::shared_ptr<ParameterCombination> child)
 {
 	m_child_nodes->append_element(child);
 }
 
-bool CParameterCombination::set_parameter_helper(
+bool ParameterCombination::set_parameter_helper(
 		const char* name, bool value, index_t index)
 {
 	if (m_param)
@@ -166,7 +166,7 @@ bool CParameterCombination::set_parameter_helper(
 	return false;
 }
 
-bool CParameterCombination::set_parameter_helper(
+bool ParameterCombination::set_parameter_helper(
 		const char* name, int32_t value, index_t index)
 {
 	if (m_param)
@@ -195,7 +195,7 @@ bool CParameterCombination::set_parameter_helper(
 	return false;
 }
 
-bool CParameterCombination::set_parameter_helper(
+bool ParameterCombination::set_parameter_helper(
 		const char* name, float64_t value, index_t index)
 {
 	if (m_param)
@@ -226,7 +226,7 @@ bool CParameterCombination::set_parameter_helper(
 }
 
 
-TParameter* CParameterCombination::get_parameter_helper(const char* name)
+TParameter* ParameterCombination::get_parameter_helper(const char* name)
 {
 	if (m_param)
 	{
@@ -242,8 +242,8 @@ TParameter* CParameterCombination::get_parameter_helper(const char* name)
 }
 
 
-TParameter* CParameterCombination::get_parameter(const char* name,
-		CSGObject* parent)
+TParameter* ParameterCombination::get_parameter(const char* name,
+		SGObject* parent)
 {
 	bool match = false;
 
@@ -253,8 +253,8 @@ TParameter* CParameterCombination::get_parameter(const char* name,
 		{
 			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
 			{
-				CSGObject* obj =
-						(*((CSGObject**)m_param->get_parameter(i)->m_parameter));
+				SGObject* obj =
+						(*((SGObject**)m_param->get_parameter(i)->m_parameter));
 				if (parent == obj)
 					match = true;
 			}
@@ -265,7 +265,7 @@ TParameter* CParameterCombination::get_parameter(const char* name,
 	for (index_t i = 0; i < m_child_nodes->get_num_elements(); ++i)
 	{
 		auto child =
-				m_child_nodes->get_element<CParameterCombination>(i);
+				m_child_nodes->get_element<ParameterCombination>(i);
 
 		TParameter* p;
 
@@ -288,18 +288,18 @@ TParameter* CParameterCombination::get_parameter(const char* name,
 }
 
 
-void CParameterCombination::merge_with(std::shared_ptr<CParameterCombination> node)
+void ParameterCombination::merge_with(std::shared_ptr<ParameterCombination> node)
 {
 	for (index_t i=0; i<node->m_child_nodes->get_num_elements(); ++i)
 	{
 		auto child=
-				node->m_child_nodes->get_element<CParameterCombination>(i);
+				node->m_child_nodes->get_element<ParameterCombination>(i);
 		append_child(child->copy_tree());
 
 	}
 }
 
-void CParameterCombination::print_tree(int prefix_num) const
+void ParameterCombination::print_tree(int prefix_num) const
 {
 	/* prefix is enlarged */
 	char* prefix=SG_MALLOC(char, prefix_num+1);
@@ -324,7 +324,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 			if (m_param->get_parameter(i)->m_datatype.m_ptype==PT_SGOBJECT)
 			{
 				TParameter* param=m_param->get_parameter(i);
-				CSGObject* current_sgobject=*((CSGObject**) param->m_parameter);
+				SGObject* current_sgobject=*((SGObject**) param->m_parameter);
 				SG_SPRINT("\"%s\":%s at %p ", param->m_name,
 						current_sgobject->get_name(), current_sgobject);
 			}
@@ -366,7 +366,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
 		auto child=
-				m_child_nodes->get_element<CParameterCombination>(i);
+				m_child_nodes->get_element<ParameterCombination>(i);
 		child->print_tree(prefix_num+1);
 
 	}
@@ -374,7 +374,7 @@ void CParameterCombination::print_tree(int prefix_num) const
 	SG_FREE(prefix);
 }
 
-DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
+DynArray<Parameter*>* ParameterCombination::parameter_set_multiplication(
 		const DynArray<Parameter*>& set_1, const DynArray<Parameter*>& set_2)
 {
 	SG_SDEBUG("entering CParameterCombination::parameter_set_multiplication()\n")
@@ -410,16 +410,16 @@ DynArray<Parameter*>* CParameterCombination::parameter_set_multiplication(
 	return result;
 }
 
-std::shared_ptr<CDynamicObjectArray> CParameterCombination::leaf_sets_multiplication(
-		const CDynamicObjectArray& sets, std::shared_ptr<const CParameterCombination> new_root)
+std::shared_ptr<DynamicObjectArray> ParameterCombination::leaf_sets_multiplication(
+		const DynamicObjectArray& sets, std::shared_ptr<const ParameterCombination> new_root)
 {
-	auto result=std::make_shared<CDynamicObjectArray>();
+	auto result=std::make_shared<DynamicObjectArray>();
 
 	/* check marginal cases */
 	if (sets.get_num_elements()==1)
 	{
 		auto current_set=
-				sets.get_element<CDynamicObjectArray>(0);
+				sets.get_element<DynamicObjectArray>(0);
 
 		/* just use the only element into result array.
 		 * put root node before all combinations*/
@@ -431,7 +431,7 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::leaf_sets_multiplica
 		{
 			/* put new root as root into the tree and replace tree */
 			auto current=
-					result->get_element<CParameterCombination>(i);
+					result->get_element<ParameterCombination>(i);
 			auto root=new_root->copy_tree();
 			root->append_child(current);
 			result->set_element(root, i);
@@ -448,14 +448,14 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::leaf_sets_multiplica
 		for (index_t set_nr=0; set_nr<sets.get_num_elements(); ++set_nr)
 		{
 			auto current_set=
-					sets.get_element<CDynamicObjectArray>(set_nr);
+					sets.get_element<DynamicObjectArray>(set_nr);
 			DynArray<Parameter*>* new_param_set=new DynArray<Parameter*> ();
 			param_sets.append_element(new_param_set);
 
 			for (index_t i=0; i<current_set->get_num_elements(); ++i)
 			{
 				auto current_node=
-						current_set->get_element<CParameterCombination>(i);
+						current_set->get_element<ParameterCombination>(i);
 
 				if (current_node->m_child_nodes->get_num_elements())
 				{
@@ -512,7 +512,7 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::leaf_sets_multiplica
 		for (index_t i=0; i<param_product->get_num_elements(); ++i)
 		{
 			/* build parameter node from parameter product to append to root */
-			auto param_node=std::make_shared<CParameterCombination>(
+			auto param_node=std::make_shared<ParameterCombination>(
 					param_product->get_element(i));
 
 			/* copy new root node, has to be a new one each time */
@@ -531,12 +531,12 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::leaf_sets_multiplica
 	return result;
 }
 
-std::shared_ptr<CDynamicObjectArray> CParameterCombination::non_value_tree_multiplication(
-				std::shared_ptr<const CDynamicObjectArray> sets,
-				std::shared_ptr<const CParameterCombination> new_root)
+std::shared_ptr<DynamicObjectArray> ParameterCombination::non_value_tree_multiplication(
+				std::shared_ptr<const DynamicObjectArray> sets,
+				std::shared_ptr<const ParameterCombination> new_root)
 {
 	SG_SDEBUG("entering CParameterCombination::non_value_tree_multiplication()\n")
-	auto result=std::make_shared<CDynamicObjectArray>();
+	auto result=std::make_shared<DynamicObjectArray>();
 
 	/* first step: get all names in the sets */
 	std::set<string> names;
@@ -545,13 +545,13 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::non_value_tree_multi
 			j<sets->get_num_elements(); ++j)
 	{
 		auto current_set=
-				sets->get_element<CDynamicObjectArray>(j);
+				sets->get_element<DynamicObjectArray>(j);
 
 		for (index_t k=0; k
 				<current_set->get_num_elements(); ++k)
 		{
 			auto current_tree=
-					current_set->get_element<CParameterCombination>(k);
+					current_set->get_element<ParameterCombination>(k);
 
 			names.insert(string(current_tree->m_param->get_parameter(0)->m_name));
 
@@ -576,13 +576,13 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::non_value_tree_multi
 		/* extract all trees with first name */
 		const char* first_name=(*(names.begin())).c_str();
 		auto trees=
-				CParameterCombination::extract_trees_with_name(sets, first_name);
+				ParameterCombination::extract_trees_with_name(sets, first_name);
 
 		SG_SDEBUG("adding trees for first name \"%s\":\n", first_name)
 		for (index_t i=0; i<trees->get_num_elements(); ++i)
 		{
 			auto current_tree=
-					trees->get_element<CParameterCombination>(i);
+					trees->get_element<ParameterCombination>(i);
 
 			auto current_root=new_root->copy_tree();
 			current_root->append_child(current_tree);
@@ -602,25 +602,25 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::non_value_tree_multi
 
 			/* extract all trees with current name */
 			const char* current_name=(*it).c_str();
-			trees=CParameterCombination::extract_trees_with_name(sets,
+			trees=ParameterCombination::extract_trees_with_name(sets,
 					current_name);
 
 			/* create new set of trees where each element is put once for each
 			 * of the just generated trees */
-			auto new_result=std::make_shared<CDynamicObjectArray>();
+			auto new_result=std::make_shared<DynamicObjectArray>();
 			for (index_t i=0; i<result->get_num_elements(); ++i)
 			{
 				for (index_t j=0; j<trees->get_num_elements(); ++j)
 				{
 					auto to_copy=
-							result->get_element<CParameterCombination>(i);
+							result->get_element<ParameterCombination>(i);
 
 					/* create a copy of current element */
 					auto new_element=to_copy->copy_tree();
 
 
 					auto to_add=
-							trees->get_element<CParameterCombination>(j);
+							trees->get_element<ParameterCombination>(j);
 					new_element->append_child(to_add);
 
 					new_result->append_element(new_element);
@@ -642,21 +642,21 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::non_value_tree_multi
 	return result;
 }
 
-std::shared_ptr<CDynamicObjectArray> CParameterCombination::extract_trees_with_name(
-		std::shared_ptr<const CDynamicObjectArray> sets, const char* desired_name)
+std::shared_ptr<DynamicObjectArray> ParameterCombination::extract_trees_with_name(
+		std::shared_ptr<const DynamicObjectArray> sets, const char* desired_name)
 {
-	auto result=std::make_shared<CDynamicObjectArray>();
+	auto result=std::make_shared<DynamicObjectArray>();
 
 	for (index_t j=0;
 			j<sets->get_num_elements(); ++j)
 	{
 		auto current_set=
-				sets->get_element<CDynamicObjectArray>(j);
+				sets->get_element<DynamicObjectArray>(j);
 
 		for (index_t k=0; k<current_set->get_num_elements(); ++k)
 		{
 			auto current_tree=
-					current_set->get_element<CParameterCombination>(k);
+					current_set->get_element<ParameterCombination>(k);
 
 			char* current_name=current_tree->m_param->get_parameter(0)->m_name;
 
@@ -672,9 +672,9 @@ std::shared_ptr<CDynamicObjectArray> CParameterCombination::extract_trees_with_n
 	return result;
 }
 
-std::shared_ptr<CParameterCombination> CParameterCombination::copy_tree() const
+std::shared_ptr<ParameterCombination> ParameterCombination::copy_tree() const
 {
-	auto copy=std::make_shared<CParameterCombination>();
+	auto copy=std::make_shared<ParameterCombination>();
 
 	/* but build new Parameter instance */
 
@@ -690,7 +690,7 @@ std::shared_ptr<CParameterCombination> CParameterCombination::copy_tree() const
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 	{
 		auto child=
-				m_child_nodes->get_element<CParameterCombination>(i);
+				m_child_nodes->get_element<ParameterCombination>(i);
 		copy->m_child_nodes->append_element(child->copy_tree());
 
 	}
@@ -698,12 +698,12 @@ std::shared_ptr<CParameterCombination> CParameterCombination::copy_tree() const
 	return copy;
 }
 
-void CParameterCombination::apply_to_machine(std::shared_ptr<CMachine> machine) const
+void ParameterCombination::apply_to_machine(std::shared_ptr<Machine> machine) const
 {
 	apply_to_modsel_parameter(machine->m_model_selection_parameters);
 }
 
-void CParameterCombination::apply_to_modsel_parameter(
+void ParameterCombination::apply_to_modsel_parameter(
 		Parameter* parameter) const
 {
 	/* case root node */
@@ -715,7 +715,7 @@ void CParameterCombination::apply_to_modsel_parameter(
 		for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 		{
 			auto child=
-					m_child_nodes->get_element<CParameterCombination>(i);
+					m_child_nodes->get_element<ParameterCombination>(i);
 			child->apply_to_modsel_parameter(parameter);
 
 		}
@@ -729,26 +729,26 @@ void CParameterCombination::apply_to_modsel_parameter(
 		/* does this node has sub parameters? */
 		if (has_children())
 		{
-			/* if a parameter node has children, it has to have ONE CSGObject as
+			/* if a parameter node has children, it has to have ONE SGObject as
 			 * parameter */
 			if (m_param->get_num_parameters()>1 ||
 					m_param->get_parameter(0)->m_datatype.m_ptype!=PT_SGOBJECT)
 			{
 				SG_SERROR("invalid CParameterCombination node type, has children"
 						" and more than one parameter or is not a "
-						"CSGObject.\n");
+						"SGObject.\n");
 			}
 
 			/* cast is now safe */
-			CSGObject* current_sgobject=
-					*((CSGObject**)(m_param->get_parameter(0)->m_parameter));
+			SGObject* current_sgobject=
+					*((SGObject**)(m_param->get_parameter(0)->m_parameter));
 
 			/* iterate over all children and recursively set parameters from
 			 * their values */
 			for (index_t i=0; i<m_child_nodes->get_num_elements(); ++i)
 			{
 				auto child=
-						m_child_nodes->get_element<CParameterCombination>(i);
+						m_child_nodes->get_element<ParameterCombination>(i);
 				child->apply_to_modsel_parameter(
 						current_sgobject->m_model_selection_parameters);
 
@@ -759,7 +759,7 @@ void CParameterCombination::apply_to_modsel_parameter(
 		SG_SERROR("CParameterCombination node has illegal type.\n")
 }
 
-void CParameterCombination::build_parameter_values_map(
+void ParameterCombination::build_parameter_values_map(
 		std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> dict)
 {
 	if (m_param)
@@ -792,16 +792,16 @@ void CParameterCombination::build_parameter_values_map(
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); i++)
 	{
 		auto child=
-			m_child_nodes->get_element<CParameterCombination>(i);
+			m_child_nodes->get_element<ParameterCombination>(i);
 		child->build_parameter_values_map(dict);
 
 	}
 }
 
-void CParameterCombination::build_parameter_parent_map(
-		std::shared_ptr<CMap<TParameter*, CSGObject*>> dict)
+void ParameterCombination::build_parameter_parent_map(
+		std::shared_ptr<CMap<TParameter*, SGObject*>> dict)
 {
-	CSGObject* parent=NULL;
+	SGObject* parent=NULL;
 
 	if (m_param)
 	{
@@ -814,7 +814,7 @@ void CParameterCombination::build_parameter_parent_map(
 			{
 				if (type.m_ctype==CT_SCALAR)
 				{
-					parent=(*(CSGObject**)param->m_parameter);
+					parent=(*(SGObject**)param->m_parameter);
 					break;
 				}
 				else
@@ -828,7 +828,7 @@ void CParameterCombination::build_parameter_parent_map(
 	for (index_t i=0; i<m_child_nodes->get_num_elements(); i++)
 	{
 		auto child=
-			m_child_nodes->get_element<CParameterCombination>(i);
+			m_child_nodes->get_element<ParameterCombination>(i);
 
 		for (index_t j=0; j<child->m_param->get_num_parameters(); j++)
 		{

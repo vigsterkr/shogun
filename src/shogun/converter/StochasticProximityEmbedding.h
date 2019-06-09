@@ -52,27 +52,27 @@ enum ESPEStrategy
  *
  * Uses implementation from the Tapkee library.
  *
- * Only CEuclideanDistance distance is supported for the moment.
+ * Only EuclideanDistance distance is supported for the moment.
  *
  */
 
-class CStochasticProximityEmbedding : public CEmbeddingConverter
+class StochasticProximityEmbedding : public EmbeddingConverter
 {
 
 	public:
 
 		/** constructor */
-		CStochasticProximityEmbedding();
+		StochasticProximityEmbedding();
 
 		/** destructor */
-		virtual ~CStochasticProximityEmbedding();
+		virtual ~StochasticProximityEmbedding();
 
 		/** apply to features
 		 *
 		 * @param features features to embed
 		 * @return embedding features
 		 */
-		virtual std::shared_ptr<CFeatures> transform(std::shared_ptr<CFeatures> features, bool inplace = true);
+		virtual std::shared_ptr<Features> transform(std::shared_ptr<Features> features, bool inplace = true);
 
 		/** setter for number of neighbors k in local strategy
 		 *
@@ -142,11 +142,11 @@ class CStochasticProximityEmbedding : public CEmbeddingConverter
 		/** default init */
 		void init();
 
-		/** apply embedding to CDistance
+		/** apply embedding to Distance
 		 * @param distance TODO Euclidean works fine, check with others
 		 * @return new features in the embedded space
 		 */
-		virtual std::shared_ptr<CDenseFeatures<float64_t>> embed_distance(std::shared_ptr<CDistance> distance);
+		virtual std::shared_ptr<DenseFeatures<float64_t>> embed_distance(std::shared_ptr<Distance> distance);
 
 	private:
 

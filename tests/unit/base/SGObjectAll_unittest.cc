@@ -52,7 +52,7 @@ TYPED_TEST(SGObjectAll, clone_basic)
 	for (auto obj : sg_object_iterator<TypeParam>().ignore(sg_object_all_ignores))
 	{
 		SCOPED_TRACE(obj->get_name());
-		std::shared_ptr<CSGObject> clone;
+		std::shared_ptr<SGObject> clone;
 		try
 		{
 			clone = obj->clone();
@@ -96,15 +96,15 @@ TYPED_TEST(SGObjectAll, serialization_empty_json)
 		ASSERT_FALSE(fs->file_exists(filename));
 		std::unique_ptr<io::WritableFile> file;
 		ASSERT_FALSE(fs->new_writable_file(filename, &file));
-		auto fos = std::make_shared<io::CFileOutputStream>(file.get());
-		auto serializer = std::make_unique<io::CJsonSerializer>();
+		auto fos = std::make_shared<io::FileOutputStream>(file.get());
+		auto serializer = std::make_unique<io::JsonSerializer>();
 		serializer->attach(fos);
-		serializer->write(wrap<CSGObject>(obj));
+		serializer->write(obj);
 
 		std::unique_ptr<io::RandomAccessFile> raf;
 		ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
-		auto fis = std::make_shared<io::CFileInputStream>(raf.get());
-		auto deserializer = std::make_unique<io::CJsonDeserializer>();
+		auto fis = std::make_shared<io::FileInputStream>(raf.get());
+		auto deserializer = std::make_unique<io::JsonDeserializer>();
 		deserializer->attach(fis);
 		auto loaded = deserializer->read_object();
 

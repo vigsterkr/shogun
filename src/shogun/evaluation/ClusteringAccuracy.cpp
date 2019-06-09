@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-float64_t CClusteringAccuracy::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
+float64_t ClusteringAccuracy::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(ground_truth->get_label_type() == LT_MULTICLASS)

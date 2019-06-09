@@ -79,7 +79,7 @@ float64_t SMDMinimizer::minimize()
 void SMDMinimizer::init()
 {
 	m_mapping_fun=NULL;
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_mapping_fun, "SMDMinimizer__m_mapping_fun",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_mapping_fun, "SMDMinimizer__m_mapping_fun",
 		"m_mapping_fun in SMDMinimizer");
 }
 

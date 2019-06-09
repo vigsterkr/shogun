@@ -11,7 +11,7 @@ TEST(DelimiterTokenizerTest, tokenization)
 	const char* tokens[] = {"This", "is", "the", "ultimate", "test!"};
 	SGVector<char> cv(const_cast<char* >(text), 30, false);
 
-	auto tokenizer = std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->init_for_whitespace();
 	tokenizer->set_text(cv);
 

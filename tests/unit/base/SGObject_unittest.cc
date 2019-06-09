@@ -241,7 +241,7 @@ TYPED_TEST(SGObjectClone, equals_non_empty)
 
 TYPED_TEST(SGObjectClone, not_just_copied_pointer)
 {
-	auto obj = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj = std::make_shared<CloneEqualsMock<TypeParam>>();
 	auto clone = obj->clone();
 	auto clone_casted = clone->as<CCloneEqualsMock<TypeParam>>();
 	ASSERT_NE(clone_casted, nullptr);
@@ -257,21 +257,21 @@ TYPED_TEST(SGObjectClone, not_just_copied_pointer)
 
 TYPED_TEST(SGObjectClone, equals_other_has_null_param)
 {
-	auto obj = std::make_shared<CCloneEqualsMock<TypeParam>>();
+	auto obj = std::make_shared<CloneEqualsMock<TypeParam>>();
 	auto clone = obj->clone();
 	EXPECT_TRUE(clone->equals(obj));
 }
 
 TEST(SGObject,DISABLED_ref_copy_constructor)
 {
-	auto labs = std::make_shared<CBinaryLabels>(10);
+	auto labs = std::make_shared<BinaryLabels>(10);
 	EXPECT_EQ(labs->ref_count(), 0);
 
 
 	EXPECT_EQ(labs->ref_count(), 1);
 
 	// TODO: This causes memory corruptions; disabled test until fixed
-	auto labs_2 = std::make_shared<CBinaryLabels>(*labs);
+	auto labs_2 = std::make_shared<BinaryLabels>(*labs);
 
 
 
@@ -280,7 +280,7 @@ TEST(SGObject,DISABLED_ref_copy_constructor)
 
 TEST(SGObject,ref_unref_simple)
 {
-	auto labs = std::make_shared<CBinaryLabels>(10);
+	auto labs = std::make_shared<BinaryLabels>(10);
 	EXPECT_EQ(labs->ref_count(), 0);
 
 
@@ -302,26 +302,26 @@ TEST(SGObject,equals_complex_equal)
 
 	for (index_t  i=0; i<n; ++i)
 	{
-		X[i]=CMath::random(0.0, x_range);
+		X[i]=Math::random(0.0, x_range);
 		X_test[i]=(float64_t)i / n*x_range;
 		Y[i] = std::sin(X[i]);
 	}
 
 	/* shogun representation */
-	auto feat_train = std::make_shared<CDenseFeatures<float64_t>>(X);
-	auto feat_test = std::make_shared<CDenseFeatures<float64_t>>(X_test);
-	auto label_train = std::make_shared<CRegressionLabels>(Y);
+	auto feat_train = std::make_shared<DenseFeatures<float64_t>>(X);
+	auto feat_test = std::make_shared<DenseFeatures<float64_t>>(X_test);
+	auto label_train = std::make_shared<RegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel = std::make_shared<CGaussianKernel>(10, shogun_sigma);
-	auto mean = std::make_shared<CZeroMean>();
-	auto lik = std::make_shared<CGaussianLikelihood>();
+	auto kernel = std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean = std::make_shared<ZeroMean>();
+	auto lik = std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf = std::make_shared<CExactInferenceMethod>(kernel, feat_train,
+	auto inf = std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
-	auto gpr = std::make_shared<CGaussianProcessRegression>(inf);
+	auto gpr = std::make_shared<GaussianProcessRegression>(inf);
 
 	/* train machine */
 	gpr->train();
@@ -337,28 +337,28 @@ TEST(SGObject,equals_complex_equal)
 	ASSERT_TRUE(fs->file_exists(filename_gpr));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_FALSE(fs->new_writable_file(filename_gpr, &file));
-	auto fos = std::make_shared<io::CFileOutputStream>(file.get());
-	auto serializer = std::make_unique<io::CJsonSerializer>();
+	auto fos = std::make_shared<io::FileOutputStream>(file.get());
+	auto serializer = std::make_unique<io::JsonSerializer>();
 	serializer->attach(fos);
 	serializer->write(gpr);
 
 	ASSERT_TRUE(fs->file_exists(filename_predictions));
 	ASSERT_FALSE(fs->new_writable_file(filename_predictions, &file));
-	fos = std::make_shared<io::CFileOutputStream>(file.get());
+	fos = std::make_shared<io::FileOutputStream>(file.get());
 	serializer->attach(fos);
 	serializer->write(predictions);
 
 	std::unique_ptr<io::RandomAccessFile> raf;
 	ASSERT_FALSE(fs->new_random_access_file(filename_gpr, &raf));
-	auto fis = std::make_unique<io::CFileInputStream>(raf.get());
-	auto bis = std::make_shared<io::CBufferedInputStream>(fis.get());
-	auto deserializer = std::make_unique<io::CJsonDeserializer>();
+	auto fis = std::make_unique<io::FileInputStream>(raf.get());
+	auto bis = std::make_shared<io::BufferedInputStream>(fis.get());
+	auto deserializer = std::make_unique<io::JsonDeserializer>();
 	deserializer->attach(bis);
 	auto gpr_copy = deserializer->read_object();
 
 	ASSERT_FALSE(fs->new_random_access_file(filename_predictions, &raf));
-	fis = std::make_unique<io::CFileInputStream>(raf.get());
-	bis = std::make_shared<io::CBufferedInputStream>(fis.get());
+	fis = std::make_unique<io::FileInputStream>(raf.get());
+	bis = std::make_shared<io::BufferedInputStream>(fis.get());
 	deserializer->attach(bis);
 	auto predictions_copy = deserializer->read_object();
 
@@ -393,16 +393,16 @@ TEST(SGObject,update_parameter_hash)
 		Y[i] = std::sin(X(0, i));
 	}
 
-	CDenseFeatures<float64_t>* feat_train=std::make_shared<CDenseFeatures><float64_t>(X);
-	CRegressionLabels* label_train=std::make_shared<CRegressionLabels>(Y);
+	DenseFeatures<float64_t>* feat_train=std::make_shared<DenseFeatures><float64_t>(X);
+	RegressionLabels* label_train=std::make_shared<RegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
-	auto mean=std::make_shared<CZeroMean>();
-	auto lik=std::make_shared<CGaussianLikelihood>();
+	auto kernel=std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<ZeroMean>();
+	auto lik=std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	ExactInferenceMethod* inf=new ExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
 
 	SGMatrix<float64_t> L=inf->get_cholesky();
@@ -440,16 +440,16 @@ TEST(SGObject,parameter_hash_changed)
 		Y[i] = std::sin(X(0, i));
 	}
 
-	CDenseFeatures<float64_t>* feat_train=std::make_shared<CDenseFeatures><float64_t>(X);
-	CRegressionLabels* label_train=std::make_shared<CRegressionLabels>(Y);
+	DenseFeatures<float64_t>* feat_train=std::make_shared<DenseFeatures><float64_t>(X);
+	RegressionLabels* label_train=std::make_shared<RegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
-	auto mean=std::make_shared<CZeroMean>();
-	auto lik=std::make_shared<CGaussianLikelihood>();
+	auto kernel=std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<ZeroMean>();
+	auto lik=std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	CExactInferenceMethod* inf=new CExactInferenceMethod(kernel, feat_train,
+	ExactInferenceMethod* inf=new ExactInferenceMethod(kernel, feat_train,
 			mean, label_train, lik);
 	EXPECT_TRUE(inf->parameter_hash_changed());
 

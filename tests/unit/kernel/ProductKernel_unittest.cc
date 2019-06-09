@@ -6,17 +6,17 @@ using namespace shogun;
 
 TEST(ProductKernelTest,test_array_operations)
 {
-	auto product = std::make_shared<CProductKernel>();
-	auto gaus_1 = std::make_shared<CGaussianKernel>();
+	auto product = std::make_shared<ProductKernel>();
+	auto gaus_1 = std::make_shared<GaussianKernel>();
 	product->append_kernel(gaus_1);
 
-	auto gaus_2 = std::make_shared<CGaussianKernel>();
+	auto gaus_2 = std::make_shared<GaussianKernel>();
 	product->append_kernel(gaus_2);
 
-	auto gaus_3 = std::make_shared<CGaussianKernel>();
+	auto gaus_3 = std::make_shared<GaussianKernel>();
 	product->insert_kernel(gaus_3,1);
 
-	auto gaus_4 = std::make_shared<CGaussianKernel>();
+	auto gaus_4 = std::make_shared<GaussianKernel>();
 	product->insert_kernel(gaus_4,0);
 
 	EXPECT_EQ(product->get_num_subkernels(),4);

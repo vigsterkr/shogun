@@ -77,10 +77,10 @@ TEST(SoftMaxLikelihood,get_log_probabilities_f)
 	lab[5]=0;
 	lab[6]=0;
 
-	auto labels=std::make_shared<CMulticlassLabels>();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	auto sml=std::make_shared<CSoftMaxLikelihood>();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_f(labels,data_vector);
 
@@ -134,10 +134,10 @@ TEST(SoftMaxLikelihood,get_log_probability_derivative_first)
 	lab[5]=0;
 	lab[6]=0;
 
-	auto labels=std::make_shared<CMulticlassLabels>();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	auto sml=std::make_shared<CSoftMaxLikelihood>();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_derivative_f(labels,data_vector,1);
 
@@ -205,10 +205,10 @@ TEST(SoftMaxLikelihood,get_log_derivatives_second)
 	lab[5]=0;
 	lab[6]=0;
 
-	auto labels=std::make_shared<CMulticlassLabels>();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	auto sml=std::make_shared<CSoftMaxLikelihood>();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_derivative_f(labels,data_vector,2);
 
@@ -318,10 +318,10 @@ TEST(SoftMaxLikelihood,get_log_derivatives_third)
 	lab[5]=0;
 	lab[6]=0;
 
-	auto labels=std::make_shared<CMulticlassLabels>();
+	auto labels=std::make_shared<MulticlassLabels>();
 	labels->set_int_labels(lab);
 
-	auto sml=std::make_shared<CSoftMaxLikelihood>();
+	auto sml=std::make_shared<SoftMaxLikelihood>();
 	SGVector<float64_t> data_vector=SGVector<float64_t>(data.matrix,data.num_rows*data.num_cols,false);
 	SGVector<float64_t> v=sml->get_log_probability_derivative_f(labels,data_vector,3);
 

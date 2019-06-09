@@ -84,19 +84,19 @@ template <class T> class SGVector;
  * m_activation_gradients: size m_num_neurons*m_batch_size
  * m_local_gradients: size m_num_neurons*m_batch_size
  */
-class CNeuralLayer : public CSGObject
+class NeuralLayer : public SGObject
 {
 public:
 	/** default constructor */
-	CNeuralLayer();
+	NeuralLayer();
 
 	/** Constuctor
 	 *
 	 * @param num_neurons Number of neurons in this layer
 	 */
-	CNeuralLayer(int32_t num_neurons);
+	NeuralLayer(int32_t num_neurons);
 
-	virtual ~CNeuralLayer();
+	virtual ~NeuralLayer();
 
 	/** Initializes the layer
 	 *
@@ -106,7 +106,7 @@ public:
 	 * @param input_indices  Indices of the layers that are connected to this
 	 * layer as input
 	 */
-	virtual void initialize_neural_layer(std::shared_ptr<CDynamicObjectArray> layers,
+	virtual void initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
 			SGVector<int32_t> input_indices);
 
 	/** Sets the batch_size and allocates memory for m_activations and
@@ -162,7 +162,7 @@ public:
 	 * being used with
 	 */
 	virtual void compute_activations(SGVector<float64_t> parameters,
-			std::shared_ptr<CDynamicObjectArray> layers) { }
+			std::shared_ptr<DynamicObjectArray> layers) { }
 
 	/** Computes the gradients that are relevent to this layer:
 	 *- The gradients of the error with respect to the layer's parameters
@@ -194,7 +194,7 @@ public:
 	 */
 	virtual void compute_gradients(SGVector<float64_t> parameters,
 			SGMatrix<float64_t> targets,
-			std::shared_ptr<CDynamicObjectArray> layers,
+			std::shared_ptr<DynamicObjectArray> layers,
 			SGVector<float64_t> parameter_gradients) { }
 
 	/** Computes the error between the layer's current activations and the given

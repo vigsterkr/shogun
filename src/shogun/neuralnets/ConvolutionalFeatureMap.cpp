@@ -76,7 +76,7 @@ CConvolutionalFeatureMap::CConvolutionalFeatureMap(
 
 void CConvolutionalFeatureMap::compute_activations(
 	SGVector< float64_t > parameters,
-	std::shared_ptr<CDynamicObjectArray> layers,
+	std::shared_ptr<DynamicObjectArray> layers,
 	SGVector< int32_t > input_indices,
 	SGMatrix<float64_t> activations)
 {
@@ -95,7 +95,7 @@ void CConvolutionalFeatureMap::compute_activations(
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		auto layer =
-			layers->get_element<CNeuralLayer>(input_indices[l]);
+			layers->get_element<NeuralLayer>(input_indices[l]);
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 
@@ -125,7 +125,7 @@ void CConvolutionalFeatureMap::compute_activations(
 		for (int32_t i=0; i<m_output_num_neurons; i++)
 			for (int32_t j=0; j<batch_size; j++)
 				activations(i+m_row_offset,j) =
-					CMath::max<float64_t>(0, activations(i+m_row_offset,j));
+					Math::max<float64_t>(0, activations(i+m_row_offset,j));
 	}
 }
 
@@ -133,7 +133,7 @@ void CConvolutionalFeatureMap::compute_gradients(
 	SGVector< float64_t > parameters,
 	SGMatrix<float64_t> activations,
 	SGMatrix< float64_t > activation_gradients,
-	std::shared_ptr<CDynamicObjectArray> layers,
+	std::shared_ptr<DynamicObjectArray> layers,
 	SGVector< int32_t > input_indices,
 	SGVector< float64_t > parameter_gradients)
 {
@@ -170,7 +170,7 @@ void CConvolutionalFeatureMap::compute_gradients(
 	for (int32_t l=0; l<input_indices.vlen; l++)
 	{
 		auto layer =
-			layers->get_element<CNeuralLayer>(input_indices[l]);
+			layers->get_element<NeuralLayer>(input_indices[l]);
 
 		int32_t num_maps = layer->get_num_neurons()/m_input_num_neurons;
 

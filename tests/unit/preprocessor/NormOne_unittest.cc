@@ -10,16 +10,16 @@
 
 using namespace shogun;
 
-class NormOne : public ::testing::Test
+class NormOneTest : public ::testing::Test
 {
 public:
-	NormOne()
+	NormOneTest()
 	    : feats(nullptr),
-	      transformer(std::make_shared<CNormOne>())
+	      transformer(std::make_shared<NormOne>())
 	{
 		matrix = SGMatrix<float64_t>(data, num_features, num_vectors, false);
 		auto cloned_matrix = matrix.clone();
-		feats = std::make_shared<CDenseFeatures<float64_t>>(cloned_matrix);
+		feats = std::make_shared<DenseFeatures<float64_t>>(cloned_matrix);
 	}
 
 protected:
@@ -31,15 +31,15 @@ protected:
 	int32_t num_vectors = 2;
 	int32_t num_features = 3;
 
-	std::shared_ptr<CDenseFeatures<float64_t>> feats;
-	std::shared_ptr<CNormOne> transformer;
+	std::shared_ptr<DenseFeatures<float64_t>> feats;
+	std::shared_ptr<NormOne> transformer;
 };
 
-TEST_F(NormOne, transform)
+TEST_F(NormOneTest, transform)
 {
 	transformer->fit(feats);
 	feats =
-	    transformer->transform(feats)->as<CDenseFeatures<float64_t>>();
+	    transformer->transform(feats)->as<DenseFeatures<float64_t>>();
 
 	ASSERT_EQ(feats->get_num_vectors(), num_vectors);
 
@@ -54,7 +54,7 @@ TEST_F(NormOne, transform)
 	}
 }
 
-TEST_F(NormOne, apply_to_vector)
+TEST_F(NormOneTest, apply_to_vector)
 {
 	transformer->fit(feats);
 	feats->add_preprocessor(transformer);

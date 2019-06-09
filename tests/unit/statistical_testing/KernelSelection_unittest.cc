@@ -51,10 +51,10 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mmd=std::make_shared<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -64,7 +64,7 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD);
 
@@ -72,7 +72,7 @@ TEST(KernelSelectionMaxMMD, linear_time_single_kernel_streaming)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
 }
 
@@ -86,20 +86,20 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto mmd=std::make_shared<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD);
 
@@ -107,7 +107,7 @@ TEST(KernelSelectionMaxMMD, quadratic_time_single_kernel_dense)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
 }
 
@@ -124,20 +124,20 @@ TEST(
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p = std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q = std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p = std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q = std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p = gen_p->get_streamed_features(m);
 	auto feats_q = gen_q->get_streamed_features(n);
 
-	auto mmd = std::make_shared<CQuadraticTimeMMD>();
+	auto mmd = std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	for (auto i = 0, sigma = -5; i < num_kernels; ++i, sigma += 1)
 	{
 		float64_t tau = pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD);
 
@@ -157,10 +157,10 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mmd=std::make_shared<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -170,7 +170,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_MMD, true);
 
@@ -178,7 +178,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto weighted_kernel=dynamic_cast<CCombinedKernel*>(mmd->get_kernel());
+	auto weighted_kernel=dynamic_cast<CombinedKernel*>(mmd->get_kernel());
 	ASSERT_TRUE(weighted_kernel!=nullptr);
 	ASSERT_TRUE(weighted_kernel->get_num_subkernels()==num_kernels);
 
@@ -198,10 +198,10 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mmd=std::make_shared<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -211,7 +211,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_POWER);
 
@@ -219,7 +219,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_single_kernel_streaming)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
 }
 
@@ -233,10 +233,10 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mmd=std::make_shared<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_UNBIASED_FULL);
@@ -245,7 +245,7 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_POWER);
 
@@ -253,7 +253,7 @@ TEST(KernelSelectionMaxTestPower, quadratic_time_single_kernel)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 0.25, 1E-10);
 }
 
@@ -268,10 +268,10 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mmd=std::make_shared<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -281,7 +281,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MAXIMIZE_POWER, true);
 
@@ -289,7 +289,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto weighted_kernel=dynamic_cast<CCombinedKernel*>(mmd->get_kernel());
+	auto weighted_kernel=dynamic_cast<CombinedKernel*>(mmd->get_kernel());
 	ASSERT_TRUE(weighted_kernel!=nullptr);
 	ASSERT_TRUE(weighted_kernel->get_num_subkernels()==num_kernels);
 
@@ -313,12 +313,12 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto mmd=std::make_shared<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -327,7 +327,7 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_CROSS_VALIDATION, num_runs, num_folds, alpha);
 
@@ -336,7 +336,7 @@ TEST(KernelSelectionMaxCrossValidation, quadratic_time_single_kernel_dense)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
 }
 
@@ -354,19 +354,19 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 	auto feats_p=gen_p->get_streamed_features(m);
 	auto feats_q=gen_q->get_streamed_features(n);
 
-	auto mmd=std::make_shared<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_CROSS_VALIDATION, num_runs, num_folds, alpha);
 
@@ -375,7 +375,7 @@ TEST(KernelSelectionMaxCrossValidation, linear_time_single_kernel_dense)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 0.03125, 1E-10);
 }
 
@@ -389,10 +389,10 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mmd=std::make_shared<CQuadraticTimeMMD>();
+	auto mmd=std::make_shared<QuadraticTimeMMD>();
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -401,7 +401,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MEDIAN_HEURISTIC);
 
@@ -409,7 +409,7 @@ TEST(KernelSelectionMedianHeuristic, quadratic_time_single_kernel_dense)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 1.0, 1E-10);
 }
 
@@ -423,10 +423,10 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 
 	sg_rand->set_seed(12345);
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mmd=std::make_shared<CLinearTimeMMD>();
+	auto mmd=std::make_shared<LinearTimeMMD>();
 	mmd->set_p(gen_p);
 	mmd->set_q(gen_q);
 	mmd->set_statistic_type(ST_BIASED_FULL);
@@ -435,7 +435,7 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 	for (auto i=0, sigma=-5; i<num_kernels; ++i, sigma+=1)
 	{
 		float64_t tau=pow(2, sigma);
-		mmd->add_kernel(std::make_shared<CGaussianKernel>(10, tau));
+		mmd->add_kernel(std::make_shared<GaussianKernel>(10, tau));
 	}
 	mmd->set_kernel_selection_strategy(KSM_MEDIAN_HEURISTIC);
 
@@ -443,6 +443,6 @@ TEST(KernelSelectionMedianHeuristic, linear_time_single_kernel_dense)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto selected_kernel=mmd->get_kernel()->as<CGaussianKernel>();
+	auto selected_kernel=mmd->get_kernel()->as<GaussianKernel>();
 	EXPECT_NEAR(selected_kernel->get_width(), 1.0, 1E-10);
 }

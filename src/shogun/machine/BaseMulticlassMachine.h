@@ -15,19 +15,19 @@
 namespace shogun
 {
 
-class CDynamicObjectArray;
-class CLabels;
+class DynamicObjectArray;
+class Labels;
 
 /** Base class of all Multiclass Machines.
  */
-class CBaseMulticlassMachine: public CMachine
+class BaseMulticlassMachine: public Machine
 {
 public:
     /** constructor */
-	CBaseMulticlassMachine();
+	BaseMulticlassMachine();
 
     /** destructor */
-	virtual ~CBaseMulticlassMachine();
+	virtual ~BaseMulticlassMachine();
 
     /** get name */
     virtual const char* get_name() const { return "BaseMulticlassMachine"; }
@@ -45,12 +45,12 @@ public:
 	 *
 	 * @param lab the labels being checked, guaranteed to be non-NULL
 	 */
-	virtual bool is_label_valid(std::shared_ptr<CLabels >lab) const;
+	virtual bool is_label_valid(std::shared_ptr<Labels >lab) const;
 
 protected:
 
 	/** machines */
-	std::shared_ptr<CDynamicObjectArray >m_machines;
+	std::shared_ptr<DynamicObjectArray >m_machines;
 };
 
 } /* shogun */

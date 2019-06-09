@@ -24,14 +24,14 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\sqrt{k({\bf x},{\bf x})k({\bf x'},{\bf x'})}}
  * \f]
  */
-class CSqrtDiagKernelNormalizer : public CKernelNormalizer
+class SqrtDiagKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** default constructor
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CSqrtDiagKernelNormalizer(bool use_opt_diag=false): CKernelNormalizer(),
+		SqrtDiagKernelNormalizer(bool use_opt_diag=false): KernelNormalizer(),
 			sqrtdiag_lhs(NULL), num_sqrtdiag_lhs(0),
 			sqrtdiag_rhs(NULL), num_sqrtdiag_rhs(0),
 			use_optimized_diagonal_computation(use_opt_diag)
@@ -50,7 +50,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~CSqrtDiagKernelNormalizer()
+		virtual ~SqrtDiagKernelNormalizer()
 		{
 			SG_FREE(sqrtdiag_lhs);
 			SG_FREE(sqrtdiag_rhs);
@@ -58,7 +58,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			ASSERT(k)
 			num_sqrtdiag_lhs=k->get_num_vec_lhs();
@@ -121,7 +121,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num) const
+		bool alloc_and_compute_diag(Kernel* k, float64_t* &v, int32_t num) const
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
@@ -130,7 +130,7 @@ class CSqrtDiagKernelNormalizer : public CKernelNormalizer
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
-					auto cwk = k->as<CCommWordStringKernel>();
+					auto cwk = k->as<CommWordStringKernel>();
 					if (use_optimized_diagonal_computation)
 						v[i]=sqrt(cwk->compute_diag(i));
 					else

@@ -11,8 +11,8 @@
 
 using namespace shogun;
 
-CManifoldSculpting::CManifoldSculpting() :
-		CEmbeddingConverter()
+ManifoldSculpting::ManifoldSculpting() :
+		EmbeddingConverter()
 {
 	// Default values
 	m_k = 10;
@@ -21,7 +21,7 @@ CManifoldSculpting::CManifoldSculpting() :
 	init();
 }
 
-void CManifoldSculpting::init()
+void ManifoldSculpting::init()
 {
 	SG_ADD(&m_k, "k", "number of neighbors");
 	SG_ADD(&m_squishing_rate, "quishing_rate",
@@ -30,54 +30,54 @@ void CManifoldSculpting::init()
       "maximum number of algorithm's iterations");
 }
 
-CManifoldSculpting::~CManifoldSculpting()
+ManifoldSculpting::~ManifoldSculpting()
 {
 }
 
-const char* CManifoldSculpting::get_name() const
+const char* ManifoldSculpting::get_name() const
 {
 	return "ManifoldSculpting";
 }
 
-void CManifoldSculpting::set_k(const int32_t k)
+void ManifoldSculpting::set_k(const int32_t k)
 {
 	ASSERT(k>0)
 	m_k = k;
 }
 
-int32_t CManifoldSculpting::get_k() const
+int32_t ManifoldSculpting::get_k() const
 {
 	return m_k;
 }
 
-void CManifoldSculpting::set_squishing_rate(const float64_t squishing_rate)
+void ManifoldSculpting::set_squishing_rate(const float64_t squishing_rate)
 {
 	ASSERT(squishing_rate >= 0 && squishing_rate < 1)
 	m_squishing_rate = squishing_rate;
 }
 
-float64_t CManifoldSculpting::get_squishing_rate() const
+float64_t ManifoldSculpting::get_squishing_rate() const
 {
 	return m_squishing_rate;
 }
 
-void CManifoldSculpting::set_max_iteration(const int32_t max_iteration)
+void ManifoldSculpting::set_max_iteration(const int32_t max_iteration)
 {
 	ASSERT(max_iteration > 0)
 	m_max_iteration = max_iteration;
 }
 
-int32_t CManifoldSculpting::get_max_iteration() const
+int32_t ManifoldSculpting::get_max_iteration() const
 {
 	return m_max_iteration;
 }
 
-std::shared_ptr<CFeatures> CManifoldSculpting::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features> ManifoldSculpting::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	auto feats = std::static_pointer_cast<CDenseFeatures<float64_t>>(features);
+	auto feats = std::static_pointer_cast<DenseFeatures<float64_t>>(features);
 
 	auto euclidean_distance =
-		std::make_shared<CEuclideanDistance>(feats, feats);
+		std::make_shared<EuclideanDistance>(feats, feats);
 
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;

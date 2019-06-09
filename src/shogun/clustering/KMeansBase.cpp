@@ -17,14 +17,14 @@
 using namespace shogun;
 using namespace Eigen;
 
-CKMeansBase::CKMeansBase()
-: CDistanceMachine()
+KMeansBase::KMeansBase()
+: DistanceMachine()
 {
 	init();
 }
 
-CKMeansBase::CKMeansBase(int32_t k_, std::shared_ptr<CDistance> d, bool use_kmpp)
-: CDistanceMachine()
+KMeansBase::KMeansBase(int32_t k_, std::shared_ptr<Distance> d, bool use_kmpp)
+: DistanceMachine()
 {
 	init();
 	k=k_;
@@ -32,8 +32,8 @@ CKMeansBase::CKMeansBase(int32_t k_, std::shared_ptr<CDistance> d, bool use_kmpp
 	use_kmeanspp=use_kmpp;
 }
 
-CKMeansBase::CKMeansBase(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i)
-: CDistanceMachine()
+KMeansBase::KMeansBase(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i)
+: DistanceMachine()
 {
 	init();
 	k = k_i;
@@ -41,13 +41,13 @@ CKMeansBase::CKMeansBase(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<f
 	set_initial_centers(centers_i);
 }
 
-CKMeansBase::~CKMeansBase()
+KMeansBase::~KMeansBase()
 {
 }
 
-void CKMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
+void KMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 {
-	auto lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto lhs=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	dimensions=lhs->get_num_features();
 	REQUIRE(centers.num_cols == k,
 			"Expected %d initial cluster centers, got %d", k, centers.num_cols);
@@ -57,16 +57,16 @@ void CKMeansBase::set_initial_centers(SGMatrix<float64_t> centers)
 
 }
 
-void CKMeansBase::set_random_centers()
+void KMeansBase::set_random_centers()
 {
 	mus.zero();
 	auto lhs=
-		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+		distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	int32_t lhs_size=lhs->get_num_vectors();
 
 	SGVector<int32_t> temp=SGVector<int32_t>(lhs_size);
 	SGVector<int32_t>::range_fill_vector(temp, lhs_size, 0);
-	CMath::permute(temp);
+	Math::permute(temp);
 
 	for (int32_t i=0; i<k; i++)
 	{
@@ -82,7 +82,7 @@ void CKMeansBase::set_random_centers()
 	observe<SGMatrix<float64_t>>(0, "mus");
 }
 
-void CKMeansBase::compute_cluster_variances()
+void KMeansBase::compute_cluster_variances()
 {
 	/* compute the ,,variances'' of the clusters */
 	for (int32_t i=0; i<k; i++)
@@ -101,7 +101,7 @@ void CKMeansBase::compute_cluster_variances()
 
 				for (l=0; l<dimensions; l++)
 				{
-					dist+=CMath::sq(
+					dist+=Math::sq(
 							mus.matrix[i*dimensions+l]
 									-mus.matrix[j*dimensions+l]);
 				}
@@ -130,7 +130,7 @@ void CKMeansBase::compute_cluster_variances()
 	}
 }
 
-void CKMeansBase::initialize_training(std::shared_ptr<CFeatures> data)
+void KMeansBase::initialize_training(std::shared_ptr<Features> data)
 {
 	REQUIRE(distance, "Distance is not provided\n")
 	REQUIRE(
@@ -148,7 +148,7 @@ void CKMeansBase::initialize_training(std::shared_ptr<CFeatures> data)
 		distance->init(data, data);
 
 	auto lhs=
-		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+		distance->get_lhs()->as<DenseFeatures<float64_t>>();
 
 	REQUIRE(lhs, "Lhs features of distance not provided");
 	int32_t lhs_size=lhs->get_num_vectors();
@@ -179,36 +179,36 @@ void CKMeansBase::initialize_training(std::shared_ptr<CFeatures> data)
 	}
 }
 
-bool CKMeansBase::load(FILE* srcfile)
+bool KMeansBase::load(FILE* srcfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-bool CKMeansBase::save(FILE* dstfile)
+bool KMeansBase::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-SGMatrix<float64_t> CKMeansBase::get_cluster_centers() const
+SGMatrix<float64_t> KMeansBase::get_cluster_centers() const
 {
 	if (!R.vector)
 		return SGMatrix<float64_t>();
 
 	auto lhs=
-		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+		distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> centers=lhs->get_feature_matrix();
 
 	return centers;
 }
 
-void CKMeansBase::store_model_features()
+void KMeansBase::store_model_features()
 {
 	/* set lhs of underlying distance to cluster centers */
-	auto cluster_centers=std::make_shared<CDenseFeatures<float64_t>>(mus);
+	auto cluster_centers=std::make_shared<DenseFeatures<float64_t>>(mus);
 
 	/* store cluster centers in lhs of distance variable */
 	auto rhs=distance->get_rhs();
@@ -216,10 +216,10 @@ void CKMeansBase::store_model_features()
 
 }
 
-SGMatrix<float64_t> CKMeansBase::kmeanspp()
+SGMatrix<float64_t> KMeansBase::kmeanspp()
 {
 	int32_t lhs_size;
-	auto lhs=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto lhs=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	lhs_size=lhs->get_num_vectors();
 
 	SGMatrix<float64_t> centers=SGMatrix<float64_t>(dimensions, k);
@@ -228,7 +228,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	min_dist.zero();
 
 	/* First center is chosen at random */
-	int32_t mu=CMath::random((int32_t) 0, lhs_size-1);
+	int32_t mu=Math::random((int32_t) 0, lhs_size-1);
 	SGVector<float64_t> mu_first=lhs->get_feature_vector(mu);
 	for(int32_t j=0; j<dimensions; j++)
 		centers(j, 0)=mu_first[j];
@@ -239,7 +239,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	default(none) shared(min_dist, mu, lhs_size) \
 	schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 	for(int32_t i=0; i<lhs_size; i++)
-		min_dist[i]=CMath::sq(distance->distance(i, mu));
+		min_dist[i]=Math::sq(distance->distance(i, mu));
 #ifdef HAVE_LINALG
 	float64_t sum=linalg::vector_sum(min_dist);
 #else //HAVE_LINALG
@@ -262,7 +262,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 			float64_t temp_dist=0.0;
 			SGVector<float64_t> temp_min_dist=SGVector<float64_t>(lhs_size);
 			int32_t new_center=0;
-			float64_t prob=CMath::random(0.0, 1.0);
+			float64_t prob=Math::random(0.0, 1.0);
 			prob=prob*sum;
 
 			for(int32_t j=0; j<lhs_size; j++)
@@ -280,8 +280,8 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 			schedule(static, CPU_CACHE_LINE_SIZE_BYTES)
 			for(int32_t j=0; j<lhs_size; j++)
 			{
-				temp_dist=CMath::sq(distance->distance(j, new_center));
-				temp_min_dist[j]=CMath::min(temp_dist, min_dist[j]);
+				temp_dist=Math::sq(distance->distance(j, new_center));
+				temp_min_dist[j]=Math::min(temp_dist, min_dist[j]);
 			}
 
 #ifdef HAVE_LINALG
@@ -310,7 +310,7 @@ SGMatrix<float64_t> CKMeansBase::kmeanspp()
 	return centers;
 }
 
-void CKMeansBase::init()
+void KMeansBase::init()
 {
 	max_iter=300;
 	k=8;
@@ -325,6 +325,6 @@ void CKMeansBase::init()
 	SG_ADD(&use_kmeanspp, "kmeanspp", "Whether use kmeans++", ParameterProperties::HYPER);
 	SG_ADD(&mus, "mus", "Cluster centers")
 
-	watch_method("cluster_centers", &CKMeansBase::get_cluster_centers);
+	watch_method("cluster_centers", &KMeansBase::get_cluster_centers);
 }
 

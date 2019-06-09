@@ -11,26 +11,26 @@
 using namespace shogun;
 using namespace shogun::io;
 
-CDeserializer::CDeserializer() : CSGObject()
+Deserializer::Deserializer() : SGObject()
 {
 }
 
-CDeserializer::~CDeserializer()
+Deserializer::~Deserializer()
 {
 }
 
-void CDeserializer::attach(std::shared_ptr<CInputStream> stream)
+void Deserializer::attach(std::shared_ptr<InputStream> stream)
 {
 	m_stream = stream;
 }
 
-std::shared_ptr<CInputStream> CDeserializer::stream() const
+std::shared_ptr<InputStream> Deserializer::stream() const
 {
 	REQUIRE(m_stream, "Deserializer has no stream, attach() it to a stream");
 	return m_stream;
 }
 
-void shogun::io::pre_deserialize(std::shared_ptr<CSGObject> obj) noexcept(false)
+void shogun::io::pre_deserialize(std::shared_ptr<SGObject> obj) noexcept(false)
 {
 	obj->load_serializable_pre();
 
@@ -42,7 +42,7 @@ void shogun::io::pre_deserialize(std::shared_ptr<CSGObject> obj) noexcept(false)
 	}
 }
 
-void shogun::io::post_deserialize(std::shared_ptr<CSGObject> obj) noexcept(false)
+void shogun::io::post_deserialize(std::shared_ptr<SGObject> obj) noexcept(false)
 {
 	obj->load_serializable_post();
 
@@ -54,7 +54,7 @@ void shogun::io::post_deserialize(std::shared_ptr<CSGObject> obj) noexcept(false
 	}
 }
 
-std::shared_ptr<CSGObject> shogun::io::deserialize(const std::string& _path, std::shared_ptr<CDeserializer> _deser)
+std::shared_ptr<SGObject> shogun::io::deserialize(const std::string& _path, std::shared_ptr<Deserializer> _deser)
 {
 	auto fs = io::FileSystemRegistry::instance();
 	std::error_condition ec;

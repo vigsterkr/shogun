@@ -46,12 +46,12 @@ namespace shogun
 /** @brief This class implements the stochastic gradient boosting algorithm for ensemble learning invented by Jerome H. Friedman. This class
  * works with a variety of loss functions like squared loss, exponential loss, Huber loss etc which can be accessed through Shogun's
  * CLossFunction interface (cf. http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1CLossFunction.html). Additionally, it can create
- * an ensemble of any regressor class derived from the CMachine class (cf. http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1CMachine.html).
+ * an ensemble of any regressor class derived from the Machine class (cf. http://www.shogun-toolbox.org/doc/en/latest/classshogun_1_1Machine.html).
  * For one dimensional optimization, this class uses the backtracking linesearch accessed via Shogun's L-BFGS class.
  * A concise description of the algorithm implemented can be found in the following link :
  * http://en.wikipedia.org/wiki/Gradient_boosting#Algorithm
  */
-class CStochasticGBMachine : public CMachine
+class StochasticGBMachine : public Machine
 {
 public:
 	/** Constructor
@@ -62,11 +62,11 @@ public:
 	 * @param subset_fraction fraction of trainining vectors to be chosen randomly w/o replacement
 	 * @param learning_rate shrinkage factor
 	 */
-	CStochasticGBMachine(std::shared_ptr<CMachine> machine=NULL, std::shared_ptr<CLossFunction> loss=NULL, int32_t num_iterations=100,
+	StochasticGBMachine(std::shared_ptr<Machine> machine=NULL, std::shared_ptr<LossFunction> loss=NULL, int32_t num_iterations=100,
 						float64_t learning_rate=1.0, float64_t subset_fraction=0.6);
 
 	/** Destructor */
-	virtual ~CStochasticGBMachine();
+	virtual ~StochasticGBMachine();
 
 	/** get name
 	 *
@@ -78,25 +78,25 @@ public:
 	 *
 	 * @param machine machine
 	 */
-	void set_machine(std::shared_ptr<CMachine> machine);
+	void set_machine(std::shared_ptr<Machine> machine);
 
 	/** get machine
 	 *
 	 * @return machine
 	 */
-	std::shared_ptr<CMachine> get_machine() const;
+	std::shared_ptr<Machine> get_machine() const;
 
 	/** set loss function
 	 *
 	 * @param f loss function
 	 */
-	virtual void set_loss_function(std::shared_ptr<CLossFunction> f);
+	virtual void set_loss_function(std::shared_ptr<LossFunction> f);
 
 	/** get loss function
 	 *
 	 * @return loss function
 	 */
-	virtual std::shared_ptr<CLossFunction> get_loss_function() const;
+	virtual std::shared_ptr<LossFunction> get_loss_function() const;
 
 	/** set number of iterations
 	 *
@@ -139,7 +139,7 @@ public:
 	 * @param data test data
 	 * @return Regression labels
 	 */
-	virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
+	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
 protected:
 	/** train machine
@@ -147,7 +147,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	/** compute gamma values
 	 *
@@ -158,7 +158,7 @@ protected:
 	 * the ensemble model
 	 */
 	float64_t compute_multiplier(
-		std::shared_ptr<CRegressionLabels> f, std::shared_ptr<CRegressionLabels> hm, std::shared_ptr<CLabels> labs);
+		std::shared_ptr<RegressionLabels> f, std::shared_ptr<RegressionLabels> hm, std::shared_ptr<Labels> labs);
 
 	/** train base model
 	 *
@@ -166,7 +166,7 @@ protected:
 	 * @param labels training labels
 	 * @return trained base model
 	 */
-	std::shared_ptr<CMachine> fit_model(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<CRegressionLabels> labels);
+	std::shared_ptr<Machine> fit_model(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<RegressionLabels> labels);
 
 	/** compute pseudo_residuals
 	 *
@@ -174,17 +174,17 @@ protected:
 	 * @param labs training labels
 	 * @return pseudo_residuals
 	 */
-	std::shared_ptr<CRegressionLabels>
-	compute_pseudo_residuals(std::shared_ptr<CRegressionLabels> inter_f, std::shared_ptr<CLabels> labs);
+	std::shared_ptr<RegressionLabels>
+	compute_pseudo_residuals(std::shared_ptr<RegressionLabels> inter_f, std::shared_ptr<Labels> labs);
 
 	/** add randomized subset to relevant parameters
 	 *
 	 * @param f training data
 	 * @param interf intermediate boosted model labels for training data
 	 */
-	std::tuple<std::shared_ptr<CDenseFeatures<float64_t>>, std::shared_ptr<CRegressionLabels>,
-		       std::shared_ptr<CLabels>>
-	get_subset(std::shared_ptr<CDenseFeatures<float64_t>> f, std::shared_ptr<CRegressionLabels> interf);
+	std::tuple<std::shared_ptr<DenseFeatures<float64_t>>, std::shared_ptr<RegressionLabels>,
+		       std::shared_ptr<Labels>>
+	get_subset(std::shared_ptr<DenseFeatures<float64_t>> f, std::shared_ptr<RegressionLabels> interf);
 
 	/** reset arrays of weak learners and gamma values */
 	void initialize_learners();
@@ -211,10 +211,10 @@ protected:
 
 protected:
 	/** machine to be used for  GBoosting */
-	std::shared_ptr<CMachine> m_machine;
+	std::shared_ptr<Machine> m_machine;
 
 	/** loss function */
-	std::shared_ptr<CLossFunction> m_loss;
+	std::shared_ptr<LossFunction> m_loss;
 
 	/** num of iterations */
 	int32_t m_num_iter;
@@ -226,10 +226,10 @@ protected:
 	float64_t m_learning_rate;
 
 	/** array of weak learners */
-	std::shared_ptr<CDynamicObjectArray> m_weak_learners;
+	std::shared_ptr<DynamicObjectArray> m_weak_learners;
 
 	/** gamma - weak learner weights */
-	std::shared_ptr<CDynamicArray<float64_t>> m_gamma;
+	std::shared_ptr<DynamicArray<float64_t>> m_gamma;
 };
 }/* shogun */
 

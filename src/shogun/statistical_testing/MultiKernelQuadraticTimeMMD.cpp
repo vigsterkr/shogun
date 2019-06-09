@@ -46,13 +46,13 @@ using namespace internal;
 using namespace mmd;
 using std::unique_ptr;
 
-struct CMultiKernelQuadraticTimeMMD::Self
+struct MultiKernelQuadraticTimeMMD::Self
 {
-	Self(CQuadraticTimeMMD* owner);
-	void update_pairwise_distance(std::shared_ptr<CDistance >distance);
+	Self(QuadraticTimeMMD* owner);
+	void update_pairwise_distance(std::shared_ptr<Distance >distance);
 
-	CQuadraticTimeMMD* m_owner;
-	std::shared_ptr<CCustomDistance> m_pairwise_distance;
+	QuadraticTimeMMD* m_owner;
+	std::shared_ptr<CustomDistance> m_pairwise_distance;
 	EDistanceType m_dtype;
 	KernelManager m_kernel_mgr;
 	ComputeMMD statistic_job;
@@ -60,12 +60,12 @@ struct CMultiKernelQuadraticTimeMMD::Self
 	PermutationMMD permutation_job;
 };
 
-CMultiKernelQuadraticTimeMMD::Self::Self(CQuadraticTimeMMD* owner) : m_owner(owner),
+MultiKernelQuadraticTimeMMD::Self::Self(QuadraticTimeMMD* owner) : m_owner(owner),
 	m_pairwise_distance(nullptr), m_dtype(D_UNKNOWN)
 {
 }
 
-void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(std::shared_ptr<CDistance> distance)
+void MultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(std::shared_ptr<Distance> distance)
 {
 	ASSERT(distance);
 	if (m_dtype==distance->get_distance_type())
@@ -80,78 +80,78 @@ void CMultiKernelQuadraticTimeMMD::Self::update_pairwise_distance(std::shared_pt
 	}
 }
 
-CMultiKernelQuadraticTimeMMD::CMultiKernelQuadraticTimeMMD() : CSGObject()
+MultiKernelQuadraticTimeMMD::MultiKernelQuadraticTimeMMD() : SGObject()
 {
 	self=unique_ptr<Self>(new Self(nullptr));
 }
 
-CMultiKernelQuadraticTimeMMD::CMultiKernelQuadraticTimeMMD(CQuadraticTimeMMD* owner) : CSGObject()
+MultiKernelQuadraticTimeMMD::MultiKernelQuadraticTimeMMD(QuadraticTimeMMD* owner) : SGObject()
 {
 	self=unique_ptr<Self>(new Self(owner));
 }
 
-CMultiKernelQuadraticTimeMMD::~CMultiKernelQuadraticTimeMMD()
+MultiKernelQuadraticTimeMMD::~MultiKernelQuadraticTimeMMD()
 {
 	cleanup();
 }
 
-void CMultiKernelQuadraticTimeMMD::add_kernel(std::shared_ptr<CKernel >kernel)
+void MultiKernelQuadraticTimeMMD::add_kernel(std::shared_ptr<Kernel >kernel)
 {
 	ASSERT(self->m_owner);
 	REQUIRE(kernel, "Kernel instance cannot be NULL!\n");
-	self->m_kernel_mgr.push_back(kernel->as<CShiftInvariantKernel>());
+	self->m_kernel_mgr.push_back(kernel->as<ShiftInvariantKernel>());
 }
 
-void CMultiKernelQuadraticTimeMMD::cleanup()
+void MultiKernelQuadraticTimeMMD::cleanup()
 {
 	self->m_kernel_mgr.clear();
 	invalidate_precomputed_distance();
 }
 
-void CMultiKernelQuadraticTimeMMD::invalidate_precomputed_distance()
+void MultiKernelQuadraticTimeMMD::invalidate_precomputed_distance()
 {
 	self->m_pairwise_distance=nullptr;
 	self->m_dtype=D_UNKNOWN;
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_statistic()
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::compute_statistic()
 {
 	ASSERT(self->m_owner);
 	return statistic(self->m_kernel_mgr);
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h0()
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::compute_variance_h0()
 {
 	ASSERT(self->m_owner);
 	SG_NOTIMPLEMENTED;
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_variance_h1()
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::compute_variance_h1()
 {
 	ASSERT(self->m_owner);
 	return variance_h1(self->m_kernel_mgr);
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_test_power()
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::compute_test_power()
 {
 	ASSERT(self->m_owner);
 	return test_power(self->m_kernel_mgr);
 }
 
-SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null()
+SGMatrix<float32_t> MultiKernelQuadraticTimeMMD::sample_null()
 {
 	ASSERT(self->m_owner);
 	return sample_null(self->m_kernel_mgr);
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::compute_p_value()
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::compute_p_value()
 {
 	ASSERT(self->m_owner);
 	return p_values(self->m_kernel_mgr);
 }
 
-SGVector<bool> CMultiKernelQuadraticTimeMMD::perform_test(float64_t alpha)
+SGVector<bool> MultiKernelQuadraticTimeMMD::perform_test(float64_t alpha)
 {
 	SGVector<float64_t> pvalues=compute_p_value();
 	SGVector<bool> rejections(pvalues.size());
@@ -162,7 +162,7 @@ SGVector<bool> CMultiKernelQuadraticTimeMMD::perform_test(float64_t alpha)
 	return rejections;
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager& kernel_mgr)
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::statistic(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
 	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
@@ -190,7 +190,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::statistic(const KernelManager&
 	return result;
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManager& kernel_mgr)
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::variance_h1(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
 	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
@@ -213,7 +213,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::variance_h1(const KernelManage
 	return result;
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager& kernel_mgr)
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::test_power(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
 	REQUIRE(kernel_mgr.num_kernels()>0, "Number of kernels (%d) have to be greater than 0!\n", kernel_mgr.num_kernels());
@@ -237,7 +237,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::test_power(const KernelManager
 	return result;
 }
 
-SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManager& kernel_mgr)
+SGMatrix<float32_t> MultiKernelQuadraticTimeMMD::sample_null(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
 	REQUIRE(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
@@ -270,7 +270,7 @@ SGMatrix<float32_t> CMultiKernelQuadraticTimeMMD::sample_null(const KernelManage
 	return result;
 }
 
-SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& kernel_mgr)
+SGVector<float64_t> MultiKernelQuadraticTimeMMD::p_values(const KernelManager& kernel_mgr)
 {
 	SG_DEBUG("Entering");
 	REQUIRE(self->m_owner->get_null_approximation_method()==NAM_PERMUTATION,
@@ -300,7 +300,7 @@ SGVector<float64_t> CMultiKernelQuadraticTimeMMD::p_values(const KernelManager& 
 	return result;
 }
 
-const char* CMultiKernelQuadraticTimeMMD::get_name() const
+const char* MultiKernelQuadraticTimeMMD::get_name() const
 {
 	return "MultiKernelQuadraticTimeMMD";
 }

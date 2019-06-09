@@ -51,7 +51,7 @@ private:
 	std::shared_ptr<CPiecewiseQuadraticObject> m_obj;
 };
 
-class CPiecewiseQuadraticObject: public CSGObject
+class CPiecewiseQuadraticObject: public SGObject
 {
 friend class LBFGSTestCostFunction;
 public:

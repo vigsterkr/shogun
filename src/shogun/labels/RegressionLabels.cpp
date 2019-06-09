@@ -4,32 +4,32 @@
 
 using namespace shogun;
 
-CRegressionLabels::CRegressionLabels() : CDenseLabels()
+RegressionLabels::RegressionLabels() : DenseLabels()
 {
 }
 
-CRegressionLabels::CRegressionLabels(int32_t num_labels) : CDenseLabels(num_labels)
+RegressionLabels::RegressionLabels(int32_t num_labels) : DenseLabels(num_labels)
 {
 }
 
-CRegressionLabels::CRegressionLabels(const SGVector<float64_t> src) : CDenseLabels()
+RegressionLabels::RegressionLabels(const SGVector<float64_t> src) : DenseLabels()
 {
 	set_labels(src);
 }
 
-CRegressionLabels::CRegressionLabels(std::shared_ptr<CFile> loader) : CDenseLabels(loader)
+RegressionLabels::RegressionLabels(std::shared_ptr<File> loader) : DenseLabels(loader)
 {
 }
 
-ELabelType CRegressionLabels::get_label_type() const
+ELabelType RegressionLabels::get_label_type() const
 {
 	return LT_REGRESSION;
 }
 
-std::shared_ptr<CLabels> CRegressionLabels::shallow_subset_copy()
+std::shared_ptr<Labels> RegressionLabels::shallow_subset_copy()
 {
 	SGVector<float64_t> shallow_copy_vector(m_labels);
-	auto shallow_copy_labels=std::make_shared<CRegressionLabels>(m_labels.size());
+	auto shallow_copy_labels=std::make_shared<RegressionLabels>(m_labels.size());
 
 	shallow_copy_labels->set_labels(shallow_copy_vector);
 	if (m_subset_stack->has_subsets())
@@ -38,14 +38,14 @@ std::shared_ptr<CLabels> CRegressionLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-std::shared_ptr<CLabels> CRegressionLabels::duplicate() const
+std::shared_ptr<Labels> RegressionLabels::duplicate() const
 {
-	return std::make_shared<CRegressionLabels>(*this);
+	return std::make_shared<RegressionLabels>(*this);
 }
 
 namespace shogun
 {
-	std::shared_ptr<CRegressionLabels> regression_labels(std::shared_ptr<CLabels> orig)
+	std::shared_ptr<RegressionLabels> regression_labels(std::shared_ptr<Labels> orig)
 	{
 		REQUIRE(orig, "No labels provided.\n");
 		try
@@ -53,7 +53,7 @@ namespace shogun
 			switch (orig->get_label_type())
 			{
 			case LT_REGRESSION:
-				return std::static_pointer_cast<CRegressionLabels>(orig);
+				return std::static_pointer_cast<RegressionLabels>(orig);
 			default:
 				SG_SNOTIMPLEMENTED
 			}

@@ -14,12 +14,12 @@ TEST(ParserTest, tokenization)
 	const char* tokens[]={"This", "is", "the", "ultimate", "test!"};
 	SGVector<char> cv(const_cast<char* >(text), 30, false);
 
-	auto tokenizer=std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->init_for_whitespace();
 	tokenizer->set_skip_delimiters(true);
 	
 
-	CParser* reader=new CParser(cv, tokenizer);
+	Parser* reader=new Parser(cv, tokenizer);
 
 	SGVector<char> token;
 	int32_t num_tokens=0;
@@ -47,14 +47,14 @@ TEST(ParserTest, tokenization_reals)
 	float64_t tokens[]={1.0, 1.1, 1.2, 1.3, 1.4};
 	SGVector<char> cv(const_cast<char* >(text), 24, false);
 
-	auto tokenizer=std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' ']=1;
 	tokenizer->delimiters[',']=1;
 	tokenizer->delimiters['\n']=1;
 	tokenizer->set_skip_delimiters(true);
 	
 
-	CParser* reader=new CParser(cv, tokenizer);
+	Parser* reader=new Parser(cv, tokenizer);
 
 	SG_SET_LOCALE_C;
 

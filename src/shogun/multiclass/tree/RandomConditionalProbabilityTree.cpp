@@ -9,9 +9,9 @@
 
 using namespace shogun;
 
-bool CRandomConditionalProbabilityTree::which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex)
+bool RandomConditionalProbabilityTree::which_subtree(std::shared_ptr<bnode_t> node, SGVector<float32_t> ex)
 {
-	if (CMath::random(0.0, 1.0) > 0.5)
+	if (Math::random(0.0, 1.0) > 0.5)
 		return true;
 	return false;
 }

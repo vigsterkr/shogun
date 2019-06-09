@@ -14,25 +14,25 @@ using namespace shogun;
 TEST(StructuredLabels, add_label)
 {
 	int32_t num_labels = 3;
-	auto l = std::make_shared<CStructuredLabels>(num_labels);
+	auto l = std::make_shared<StructuredLabels>(num_labels);
 
-	l->add_label(std::make_shared<CRealNumber>(3));
-	l->add_label(std::make_shared<CRealNumber>(7));
-	l->add_label(std::make_shared<CRealNumber>(13));
+	l->add_label(std::make_shared<RealNumber>(3));
+	l->add_label(std::make_shared<RealNumber>(7));
+	l->add_label(std::make_shared<RealNumber>(13));
 
-	std::shared_ptr<CRealNumber> real_number;
+	std::shared_ptr<RealNumber> real_number;
 
 	EXPECT_EQ(3, l->get_num_labels());
 
-	real_number = l->get_label(0)->as<CRealNumber>();
+	real_number = l->get_label(0)->as<RealNumber>();
 	EXPECT_EQ(3, real_number->value);
 
 
-	real_number = l->get_label(1)->as<CRealNumber>();
+	real_number = l->get_label(1)->as<RealNumber>();
 	EXPECT_EQ(7, real_number->value);
 
 
-	real_number = l->get_label(2)->as<CRealNumber>();
+	real_number = l->get_label(2)->as<RealNumber>();
 	EXPECT_EQ(13, real_number->value);
 
 
@@ -42,27 +42,27 @@ TEST(StructuredLabels, add_label)
 TEST(StructuredLabels, set_label)
 {
 	int32_t num_labels = 3;
-	auto l = std::make_shared<CStructuredLabels>(num_labels);
+	auto l = std::make_shared<StructuredLabels>(num_labels);
 
-	l->add_label(std::make_shared<CRealNumber>(3));
-	l->add_label(std::make_shared<CRealNumber>(7));
-	l->add_label(std::make_shared<CRealNumber>(13));
+	l->add_label(std::make_shared<RealNumber>(3));
+	l->add_label(std::make_shared<RealNumber>(7));
+	l->add_label(std::make_shared<RealNumber>(13));
 
-	l->set_label(1, std::make_shared<CRealNumber>(23));
+	l->set_label(1, std::make_shared<RealNumber>(23));
 
-	std::shared_ptr<CRealNumber> real_number;
+	std::shared_ptr<RealNumber> real_number;
 
 	EXPECT_EQ(3, l->get_num_labels());
 
-	real_number = l->get_label(0)->as<CRealNumber>();
+	real_number = l->get_label(0)->as<RealNumber>();
 	EXPECT_EQ(3, real_number->value);
 
 
-	real_number = l->get_label(1)->as<CRealNumber>();
+	real_number = l->get_label(1)->as<RealNumber>();
 	EXPECT_EQ(23, real_number->value);
 
 
-	real_number = l->get_label(2)->as<CRealNumber>();
+	real_number = l->get_label(2)->as<RealNumber>();
 	EXPECT_EQ(13, real_number->value);
 
 

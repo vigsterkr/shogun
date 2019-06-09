@@ -14,22 +14,22 @@
 
 using namespace shogun;
 
-CBeliefPropagation::CBeliefPropagation()
-	: CMAPInferImpl()
+BeliefPropagation::BeliefPropagation()
+	: MAPInferImpl()
 {
-	SG_UNSTABLE("CBeliefPropagation::CBeliefPropagation()", "\n");
+	SG_UNSTABLE("BeliefPropagation::BeliefPropagation()", "\n");
 }
 
-CBeliefPropagation::CBeliefPropagation(std::shared_ptr<CFactorGraph> fg)
-	: CMAPInferImpl(fg)
-{
-}
-
-CBeliefPropagation::~CBeliefPropagation()
+BeliefPropagation::BeliefPropagation(std::shared_ptr<FactorGraph> fg)
+	: MAPInferImpl(fg)
 {
 }
 
-float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
+BeliefPropagation::~BeliefPropagation()
+{
+}
+
+float64_t BeliefPropagation::inference(SGVector<int32_t> assignment)
 {
 	SG_ERROR("%s::inference(): please use TreeMaxProduct or LoopyMaxProduct!\n", get_name());
 	return 0;
@@ -37,16 +37,16 @@ float64_t CBeliefPropagation::inference(SGVector<int32_t> assignment)
 
 // -----------------------------------------------------------------
 
-CTreeMaxProduct::CTreeMaxProduct()
-	: CBeliefPropagation()
+TreeMaxProduct::TreeMaxProduct()
+	: BeliefPropagation()
 {
-	SG_UNSTABLE("CTreeMaxProduct::CTreeMaxProduct()", "\n");
+	SG_UNSTABLE("TreeMaxProduct::TreeMaxProduct()", "\n");
 
 	init();
 }
 
-CTreeMaxProduct::CTreeMaxProduct(std::shared_ptr<CFactorGraph> fg)
-	: CBeliefPropagation(fg)
+TreeMaxProduct::TreeMaxProduct(std::shared_ptr<FactorGraph> fg)
+	: BeliefPropagation(fg)
 {
 	ASSERT(m_fg != NULL);
 
@@ -82,7 +82,7 @@ CTreeMaxProduct::CTreeMaxProduct(std::shared_ptr<CFactorGraph> fg)
 
 }
 
-CTreeMaxProduct::~CTreeMaxProduct()
+TreeMaxProduct::~TreeMaxProduct()
 {
 	if (!m_msg_order.empty())
 	{
@@ -91,7 +91,7 @@ CTreeMaxProduct::~CTreeMaxProduct()
 	}
 }
 
-void CTreeMaxProduct::init()
+void TreeMaxProduct::init()
 {
 	m_msg_order = std::vector<MessageEdge*>(m_fg->get_num_edges(), (MessageEdge*) NULL);
 	m_is_root = std::vector<bool>(m_fg->get_cardinalities().size(), false);
@@ -106,7 +106,7 @@ void CTreeMaxProduct::init()
 	m_msgset_map_var = msgset_map_type();
 }
 
-void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
+void TreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 	std::vector<bool>& is_root) const
 {
 	ASSERT(m_fg->is_acyclic_graph());
@@ -138,7 +138,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 
 	for (int32_t fi = 0; fi < facs->get_num_elements(); ++fi)
 	{
-		auto fac = facs->get_element<CFactor>(fi);
+		auto fac = facs->get_element<Factor>(fi);
 		SGVector<int32_t> vars = fac->get_variables();
 		for (int32_t vi = 0; vi < vars.size(); vi++)
 			vf_map.insert(var_factor_map_type::value_type(vars[vi], fi));
@@ -184,7 +184,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 		}
 		else // child: var -> parent: factor
 		{
-			auto fac = facs->get_element<CFactor>(node->node_id);
+			auto fac = facs->get_element<Factor>(node->node_id);
 			SGVector<int32_t> vars = fac->get_variables();
 
 
@@ -205,7 +205,7 @@ void CTreeMaxProduct::get_message_order(std::vector<MessageEdge*>& order,
 
 }
 
-float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
+float64_t TreeMaxProduct::inference(SGVector<int32_t> assignment)
 {
 	REQUIRE(assignment.size() == m_fg->get_cardinalities().size(),
 		"%s::inference(): the output assignment should be prepared as"
@@ -223,7 +223,7 @@ float64_t CTreeMaxProduct::inference(SGVector<int32_t> assignment)
 	return -m_map_energy;
 }
 
-void CTreeMaxProduct::bottom_up_pass()
+void TreeMaxProduct::bottom_up_pass()
 {
 	SG_DEBUG("\n***enter bottom_up_pass().\n");
 	auto facs = m_fg->get_factors();
@@ -270,7 +270,7 @@ void CTreeMaxProduct::bottom_up_pass()
 			int32_t fac_id = m_msg_order[mi]->child;
 			int32_t var_id = m_msg_order[mi]->parent;
 
-			auto fac = facs->get_element<CFactor>(fac_id);
+			auto fac = facs->get_element<Factor>(fac_id);
 			auto ftype = fac->get_factor_type();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
@@ -340,7 +340,7 @@ void CTreeMaxProduct::bottom_up_pass()
 	SG_DEBUG("***leave bottom_up_pass().\n");
 }
 
-void CTreeMaxProduct::top_down_pass()
+void TreeMaxProduct::top_down_pass()
 {
 	SG_DEBUG("\n***enter top_down_pass().\n");
 	int32_t minf = std::numeric_limits<int32_t>::max();
@@ -400,7 +400,7 @@ void CTreeMaxProduct::top_down_pass()
 			int32_t fac_id = m_msg_order[mi]->child;
 			int32_t var_id = m_msg_order[mi]->parent;
 
-			auto fac = facs->get_element<CFactor>(fac_id);
+			auto fac = facs->get_element<Factor>(fac_id);
 			auto ftype = fac->get_factor_type();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();
@@ -488,7 +488,7 @@ void CTreeMaxProduct::top_down_pass()
 			int32_t var_id = m_msg_order[mi]->child;
 			int32_t fac_id = m_msg_order[mi]->parent;
 
-			auto fac = facs->get_element<CFactor>(fac_id);
+			auto fac = facs->get_element<Factor>(fac_id);
 			auto ftype = fac->get_factor_type();
 			SGVector<int32_t> fvars = fac->get_variables();
 			SGVector<float64_t> fenrgs = fac->get_energies();

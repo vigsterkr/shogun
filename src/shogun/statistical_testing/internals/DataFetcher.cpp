@@ -41,7 +41,7 @@ DataFetcher::DataFetcher() : m_num_samples(0), train_test_mode(false),
 {
 }
 
-DataFetcher::DataFetcher(std::shared_ptr<CFeatures> samples) : train_test_mode(false),
+DataFetcher::DataFetcher(std::shared_ptr<Features> samples) : train_test_mode(false),
    	train_mode(false), m_samples(samples), features_shuffled(false)
 {
 	REQUIRE(m_samples!=nullptr, "Samples cannot be null!\n");
@@ -118,7 +118,7 @@ void DataFetcher::shuffle_features()
 			shuffle_subset=SGVector<index_t>(size);
 		}
 		std::iota(shuffle_subset.data(), shuffle_subset.data()+shuffle_subset.size(), 0);
-		CMath::permute(shuffle_subset);
+		Math::permute(shuffle_subset);
 //		shuffle_subset.display_vector("shuffle_subset");
 
 		SG_SDEBUG("Shuffling %d feature vectors\n", size);
@@ -194,9 +194,9 @@ void DataFetcher::start()
 	reset();
 }
 
-std::shared_ptr<CFeatures> DataFetcher::next()
+std::shared_ptr<Features> DataFetcher::next()
 {
-	std::shared_ptr<CFeatures> next_samples=nullptr;
+	std::shared_ptr<Features> next_samples=nullptr;
 	// figure out how many samples to fetch in this burst
 	auto num_already_fetched=m_block_details.m_next_block_index*m_block_details.m_blocksize;
 	auto num_more_samples=get_num_samples()-num_already_fetched;

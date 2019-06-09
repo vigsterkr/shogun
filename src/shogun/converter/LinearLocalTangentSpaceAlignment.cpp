@@ -12,32 +12,32 @@
 
 using namespace shogun;
 
-CLinearLocalTangentSpaceAlignment::CLinearLocalTangentSpaceAlignment() :
-		CLocalTangentSpaceAlignment()
+LinearLocalTangentSpaceAlignment::LinearLocalTangentSpaceAlignment() :
+		LocalTangentSpaceAlignment()
 {
 }
 
-CLinearLocalTangentSpaceAlignment::~CLinearLocalTangentSpaceAlignment()
+LinearLocalTangentSpaceAlignment::~LinearLocalTangentSpaceAlignment()
 {
 }
 
-const char* CLinearLocalTangentSpaceAlignment::get_name() const
+const char* LinearLocalTangentSpaceAlignment::get_name() const
 {
 	return "LinearLocalTangentSpaceAlignment";
 }
 
-std::shared_ptr<CFeatures>
-CLinearLocalTangentSpaceAlignment::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+LinearLocalTangentSpaceAlignment::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	auto dot_feats = std::static_pointer_cast<CDotFeatures>(features);
-	auto kernel = std::make_shared<CLinearKernel>(dot_feats, dot_feats);
+	auto dot_feats = std::static_pointer_cast<DotFeatures>(features);
+	auto kernel = std::make_shared<LinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;
 	parameters.method = SHOGUN_LINEAR_LOCAL_TANGENT_SPACE_ALIGNMENT;
 	parameters.target_dimension = m_target_dim;
 	parameters.kernel = kernel.get();
-	parameters.features = (CDotFeatures*)features.get();
+	parameters.features = (DotFeatures*)features.get();
 	return tapkee_embed(parameters);
 }
 

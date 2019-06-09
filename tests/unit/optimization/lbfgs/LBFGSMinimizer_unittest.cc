@@ -67,7 +67,7 @@ float64_t LBFGSTestCostFunction::get_cost()
 SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, CSGObject*>>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 
@@ -88,7 +88,7 @@ SGVector<float64_t> LBFGSTestCostFunction::obtain_variable_reference()
 SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, CSGObject*>>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();
@@ -108,7 +108,7 @@ SGVector<float64_t> LBFGSTestCostFunction::get_gradient()
 
 
 CPiecewiseQuadraticObject::CPiecewiseQuadraticObject()
-	:CSGObject()
+	:SGObject()
 {
 	init();
 }
@@ -183,7 +183,7 @@ SGVector<float64_t> CPiecewiseQuadraticObject::get_variable(TParameter * param)
 	return SGVector<float64_t>();
 }
 
-TEST(CLBFGSMinimizer,test1)
+TEST(LBFGSMinimizer,test1)
 {
 	auto obj=std::make_shared<CPiecewiseQuadraticObject>();
 	SGVector<float64_t> init_x(5);
@@ -198,13 +198,13 @@ TEST(CLBFGSMinimizer,test1)
 
 	b->set_target(obj);
 
-	FirstOrderMinimizer* opt=new CLBFGSMinimizer(b);
+	FirstOrderMinimizer* opt=new LBFGSMinimizer(b);
 	float64_t cost=opt->minimize();
 	EXPECT_NEAR(cost, 0.0, 1e-6);
 
 }
 
-TEST(CLBFGSMinimizer,test2)
+TEST(LBFGSMinimizer,test2)
 {
 	auto obj=std::make_shared<CPiecewiseQuadraticObject>();
 	SGVector<float64_t> init_x(5);
@@ -219,7 +219,7 @@ TEST(CLBFGSMinimizer,test2)
 
 	b->set_target(obj);
 
-	auto opt=std::make_shared<CLBFGSMinimizer>(b);
+	auto opt=std::make_shared<LBFGSMinimizer>(b);
 	opt->minimize();
 
 	for(index_t i=0; i<init_x.vlen; i++)

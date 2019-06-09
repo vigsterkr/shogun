@@ -56,30 +56,30 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_all_columns)
 	for (index_t i=0; i<num_vectors; ++i)
 	{
 		/* labels are linear plus noise */
-		lab.vector[i]=i+CMath::normal_random(0, 1.0);
+		lab.vector[i]=i+Math::normal_random(0, 1.0);
 		train_dat.matrix[i]=i;
 		test_dat.matrix[i]=i;
 	}
 
 	/* training features */
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(train_dat);
-	auto features_krr=std::make_shared<CDenseFeatures<float64_t>>(train_dat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(train_dat);
+	auto features_krr=std::make_shared<DenseFeatures<float64_t>>(train_dat);
 
 	/* testing features */
-	auto test_features=std::make_shared<CDenseFeatures<float64_t>>(test_dat);
+	auto test_features=std::make_shared<DenseFeatures<float64_t>>(test_dat);
 
 	/* training labels */
-	auto labels=std::make_shared<CRegressionLabels>(lab);
-	auto labels_krr=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
+	auto labels_krr=std::make_shared<RegressionLabels>(lab);
 
 	/* kernel */
-	auto kernel=std::make_shared<CGaussianKernel>(features, features, 10, 0.5);
-	auto kernel_krr=std::make_shared<CGaussianKernel>(features_krr, features_krr, 10, 0.5);
+	auto kernel=std::make_shared<GaussianKernel>(features, features, 10, 0.5);
+	auto kernel_krr=std::make_shared<GaussianKernel>(features_krr, features_krr, 10, 0.5);
 
 	/* kernel ridge regression and the nystrom approximation */
 	float64_t tau=0.01;
-	auto nystrom=std::make_shared<CKRRNystrom>(tau, num_vectors, kernel, labels);
-	auto krr=std::make_shared<CKernelRidgeRegression>(tau, kernel_krr, labels_krr);
+	auto nystrom=std::make_shared<KRRNystrom>(tau, num_vectors, kernel, labels);
+	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr, labels_krr);
 
 	nystrom->train(features);
 	krr->train(features);
@@ -120,30 +120,30 @@ TEST(KRRNystrom, apply_and_compare_to_KRR_with_column_subset)
 	{
 		/* labels are linear plus noise */
 		float64_t point=(float64_t)i*10/num_vectors;
-		lab.vector[i]=point+CMath::normal_random(0, 1.0);
+		lab.vector[i]=point+Math::normal_random(0, 1.0);
 		train_dat.matrix[i]=point;
 		test_dat.matrix[i]=point;
 	}
 
 	/* training features */
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(train_dat);
-	auto features_krr=std::make_shared<CDenseFeatures<float64_t>>(train_dat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(train_dat);
+	auto features_krr=std::make_shared<DenseFeatures<float64_t>>(train_dat);
 
 	/* testing features */
-	auto test_features=std::make_shared<CDenseFeatures<float64_t>>(test_dat);
+	auto test_features=std::make_shared<DenseFeatures<float64_t>>(test_dat);
 
 	/* training labels */
-	auto labels=std::make_shared<CRegressionLabels>(lab);
-	auto labels_krr=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
+	auto labels_krr=std::make_shared<RegressionLabels>(lab);
 
 	/* kernel */
-	auto kernel=std::make_shared<CGaussianKernel>(features, features, 10, 0.5);
-	auto kernel_krr=std::make_shared<CGaussianKernel>(features_krr, features_krr, 10, 0.5);
+	auto kernel=std::make_shared<GaussianKernel>(features, features, 10, 0.5);
+	auto kernel_krr=std::make_shared<GaussianKernel>(features_krr, features_krr, 10, 0.5);
 
 	/* kernel ridge regression and the nystrom approximation */
 	float64_t tau=0.01;
-	auto nystrom=std::make_shared<CKRRNystrom>(tau, num_basis_rkhs, kernel, labels);
-	auto krr=std::make_shared<CKernelRidgeRegression>(tau, kernel_krr, labels_krr);
+	auto nystrom=std::make_shared<KRRNystrom>(tau, num_basis_rkhs, kernel, labels);
+	auto krr=std::make_shared<KernelRidgeRegression>(tau, kernel_krr, labels_krr);
 
 	nystrom->train(features);
 	krr->train(features);

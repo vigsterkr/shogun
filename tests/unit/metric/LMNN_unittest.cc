@@ -29,7 +29,7 @@ TEST(LMNN,train_identity_init)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -39,11 +39,11 @@ TEST(LMNN,train_identity_init)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because it works in general for more than
 	// two classes
-	auto labels=std::make_shared<CMulticlassLabels>(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// create LMNN metric machine
 	int32_t k=1;	// number of target neighbors per example
-	auto lmnn=std::make_shared<CLMNN>(features,labels,k);
+	auto lmnn=std::make_shared<LMNN>(features,labels,k);
 	// use the identity matrix as initial transform for LMNN
 	SGMatrix<float64_t> init_transform=SGMatrix<float64_t>::create_identity_matrix(2,1);
 	// set number of maximum iterations and train
@@ -73,7 +73,7 @@ TEST(LMNN, train_termination)
 	feat_mat(1, 3) = 1;
 
 	auto features =
-	    std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
+	    std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	SGVector<float64_t> lab_vec(4);
 	lab_vec[0] = 0;
@@ -81,10 +81,10 @@ TEST(LMNN, train_termination)
 	lab_vec[2] = 1;
 	lab_vec[3] = 1;
 
-	auto labels = std::make_shared<CMulticlassLabels>(lab_vec);
+	auto labels = std::make_shared<MulticlassLabels>(lab_vec);
 
 	int32_t k = 1; // number of target neighbors per example
-	auto lmnn = std::make_shared<CLMNN>(features, labels, k);
+	auto lmnn = std::make_shared<LMNN>(features, labels, k);
 
 	SGMatrix<float64_t> init_transform =
 	    SGMatrix<float64_t>::create_identity_matrix(2, 1);
@@ -120,7 +120,7 @@ TEST(LMNN,train_pca_init)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -130,11 +130,11 @@ TEST(LMNN,train_pca_init)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because it works in general for more than
 	// two classes
-	auto labels=std::make_shared<CMulticlassLabels>(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// create LMNN metric machine
 	int32_t k=1;	// number of target neighbors per example
-	auto lmnn=std::make_shared<CLMNN>(features,labels,k);
+	auto lmnn=std::make_shared<LMNN>(features,labels,k);
 	// set number of maximum iterations and train
 	lmnn->set_maxiter(500);
 	lmnn->train();
@@ -166,7 +166,7 @@ TEST(LMNN,train_diagonal)
 	feat_mat(0,3)=-1;
 	feat_mat(1,3)=1;
 	// wrap feat_mat in Shogun features
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// create labels
 	SGVector<float64_t> lab_vec(4);
@@ -176,11 +176,11 @@ TEST(LMNN,train_diagonal)
 	lab_vec[3]=1;
 	// two-class data, use MulticlassLabels because it works in general for more than
 	// two classes
-	auto labels=std::make_shared<CMulticlassLabels>(lab_vec);
+	auto labels=std::make_shared<MulticlassLabels>(lab_vec);
 
 	// create LMNN metric machine
 	int32_t k=1;	// number of target neighbors per example
-	auto lmnn=std::make_shared<CLMNN>(features,labels,k);
+	auto lmnn=std::make_shared<LMNN>(features,labels,k);
 	// use the identity matrix as initial transform for LMNN
 	SGMatrix<float64_t> init_transform=SGMatrix<float64_t>::create_identity_matrix(2,1);
 	// set number of maximum iterations and train

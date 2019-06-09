@@ -19,7 +19,7 @@ typedef Matrix< float64_t, Dynamic, 1, ColMajor > EVector;
 
 using namespace shogun;
 
-TEST(CJade, blind_source_separation)
+TEST(Jade, blind_source_separation)
 {
 	// Generate sample data
 	int FS = 4000;
@@ -43,10 +43,10 @@ TEST(CJade, blind_source_separation)
 	SGMatrix<float64_t> X(2,FS+1);
 	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
 	EX = A * S;
-	auto mixed_signals = std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto mixed_signals = std::make_shared<DenseFeatures<float64_t>>(X);
 
 	// Separate
-	auto jade = std::make_shared<CJade>();
+	auto jade = std::make_shared<Jade>();
 	jade->fit(mixed_signals);
 	auto signals = jade->transform(mixed_signals);
 

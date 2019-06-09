@@ -42,7 +42,7 @@ namespace shogun
 /** @brief This class implements Ball tree. The ball tree is contructed using the top-down approach.
  * cf. ftp://ftp.icsi.berkeley.edu/pub/techreports/1989/tr-89-063.pdf
  */
-class CBallTree : public CNbodyTree
+class BallTree : public CNbodyTree
 {
 public:
 	/** constructor
@@ -50,10 +50,10 @@ public:
 	 * @param leaf_size min number of samples in any node
 	 * @param d distance type
 	 */
-	CBallTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
+	BallTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 
 	/** Destructor */
-	virtual ~CBallTree() { };
+	virtual ~BallTree() { };
 
 	/** get name
 	 * @return class of the tree

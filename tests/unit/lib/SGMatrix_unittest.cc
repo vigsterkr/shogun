@@ -252,14 +252,14 @@ TEST(SGMatrixTest,is_symmetric_float32_false_old_plus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j)=Math::randn_float();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -289,14 +289,14 @@ TEST(SGMatrixTest,is_symmetric_float32_false_old_minus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j)=Math::randn_float();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -326,12 +326,12 @@ TEST(SGMatrixTest,is_symmetric_float32_true)
 {
 	const index_t size=2;
 	SGMatrix<float32_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_float();
+			mat(i, j)=Math::randn_float();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -342,14 +342,14 @@ TEST(SGMatrixTest,is_symmetric_float64_false_old_plus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j)=Math::randn_double();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -379,14 +379,14 @@ TEST(SGMatrixTest,is_symmetric_float64_false_old_minus_eps)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j)=Math::randn_double();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -416,12 +416,12 @@ TEST(SGMatrixTest,is_symmetric_float64_true)
 {
 	const index_t size=2;
 	SGMatrix<float64_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=CMath::randn_double();
+			mat(i, j)=Math::randn_double();
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -432,14 +432,14 @@ TEST(SGMatrixTest,is_symmetric_complex128_false_old_plus_eps)
 {
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j)=complex128_t(Math::randn_double(), Math::randn_double());
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -477,14 +477,14 @@ TEST(SGMatrixTest,is_symmetric_complex128_false_old_minus_eps)
 {
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	// create a symmetric matrix
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j)=complex128_t(Math::randn_double(), Math::randn_double());
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -522,12 +522,12 @@ TEST(SGMatrixTest,is_symmetric_complex128_true)
 {
 	const index_t size=2;
 	SGMatrix<complex128_t> mat(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 	for (index_t i=0; i<size; ++i)
 	{
 		for (index_t j=i+1; j<size; ++j)
 		{
-			mat(i, j)=complex128_t(CMath::randn_double(), CMath::randn_double());
+			mat(i, j)=complex128_t(Math::randn_double(), Math::randn_double());
 			mat(j, i)=mat(i, j);
 		}
 	}
@@ -573,9 +573,9 @@ TEST(SGMatrixTest, equals)
 	EXPECT_TRUE(mat.equals(copy));
 
 	mat=SGMatrix<float32_t>(size, size);
-	CMath::init_random(100);
+	Math::init_random(100);
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i]=Math::randn_float();
 
 	EXPECT_TRUE(mat.equals(mat));
 	EXPECT_FALSE(mat.equals(copy));
@@ -583,9 +583,9 @@ TEST(SGMatrixTest, equals)
 	copy=SGMatrix<float32_t>(size, size);
 	EXPECT_FALSE(mat.equals(copy));
 
-	CMath::init_random(100);
+	Math::init_random(100);
 	for (int64_t i=0; i<copy.size(); ++i)
-		copy.matrix[i]=CMath::randn_float();
+		copy.matrix[i]=Math::randn_float();
 
 	EXPECT_TRUE(mat.equals(copy));
 }
@@ -595,7 +595,7 @@ TEST(SGMatrixTest, clone)
 	const index_t size=10;
 	SGMatrix<float32_t> mat(size, size);
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i]=Math::randn_float();
 
 	SGMatrix<float32_t> copy=mat.clone();
 
@@ -617,7 +617,7 @@ TEST(SGMatrixTest, set_const)
 {
 	const index_t size=10;
 	SGMatrix<float64_t> mat(size, size);
-	const auto value=CMath::randn_double();
+	const auto value=Math::randn_double();
 	mat.set_const(value);
 
 	for (int64_t i=0; i<mat.size(); ++i)
@@ -629,7 +629,7 @@ TEST(SGMatrixTest, max_single)
 	const index_t size=10;
 	SGMatrix<float32_t> mat(size, size);
 	for (int64_t i=0; i<mat.size(); ++i)
-		mat.matrix[i]=CMath::randn_float();
+		mat.matrix[i]=Math::randn_float();
 
 	auto max=mat.max_single();
 	for (int64_t i=0; i<mat.size(); ++i)
@@ -644,7 +644,7 @@ TEST(SGMatrixTest, get_slice)
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	for (index_t i = 0; i < n_rows * n_cols; ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = Math::randn_double();
 
 	auto sub = mat.slice(start_col, end_col);
 
@@ -662,7 +662,7 @@ TEST(SGMatrixTest, get_column)
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	for (index_t i = 0; i < n_rows * n_cols; ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = Math::randn_double();
 
 	auto vec = mat.get_column_vector(col);
 
@@ -679,7 +679,7 @@ TEST(SGMatrixTest, set_column)
 	SGVector<float64_t> vec(n_rows);
 
 	for (index_t i = 0; i < n_rows; ++i)
-		vec[i] = CMath::randn_double();
+		vec[i] = Math::randn_double();
 
 	mat.set_column(col, vec);
 

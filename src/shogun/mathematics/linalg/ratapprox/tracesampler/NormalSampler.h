@@ -16,19 +16,19 @@ template<class T> class SGVector;
 
 /** @brief Class that provides a sample method for Gaussian samples
  */
-class CNormalSampler : public CTraceSampler
+class NormalSampler : public TraceSampler
 {
 public:
 	/** default constructor */
-	CNormalSampler();
+	NormalSampler();
 
 	/** constructor
 	 * @param dimension the dimension of the Gaussian sample vectors ~(0,I)
 	 */
-	CNormalSampler(index_t dimension);
+	NormalSampler(index_t dimension);
 
 	/** destructor */
-	virtual ~CNormalSampler();
+	virtual ~NormalSampler();
 
 	/** method that generates the samples
 	 * @param idx the index (this is effectively ignored)

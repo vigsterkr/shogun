@@ -39,9 +39,9 @@
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
-class CQuadraticTimeMMD;
+class Kernel;
+class MMD;
+class QuadraticTimeMMD;
 template <class> class SGVector;
 template <class> class SGMatrix;
 
@@ -52,24 +52,24 @@ class KernelManager;
 
 }
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class CKernelSelectionStrategy : public CSGObject
+class KernelSelectionStrategy : public SGObject
 {
-	friend class CMMD;
-	friend class CStreamingMMD;
-	friend class CQuadraticTimeMMD;
+	friend class MMD;
+	friend class StreamingMMD;
+	friend class QuadraticTimeMMD;
 public:
-	CKernelSelectionStrategy();
-	CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted = false);
-	CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
-	CKernelSelectionStrategy(const CKernelSelectionStrategy& other)=delete;
-	CKernelSelectionStrategy& operator=(const CKernelSelectionStrategy& other)=delete;
-	virtual ~CKernelSelectionStrategy();
+	KernelSelectionStrategy();
+	KernelSelectionStrategy(EKernelSelectionMethod method, bool weighted = false);
+	KernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs, index_t num_folds, float64_t alpha);
+	KernelSelectionStrategy(const KernelSelectionStrategy& other)=delete;
+	KernelSelectionStrategy& operator=(const KernelSelectionStrategy& other)=delete;
+	virtual ~KernelSelectionStrategy();
 
-	CKernelSelectionStrategy& use_method(EKernelSelectionMethod method);
-	CKernelSelectionStrategy& use_num_runs(index_t num_runs);
-	CKernelSelectionStrategy& use_num_folds(index_t num_folds);
-	CKernelSelectionStrategy& use_alpha(float64_t alpha);
-	CKernelSelectionStrategy& use_weighted(bool weighted);
+	KernelSelectionStrategy& use_method(EKernelSelectionMethod method);
+	KernelSelectionStrategy& use_num_runs(index_t num_runs);
+	KernelSelectionStrategy& use_num_folds(index_t num_folds);
+	KernelSelectionStrategy& use_alpha(float64_t alpha);
+	KernelSelectionStrategy& use_weighted(bool weighted);
 
 	EKernelSelectionMethod get_method() const;
 	index_t get_num_runs() const;
@@ -77,8 +77,8 @@ public:
 	float64_t get_alpha() const;
 	bool get_weighted() const;
 
-	void add_kernel(std::shared_ptr<CKernel> kernel);
-	std::shared_ptr<CKernel> select_kernel(std::shared_ptr<CMMD> estimator);
+	void add_kernel(std::shared_ptr<Kernel> kernel);
+	std::shared_ptr<Kernel> select_kernel(std::shared_ptr<MMD> estimator);
 	virtual const char* get_name() const;
 	void erase_intermediate_results();
 

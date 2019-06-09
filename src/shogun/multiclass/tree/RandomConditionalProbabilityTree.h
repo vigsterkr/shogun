@@ -16,14 +16,14 @@ namespace shogun
 
 /** Conditional Probability Tree, decide subtree by a random strategy.
  */
-class CRandomConditionalProbabilityTree: public CConditionalProbabilityTree
+class RandomConditionalProbabilityTree: public ConditionalProbabilityTree
 {
 public:
     /** constructor */
-	CRandomConditionalProbabilityTree() {}
+	RandomConditionalProbabilityTree() {}
 
     /** destructor */
-	virtual ~CRandomConditionalProbabilityTree() {}
+	virtual ~RandomConditionalProbabilityTree() {}
 
     /** get name */
     virtual const char* get_name() const { return "RandomConditionalProbabilityTree"; }

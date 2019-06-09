@@ -42,19 +42,19 @@ TEST(HashedDocDotFeaturesTest, computed_features_test)
 
 	int32_t hash_bits = 5; //log2(32).
 
-	auto tokenizer = std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	auto doc_collection = std::make_shared<CStringFeatures<char>>(list, RAWBYTE);
-	auto hddf = std::make_shared<CHashedDocDotFeatures>(hash_bits, doc_collection,
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false);
 
-	auto converter = std::make_shared<CHashedDocConverter>(tokenizer, hash_bits, false);
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, hash_bits, false);
 
 	auto converted_docs =
-	    converter->transform(doc_collection)->as<CSparseFeatures<float64_t>>();
+	    converter->transform(doc_collection)->as<SparseFeatures<float64_t>>();
 
 	for (index_t i=0; i<3; i++)
 	{
@@ -97,22 +97,22 @@ TEST(HashedDocDotFeaturesTest, dense_dot_test)
 	int32_t dimension = 32;
 	int32_t hash_bits = 5;
 
-	auto tokenizer = std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	auto doc_collection = std::make_shared<CStringFeatures<char>>(list, RAWBYTE);
-	auto hddf = std::make_shared<CHashedDocDotFeatures>(hash_bits, doc_collection,
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false);
 
-	auto converter = std::make_shared<CHashedDocConverter>(tokenizer, hash_bits, false);
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, hash_bits, false);
 	auto converted_docs =
-	    converter->transform(doc_collection)->as<CSparseFeatures<float64_t>>();
+	    converter->transform(doc_collection)->as<SparseFeatures<float64_t>>();
 
 	SGVector<float64_t> vec(dimension);
 	for (index_t i=0; i<dimension; i++)
-		vec[i] = CMath::random(-dimension, dimension);
+		vec[i] = Math::random(-dimension, dimension);
 
 	for (index_t i=0; i<3; i++)
 	{
@@ -138,7 +138,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 
 	const int32_t seed = 0xdeadbeaf;
 	for (index_t i=0; i<4; i++)
-		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
+		hashes[i] = Hash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
 
 
 	int32_t dimension = 32;
@@ -193,14 +193,14 @@ TEST(HashedDocDotFeaturesTest, quadratic_dense_dot)
 	SGStringList<char> list(1,6);
 	list.strings[0] = string_1;
 
-	auto tokenizer = std::make_shared<CNGramTokenizer>(3);
+	auto tokenizer = std::make_shared<NGramTokenizer>(3);
 
-	auto doc_collection = std::make_shared<CStringFeatures<char>>(list, RAWBYTE);
-	auto hddf = std::make_shared<CHashedDocDotFeatures>(hash_bits, doc_collection,
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false, 3, 2);
-	auto conv = std::make_shared<CHashedDocConverter>(tokenizer, hash_bits, false, 3, 2);
+	auto conv = std::make_shared<HashedDocConverter>(tokenizer, hash_bits, false, 3, 2);
 	auto sf =
-	    conv->transform(doc_collection)->as<CSparseFeatures<float64_t>>();
+	    conv->transform(doc_collection)->as<SparseFeatures<float64_t>>();
 
 	SGVector<float64_t> dense_vec(dimension);
 	float64_t dot_product = 0;
@@ -229,7 +229,7 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 
 	const int32_t seed = 0xdeadbeaf;
 	for (index_t i=0; i<4; i++)
-		hashes[i] = CHash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
+		hashes[i] = Hash::MurmurHash3((uint8_t* ) &grams[i][0], 3, seed);
 
 
 	int32_t dimension = 32;
@@ -284,9 +284,9 @@ TEST(HashedDocDotFeaturesTest, quadratic_add_to_dense)
 	SGStringList<char> list(1,6);
 	list.strings[0] = string_1;
 
-	auto tokenizer = std::make_shared<CNGramTokenizer>(3);
-	auto doc_collection = std::make_shared<CStringFeatures<char>>(list, RAWBYTE);
-	auto hddf = std::make_shared<CHashedDocDotFeatures>(hash_bits, doc_collection,
+	auto tokenizer = std::make_shared<NGramTokenizer>(3);
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto hddf = std::make_shared<HashedDocDotFeatures>(hash_bits, doc_collection,
 			tokenizer, false, 3, 2);
 
 	SGVector<float64_t> dense_vec(dimension);

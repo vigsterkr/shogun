@@ -30,26 +30,26 @@ namespace shogun
  * The SMEM algorithm is described here:
  * http://mlg.eng.cam.ac.uk/zoubin/papers/uedanc.pdf
  */
-class CGMM : public CDistribution
+class GMM : public Distribution
 {
 	public:
 		/** default constructor */
-		CGMM();
+		GMM();
 		/** constructor
 		 *
 		 * @param n number of Gaussians
 		 * @param cov_type covariance type
 		 */
-		CGMM(int32_t n, ECovType cov_type=FULL);
+		GMM(int32_t n, ECovType cov_type=FULL);
 		/** constructor
 		 *
 		 * @param components GMM components
 		 * @param coefficients mixing coefficients
 		 * @param copy true if should be copied
 		 */
-		CGMM(std::vector<std::shared_ptr<CGaussian>> components, SGVector<float64_t> coefficients,
+		GMM(std::vector<std::shared_ptr<Gaussian>> components, SGVector<float64_t> coefficients,
 				bool copy=false);
-		virtual ~CGMM();
+		virtual ~GMM();
 
 		/** cleanup */
 		void cleanup();
@@ -60,7 +60,7 @@ class CGMM : public CDistribution
 		 *
 		 * @return true
 		 */
-		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** learn model using EM
 		 *
@@ -114,7 +114,7 @@ class CGMM : public CDistribution
 		 * @param index index of component
 		 * @return component at index
 		 */
-		std::shared_ptr<CDistribution> get_component(index_t index) const;
+		std::shared_ptr<Distribution> get_component(index_t index) const;
 
 		/** get partial derivative of likelihood function (logarithmic)
 		 *
@@ -189,13 +189,13 @@ class CGMM : public CDistribution
 		 *
 		 * @return components
 		 */
-		virtual std::vector<std::shared_ptr<CGaussian>> get_comp();
+		virtual std::vector<std::shared_ptr<Gaussian>> get_comp();
 
 		/** set components
 		 *
 		 * @param components Gaussian components
 		 */
-		virtual void set_comp(std::vector<std::shared_ptr<CGaussian>> components);
+		virtual void set_comp(std::vector<std::shared_ptr<Gaussian>> components);
 
 		/** sample from model
 		 *
@@ -239,7 +239,7 @@ class CGMM : public CDistribution
 
 	protected:
 		/** Mixture components */
-		std::vector<std::shared_ptr<CGaussian>> m_components;
+		std::vector<std::shared_ptr<Gaussian>> m_components;
 		/** Mixture coefficients */
 		SGVector<float64_t> m_coefficients;
 };

@@ -52,11 +52,11 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_activations)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	std::shared_ptr<CNeuralInputLayer> input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	// initialize the rectified linear layer
-	auto layer=std::make_shared<CNeuralRectifiedLinearLayer>(9);
+	auto layer=std::make_shared<NeuralRectifiedLinearLayer>(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
@@ -89,12 +89,12 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x1, x2;
-	std::shared_ptr<CNeuralInputLayer> input1, input2;
+	std::shared_ptr<NeuralInputLayer> input1, input2;
 	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
 
 	// initialize the hidden rectified linear layer
-	auto layer_hid = std::make_shared<CNeuralRectifiedLinearLayer>(5);
+	auto layer_hid = std::make_shared<NeuralRectifiedLinearLayer>(5);
 	SGVector<int32_t> input_indices_hid(2);
 	input_indices_hid[0] = 0;
 	input_indices_hid[1] = 1;
@@ -103,7 +103,7 @@ TEST_F(NeuralRectifiedLinearLayerTest, compute_parameter_gradients_hidden)
 
 	// initialize the output layer
 	auto y = create_rand_matrix<float64_t>(9, 3, 0.0, 1.0);
-	auto layer_out=std::make_shared<CNeuralLinearLayer>(y.num_rows);
+	auto layer_out=std::make_shared<NeuralLinearLayer>(y.num_rows);
 	SGVector<int32_t> input_indices_out(1);
 	input_indices_out[0] = 2;
 	auto param_out = init_linear_layer(

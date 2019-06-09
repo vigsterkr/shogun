@@ -15,8 +15,8 @@
 
 using namespace shogun;
 
-CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
-		CEmbeddingConverter()
+LocallyLinearEmbedding::LocallyLinearEmbedding() :
+		EmbeddingConverter()
 {
 	m_k = 10;
 	m_nullspace_shift = -1e-9;
@@ -24,7 +24,7 @@ CLocallyLinearEmbedding::CLocallyLinearEmbedding() :
 	init();
 }
 
-void CLocallyLinearEmbedding::init()
+void LocallyLinearEmbedding::init()
 {
 	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
 	SG_ADD(&m_nullspace_shift, "nullspace_shift",
@@ -34,51 +34,51 @@ void CLocallyLinearEmbedding::init()
 }
 
 
-CLocallyLinearEmbedding::~CLocallyLinearEmbedding()
+LocallyLinearEmbedding::~LocallyLinearEmbedding()
 {
 }
 
-void CLocallyLinearEmbedding::set_k(int32_t k)
+void LocallyLinearEmbedding::set_k(int32_t k)
 {
 	ASSERT(k>0)
 	m_k = k;
 }
 
-int32_t CLocallyLinearEmbedding::get_k() const
+int32_t LocallyLinearEmbedding::get_k() const
 {
 	return m_k;
 }
 
-void CLocallyLinearEmbedding::set_nullspace_shift(float64_t nullspace_shift)
+void LocallyLinearEmbedding::set_nullspace_shift(float64_t nullspace_shift)
 {
 	m_nullspace_shift = nullspace_shift;
 }
 
-float64_t CLocallyLinearEmbedding::get_nullspace_shift() const
+float64_t LocallyLinearEmbedding::get_nullspace_shift() const
 {
 	return m_nullspace_shift;
 }
 
-void CLocallyLinearEmbedding::set_reconstruction_shift(float64_t reconstruction_shift)
+void LocallyLinearEmbedding::set_reconstruction_shift(float64_t reconstruction_shift)
 {
 	m_reconstruction_shift = reconstruction_shift;
 }
 
-float64_t CLocallyLinearEmbedding::get_reconstruction_shift() const
+float64_t LocallyLinearEmbedding::get_reconstruction_shift() const
 {
 	return m_reconstruction_shift;
 }
 
-const char* CLocallyLinearEmbedding::get_name() const
+const char* LocallyLinearEmbedding::get_name() const
 {
 	return "LocallyLinearEmbedding";
 }
 
-std::shared_ptr<CFeatures> CLocallyLinearEmbedding::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features> LocallyLinearEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	// oh my let me dirty cast it
-	auto dot_feats = std::static_pointer_cast<CDotFeatures>(features);
-	auto kernel = std::make_shared<CLinearKernel>(dot_feats, dot_feats);
+	auto dot_feats = std::static_pointer_cast<DotFeatures>(features);
+	auto kernel = std::make_shared<LinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;

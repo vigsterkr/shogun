@@ -53,27 +53,27 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	y_train[4]=-3.08232;
 
 	// shogun representation of features and labels
-	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X_train);
-	auto lab_train=std::make_shared<CRegressionLabels>(y_train);
+	auto feat_train=std::make_shared<DenseFeatures<float64_t>>(X_train);
+	auto lab_train=std::make_shared<RegressionLabels>(y_train);
 
 	// choose Gaussian kernel with width=2*ell^2, where ell=3
-	auto kernel=std::make_shared<CGaussianKernel>(10, 3*3*2.0);
+	auto kernel=std::make_shared<GaussianKernel>(10, 3*3*2.0);
 
 	// create zero mean
-	auto mean=std::make_shared<CZeroMean>();
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma
-	auto lik=std::make_shared<CGaussianLikelihood>(4.0);
+	auto lik=std::make_shared<GaussianLikelihood>(4.0);
 
 	// specify exact inference method
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, lab_train, lik);
 
 	// set kernel scale
 	inf->set_scale(3);
 
 	// specify GP regression with exact inference
-	auto gpr=std::make_shared<CGaussianProcessRegression>(inf);
+	auto gpr=std::make_shared<GaussianProcessRegression>(inf);
 
 	// specify gradient evaluation object
 	auto grad_eval=std::make_shared<CGradientEvaluation>(gpr, feat_train,
@@ -141,23 +141,23 @@ TEST(GradientModelSelection,select_model_ep_inference)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitLikelihood>();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
 	// specify GP classification with EP inference
-	auto gpc=std::make_shared<CGaussianProcessClassification>(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 
 	// specify gradient evaluation object
 	auto grad_eval=std::make_shared<CGradientEvaluation>(gpc, features_train,

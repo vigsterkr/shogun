@@ -27,14 +27,14 @@ TEST(DirectLinearSolverComplex, solve_SVD)
 	m(1,1)=complex128_t(3.0);
 
 	auto A
-		=std::make_shared<CDenseMatrixOperator<complex128_t>>(m);
+		=std::make_shared<DenseMatrixOperator<complex128_t>>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
-	CDirectLinearSolverComplex solver(DS_SVD);
+	DirectLinearSolverComplex solver(DS_SVD);
 	SGVector<complex128_t> x
-		=solver.solve(A->as<CLinearOperator<complex128_t>>(), b);
+		=solver.solve(A->as<LinearOperator<complex128_t>>(), b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -56,14 +56,14 @@ TEST(DirectLinearSolverComplex, solve_QR_NOPERM)
 	m(1,1)=complex128_t(3.0);
 
 	auto A
-		=std::make_shared<CDenseMatrixOperator<complex128_t>>(m);
+		=std::make_shared<DenseMatrixOperator<complex128_t>>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
-	CDirectLinearSolverComplex solver(DS_QR_NOPERM);
+	DirectLinearSolverComplex solver(DS_QR_NOPERM);
 	SGVector<complex128_t> x
-		=solver.solve(A->as<CLinearOperator<complex128_t>>(), b);
+		=solver.solve(A->as<LinearOperator<complex128_t>>(), b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -85,14 +85,14 @@ TEST(DirectLinearSolverComplex, solve_QR_COLPERM)
 	m(1,1)=complex128_t(3.0);
 
 	auto A
-		=std::make_shared<CDenseMatrixOperator<complex128_t>>(m);
+		=std::make_shared<DenseMatrixOperator<complex128_t>>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
-	CDirectLinearSolverComplex solver(DS_QR_COLPERM);
+	DirectLinearSolverComplex solver(DS_QR_COLPERM);
 	SGVector<complex128_t> x
-		=solver.solve(A->as<CLinearOperator<complex128_t>>(), b);
+		=solver.solve(A->as<LinearOperator<complex128_t>>(), b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -114,14 +114,14 @@ TEST(DirectLinearSolverComplex, solve_QR_FULLPERM)
 	m(1,1)=complex128_t(3.0);
 
 	auto A
-		=std::make_shared<CDenseMatrixOperator<complex128_t>>(m);
+		=std::make_shared<DenseMatrixOperator<complex128_t>>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
-	CDirectLinearSolverComplex solver(DS_QR_FULLPERM);
+	DirectLinearSolverComplex solver(DS_QR_FULLPERM);
 	SGVector<complex128_t> x
-		=solver.solve(A->as<CLinearOperator<complex128_t>>(), b);
+		=solver.solve(A->as<LinearOperator<complex128_t>>(), b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);
@@ -144,14 +144,14 @@ TEST(DirectLinearSolverComplex, solve_LLT)
 	m(1,1)=complex128_t(2.5, 0.0);
 
 	auto A
-		=std::make_shared<CDenseMatrixOperator<complex128_t>>(m);
+		=std::make_shared<DenseMatrixOperator<complex128_t>>(m);
 
 	SGVector<float64_t> b(size);
 	b.set_const(1.0);
 
-	CDirectLinearSolverComplex solver(DS_LLT);
+	DirectLinearSolverComplex solver(DS_LLT);
 	SGVector<complex128_t> x
-		=solver.solve(A->as<CLinearOperator<complex128_t>>(), b);
+		=solver.solve(A->as<LinearOperator<complex128_t>>(), b);
 
 	SGVector<complex128_t> bp=A->apply(x);
 	Map<VectorXd> map_b(b.vector, b.vlen);

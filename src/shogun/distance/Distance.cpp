@@ -34,19 +34,19 @@
 
 using namespace shogun;
 
-CDistance::CDistance() : CSGObject()
+Distance::Distance() : SGObject()
 {
 	init();
 }
 
 
-CDistance::CDistance(std::shared_ptr<CFeatures> p_lhs, std::shared_ptr<CFeatures> p_rhs) : CSGObject()
+Distance::Distance(std::shared_ptr<Features> p_lhs, std::shared_ptr<Features> p_rhs) : SGObject()
 {
 	init();
 	init(p_lhs, p_rhs);
 }
 
-CDistance::~CDistance()
+Distance::~Distance()
 {
 	SG_FREE(precomputed_matrix);
 	precomputed_matrix=NULL;
@@ -54,7 +54,7 @@ CDistance::~CDistance()
 	remove_lhs_and_rhs();
 }
 
-bool CDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool Distance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	REQUIRE(check_compatibility(l, r), "Features are not compatible!\n");
 
@@ -77,7 +77,7 @@ bool CDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
 	return true;
 }
 
-bool CDistance::check_compatibility(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool Distance::check_compatibility(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	REQUIRE(l, "Left hand side features must be set!\n");
 	REQUIRE(r, "Right hand side features must be set!\n");
@@ -108,19 +108,19 @@ bool CDistance::check_compatibility(std::shared_ptr<CFeatures> l, std::shared_pt
 	return true;
 }
 
-void CDistance::load(std::shared_ptr<CFile> loader)
+void Distance::load(std::shared_ptr<File> loader)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 }
 
-void CDistance::save(std::shared_ptr<CFile> writer)
+void Distance::save(std::shared_ptr<File> writer)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 }
 
-void CDistance::remove_lhs_and_rhs()
+void Distance::remove_lhs_and_rhs()
 {
 
 	rhs = NULL;
@@ -131,7 +131,7 @@ void CDistance::remove_lhs_and_rhs()
 	num_lhs=0;
 }
 
-void CDistance::remove_lhs()
+void Distance::remove_lhs()
 {
 
 	lhs = NULL;
@@ -139,14 +139,14 @@ void CDistance::remove_lhs()
 }
 
 /// takes all necessary steps if the rhs is removed from distance
-void CDistance::remove_rhs()
+void Distance::remove_rhs()
 {
 
 	rhs = NULL;
 	num_rhs=0;
 }
 
-std::shared_ptr<CFeatures> CDistance::replace_rhs(std::shared_ptr<CFeatures> r)
+std::shared_ptr<Features> Distance::replace_rhs(std::shared_ptr<Features> r)
 {
 	//make sure features are compatible
 	REQUIRE(check_compatibility(lhs, r), "Features are not compatible!\n");
@@ -164,7 +164,7 @@ std::shared_ptr<CFeatures> CDistance::replace_rhs(std::shared_ptr<CFeatures> r)
 	return tmp;
 }
 
-std::shared_ptr<CFeatures> CDistance::replace_lhs(std::shared_ptr<CFeatures> l)
+std::shared_ptr<Features> Distance::replace_lhs(std::shared_ptr<Features> l)
 {
 	//make sure features are compatible
 	REQUIRE(check_compatibility(l, rhs), "Features are not compatible!\n");
@@ -182,7 +182,7 @@ std::shared_ptr<CFeatures> CDistance::replace_lhs(std::shared_ptr<CFeatures> l)
 	return tmp;
 }
 
-float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
+float64_t Distance::distance(int32_t idx_a, int32_t idx_b)
 {
 	REQUIRE(idx_a < lhs->get_num_vectors() && idx_b < rhs->get_num_vectors() && \
 			idx_a >= 0 && idx_b >= 0,
@@ -218,19 +218,19 @@ float64_t CDistance::distance(int32_t idx_a, int32_t idx_b)
 	return compute(idx_a, idx_b);
 }
 
-void CDistance::run_distance_rhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_a)
+void Distance::run_distance_rhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_a)
 {
 	for(index_t i=idx_r_start; idx_start < idx_stop; ++i,++idx_start)
         result.vector[i] = this->distance(idx_a,idx_start);
 }
 
-void CDistance::run_distance_lhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_b)
+void Distance::run_distance_lhs(SGVector<float64_t>& result, const index_t idx_r_start, index_t idx_start, const index_t idx_stop, const index_t idx_b)
 {
 	for(index_t i=idx_r_start; idx_start < idx_stop; ++i,++idx_start)
         result.vector[i] = this->distance(idx_start,idx_b);
 }
 
-void CDistance::do_precompute_matrix()
+void Distance::do_precompute_matrix()
 {
 	int32_t num_left=lhs->get_num_vectors();
 	int32_t num_right=rhs->get_num_vectors();
@@ -250,7 +250,7 @@ void CDistance::do_precompute_matrix()
 	}
 }
 
-void CDistance::init()
+void Distance::init()
 {
 	precomputed_matrix = NULL;
 	precompute_matrix = false;
@@ -264,7 +264,7 @@ void CDistance::init()
 }
 
 template <class T>
-SGMatrix<T> CDistance::get_distance_matrix()
+SGMatrix<T> Distance::get_distance_matrix()
 {
 	T* result = NULL;
 
@@ -333,7 +333,7 @@ SGMatrix<T> CDistance::get_distance_matrix()
 					pb.print_progress();
 
 					// TODO: replace with new signal
-					// if (CSignal::cancel_computations())
+					// if (Signal::cancel_computations())
 					//	break;
 				}
 			}
@@ -344,5 +344,5 @@ SGMatrix<T> CDistance::get_distance_matrix()
 	return SGMatrix<T>(result,m,n,true);
 }
 
-template SGMatrix<float64_t> CDistance::get_distance_matrix<float64_t>();
-template SGMatrix<float32_t> CDistance::get_distance_matrix<float32_t>();
+template SGMatrix<float64_t> Distance::get_distance_matrix<float64_t>();
+template SGMatrix<float32_t> Distance::get_distance_matrix<float32_t>();

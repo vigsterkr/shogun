@@ -14,24 +14,24 @@
 
 namespace shogun
 {
-/** @brief Class CStreamingFileFromSparseFeatures is derived from CStreamingFile
+/** @brief Class StreamingFileFromSparseFeatures is derived from CStreamingFile
  * and provides an input source for the online framework. It uses an existing
- * CSparseFeatures object to generate online examples.
+ * SparseFeatures object to generate online examples.
  */
-template <class T> class CStreamingFileFromSparseFeatures: public CStreamingFileFromFeatures
+template <class T> class StreamingFileFromSparseFeatures: public StreamingFileFromFeatures
 {
 public:
 	/**
 	 * Default constructor
 	 */
-	CStreamingFileFromSparseFeatures();
+	StreamingFileFromSparseFeatures();
 
 	/**
 	 * Constructor taking a SparseFeatures object as arg
 	 *
 	 * @param feat SparseFeatures object
 	 */
-	CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat);
+	StreamingFileFromSparseFeatures(std::shared_ptr<SparseFeatures<T>> feat);
 
 	/**
 	 * Constructor taking a SparseFeatures object as arg
@@ -39,12 +39,12 @@ public:
 	 * @param feat SparseFeatures object
 	 * @param lab Labels as float64_t*
 	 */
-	CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat, float64_t* lab);
+	StreamingFileFromSparseFeatures(std::shared_ptr<SparseFeatures<T>> feat, float64_t* lab);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFileFromSparseFeatures();
+	virtual ~StreamingFileFromSparseFeatures();
 
 	/**
 	 * This function will be called for reading vectors from the
@@ -88,11 +88,11 @@ private:
 	/**
 	 * Initialize members to defaults
 	 */
-	void init(std::shared_ptr<CSparseFeatures<T>> feat);
+	void init(std::shared_ptr<SparseFeatures<T>> feat);
 
 protected:
 	/// SparseFeatures object
-	std::shared_ptr<CSparseFeatures<T>> features;
+	std::shared_ptr<SparseFeatures<T>> features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
@@ -100,33 +100,33 @@ protected:
 };
 
 template <class T>
-CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures()
-	: CStreamingFileFromFeatures()
+StreamingFileFromSparseFeatures<T>::StreamingFileFromSparseFeatures()
+	: StreamingFileFromFeatures()
 {
 	init(NULL);
 }
 
 template <class T>
-CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat)
-	: CStreamingFileFromFeatures(feat)
+StreamingFileFromSparseFeatures<T>::StreamingFileFromSparseFeatures(std::shared_ptr<SparseFeatures<T>> feat)
+	: StreamingFileFromFeatures(feat)
 {
 	init(feat);
 }
 
 template <class T>
-CStreamingFileFromSparseFeatures<T>::CStreamingFileFromSparseFeatures(std::shared_ptr<CSparseFeatures<T>> feat, float64_t* lab)
-	: CStreamingFileFromFeatures(feat,lab)
+StreamingFileFromSparseFeatures<T>::StreamingFileFromSparseFeatures(std::shared_ptr<SparseFeatures<T>> feat, float64_t* lab)
+	: StreamingFileFromFeatures(feat,lab)
 {
 	init(feat);
 }
 
 template <class T>
-CStreamingFileFromSparseFeatures<T>::~CStreamingFileFromSparseFeatures()
+StreamingFileFromSparseFeatures<T>::~StreamingFileFromSparseFeatures()
 {
 }
 
 template <class T>
-void CStreamingFileFromSparseFeatures<T>::init(std::shared_ptr<CSparseFeatures<T>> feat)
+void StreamingFileFromSparseFeatures<T>::init(std::shared_ptr<SparseFeatures<T>> feat)
 {
 	features = feat;
 	vector_num=0;
@@ -136,7 +136,7 @@ void CStreamingFileFromSparseFeatures<T>::init(std::shared_ptr<CSparseFeatures<T
 
 /* Functions to return the vector from the SparseFeatures object */
 template <class T>
-void CStreamingFileFromSparseFeatures<T>::get_sparse_vector
+void StreamingFileFromSparseFeatures<T>::get_sparse_vector
 (SGSparseVectorEntry<T>*& vector, int32_t& len)
 {
 	if (vector_num >= features->get_num_vectors())
@@ -158,7 +158,7 @@ void CStreamingFileFromSparseFeatures<T>::get_sparse_vector
 
 /* Functions to return the vector from the SparseFeatures object */
 template <class T>
-void CStreamingFileFromSparseFeatures<T>::get_sparse_vector_and_label
+void StreamingFileFromSparseFeatures<T>::get_sparse_vector_and_label
 (SGSparseVectorEntry<T>*& vector, int32_t& len, float64_t& label)
 {
 	get_sparse_vector(vector, len);

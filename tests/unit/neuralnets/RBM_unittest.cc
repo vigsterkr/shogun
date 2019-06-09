@@ -40,12 +40,12 @@ using namespace shogun;
 
 TEST(RBM, gibbs_sampling)
 {
-	CMath::init_random(10);
+	Math::init_random(10);
 
 	int32_t num_visible = 5;
 	int32_t num_hidden = 6;
 
-	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
+	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
 	rbm.initialize_neural_network();
 	rbm.set_batch_size(1);
 
@@ -83,13 +83,13 @@ TEST(RBM, gibbs_sampling)
 
 TEST(RBM, free_energy_binary)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	int32_t num_visible = 5;
 	int32_t num_hidden = 6;
 	int32_t batch_size = 3;
 
-	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
+	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
 	rbm.initialize_neural_network();
 
 	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)
@@ -111,13 +111,13 @@ TEST(RBM, free_energy_binary)
 
 TEST(RBM, free_energy_gradients)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	int32_t num_visible = 15;
 	int32_t num_hidden = 6;
 	int32_t batch_size = 3;
 
-	CRBM rbm(num_hidden);
+	RBM rbm(num_hidden);
 	rbm.add_visible_group(4, RBMVUT_BINARY);
 	rbm.add_visible_group(6, RBMVUT_GAUSSIAN);
 	rbm.add_visible_group(5, RBMVUT_BINARY);
@@ -125,7 +125,7 @@ TEST(RBM, free_energy_gradients)
 
 	SGMatrix<float64_t> V(num_visible, batch_size);
 	for (int32_t i=0; i<V.num_rows*V.num_cols; i++)
-		V[i] = CMath::random() < 0.7;
+		V[i] = Math::random() < 0.7;
 
 	SGVector<float64_t> gradients(rbm.get_num_parameters());
 	rbm.free_energy_gradients(V, gradients);
@@ -152,13 +152,13 @@ TEST(RBM, free_energy_gradients)
 
 TEST(RBM, pseudo_likelihood_binary)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	int32_t num_visible = 5;
 	int32_t num_hidden = 6;
 	int32_t batch_size = 1;
 
-	CRBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
+	RBM rbm(num_hidden, num_visible, RBMVUT_BINARY);
 	rbm.initialize_neural_network();
 
 	for (int32_t i=0; i<rbm.get_weights().num_rows*rbm.get_weights().num_cols; i++)

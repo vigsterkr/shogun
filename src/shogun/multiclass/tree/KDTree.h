@@ -42,7 +42,7 @@ namespace shogun
 /** @brief This class implements KD-Tree.
  * cf. http://www.autonlab.org/autonweb/14665/version/2/part/5/data/moore-tutorial.pdf
  */
-class CKDTree : public CNbodyTree
+class KDTree : public CNbodyTree
 {
 public:
 	/** constructor
@@ -50,10 +50,10 @@ public:
 	 * @param leaf_size min number of samples in any node
 	 * @param d distance type
 	 */
-	CKDTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
+	KDTree(int32_t leaf_size=1, EDistanceType d=D_EUCLIDEAN);
 
 	/** Destructor */
-	virtual ~CKDTree();
+	virtual ~KDTree();
 
 	/** get name
 	 * @return class of the tree

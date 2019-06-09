@@ -51,7 +51,7 @@ void generate_data(SGMatrix<float64_t>& mat, SGVector<float64_t> &lab)
 
 	for (index_t i=0; i<num; i++)
 	{
-		mat(0,i)=i<num/2 ? 0+(CMath::randn_double()*4) : 100+(CMath::randn_double()*4)	;
+		mat(0,i)=i<num/2 ? 0+(Math::randn_double()*4) : 100+(Math::randn_double()*4)	;
 		mat(1,i)=i;
 	}
 
@@ -75,40 +75,40 @@ TEST(CrossValidation_multithread, LibSVM_unlocked)
 
 	for (index_t i=0; i<num/2; ++i)
 		lab.vector[i]-=1;
-	auto labels=std::make_shared<CBinaryLabels>(lab);
+	auto labels=std::make_shared<BinaryLabels>(lab);
 
 	auto features=
-			std::make_shared<CDenseFeatures<float64_t>>(mat);
+			std::make_shared<DenseFeatures<float64_t>>(mat);
 
 
 	int32_t width=100;
-	auto kernel=std::make_shared<CGaussianKernel>(width);
+	auto kernel=std::make_shared<GaussianKernel>(width);
 	kernel->init(features, features);
 
 	/* create svm via libsvm */
 	float64_t svm_C=1;
-	auto svm=std::make_shared<CLibSVM>(svm_C, kernel, labels);
+	auto svm=std::make_shared<LibSVM>(svm_C, kernel, labels);
 
 	auto eval_crit=
-			std::make_shared<CContingencyTableEvaluation>(ACCURACY);
+			std::make_shared<ContingencyTableEvaluation>(ACCURACY);
 
 	index_t n_folds=4;
 	auto splitting=
-			std::make_shared<CStratifiedCrossValidationSplitting>(labels, n_folds);
+			std::make_shared<StratifiedCrossValidationSplitting>(labels, n_folds);
 
-	auto cross=std::make_shared<CCrossValidation>(svm, features, labels,
+	auto cross=std::make_shared<CrossValidation>(svm, features, labels,
 			splitting, eval_crit);
 
 	cross->set_autolock(false);
 	cross->set_num_runs(4);
 	cross->parallel->set_num_threads(1);
 
-	auto result1=cross->evaluate()->as<CCrossValidationResult>();;
+	auto result1=cross->evaluate()->as<CrossValidationResult>();;
 	float64_t mean1 = result1->get_mean();
 
 	cross->parallel->set_num_threads(3);
 
-	auto result2=cross->evaluate()->as<CCrossValidationResult>();;
+	auto result2=cross->evaluate()->as<CrossValidationResult>();;
 	float64_t mean2 = result2->get_mean();
 
 	EXPECT_EQ(mean1, mean2);
@@ -129,36 +129,36 @@ TEST(CrossValidation_multithread, KNN)
 
 	/*create simple linearly separable data*/
 	generate_data(mat, lab);
-	auto labels=std::make_shared<CMulticlassLabels>(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
 	auto features=
-			std::make_shared<CDenseFeatures<float64_t>>(mat);
+			std::make_shared<DenseFeatures<float64_t>>(mat);
 
 
 	/* create knn */
-	auto distance = std::make_shared<CEuclideanDistance>(features, features);
-	auto knn=std::make_shared<CKNN>(4, distance, labels);
+	auto distance = std::make_shared<EuclideanDistance>(features, features);
+	auto knn=std::make_shared<KNN>(4, distance, labels);
 	/* evaluation criterion */
-	auto eval_crit = std::make_shared<CMulticlassAccuracy> ();
+	auto eval_crit = std::make_shared<MulticlassAccuracy> ();
 
 	/* splitting strategy */
 	index_t n_folds=4;
 	auto splitting=
-			std::make_shared<CStratifiedCrossValidationSplitting>(labels, n_folds);
+			std::make_shared<StratifiedCrossValidationSplitting>(labels, n_folds);
 
-	auto cross=std::make_shared<CCrossValidation>(knn, features, labels,
+	auto cross=std::make_shared<CrossValidation>(knn, features, labels,
 			splitting, eval_crit);
 
 	cross->set_autolock(false);
 	cross->set_num_runs(4);
 	cross->parallel->set_num_threads(1);
 
-	auto result1=cross->evaluate()->as<CCrossValidationResult>();
+	auto result1=cross->evaluate()->as<CrossValidationResult>();
 	float64_t mean1 = result1->get_mean();
 
 	cross->parallel->set_num_threads(3);
 
-	auto result2=cross->evaluate()->as<CCrossValidationResult>();
+	auto result2=cross->evaluate()->as<CrossValidationResult>();
 	float64_t mean2 = result2->get_mean();
 
 	EXPECT_EQ(mean1, mean2);

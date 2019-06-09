@@ -13,8 +13,8 @@
 
 using namespace shogun;
 
-CMachine::CMachine()
-    : CStoppableSGObject(), m_max_train_time(0), m_labels(NULL),
+Machine::Machine()
+    : StoppableSGObject(), m_max_train_time(0), m_labels(NULL),
       m_solver_type(ST_AUTO)
 {
 	m_data_locked = false;
@@ -34,12 +34,12 @@ CMachine::CMachine()
 	        ST_BLOCK_NORM));
 }
 
-CMachine::~CMachine()
+Machine::~Machine()
 {
 
 }
 
-bool CMachine::train(std::shared_ptr<CFeatures> data)
+bool Machine::train(std::shared_ptr<Features> data)
 {
 	/* not allowed to train on locked data */
 	REQUIRE(
@@ -90,7 +90,7 @@ bool CMachine::train(std::shared_ptr<CFeatures> data)
 	return result;
 }
 
-bool CMachine::train_locked()
+bool Machine::train_locked()
 {
 	/*train machine without any actual features(data is locked)*/
 	REQUIRE(
@@ -104,7 +104,7 @@ bool CMachine::train_locked()
 	return result;
 }
 
-void CMachine::set_labels(std::shared_ptr<CLabels> lab)
+void Machine::set_labels(std::shared_ptr<Labels> lab)
 {
     if (lab != NULL)
     {
@@ -114,42 +114,42 @@ void CMachine::set_labels(std::shared_ptr<CLabels> lab)
     m_labels = lab;
 }
 
-std::shared_ptr<CLabels> CMachine::get_labels()
+std::shared_ptr<Labels> Machine::get_labels()
 {
 	return m_labels;
 }
 
-void CMachine::set_max_train_time(float64_t t)
+void Machine::set_max_train_time(float64_t t)
 {
 	m_max_train_time = t;
 }
 
-float64_t CMachine::get_max_train_time()
+float64_t Machine::get_max_train_time()
 {
 	return m_max_train_time;
 }
 
-EMachineType CMachine::get_classifier_type()
+EMachineType Machine::get_classifier_type()
 {
 	return CT_NONE;
 }
 
-void CMachine::set_solver_type(ESolverType st)
+void Machine::set_solver_type(ESolverType st)
 {
 	m_solver_type = st;
 }
 
-ESolverType CMachine::get_solver_type()
+ESolverType Machine::get_solver_type()
 {
 	return m_solver_type;
 }
 
-void CMachine::set_store_model_features(bool store_model)
+void Machine::set_store_model_features(bool store_model)
 {
 	m_store_model_features = store_model;
 }
 
-void CMachine::data_lock(std::shared_ptr<CLabels> labs, std::shared_ptr<CFeatures> features)
+void Machine::data_lock(std::shared_ptr<Labels> labs, std::shared_ptr<Features> features)
 {
 	SG_DEBUG("entering %s::data_lock\n", get_name())
 	if (!supports_locking())
@@ -180,7 +180,7 @@ void CMachine::data_lock(std::shared_ptr<CLabels> labs, std::shared_ptr<CFeature
 	SG_DEBUG("leaving %s::data_lock\n", get_name())
 }
 
-void CMachine::data_unlock()
+void Machine::data_unlock()
 {
 	SG_DEBUG("entering %s::data_lock\n", get_name())
 	if (m_data_locked)
@@ -189,12 +189,12 @@ void CMachine::data_unlock()
 	SG_DEBUG("leaving %s::data_lock\n", get_name())
 }
 
-std::shared_ptr<CLabels> CMachine::apply(std::shared_ptr<CFeatures> data)
+std::shared_ptr<Labels> Machine::apply(std::shared_ptr<Features> data)
 {
 	SG_DEBUG("entering %s::apply(%s at %p)\n",
 			get_name(), data ? data->get_name() : "NULL", data.get());
 
-	std::shared_ptr<CLabels> result=NULL;
+	std::shared_ptr<Labels> result=NULL;
 
 	switch (get_machine_problem_type())
 	{
@@ -224,7 +224,7 @@ std::shared_ptr<CLabels> CMachine::apply(std::shared_ptr<CFeatures> data)
 	return result;
 }
 
-std::shared_ptr<CLabels> CMachine::apply_locked(SGVector<index_t> indices)
+std::shared_ptr<Labels> Machine::apply_locked(SGVector<index_t> indices)
 {
 	switch (get_machine_problem_type())
 	{
@@ -245,65 +245,65 @@ std::shared_ptr<CLabels> CMachine::apply_locked(SGVector<index_t> indices)
 	return NULL;
 }
 
-std::shared_ptr<CBinaryLabels> CMachine::apply_binary(std::shared_ptr<CFeatures> data)
+std::shared_ptr<BinaryLabels> Machine::apply_binary(std::shared_ptr<Features> data)
 {
 	SG_ERROR("This machine does not support apply_binary()\n")
 	return NULL;
 }
 
-std::shared_ptr<CRegressionLabels> CMachine::apply_regression(std::shared_ptr<CFeatures> data)
+std::shared_ptr<RegressionLabels> Machine::apply_regression(std::shared_ptr<Features> data)
 {
 	SG_ERROR("This machine does not support apply_regression()\n")
 	return NULL;
 }
 
-std::shared_ptr<CMulticlassLabels> CMachine::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> Machine::apply_multiclass(std::shared_ptr<Features> data)
 {
 	SG_ERROR("This machine does not support apply_multiclass()\n")
 	return NULL;
 }
 
-std::shared_ptr<CStructuredLabels> CMachine::apply_structured(std::shared_ptr<CFeatures> data)
+std::shared_ptr<StructuredLabels> Machine::apply_structured(std::shared_ptr<Features> data)
 {
 	SG_ERROR("This machine does not support apply_structured()\n")
 	return NULL;
 }
 
-std::shared_ptr<CLatentLabels> CMachine::apply_latent(std::shared_ptr<CFeatures> data)
+std::shared_ptr<LatentLabels> Machine::apply_latent(std::shared_ptr<Features> data)
 {
 	SG_ERROR("This machine does not support apply_latent()\n")
 	return NULL;
 }
 
-std::shared_ptr<CBinaryLabels> CMachine::apply_locked_binary(SGVector<index_t> indices)
+std::shared_ptr<BinaryLabels> Machine::apply_locked_binary(SGVector<index_t> indices)
 {
 	SG_ERROR("apply_locked_binary(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());
 	return NULL;
 }
 
-std::shared_ptr<CRegressionLabels> CMachine::apply_locked_regression(SGVector<index_t> indices)
+std::shared_ptr<RegressionLabels> Machine::apply_locked_regression(SGVector<index_t> indices)
 {
 	SG_ERROR("apply_locked_regression(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());
 	return NULL;
 }
 
-std::shared_ptr<CMulticlassLabels> CMachine::apply_locked_multiclass(SGVector<index_t> indices)
+std::shared_ptr<MulticlassLabels> Machine::apply_locked_multiclass(SGVector<index_t> indices)
 {
 	SG_ERROR("apply_locked_multiclass(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());
 	return NULL;
 }
 
-std::shared_ptr<CStructuredLabels> CMachine::apply_locked_structured(SGVector<index_t> indices)
+std::shared_ptr<StructuredLabels> Machine::apply_locked_structured(SGVector<index_t> indices)
 {
 	SG_ERROR("apply_locked_structured(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());
 	return NULL;
 }
 
-std::shared_ptr<CLatentLabels> CMachine::apply_locked_latent(SGVector<index_t> indices)
+std::shared_ptr<LatentLabels> Machine::apply_locked_latent(SGVector<index_t> indices)
 {
 	SG_ERROR("apply_locked_latent(SGVector<index_t>) is not yet implemented "
 			"for %s\n", get_name());

@@ -26,7 +26,7 @@ namespace shogun
 * k'(x,x')= \frac{k(x,x')}{scale}
 * \f]
 */
-class CAvgDiagKernelNormalizer : public CKernelNormalizer
+class AvgDiagKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** constructor
@@ -34,7 +34,7 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		 * @param c scale parameter, if <= 0 scaling will be computed from the
 		 * avg of the kernel diagonal elements
 		 */
-		CAvgDiagKernelNormalizer(float64_t c=0.0) : CKernelNormalizer()
+		AvgDiagKernelNormalizer(float64_t c=0.0) : KernelNormalizer()
 		{
 			scale=c;
 
@@ -43,13 +43,13 @@ class CAvgDiagKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~CAvgDiagKernelNormalizer()
+		virtual ~AvgDiagKernelNormalizer()
 		{
 		}
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			if (scale<=0)
 			{

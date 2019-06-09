@@ -44,7 +44,7 @@ using namespace shogun;
 
 TEST(Autoencoder, train)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	int32_t num_features = 10;
 	int32_t num_examples = 100;
@@ -52,11 +52,11 @@ TEST(Autoencoder, train)
 
 	SGMatrix<float64_t> data(num_features, num_examples);
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		data[i] = CMath::random(-1.0,1.0);
+		data[i] = Math::random(-1.0,1.0);
 
-	CAutoencoder ae(num_features, std::make_shared<CNeuralRectifiedLinearLayer>(num_hid));
+	Autoencoder ae(num_features, std::make_shared<NeuralRectifiedLinearLayer>(num_hid));
 
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	ae.train(features);
 
@@ -65,7 +65,7 @@ TEST(Autoencoder, train)
 
 	float64_t avg_diff = 0;
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		avg_diff += CMath::abs(reconstructed_data[i]-data[i])/(num_examples*num_features);
+		avg_diff += Math::abs(reconstructed_data[i]-data[i])/(num_examples*num_features);
 
 	EXPECT_NEAR(0.0, avg_diff, 1e-6);
 
@@ -74,16 +74,16 @@ TEST(Autoencoder, train)
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralLinearLayer-based contractive
+ * by numerical approximation. Uses a NeuralLinearLayer-based contractive
  * autoencoder.
  */
 TEST(Autoencoder, contractive_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	CAutoencoder ae(10, std::make_shared<CNeuralLinearLayer>(15));
+	Autoencoder ae(10, std::make_shared<NeuralLinearLayer>(15));
 
 	ae.set_contraction_coefficient(10.0);
 
@@ -91,16 +91,16 @@ TEST(Autoencoder, contractive_linear)
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralRectifiedLinearLayer-based contractive
+ * by numerical approximation. Uses a NeuralRectifiedLinearLayer-based contractive
  * autoencoder.
  */
 TEST(Autoencoder, contractive_rectified_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	CAutoencoder ae(10, std::make_shared<CNeuralRectifiedLinearLayer>(15));
+	Autoencoder ae(10, std::make_shared<NeuralRectifiedLinearLayer>(15));
 
 	ae.set_contraction_coefficient(10.0);
 
@@ -108,16 +108,16 @@ TEST(Autoencoder, contractive_rectified_linear)
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralLogisticLayer-based contractive
+ * by numerical approximation. Uses a NeuralLogisticLayer-based contractive
  * autoencoder.
  */
 TEST(Autoencoder, contractive_logistic)
 {
 	float64_t tolerance = 1e-6;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	CAutoencoder ae(10, std::make_shared<CNeuralLogisticLayer>(15));
+	Autoencoder ae(10, std::make_shared<NeuralLogisticLayer>(15));
 	ae.initialize_neural_network();
 
 	ae.set_contraction_coefficient(1.0);
@@ -126,7 +126,7 @@ TEST(Autoencoder, contractive_logistic)
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ * by numerical approximation. Uses a NeuralConvolutionalLayer-based autoencoder.
  */
 TEST(Autoencoder, convolutional)
 {
@@ -135,17 +135,17 @@ TEST(Autoencoder, convolutional)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	CAutoencoder ae(w,h,3,
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 1,1, 1,1),
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
+	Autoencoder ae(w,h,3,
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 1,1, 1,1),
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ * by numerical approximation. Uses a NeuralConvolutionalLayer-based autoencoder.
  */
 TEST(Autoencoder, convolutional_with_pooling)
 {
@@ -154,17 +154,17 @@ TEST(Autoencoder, convolutional_with_pooling)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	CAutoencoder ae(w,h,3,
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 3,2, 1,1),
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
+	Autoencoder ae(w,h,3,
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 3,2, 1,1),
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ * by numerical approximation. Uses a NeuralConvolutionalLayer-based autoencoder.
  */
 TEST(Autoencoder, convolutional_with_stride)
 {
@@ -173,17 +173,17 @@ TEST(Autoencoder, convolutional_with_stride)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	CAutoencoder ae(w,h,3,
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 1,1, 3,2),
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
+	Autoencoder ae(w,h,3,
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 1,1, 3,2),
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralConvolutionalLayer-based autoencoder.
+ * by numerical approximation. Uses a NeuralConvolutionalLayer-based autoencoder.
  */
 TEST(Autoencoder, convolutional_with_stride_and_pooling)
 {
@@ -192,11 +192,11 @@ TEST(Autoencoder, convolutional_with_stride_and_pooling)
 
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	CAutoencoder ae(w,h,3,
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 2,2, 2,2),
-		std::make_shared<CNeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
+	Autoencoder ae(w,h,3,
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 2, 1,1, 2,2, 2,2),
+		std::make_shared<NeuralConvolutionalLayer>(CMAF_IDENTITY, 3, 1,1, 1,1, 1,1));
 
 	EXPECT_NEAR(ae.check_gradients(), 0.0, tolerance);
 }

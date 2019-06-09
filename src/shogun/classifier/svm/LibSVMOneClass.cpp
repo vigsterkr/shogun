@@ -10,21 +10,21 @@
 
 using namespace shogun;
 
-CLibSVMOneClass::CLibSVMOneClass()
-: CSVM()
+LibSVMOneClass::LibSVMOneClass()
+: SVM()
 {
 }
 
-CLibSVMOneClass::CLibSVMOneClass(float64_t C, std::shared_ptr<CKernel> k)
-: CSVM(C, k, NULL)
+LibSVMOneClass::LibSVMOneClass(float64_t C, std::shared_ptr<Kernel> k)
+: SVM(C, k, NULL)
 {
 }
 
-CLibSVMOneClass::~CLibSVMOneClass()
+LibSVMOneClass::~LibSVMOneClass()
 {
 }
 
-bool CLibSVMOneClass::train_machine(std::shared_ptr<CFeatures> data)
+bool LibSVMOneClass::train_machine(std::shared_ptr<Features> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -86,7 +86,7 @@ bool CLibSVMOneClass::train_machine(std::shared_ptr<CFeatures> data)
 		int32_t num_sv=model->l;
 
 		create_new_model(num_sv);
-		CSVM::set_objective(model->objective);
+		SVM::set_objective(model->objective);
 
 		set_bias(-model->rho[0]);
 		for (int32_t i=0; i<num_sv; i++)

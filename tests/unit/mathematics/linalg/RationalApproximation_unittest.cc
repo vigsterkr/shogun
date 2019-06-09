@@ -37,10 +37,10 @@ TEST(RationalApproximation, precompute)
 	m(1,0)=1.0;
 	m(1,1)=3.0;
 
-	auto op=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
 
-	auto eig_solver=std::make_shared<CDirectEigenSolver>(op);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
 
 	auto linear_solver=std::make_shared<CDirectLinearSolverComplex>();
@@ -49,7 +49,7 @@ TEST(RationalApproximation, precompute)
 	auto op_func =
 	    std::make_shared<CLogRationalApproximationIndividual>(
 	        op, eig_solver,
-	        linear_solver->as<CLinearSolver<complex128_t, float64_t>>(), 0);
+	        linear_solver->as<LinearSolver<complex128_t, float64_t>>(), 0);
 
 	op_func->set_num_shifts(5);
 
@@ -107,11 +107,11 @@ TEST(RationalApproximation, trace_accuracy)
 	}
 
 	// create the operator
-	auto op=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
 
 	// create the eigen solver for finding max/min eigenvalues
-	auto eig_solver=std::make_shared<CDirectEigenSolver>(op);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
 
 	// create the direct linear solver for solving the systems that generates from
@@ -174,22 +174,22 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 	m(1,0)=0.0;
 	m(1,1)=100000.0;
 
-	auto op=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
 
-	auto eig_solver=std::make_shared<CDirectEigenSolver>(op);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
 
 	auto dense_solver=std::make_shared<CDirectLinearSolverComplex>();
 
 
-	CConjugateOrthogonalCGSolver *sparse_solver
-		=new CConjugateOrthogonalCGSolver();
+	ConjugateOrthogonalCGSolver *sparse_solver
+		=new ConjugateOrthogonalCGSolver();
 
 	auto op_func =
 	    std::make_shared<CLogRationalApproximationIndividual>(
 	        op, eig_solver,
-	        dense_solver->as<CLinearSolver<complex128_t, float64_t>>(), 0);
+	        dense_solver->as<LinearSolver<complex128_t, float64_t>>(), 0);
 
 	op_func->set_num_shifts(4);
 
@@ -197,19 +197,19 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 
 	SGVector<complex128_t> shifts=op_func->get_shifts();
 
-	auto trace_sampler=std::make_shared<CNormalSampler>(size);
+	auto trace_sampler=std::make_shared<NormalSampler>(size);
 	trace_sampler->precompute();
 
 	// create complex copies of operators, complex_dense/sparse
 	auto complex_dense
-		=std::dynamic_pointer_cast<CDenseMatrixOperator>(*op);
+		=std::dynamic_pointer_cast<DenseMatrixOperator>(*op);
 
 	for (index_t i=0; i<shifts.vlen; ++i)
 	{
 		SGVector<float64_t> sample=trace_sampler->sample(0);
 
 		auto shifted_dense
-			=std::make_shared<CDenseMatrixOperator<complex128>_t>(*complex_dense);
+			=std::make_shared<DenseMatrixOperator<complex128>_t>(*complex_dense);
 
 		SGVector<complex128_t> diag=shifted_dense->get_diagonal();
 		for (index_t j=0; j<diag.vlen; ++j)
@@ -219,10 +219,10 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 
 		SGMatrix<complex128_t> shifted_m=shifted_dense->get_matrix_operator();
 
-		CSparseFeatures<complex128_t> feat(shifted_m);
+		SparseFeatures<complex128_t> feat(shifted_m);
 		SGSparseMatrix<complex128_t> shifted_sm=feat.get_sparse_feature_matrix();
 		auto shifted_sparse
-			=std::make_shared<CSparseMatrixOperator<complex128_t>>(shifted_sm);
+			=std::make_shared<SparseMatrixOperator<complex128_t>>(shifted_sm);
 
 		SGVector<complex128_t> xd=dense_solver->solve(shifted_dense, sample);
 		SGVector<complex128_t> xs=sparse_solver->solve(shifted_sparse, sample);
@@ -259,16 +259,16 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 	}
 
 	// create the operator
-	auto op=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
 
 	// create the eigen solver for finding max/min eigenvalues
-	auto eig_solver=std::make_shared<CDirectEigenSolver>(op);
+	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
 
 	// create the direct linear solver for solving the systems that generates from
 	// rational approximation of the operator function
-	auto linear_solver=std::make_shared<CCGMShiftedFamilySolver>();
+	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
 
 
 	// compute the number of shifts to assure a given accuracy

@@ -17,17 +17,17 @@ namespace shogun
 {
 
 /** Multiclass Strategy that uses ECOC coding */
-class CECOCStrategy: public CMulticlassStrategy
+class ECOCStrategy: public MulticlassStrategy
 {
 public:
     /** default constructor, do not call, only to make serializer happy */
-    CECOCStrategy();
+    ECOCStrategy();
 
     /** constructor */
-    CECOCStrategy(std::shared_ptr<CECOCEncoder >encoder, std::shared_ptr<CECOCDecoder >decoder);
+    ECOCStrategy(std::shared_ptr<ECOCEncoder >encoder, std::shared_ptr<ECOCDecoder >decoder);
 
     /** destructor */
-    virtual ~CECOCStrategy();
+    virtual ~ECOCStrategy();
 
     /** get name */
     virtual const char* get_name() const
@@ -36,7 +36,7 @@ public:
     }
 
     /** start training */
-    virtual void train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels);
+    virtual void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels);
 
     /** has more training phase */
     virtual bool train_has_more();
@@ -57,9 +57,9 @@ public:
 
 protected:
     /** ECOC encoder */
-    std::shared_ptr<CECOCEncoder >m_encoder;
+    std::shared_ptr<ECOCEncoder >m_encoder;
     /** ECOC decoder */
-    std::shared_ptr<CECOCDecoder >m_decoder;
+    std::shared_ptr<ECOCDecoder >m_decoder;
 
     /** ECOC codebook */
     SGMatrix<int32_t> m_codebook;

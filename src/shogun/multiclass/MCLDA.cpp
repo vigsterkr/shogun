@@ -20,8 +20,8 @@
 using namespace shogun;
 using namespace Eigen;
 
-CMCLDA::CMCLDA(float64_t tolerance, bool store_cov)
-: CNativeMulticlassMachine()
+MCLDA::MCLDA(float64_t tolerance, bool store_cov)
+: NativeMulticlassMachine()
 {
 	init();
 	m_tolerance=tolerance;
@@ -29,8 +29,8 @@ CMCLDA::CMCLDA(float64_t tolerance, bool store_cov)
 
 }
 
-CMCLDA::CMCLDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance, bool store_cov)
-: CNativeMulticlassMachine()
+MCLDA::MCLDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_cov)
+: NativeMulticlassMachine()
 {
 	init();
 
@@ -41,18 +41,18 @@ CMCLDA::CMCLDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_
 	set_labels(trainlab);
 }
 
-CMCLDA::~CMCLDA()
+MCLDA::~MCLDA()
 {
 
 
 	cleanup();
 }
 
-void CMCLDA::init()
+void MCLDA::init()
 {
 	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", ParameterProperties::HYPER);
 	SG_ADD(&m_store_cov, "m_store_cov", "Store covariance member");
-	SG_ADD((std::shared_ptr<CSGObject>*) &m_features, "m_features", "Feature object.");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_features, "m_features", "Feature object.");
 	SG_ADD(&m_means, "m_means", "Mean vectors list");
 	SG_ADD(&m_cov, "m_cov", "covariance matrix");
 	SG_ADD(&m_xbar, "m_xbar", "total mean");
@@ -70,19 +70,19 @@ void CMCLDA::init()
 	m_rank=0;
 }
 
-void CMCLDA::cleanup()
+void MCLDA::cleanup()
 {
 	m_num_classes = 0;
 }
 
-std::shared_ptr<CMulticlassLabels> CMCLDA::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> MCLDA::apply_multiclass(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			SG_ERROR("Specified features are not of type DotFeatures\n")
 
-		set_features(data->as<CDotFeatures>());
+		set_features(data->as<DotFeatures>());
 	}
 
 	if (!m_features)
@@ -93,7 +93,7 @@ std::shared_ptr<CMulticlassLabels> CMCLDA::apply_multiclass(std::shared_ptr<CFea
 	ASSERT( m_dim == m_features->get_dim_feature_space() );
 
 	// collect features into a matrix
-	auto rf = m_features->as<CDenseFeatures<float64_t>>();
+	auto rf = m_features->as<DenseFeatures<float64_t>>();
 
 	MatrixXd X(num_vecs, m_dim);
 
@@ -140,14 +140,14 @@ std::shared_ptr<CMulticlassLabels> CMCLDA::apply_multiclass(std::shared_ptr<CFea
 #endif
 
 	// argmax to apply labels
-	auto out = std::make_shared<CMulticlassLabels>(num_vecs);
+	auto out = std::make_shared<MulticlassLabels>(num_vecs);
 	for (int i = 0; i < num_vecs; i++)
-		out->set_label(i, CMath::arg_max(d.data()+i, num_vecs, m_num_classes));
+		out->set_label(i, Math::arg_max(d.data()+i, num_vecs, m_num_classes));
 
 	return out;
 }
 
-bool CMCLDA::train_machine(std::shared_ptr<CFeatures> data)
+bool MCLDA::train_machine(std::shared_ptr<Features> data)
 {
 	if (!m_labels)
 		SG_ERROR("No labels allocated in MCLDA training\n")
@@ -155,9 +155,9 @@ bool CMCLDA::train_machine(std::shared_ptr<CFeatures> data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Speficied features are not of type CDotFeatures\n")
+			SG_ERROR("Speficied features are not of type DotFeatures\n")
 
-		set_features(data->as<CDotFeatures>());
+		set_features(data->as<DotFeatures>());
 	}
 
 	if (!m_features)
@@ -208,7 +208,7 @@ bool CMCLDA::train_machine(std::shared_ptr<CFeatures> data)
 		}
 	}
 
-	auto rf = m_features->as<CDenseFeatures<float64_t>>();
+	auto rf = m_features->as<DenseFeatures<float64_t>>();
 
 	// if ( m_store_cov )
 		index_t * cov_dims = SG_MALLOC(index_t, 3);

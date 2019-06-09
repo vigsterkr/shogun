@@ -42,7 +42,7 @@
 namespace shogun
 {
 
-class CTwoDistributionTestMock : public CTwoDistributionTest
+class TwoDistributionTestMock : public TwoDistributionTest
 {
 public:
 	MOCK_METHOD0(compute_statistic, float64_t());
@@ -60,17 +60,17 @@ TEST(TwoDistributionTest, compute_distance_dense)
 	const index_t dim=1;
 	const float64_t difference=0.5;
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto feats_p=gen_p->get_streamed_features(m)->as<CDenseFeatures<float64_t>>();
-	auto feats_q=gen_q->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
+	auto feats_p=gen_p->get_streamed_features(m)->as<DenseFeatures<float64_t>>();
+	auto feats_q=gen_q->get_streamed_features(n)->as<DenseFeatures<float64_t>>();
 
-	auto mock_obj=std::make_shared<CTwoDistributionTestMock>();
+	auto mock_obj=std::make_shared<TwoDistributionTestMock>();
 	mock_obj->set_p(feats_p);
 	mock_obj->set_q(feats_q);
 
-	auto euclidean_distance=std::make_shared<CEuclideanDistance>();
+	auto euclidean_distance=std::make_shared<EuclideanDistance>();
 	auto distance=mock_obj->compute_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
@@ -90,17 +90,17 @@ TEST(TwoDistributionTest, compute_joint_distance_dense)
 	const index_t dim=1;
 	const float64_t difference=0.5;
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto feats_p=gen_p->get_streamed_features(m)->as<CDenseFeatures<float64_t>>();
-	auto feats_q=gen_q->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
+	auto feats_p=gen_p->get_streamed_features(m)->as<DenseFeatures<float64_t>>();
+	auto feats_q=gen_q->get_streamed_features(n)->as<DenseFeatures<float64_t>>();
 
-	auto mock_obj=std::make_shared<CTwoDistributionTestMock>();
+	auto mock_obj=std::make_shared<TwoDistributionTestMock>();
 	mock_obj->set_p(feats_p);
 	mock_obj->set_q(feats_q);
 
-	auto euclidean_distance=std::make_shared<CEuclideanDistance>();
+	auto euclidean_distance=std::make_shared<EuclideanDistance>();
 	auto distance=mock_obj->compute_joint_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
@@ -109,7 +109,7 @@ TEST(TwoDistributionTest, compute_joint_distance_dense)
 	auto data_q=feats_q->get_feature_matrix();
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());
 	std::copy(data_q.data(), data_q.data()+data_q.size(), data_p_and_q.data()+data_p.size());
-	auto feats_p_and_q=std::make_shared<CDenseFeatures<float64_t> >(data_p_and_q);
+	auto feats_p_and_q=std::make_shared<DenseFeatures<float64_t> >(data_p_and_q);
 
 	euclidean_distance->init(feats_p_and_q, feats_p_and_q);
 	auto distance_mat2=euclidean_distance->get_distance_matrix();
@@ -127,23 +127,23 @@ TEST(TwoDistributionTest, compute_distance_streaming)
 	const index_t dim=1;
 	const float64_t difference=0.5;
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mock_obj=std::make_shared<CTwoDistributionTestMock>();
+	auto mock_obj=std::make_shared<TwoDistributionTestMock>();
 	mock_obj->set_p(gen_p);
 	mock_obj->set_q(gen_q);
 	mock_obj->set_num_samples_p(m);
 	mock_obj->set_num_samples_q(n);
 
 	sg_rand->set_seed(12345);
-	auto euclidean_distance=std::make_shared<CEuclideanDistance>();
+	auto euclidean_distance=std::make_shared<EuclideanDistance>();
 	auto distance=mock_obj->compute_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
 	sg_rand->set_seed(12345);
-	auto feats_p=gen_p->get_streamed_features(m)->as<CDenseFeatures<float64_t>>();
-	auto feats_q=gen_q->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
+	auto feats_p=gen_p->get_streamed_features(m)->as<DenseFeatures<float64_t>>();
+	auto feats_q=gen_q->get_streamed_features(n)->as<DenseFeatures<float64_t>>();
 	euclidean_distance->init(feats_p, feats_q);
 	auto distance_mat2=euclidean_distance->get_distance_matrix();
 
@@ -161,30 +161,30 @@ TEST(TwoDistributionTest, compute_joint_distance_streaming)
 	const index_t dim=1;
 	const float64_t difference=0.5;
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
-	auto mock_obj=std::make_shared<CTwoDistributionTestMock>();
+	auto mock_obj=std::make_shared<TwoDistributionTestMock>();
 	mock_obj->set_p(gen_p);
 	mock_obj->set_q(gen_q);
 	mock_obj->set_num_samples_p(m);
 	mock_obj->set_num_samples_q(n);
 
 	sg_rand->set_seed(12345);
-	auto euclidean_distance=std::make_shared<CEuclideanDistance>();
+	auto euclidean_distance=std::make_shared<EuclideanDistance>();
 	auto distance=mock_obj->compute_joint_distance(euclidean_distance);
 	auto distance_mat1=distance->get_distance_matrix();
 
 	sg_rand->set_seed(12345);
-	auto feats_p=gen_p->get_streamed_features(m)->as<CDenseFeatures<float64_t>>();
-	auto feats_q=gen_q->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
+	auto feats_p=gen_p->get_streamed_features(m)->as<DenseFeatures<float64_t>>();
+	auto feats_q=gen_q->get_streamed_features(n)->as<DenseFeatures<float64_t>>();
 
 	SGMatrix<float64_t> data_p_and_q(dim, m+n);
 	auto data_p=feats_p->get_feature_matrix();
 	auto data_q=feats_q->get_feature_matrix();
 	std::copy(data_p.data(), data_p.data()+data_p.size(), data_p_and_q.data());
 	std::copy(data_q.data(), data_q.data()+data_q.size(), data_p_and_q.data()+data_p.size());
-	auto feats_p_and_q=std::make_shared<CDenseFeatures<float64_t>>(data_p_and_q);
+	auto feats_p_and_q=std::make_shared<DenseFeatures<float64_t>>(data_p_and_q);
 
 	euclidean_distance->init(feats_p_and_q, feats_p_and_q);
 	auto distance_mat2=euclidean_distance->get_distance_matrix();

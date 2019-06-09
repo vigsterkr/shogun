@@ -25,10 +25,10 @@ TEST(CombinedDotFeaturesTest, test_array_operations)
 		data_3[i] = 2*i;
 	}
 
-	auto comb_feat = std::make_shared<CCombinedDotFeatures>();
-	auto feat_1 = std::make_shared<CDenseFeatures<float64_t>>(data_1);
-	auto feat_2 = std::make_shared<CDenseFeatures<float64_t>>(data_2);
-	auto feat_3 = std::make_shared<CDenseFeatures<float64_t>>(data_3);
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
+	auto feat_1 = std::make_shared<DenseFeatures<float64_t>>(data_1);
+	auto feat_2 = std::make_shared<DenseFeatures<float64_t>>(data_2);
+	auto feat_3 = std::make_shared<DenseFeatures<float64_t>>(data_3);
 
 	if (comb_feat->append_feature_obj(feat_1))
 	{
@@ -48,9 +48,9 @@ TEST(CombinedDotFeaturesTest, test_array_operations)
 	comb_feat->delete_feature_obj(0);
 	EXPECT_EQ(comb_feat->get_num_feature_obj(),2);
 
-	auto f_1 = comb_feat->get_feature_obj(0)->as<CDenseFeatures<float64_t>>();
+	auto f_1 = comb_feat->get_feature_obj(0)->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> m_1 = f_1->get_feature_matrix();
-	auto f_2 = comb_feat->get_feature_obj(1)->as<CDenseFeatures<float64_t>>();
+	auto f_2 = comb_feat->get_feature_obj(1)->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> m_2 = f_2->get_feature_matrix();
 	for (index_t i=0; i < 6; i++)
 	{
@@ -75,11 +75,11 @@ TEST(CombinedDotFeaturesTest, dot_products)
 		data_3[i] = 2*i;
 	}
 
-	auto comb_feat_1 = std::make_shared<CCombinedDotFeatures>();
-	auto comb_feat_2 = std::make_shared<CCombinedDotFeatures>();
-	auto feat_1 = std::make_shared<CDenseFeatures<float64_t>>(data_1);
-	auto feat_2 = std::make_shared<CDenseFeatures<float64_t>>(data_2);
-	auto feat_3 = std::make_shared<CDenseFeatures<float64_t>>(data_3);
+	auto comb_feat_1 = std::make_shared<CombinedDotFeatures>();
+	auto comb_feat_2 = std::make_shared<CombinedDotFeatures>();
+	auto feat_1 = std::make_shared<DenseFeatures<float64_t>>(data_1);
+	auto feat_2 = std::make_shared<DenseFeatures<float64_t>>(data_2);
+	auto feat_3 = std::make_shared<DenseFeatures<float64_t>>(data_3);
 
 	comb_feat_1->append_feature_obj(feat_1);
 	comb_feat_1->set_subfeature_weight(0, 1);
@@ -147,10 +147,10 @@ TEST(CombinedDotFeaturesTest, nnz_features)
 	nnz[4] = 2;
 	nnz[5] = 4;
 
-	auto comb_feat = std::make_shared<CCombinedDotFeatures>();
-	auto feat_1 = std::make_shared<CSparseFeatures<float64_t>>(data_1);
-	auto feat_2 = std::make_shared<CSparseFeatures<float64_t>>(data_2);
-	auto feat_3 = std::make_shared<CSparseFeatures<float64_t>>(data_3);
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
+	auto feat_1 = std::make_shared<SparseFeatures<float64_t>>(data_1);
+	auto feat_2 = std::make_shared<SparseFeatures<float64_t>>(data_2);
+	auto feat_3 = std::make_shared<SparseFeatures<float64_t>>(data_3);
 	comb_feat->append_feature_obj(feat_1);
 	comb_feat->append_feature_obj(feat_2);
 	comb_feat->append_feature_obj(feat_3);

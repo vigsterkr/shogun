@@ -50,11 +50,11 @@ TEST_F(NeuralLeakyRectifiedLayerTest, compute_activations)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	std::shared_ptr<CNeuralInputLayer> input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	// initialize leaky rectified linear layer
-	auto layer = std::make_shared<CNeuralLeakyRectifiedLinearLayer>(9);
+	auto layer = std::make_shared<NeuralLeakyRectifiedLinearLayer>(9);
 	layer->set_alpha(0.02);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
@@ -77,7 +77,7 @@ TEST_F(NeuralLeakyRectifiedLayerTest, compute_activations)
 	for (int32_t idx = 0; idx < A_ref.num_rows * A_ref.num_cols; idx++)
 	{
 		A_ref[idx] =
-		    CMath::max<float64_t>(layer->get_alpha() * A_ref[idx], A_ref[idx]);
+		    Math::max<float64_t>(layer->get_alpha() * A_ref[idx], A_ref[idx]);
 	}
 
 	// compare

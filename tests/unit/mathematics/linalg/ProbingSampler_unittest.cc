@@ -38,7 +38,7 @@ TEST(ProbingSampler, get_coloring_vector)
 		m(size-1,i)=2.0;
 
 	auto op
-		=std::make_shared<CSparseMatrixOperator<float64_t>>(m);
+		=std::make_shared<SparseMatrixOperator<float64_t>>(m);
 
 
 	// get the sparsity structure and use coloring to get coloring
@@ -59,7 +59,7 @@ TEST(ProbingSampler, get_coloring_vector)
 	}
 
 	// get the coloring vector using probing sampler
-	auto sampler=std::make_shared<CProbingSampler>(op, max_pow);
+	auto sampler=std::make_shared<ProbingSampler>(op, max_pow);
 	sampler->precompute();
 
 	SGVector<int32_t> sg_coloring=sampler->get_coloring_vector();
@@ -84,19 +84,19 @@ TEST(ProbingSampler, probing_samples_big_diag_matrix)
 	// create a sparse matrix
 	const index_t size=10000;
 	SGSparseMatrix<float64_t> sm(size, size);
-	auto op=std::make_shared<CSparseMatrixOperator<float64_t>>(sm);
+	auto op=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
 
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+		diag[i]=Math::pow(Math::abs(sg_rand->std_normal_distrib()), difficulty)
 			+min_eigenvalue;
 	}
 	op->set_diagonal(diag);
 
-	auto trace_sampler=std::make_shared<CProbingSampler>(op);
+	auto trace_sampler=std::make_shared<ProbingSampler>(op);
 
 	trace_sampler->precompute();
 
@@ -130,18 +130,18 @@ TEST(ProbingSampler, mean_variance)
 	for (index_t i=0; i<size-1; ++i)
 		m(i+1,i)=1;
 
-	auto A=std::make_shared<CSparseMatrixOperator<float64_t>>(m);
+	auto A=std::make_shared<SparseMatrixOperator<float64_t>>(m);
 
 
-	auto trace_sampler=std::make_shared<CProbingSampler>(A);
+	auto trace_sampler=std::make_shared<ProbingSampler>(A);
 	trace_sampler->precompute();
 
 	index_t num_samples=trace_sampler->get_num_samples();
 	for (index_t i=0; i<num_samples; ++i)
 	{
 		const SGVector<float64_t>& sample=trace_sampler->sample(i);
-		EXPECT_NEAR(CStatistics::mean(sample), 0.0, 0.1);
-		EXPECT_NEAR(CStatistics::variance(sample), 1.0/num_samples, 0.01);
+		EXPECT_NEAR(Statistics::mean(sample), 0.0, 0.1);
+		EXPECT_NEAR(Statistics::variance(sample), 1.0/num_samples, 0.01);
 	}
 
 

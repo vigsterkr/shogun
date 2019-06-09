@@ -19,7 +19,7 @@ TEST(MeanRule, combine_matrix)
 {
 	int32_t num_vectors = 20;
 	int32_t num_classifiers = 5;
-	auto mr = std::make_shared<CMeanRule>();
+	auto mr = std::make_shared<MeanRule>();
 	SGMatrix<float64_t> ensemble_matrix(num_vectors, num_classifiers);
 	SGVector<float64_t> expected(num_vectors);
 
@@ -46,7 +46,7 @@ TEST(MeanRule, combine_matrix)
 TEST(MeanRule, combine_vector)
 {
 	int32_t vector_size = 20;
-	auto mr = std::make_shared<CMeanRule>();
+	auto mr = std::make_shared<MeanRule>();
 	SGVector<float64_t> test_labels(vector_size);
 	test_labels.random(0.0, 50.0);
 

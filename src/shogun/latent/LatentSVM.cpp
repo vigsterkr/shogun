@@ -12,21 +12,21 @@
 
 using namespace shogun;
 
-CLatentSVM::CLatentSVM()
-	: CLinearLatentMachine()
+LatentSVM::LatentSVM()
+	: LinearLatentMachine()
 {
 }
 
-CLatentSVM::CLatentSVM(std::shared_ptr<CLatentModel> model, float64_t C)
-	: CLinearLatentMachine(model, C)
+LatentSVM::LatentSVM(std::shared_ptr<LatentModel> model, float64_t C)
+	: LinearLatentMachine(model, C)
 {
 }
 
-CLatentSVM::~CLatentSVM()
+LatentSVM::~LatentSVM()
 {
 }
 
-std::shared_ptr<CLatentLabels> CLatentSVM::apply_latent()
+std::shared_ptr<LatentLabels> LatentSVM::apply_latent()
 {
 	if (!m_model)
 		SG_ERROR("LatentModel is not set!\n")
@@ -36,8 +36,8 @@ std::shared_ptr<CLatentLabels> CLatentSVM::apply_latent()
 
 	SGVector<float64_t> w = get_w();
 	index_t num_examples = m_model->get_num_vectors();
-	auto hs = std::make_shared<CLatentLabels>(num_examples);
-	auto ys = std::make_shared<CBinaryLabels>(num_examples);
+	auto hs = std::make_shared<LatentLabels>(num_examples);
+	auto ys = std::make_shared<BinaryLabels>(num_examples);
 	hs->set_labels(ys);
 	m_model->set_labels(hs);
 
@@ -55,13 +55,13 @@ std::shared_ptr<CLatentLabels> CLatentSVM::apply_latent()
 	return hs;
 }
 
-float64_t CLatentSVM::do_inner_loop(float64_t cooling_eps)
+float64_t LatentSVM::do_inner_loop(float64_t cooling_eps)
 {
 	auto ys = m_model->get_labels()->get_labels();
 	auto feats = (m_model->get_caching() ?
 			m_model->get_cached_psi_features() :
 			m_model->get_psi_feature_vectors());
-	CSVMOcas svm(m_C, feats, ys);
+	SVMOcas svm(m_C, feats, ys);
 	svm.set_epsilon(cooling_eps);
 	svm.train();
 

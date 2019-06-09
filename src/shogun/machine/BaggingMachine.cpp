@@ -15,34 +15,34 @@
 
 using namespace shogun;
 
-CBaggingMachine::CBaggingMachine()
-	: CMachine()
+BaggingMachine::BaggingMachine()
+	: Machine()
 {
 	init();
 	register_parameters();
 }
 
-CBaggingMachine::CBaggingMachine(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels)
-	: CBaggingMachine()
+BaggingMachine::BaggingMachine(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels)
+	: BaggingMachine()
 {
 	set_labels(labels);
 	m_features = features;
 }
 
-std::shared_ptr<CBinaryLabels> CBaggingMachine::apply_binary(std::shared_ptr<CFeatures> data)
+std::shared_ptr<BinaryLabels> BaggingMachine::apply_binary(std::shared_ptr<Features> data)
 {
 	SGMatrix<float64_t> output = apply_outputs_without_combination(data);
 
-	auto mean_rule = std::make_shared<CMeanRule>();
+	auto mean_rule = std::make_shared<MeanRule>();
 
 	SGVector<float64_t> labels = m_combination_rule->combine(output);
 	SGVector<float64_t> probabilities = mean_rule->combine(output);
 
 	float64_t threshold = 0.5;
-	return std::make_shared<CBinaryLabels>(probabilities, threshold);
+	return std::make_shared<BinaryLabels>(probabilities, threshold);
 }
 
-std::shared_ptr<CMulticlassLabels> CBaggingMachine::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> BaggingMachine::apply_multiclass(std::shared_ptr<Features> data)
 {
 	SGMatrix<float64_t> bagged_outputs =
 	    apply_outputs_without_combination(data);
@@ -53,11 +53,11 @@ std::shared_ptr<CMulticlassLabels> CBaggingMachine::apply_multiclass(std::shared
 	    "Labels (%s) are not compatible with multiclass.\n",
 	    m_labels->get_name());
 
-	auto labels_multiclass = std::dynamic_pointer_cast<CMulticlassLabels>(m_labels);
+	auto labels_multiclass = std::dynamic_pointer_cast<MulticlassLabels>(m_labels);
 	auto num_samples = bagged_outputs.size() / m_num_bags;
 	auto num_classes = labels_multiclass->get_num_classes();
 
-	auto pred = std::make_shared<CMulticlassLabels>(num_samples);
+	auto pred = std::make_shared<MulticlassLabels>(num_samples);
 	pred->allocate_confidences_for(num_classes);
 
 	SGMatrix<float64_t> class_probabilities(num_classes, num_samples);
@@ -83,12 +83,12 @@ std::shared_ptr<CMulticlassLabels> CBaggingMachine::apply_multiclass(std::shared
 	return pred;
 }
 
-std::shared_ptr<CRegressionLabels> CBaggingMachine::apply_regression(std::shared_ptr<CFeatures> data)
+std::shared_ptr<RegressionLabels> BaggingMachine::apply_regression(std::shared_ptr<Features> data)
 {
-	return std::make_shared<CRegressionLabels>(apply_get_outputs(data));
+	return std::make_shared<RegressionLabels>(apply_get_outputs(data));
 }
 
-SGVector<float64_t> CBaggingMachine::apply_get_outputs(std::shared_ptr<CFeatures> data)
+SGVector<float64_t> BaggingMachine::apply_get_outputs(std::shared_ptr<Features> data)
 {
 	ASSERT(data != NULL);
 	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
@@ -98,7 +98,7 @@ SGVector<float64_t> CBaggingMachine::apply_get_outputs(std::shared_ptr<CFeatures
 }
 
 SGMatrix<float64_t>
-CBaggingMachine::apply_outputs_without_combination(std::shared_ptr<CFeatures> data)
+BaggingMachine::apply_outputs_without_combination(std::shared_ptr<Features> data)
 {
 	ASSERT(m_num_bags == m_bags.size());
 
@@ -112,7 +112,7 @@ CBaggingMachine::apply_outputs_without_combination(std::shared_ptr<CFeatures> da
 		auto l = m->apply(data);
 		SGVector<float64_t> lv;
 		if (l!=NULL)
-			lv = l->as<CDenseLabels>()->get_labels();
+			lv = l->as<DenseLabels>()->get_labels();
 		else
 			SG_ERROR("NULL returned by apply method\n");
 
@@ -123,7 +123,7 @@ CBaggingMachine::apply_outputs_without_combination(std::shared_ptr<CFeatures> da
 	return output;
 }
 
-bool CBaggingMachine::train_machine(std::shared_ptr<CFeatures> data)
+bool BaggingMachine::train_machine(std::shared_ptr<Features> data)
 {
 	REQUIRE(m_machine != NULL, "Machine is not set!");
 	REQUIRE(m_num_bags > 0, "Number of bag is not set!");
@@ -147,22 +147,22 @@ bool CBaggingMachine::train_machine(std::shared_ptr<CFeatures> data)
 	m_all_oob_idx.zero();
 
 
-	m_oob_indices = std::make_shared<CDynamicObjectArray>();
+	m_oob_indices = std::make_shared<DynamicObjectArray>();
 
 	SGMatrix<index_t> rnd_indicies(m_bag_size, m_num_bags);
 	for (index_t i = 0; i < m_num_bags*m_bag_size; ++i)
-		rnd_indicies.matrix[i] = CMath::random(0, m_bag_size-1);
+		rnd_indicies.matrix[i] = Math::random(0, m_bag_size-1);
 
 	auto pb = SG_PROGRESS(range(m_num_bags));
 #pragma omp parallel for
 	for (int32_t i = 0; i < m_num_bags; ++i)
 	{
-		auto c=std::dynamic_pointer_cast<CMachine>(m_machine->clone());
+		auto c=std::dynamic_pointer_cast<Machine>(m_machine->clone());
 		ASSERT(c != NULL);
 		SGVector<index_t> idx(rnd_indicies.get_column_vector(i), m_bag_size, false);
 
-		std::shared_ptr<CFeatures> features;
-		std::shared_ptr<CLabels> labels;
+		std::shared_ptr<Features> features;
+		std::shared_ptr<Labels> labels;
 
 		if (get_global_parallel()->get_num_threads()==1)
 		{
@@ -216,11 +216,11 @@ bool CBaggingMachine::train_machine(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-void CBaggingMachine::set_machine_parameters(std::shared_ptr<CMachine> m, SGVector<index_t> idx)
+void BaggingMachine::set_machine_parameters(std::shared_ptr<Machine> m, SGVector<index_t> idx)
 {
 }
 
-void CBaggingMachine::register_parameters()
+void BaggingMachine::register_parameters()
 {
 	SG_ADD(
 	    &m_features, "features", "Train features for bagging");
@@ -235,37 +235,37 @@ void CBaggingMachine::register_parameters()
 	    &m_oob_indices, "oob_indices", "OOB indices for each machine");
 }
 
-void CBaggingMachine::set_num_bags(int32_t num_bags)
+void BaggingMachine::set_num_bags(int32_t num_bags)
 {
 	m_num_bags = num_bags;
 }
 
-int32_t CBaggingMachine::get_num_bags() const
+int32_t BaggingMachine::get_num_bags() const
 {
 	return m_num_bags;
 }
 
-void CBaggingMachine::set_bag_size(int32_t bag_size)
+void BaggingMachine::set_bag_size(int32_t bag_size)
 {
 	m_bag_size = bag_size;
 }
 
-int32_t CBaggingMachine::get_bag_size() const
+int32_t BaggingMachine::get_bag_size() const
 {
 	return m_bag_size;
 }
 
-std::shared_ptr<CMachine> CBaggingMachine::get_machine() const
+std::shared_ptr<Machine> BaggingMachine::get_machine() const
 {
 	return m_machine;
 }
 
-void CBaggingMachine::set_machine(std::shared_ptr<CMachine> machine)
+void BaggingMachine::set_machine(std::shared_ptr<Machine> machine)
 {
 	m_machine = machine;
 }
 
-void CBaggingMachine::init()
+void BaggingMachine::init()
 {
 	m_machine = NULL;
 	m_features = NULL;
@@ -276,17 +276,17 @@ void CBaggingMachine::init()
 	m_all_oob_idx = SGVector<bool>();
 }
 
-void CBaggingMachine::set_combination_rule(std::shared_ptr<CCombinationRule> rule)
+void BaggingMachine::set_combination_rule(std::shared_ptr<CombinationRule> rule)
 {
 	m_combination_rule = rule;
 }
 
-std::shared_ptr<CCombinationRule> CBaggingMachine::get_combination_rule() const
+std::shared_ptr<CombinationRule> BaggingMachine::get_combination_rule() const
 {
 	return m_combination_rule;
 }
 
-float64_t CBaggingMachine::get_oob_error(std::shared_ptr<CEvaluation> eval) const
+float64_t BaggingMachine::get_oob_error(std::shared_ptr<Evaluation> eval) const
 {
 	REQUIRE(m_combination_rule != NULL, "Combination rule is not set!");
 	REQUIRE(m_bags.size() > 0, "BaggingMachine is not trained!");
@@ -305,7 +305,7 @@ float64_t CBaggingMachine::get_oob_error(std::shared_ptr<CEvaluation> eval) cons
 	{
 		auto m = m_bags.at(i);
 		auto current_oob
-			= m_oob_indices->get_element<CDynamicArray<index_t>>(i);
+			= m_oob_indices->get_element<DynamicArray<index_t>>(i);
 
 		SGVector<index_t> oob(current_oob->get_array(), current_oob->get_num_elements(), false);
 		m_features->add_subset(oob);
@@ -313,7 +313,7 @@ float64_t CBaggingMachine::get_oob_error(std::shared_ptr<CEvaluation> eval) cons
 		auto l = m->apply(m_features);
 		SGVector<float64_t> lv;
 		if (l!=NULL)
-			lv = std::dynamic_pointer_cast<CDenseLabels>(l)->get_labels();
+			lv = std::dynamic_pointer_cast<DenseLabels>(l)->get_labels();
 		else
 			SG_ERROR("NULL returned by apply method\n");
 
@@ -339,19 +339,19 @@ float64_t CBaggingMachine::get_oob_error(std::shared_ptr<CEvaluation> eval) cons
 	for (int32_t i=0;i<lab.vlen;i++)
 		lab[i]=combined[idx[i]];
 
-	std::shared_ptr<CLabels> predicted = NULL;
+	std::shared_ptr<Labels> predicted = NULL;
 	switch (m_labels->get_label_type())
 	{
 		case LT_BINARY:
-			predicted = std::make_shared<CBinaryLabels>(lab);
+			predicted = std::make_shared<BinaryLabels>(lab);
 			break;
 
 		case LT_MULTICLASS:
-			predicted = std::make_shared<CMulticlassLabels>(lab);
+			predicted = std::make_shared<MulticlassLabels>(lab);
 			break;
 
 		case LT_REGRESSION:
-			predicted = std::make_shared<CRegressionLabels>(lab);
+			predicted = std::make_shared<RegressionLabels>(lab);
 			break;
 
 		default:
@@ -366,7 +366,7 @@ float64_t CBaggingMachine::get_oob_error(std::shared_ptr<CEvaluation> eval) cons
 	return res;
 }
 
-std::shared_ptr<CDynamicArray<index_t>> CBaggingMachine::get_oob_indices(const SGVector<index_t>& in_bag)
+std::shared_ptr<DynamicArray<index_t>> BaggingMachine::get_oob_indices(const SGVector<index_t>& in_bag)
 {
 	SGVector<bool> out_of_bag(m_features->get_num_vectors());
 	out_of_bag.set_const(true);
@@ -375,7 +375,7 @@ std::shared_ptr<CDynamicArray<index_t>> CBaggingMachine::get_oob_indices(const S
 	for (index_t i = 0; i < in_bag.vlen; i++)
 		out_of_bag[in_bag[i]] &= false;
 
-	auto oob = std::make_shared<CDynamicArray<index_t>>();
+	auto oob = std::make_shared<DynamicArray<index_t>>();
 	// store the indicies of vectors that are out of the bag
 	for (index_t i = 0; i < out_of_bag.vlen; i++)
 	{

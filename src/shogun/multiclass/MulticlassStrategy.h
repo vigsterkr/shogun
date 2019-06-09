@@ -42,19 +42,19 @@ enum EProbHeuristicType
 /** @brief class MulticlassStrategy used to construct generic
  * multiclass classifiers with ensembles of binary classifiers
  */
-class CMulticlassStrategy: public CSGObject
+class MulticlassStrategy: public SGObject
 {
 public:
 	/** constructor */
-	CMulticlassStrategy();
+	MulticlassStrategy();
 
 	/** constructor
 	 * @param prob_heuris probability estimation heuristic
 	 */
-	CMulticlassStrategy(EProbHeuristicType prob_heuris);
+	MulticlassStrategy(EProbHeuristicType prob_heuris);
 
 	/** destructor */
-	virtual ~CMulticlassStrategy() {}
+	virtual ~MulticlassStrategy() {}
 
 	/** get name */
 	virtual const char* get_name() const
@@ -75,14 +75,14 @@ public:
 	}
 
 	/** get rejection strategy */
-	std::shared_ptr<CRejectionStrategy >get_rejection_strategy()
+	std::shared_ptr<RejectionStrategy >get_rejection_strategy()
 	{
 		
 		return m_rejection_strategy;
 	}
 
 	/** set rejection strategy */
-	void set_rejection_strategy(std::shared_ptr<CRejectionStrategy >rejection_strategy)
+	void set_rejection_strategy(std::shared_ptr<RejectionStrategy >rejection_strategy)
 	{
 		
 		
@@ -90,7 +90,7 @@ public:
 	}
 
 	/** start training */
-	virtual void train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels);
+	virtual void train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels);
 
 	/** has more training phase */
 	virtual bool train_has_more()=0;
@@ -148,7 +148,7 @@ public:
 
 	/** rescale multiclass outputs according to the selected heuristic
 	 * this function only being called with OVA_SOFTMAX heuristic
-	 * the CStatistics::fit_sigmoid() should be called first
+	 * the Statistics::fit_sigmoid() should be called first
 	 * @param outputs a vector of output from each machine (in that order)
 	 * @param As fitted sigmoid parameters a one for each machine
 	 * @param Bs fitted sigmoid parameters b one for each machine
@@ -165,9 +165,9 @@ private:
 
 protected:
 
-	std::shared_ptr<CRejectionStrategy> m_rejection_strategy; ///< rejection strategy
-	std::shared_ptr<CBinaryLabels >m_train_labels;    ///< labels used to train the submachines
-	std::shared_ptr<CMulticlassLabels >m_orig_labels; ///< original multiclass labels
+	std::shared_ptr<RejectionStrategy> m_rejection_strategy; ///< rejection strategy
+	std::shared_ptr<BinaryLabels >m_train_labels;    ///< labels used to train the submachines
+	std::shared_ptr<MulticlassLabels >m_orig_labels; ///< original multiclass labels
 	int32_t m_train_iter;             ///< index of current iterations
     int32_t m_num_classes;            ///< number of classes in this problem
 	EProbHeuristicType m_prob_heuris; ///< prob output heuristic

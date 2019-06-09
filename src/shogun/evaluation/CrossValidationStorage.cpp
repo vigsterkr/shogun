@@ -41,7 +41,7 @@
 
 using namespace shogun;
 
-CrossValidationFoldStorage::CrossValidationFoldStorage() : CEvaluationResult()
+CrossValidationFoldStorage::CrossValidationFoldStorage() : EvaluationResult()
 {
 	m_current_run_index = 0;
 	m_current_fold_index = 0;
@@ -56,13 +56,13 @@ CrossValidationFoldStorage::CrossValidationFoldStorage() : CEvaluationResult()
 	    &m_current_fold_index, "fold_index", "The current fold index",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*) &m_trained_machine, "trained_machine",
+	    (std::shared_ptr<SGObject>*) &m_trained_machine, "trained_machine",
 	    "The machine trained by this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*) &m_test_result, "predicted_labels",
+	    (std::shared_ptr<SGObject>*) &m_test_result, "predicted_labels",
 	    "The test result of this fold", ParameterProperties::HYPER);
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*) &m_test_true_result, "ground_truth_labels",
+	    (std::shared_ptr<SGObject>*) &m_test_true_result, "ground_truth_labels",
 	    "The true test result for this fold", ParameterProperties::HYPER);
 	SG_ADD(
 	    &m_train_indices, "train_indices", "Indices used for training",
@@ -87,14 +87,67 @@ void CrossValidationFoldStorage::print_result()
 {
 }
 
-std::shared_ptr<CSGObject> CrossValidationFoldStorage::create_empty() const
+std::shared_ptr<SGObject> CrossValidationFoldStorage::create_empty() const
 {
 	return std::make_shared<CrossValidationFoldStorage>();
 }
 
+const SGVector<index_t>& CrossValidationFoldStorage::get_train_indices() const
+{
+	return m_train_indices;
+}
+
+const SGVector<index_t>& CrossValidationFoldStorage::get_test_indices() const
+{
+	return m_test_indices;
+}
+
+std::shared_ptr<Machine> CrossValidationFoldStorage::get_trained_machine() const
+{
+	return m_trained_machine;
+}
+
+std::shared_ptr<Labels> CrossValidationFoldStorage::get_test_result() const
+{
+	return m_test_result;
+}
+
+std::shared_ptr<Labels> CrossValidationFoldStorage::get_test_true_result() const
+{
+	return m_test_true_result;
+}
+
+float64_t CrossValidationFoldStorage::get_evaluation_result() const
+{
+	return m_evaluation_result;
+}
+
+std::shared_ptr<CrossValidationFoldStorage> CrossValidationStorage::get_fold(int fold) const
+{
+	REQUIRE(
+	    fold < get_num_folds(), "The fold number must be less than %i",
+	    get_num_folds())
+
+	return m_folds_results[fold];
+}
+
+bool CrossValidationFoldStorage::
+operator==(const CrossValidationFoldStorage& rhs) const
+{
+	return m_current_run_index == rhs.m_current_run_index &&
+	       m_current_fold_index == rhs.m_current_fold_index &&
+	       // m_train_indices.equals(rhs.m_train_indices) &&
+	       // m_test_indices.equals(rhs.m_test_indices) &&
+	       m_trained_machine->equals(rhs.m_trained_machine) &&
+	       m_test_result->equals(rhs.m_test_result) &&
+	       m_test_true_result->equals(rhs.m_test_true_result) &&
+	       m_evaluation_result == rhs.m_evaluation_result;
+>>>>>>> drop C prefix
+}
+
 /** CrossValidationStorage **/
 
-CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
+CrossValidationStorage::CrossValidationStorage() : EvaluationResult()
 {
 	m_num_runs = 0;
 	m_num_folds = 0;
@@ -107,7 +160,7 @@ CrossValidationStorage::CrossValidationStorage() : CEvaluationResult()
 	    &m_num_folds, "num_folds", "The total number of cross-validation folds",
 	    ParameterProperties::HYPER);
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*)&m_original_labels, "labels",
+	    (std::shared_ptr<SGObject>*)&m_original_labels, "labels",
 	    "The labels used for this cross-validation",
 	    ParameterProperties::HYPER);
 	this->watch_param(
@@ -133,7 +186,7 @@ void CrossValidationStorage::print_result()
 {
 }
 
-std::shared_ptr<CSGObject> CrossValidationStorage::create_empty() const
+std::shared_ptr<SGObject> CrossValidationStorage::create_empty() const
 {
 	return std::make_shared<CrossValidationStorage>();
 }

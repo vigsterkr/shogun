@@ -203,7 +203,7 @@ struct PermutationMMD : ComputeMMD
 		for (auto n=0; n<m_num_null_samples; ++n)
 		{
 			std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-			CMath::permute(m_permuted_inds);
+			Math::permute(m_permuted_inds);
 			if (m_save_inds)
 			{
 				auto offset=n*m_permuted_inds.size();

@@ -16,8 +16,8 @@
 using namespace shogun;
 
 
-CMKLMulticlass::CMKLMulticlass()
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>())
+MKLMulticlass::MKLMulticlass()
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>())
 {
 	svm=NULL;
 	lpw=NULL;
@@ -27,8 +27,8 @@ CMKLMulticlass::CMKLMulticlass()
 	pnorm=1;
 }
 
-CMKLMulticlass::CMKLMulticlass(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>(), C, k, lab)
+MKLMulticlass::MKLMulticlass(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab)
 {
 	svm=NULL;
 	lpw=NULL;
@@ -39,38 +39,38 @@ CMKLMulticlass::CMKLMulticlass(float64_t C, std::shared_ptr<CKernel> k, std::sha
 }
 
 
-CMKLMulticlass::~CMKLMulticlass()
+MKLMulticlass::~MKLMulticlass()
 {
 }
 
-CMKLMulticlass::CMKLMulticlass( const CMKLMulticlass & cm)
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>())
+MKLMulticlass::MKLMulticlass( const MKLMulticlass & cm)
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>())
 {
 	svm=NULL;
 	lpw=NULL;
 	SG_ERROR(
-         " CMKLMulticlass::CMKLMulticlass(const CMKLMulticlass & cm): must "
+         " MKLMulticlass::MKLMulticlass(const MKLMulticlass & cm): must "
 			"not be called, glpk structure is currently not copyable");
 }
 
-CMKLMulticlass CMKLMulticlass::operator=( const CMKLMulticlass & cm)
+MKLMulticlass MKLMulticlass::operator=( const MKLMulticlass & cm)
 {
 		SG_ERROR(
-         " CMKLMulticlass CMKLMulticlass::operator=(...): must "
+         " MKLMulticlass MKLMulticlass::operator=(...): must "
 			"not be called, glpk structure is currently not copyable");
 	return (*this);
 }
 
 
-void CMKLMulticlass::initsvm()
+void MKLMulticlass::initsvm()
 {
    if (!m_labels)
 	{
-      SG_ERROR("CMKLMulticlass::initsvm(): the set labels is NULL\n")
+      SG_ERROR("MKLMulticlass::initsvm(): the set labels is NULL\n")
 	}
 
 
-	svm=std::make_shared<CGMNPSVM>();
+	svm=std::make_shared<GMNPSVM>();
 
 
    svm->set_C(get_C());
@@ -78,28 +78,28 @@ void CMKLMulticlass::initsvm()
 
    if (m_labels->get_num_labels()<=0)
 	{
-      SG_ERROR("CMKLMulticlass::initsvm(): the number of labels is "
+      SG_ERROR("MKLMulticlass::initsvm(): the number of labels is "
 				"nonpositive, do not know how to handle this!\n");
 	}
 
    svm->set_labels(m_labels);
 }
 
-void CMKLMulticlass::initlpsolver()
+void MKLMulticlass::initlpsolver()
 {
    if (!m_kernel)
 	{
-      SG_ERROR("CMKLMulticlass::initlpsolver(): the set kernel is NULL\n")
+      SG_ERROR("MKLMulticlass::initlpsolver(): the set kernel is NULL\n")
 	}
 
    if (m_kernel->get_kernel_type()!=K_COMBINED)
 	{
-      SG_ERROR("CMKLMulticlass::initlpsolver(): given kernel is not of type"
+      SG_ERROR("MKLMulticlass::initlpsolver(): given kernel is not of type"
             " K_COMBINED %d required by Multiclass Mkl \n",
             m_kernel->get_kernel_type());
 	}
 
-   int numker=std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_num_subkernels();
+   int numker=std::dynamic_pointer_cast<CombinedKernel>(m_kernel)->get_num_subkernels();
 
 	ASSERT(numker>0)
 	/*
@@ -124,7 +124,7 @@ void CMKLMulticlass::initlpsolver()
 }
 
 
-bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
+bool MKLMulticlass::evaluatefinishcriterion(const int32_t
 		numberofsilpiterations)
 {
 	if ( (max_num_mkl_iters>0) && (numberofsilpiterations>=max_num_mkl_iters) )
@@ -186,7 +186,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 			}
 			else
 			{
-            SG_SWARNING("CMKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
+            SG_SWARNING("MKLMulticlass::evaluatefinishcriterion(...): deltanew<=0.Switching back to weight norsm difference as criterion.\n")
 				delta=sqrt(delta);
 			}
 				SG_SINFO("weight delta %f \n",delta)
@@ -202,7 +202,7 @@ bool CMKLMulticlass::evaluatefinishcriterion(const int32_t
 	return false;
 }
 
-void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
+void MKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 		curweights)
 {
 
@@ -229,7 +229,7 @@ void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 	curalphaterm=sumofsignfreealphas;
 
 	int32_t numkernels=
-         std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_num_subkernels();
+         std::dynamic_pointer_cast<CombinedKernel>(m_kernel)->get_num_subkernels();
 
 
 	normweightssquared.resize(numkernels);
@@ -241,17 +241,17 @@ void CMKLMulticlass::addingweightsstep( const std::vector<float64_t> &
 	lpw->addconstraint(normweightssquared,sumofsignfreealphas);
 }
 
-float64_t CMKLMulticlass::getsumofsignfreealphas()
+float64_t MKLMulticlass::getsumofsignfreealphas()
 {
 
    std::vector<int> trainlabels2(m_labels->get_num_labels());
-   SGVector<int32_t> lab=(std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_int_labels();
+   SGVector<int32_t> lab=(std::static_pointer_cast<MulticlassLabels>(m_labels))->get_int_labels();
    std::copy(lab.vector,lab.vector+lab.vlen, trainlabels2.begin());
 
 	ASSERT (trainlabels2.size()>0)
 	float64_t sum=0;
 
-   for (int32_t nc=0; nc< (std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();++nc)
+   for (int32_t nc=0; nc< (std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();++nc)
 	{
 		auto sm=svm->get_svm(nc);
 
@@ -267,7 +267,7 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
 
 	for (size_t lb=0; lb< trainlabels2.size();++lb)
 	{
-      for (int32_t nc=0; nc< (std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();++nc)
+      for (int32_t nc=0; nc< (std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();++nc)
 		{
 			auto sm=svm->get_svm(nc);
 
@@ -288,14 +288,14 @@ float64_t CMKLMulticlass::getsumofsignfreealphas()
 	return sum;
 }
 
-float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
+float64_t MKLMulticlass::getsquarenormofprimalcoefficients(
 		const int32_t ind)
 {
-   auto ker=std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_kernel(ind);
+   auto ker=std::dynamic_pointer_cast<CombinedKernel>(m_kernel)->get_kernel(ind);
 
 	float64_t tmp=0;
 
-   for (int32_t classindex=0; classindex< (std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();
+   for (int32_t classindex=0; classindex< (std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();
 			++classindex)
 	{
 		auto sm=svm->get_svm(classindex);
@@ -324,14 +324,14 @@ float64_t CMKLMulticlass::getsquarenormofprimalcoefficients(
 }
 
 
-bool CMKLMulticlass::train_machine(std::shared_ptr<CFeatures> data)
+bool MKLMulticlass::train_machine(std::shared_ptr<Features> data)
 {
    ASSERT(m_kernel)
    ASSERT(m_labels && m_labels->get_num_labels())
    ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
    init_strategy();
 
-   int numcl=(std::static_pointer_cast<CMulticlassLabels>(m_labels))->get_num_classes();
+   int numcl=(std::static_pointer_cast<MulticlassLabels>(m_labels))->get_num_classes();
 
 	if (data)
 	{
@@ -349,7 +349,7 @@ bool CMKLMulticlass::train_machine(std::shared_ptr<CFeatures> data)
 	weightshistory.clear();
 
 	int32_t numkernels=
-         std::dynamic_pointer_cast<CCombinedKernel>(m_kernel)->get_num_subkernels();
+         std::dynamic_pointer_cast<CombinedKernel>(m_kernel)->get_num_subkernels();
 
 	::std::vector<float64_t> curweights(numkernels,1.0/numkernels);
 	weightshistory.push_back(curweights);
@@ -391,7 +391,7 @@ bool CMKLMulticlass::train_machine(std::shared_ptr<CFeatures> data)
 	for (int32_t i=0; i<numcl; i++)
 	{
 		auto osvm=svm->get_svm(i);
-		auto nsvm=std::make_shared<CSVM>(osvm->get_num_support_vectors());
+		auto nsvm=std::make_shared<SVM>(osvm->get_num_support_vectors());
 
 		for (int32_t k=0; k<osvm->get_num_support_vectors() ; k++)
 		{
@@ -414,7 +414,7 @@ bool CMKLMulticlass::train_machine(std::shared_ptr<CFeatures> data)
 
 
 
-float64_t* CMKLMulticlass::getsubkernelweights(int32_t & numweights)
+float64_t* MKLMulticlass::getsubkernelweights(int32_t & numweights)
 {
 	if ( weightshistory.empty() )
 	{
@@ -430,19 +430,19 @@ float64_t* CMKLMulticlass::getsubkernelweights(int32_t & numweights)
 	return res;
 }
 
-void CMKLMulticlass::set_mkl_epsilon(float64_t eps )
+void MKLMulticlass::set_mkl_epsilon(float64_t eps )
 {
 	mkl_eps=eps;
 }
 
-void CMKLMulticlass::set_max_num_mkliters(int32_t maxnum)
+void MKLMulticlass::set_max_num_mkliters(int32_t maxnum)
 {
 	max_num_mkl_iters=maxnum;
 }
 
-void CMKLMulticlass::set_mkl_norm(float64_t norm)
+void MKLMulticlass::set_mkl_norm(float64_t norm)
 {
 	pnorm=norm;
 	if(pnorm<1 )
-      SG_ERROR("CMKLMulticlass::set_mkl_norm(float64_t norm) : parameter pnorm<1")
+      SG_ERROR("MKLMulticlass::set_mkl_norm(float64_t norm) : parameter pnorm<1")
 }

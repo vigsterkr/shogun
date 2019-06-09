@@ -42,7 +42,7 @@
 using namespace shogun;
 using namespace internal;
 
-MaxMeasure::MaxMeasure(KernelManager& km, std::shared_ptr<CMMD> est) : KernelSelection(km, est)
+MaxMeasure::MaxMeasure(KernelManager& km, std::shared_ptr<MMD> est) : KernelSelection(km, est)
 {
 }
 
@@ -73,7 +73,7 @@ void MaxMeasure::init_measures()
 void MaxMeasure::compute_measures()
 {
 	REQUIRE(estimator!=nullptr, "Estimator is not set!\n");
-	auto mmd=std::dynamic_pointer_cast<CQuadraticTimeMMD>(estimator);
+	auto mmd=std::dynamic_pointer_cast<QuadraticTimeMMD>(estimator);
 	if (mmd!=nullptr && kernel_mgr.same_distance_type())
 		measures=mmd->multikernel()->statistic(kernel_mgr);
 	else
@@ -93,7 +93,7 @@ void MaxMeasure::compute_measures()
 	}
 }
 
-std::shared_ptr<CKernel> MaxMeasure::select_kernel()
+std::shared_ptr<Kernel> MaxMeasure::select_kernel()
 {
 	compute_measures();
 	ASSERT(measures.size()==kernel_mgr.num_kernels());

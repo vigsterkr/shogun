@@ -63,10 +63,10 @@ index_t num_features = 1;
 
 /* training label data */
 SGVector<float64_t> lab(num_vectors);
-std::shared_ptr<CDenseFeatures<float64_t>> features = NULL;
-std::shared_ptr<CRegressionLabels> labels = NULL;
+std::shared_ptr<DenseFeatures<float64_t>> features = NULL;
+std::shared_ptr<RegressionLabels> labels = NULL;
 
-std::shared_ptr<CParameterObserverCV> generate(bool locked = true)
+std::shared_ptr<ParameterObserverCV> generate(bool locked = true)
 {
 	/* training features */
 	features = regression_test_env->get_features_train();
@@ -76,41 +76,41 @@ std::shared_ptr<CParameterObserverCV> generate(bool locked = true)
 	labels = regression_test_env->get_labels_train();
 
 	/* kernel */
-	auto kernel = std::make_shared<CLinearKernel>();
+	auto kernel = std::make_shared<LinearKernel>();
 	kernel->init(features, features);
 
 	/* kernel ridge regression*/
 	float64_t tau = 0.0001;
 	auto krr =
-	    std::make_shared<CKernelRidgeRegression>(tau, kernel, labels);
+	    std::make_shared<KernelRidgeRegression>(tau, kernel, labels);
 
 	/* evaluation criterion */
-	auto eval_crit = std::make_shared<CMeanSquaredError>();
+	auto eval_crit = std::make_shared<MeanSquaredError>();
 
 	/* splitting strategy */
 	index_t n_folds = 5;
 	auto splitting =
-	    std::make_shared<CCrossValidationSplitting>(labels, n_folds);
+	    std::make_shared<CrossValidationSplitting>(labels, n_folds);
 
 	/* cross validation instance, 100 runs, 95% confidence interval */
 	auto cross =
-	    std::make_shared<CCrossValidation>(krr, features, labels, splitting, eval_crit);
+	    std::make_shared<CrossValidation>(krr, features, labels, splitting, eval_crit);
 	cross->set_num_runs(10);
 	cross->set_autolock(locked);
 
 	/* Create the parameter observer */
-	auto par = std::make_shared<CParameterObserverCV>();
+	auto par = std::make_shared<ParameterObserverCV>();
 	cross->subscribe(par);
 
 	/* actual evaluation */
-	auto result = cross->evaluate()->as<CCrossValidationResult>();
+	auto result = cross->evaluate()->as<CrossValidationResult>();
 
 	return par;
 }
 
 TEST(ParameterObserverCV, get_observations_locked)
 {
-	std::shared_ptr<CParameterObserverCV> par{generate(true)};
+	std::shared_ptr<ParameterObserverCV> par{generate(true)};
 
 	for (index_t i = 0; i < par->get<index_t>("num_observations"); i++)
 	{
@@ -143,7 +143,7 @@ TEST(ParameterObserverCV, get_observations_locked)
 
 TEST(ParameterObserverCV, get_observations_unlocked)
 {
-	std::shared_ptr<CParameterObserverCV> par{generate(false)};
+	std::shared_ptr<ParameterObserverCV> par{generate(false)};
 
 	for (index_t i = 0; i < par->get<index_t>("num_observations"); i++)
 	{

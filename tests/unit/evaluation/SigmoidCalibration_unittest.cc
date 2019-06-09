@@ -10,7 +10,7 @@ using namespace shogun;
 
 TEST(SigmoidCalibrationTest, binary_calibration)
 {
-	CMath::init_random(8);
+	Math::init_random(8);
 	SGVector<float64_t> preds(10), labs(10);
 
 	preds.vector[0] = 0.6;
@@ -35,10 +35,10 @@ TEST(SigmoidCalibrationTest, binary_calibration)
 	labs.vector[8] = -1;
 	labs.vector[9] = -1;
 
-	auto predictions = std::make_shared<CBinaryLabels>(preds);
-	auto labels = std::make_shared<CBinaryLabels>(labs);
+	auto predictions = std::make_shared<BinaryLabels>(preds);
+	auto labels = std::make_shared<BinaryLabels>(labs);
 
-	auto sigmoid_calibration = std::make_shared<CSigmoidCalibration>();
+	auto sigmoid_calibration = std::make_shared<SigmoidCalibration>();
 	auto calibrated = sigmoid_calibration->fit_binary(predictions, labels);
 	EXPECT_EQ(calibrated, true);
 	auto calibrated_labels = sigmoid_calibration->calibrate_binary(predictions);
@@ -71,8 +71,8 @@ TEST(SigmoidCalibrationTest, multiclass_calibration)
 
 	SGVector<float64_t> tgt({0, 0, 0, 0, 1, 2, 0, 1, 1, 1});
 
-	auto predictions = std::make_shared<CMulticlassLabels>(tgt);
-	auto targets = std::make_shared<CMulticlassLabels>(tgt);
+	auto predictions = std::make_shared<MulticlassLabels>(tgt);
+	auto targets = std::make_shared<MulticlassLabels>(tgt);
 	predictions->allocate_confidences_for(num_class);
 
 	for (index_t i = 0; i < num_vec; i++)
@@ -86,7 +86,7 @@ TEST(SigmoidCalibrationTest, multiclass_calibration)
 
 		predictions->set_multiclass_confidences(i, confs);
 	}
-	auto calibration_method = std::make_shared<CSigmoidCalibration>();
+	auto calibration_method = std::make_shared<SigmoidCalibration>();
 
 	auto calibrated = calibration_method->fit_multiclass(predictions, targets);
 

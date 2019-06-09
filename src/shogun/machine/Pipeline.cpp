@@ -13,21 +13,21 @@
 
 namespace shogun
 {
-	CPipelineBuilder::~CPipelineBuilder()
+	PipelineBuilder::~PipelineBuilder()
 	{
 	}
 
-	std::shared_ptr<CPipelineBuilder> CPipelineBuilder::over(std::shared_ptr<CTransformer> transformer)
+	std::shared_ptr<PipelineBuilder> PipelineBuilder::over(std::shared_ptr<Transformer> transformer)
 	{
 		return over(transformer->get_name(), transformer);
 	}
 
-	std::shared_ptr<CPipelineBuilder>
-	CPipelineBuilder::over(const std::string& name, std::shared_ptr<CTransformer> transformer)
+	std::shared_ptr<PipelineBuilder>
+	PipelineBuilder::over(const std::string& name, std::shared_ptr<Transformer> transformer)
 	{
 		REQUIRE_E(
 		    m_stages.empty() ||
-		        holds_alternative<std::shared_ptr<CTransformer>>(m_stages.back().second),
+		        holds_alternative<std::shared_ptr<Transformer>>(m_stages.back().second),
 		    std::invalid_argument,
 		    "Transformers can not be placed after machines. Last element is "
 		    "%s\n",
@@ -36,20 +36,20 @@ namespace shogun
 
 		m_stages.emplace_back(name, transformer);
 
-		return shared_from_this()->as<CPipelineBuilder>();
+		return shared_from_this()->as<PipelineBuilder>();
 	}
 
-	std::shared_ptr<CPipeline> CPipelineBuilder::then(std::shared_ptr<CMachine> machine)
+	std::shared_ptr<Pipeline> PipelineBuilder::then(std::shared_ptr<Machine> machine)
 	{
 		return then(machine->get_name(), machine);
 	}
 
-	std::shared_ptr<CPipeline>
-	CPipelineBuilder::then(const std::string& name, std::shared_ptr<CMachine> machine)
+	std::shared_ptr<Pipeline>
+	PipelineBuilder::then(const std::string& name, std::shared_ptr<Machine> machine)
 	{
 		REQUIRE_E(
 		    m_stages.empty() ||
-		        holds_alternative<std::shared_ptr<CTransformer>>(m_stages.back().second),
+		        holds_alternative<std::shared_ptr<Transformer>>(m_stages.back().second),
 		    std::invalid_argument,
 		    "Multiple machines are added to pipeline. Last element is %s\n",
 		    m_stages.back().first.c_str());
@@ -60,19 +60,19 @@ namespace shogun
 		return build();
 	}
 
-	std::shared_ptr<CPipelineBuilder>
-	CPipelineBuilder::add_stages(std::vector<std::shared_ptr<CSGObject>> stages)
+	std::shared_ptr<PipelineBuilder>
+	PipelineBuilder::add_stages(std::vector<std::shared_ptr<SGObject>> stages)
 	{
 		for (auto stage : stages)
 		{
-			auto transformer = stage->as<CTransformer>();
+			auto transformer = stage->as<Transformer>();
 			if (transformer)
 			{
 				over(transformer);
 			}
 			else
 			{
-				auto machine = stage->as<CMachine>();
+				auto machine = stage->as<Machine>();
 				REQUIRE_E(
 				    machine, std::invalid_argument, "Stage must be either a "
 				                                    "transformer or a machine. "
@@ -82,41 +82,41 @@ namespace shogun
 				m_stages.emplace_back(machine->get_name(), machine);
 			}
 		}
-		return shared_from_this()->as<CPipelineBuilder>();
+		return shared_from_this()->as<PipelineBuilder>();
 	}
 
-	std::shared_ptr<CPipeline> CPipelineBuilder::build()
+	std::shared_ptr<Pipeline> PipelineBuilder::build()
 	{
 		check_pipeline();
 
-		auto pipeline = std::make_shared<CPipeline>();
+		auto pipeline = std::make_shared<Pipeline>();
 		pipeline->m_stages = std::move(m_stages);
 		m_stages.clear();
 
 		return pipeline;
 	}
 
-	void CPipelineBuilder::check_pipeline() const
+	void PipelineBuilder::check_pipeline() const
 	{
 		REQUIRE_E(
 		    !m_stages.empty(), InvalidStateException, "Pipeline is empty");
 		REQUIRE_E(
-		    holds_alternative<std::shared_ptr<CMachine>>(m_stages.back().second),
+		    holds_alternative<std::shared_ptr<Machine>>(m_stages.back().second),
 		    InvalidStateException, "Pipline cannot be trained without an "
 		                           "added machine. Last element "
 		                           "is %s.\n",
 		    m_stages.back().first.c_str());
 	}
 
-	CPipeline::CPipeline() : CMachine()
+	Pipeline::Pipeline() : Machine()
 	{
 	}
 
-	CPipeline::~CPipeline()
+	Pipeline::~Pipeline()
 	{
 	}
 
-	bool CPipeline::train_machine(std::shared_ptr<CFeatures> data)
+	bool Pipeline::train_machine(std::shared_ptr<Features> data)
 	{
 		if (train_require_labels())
 		{
@@ -125,9 +125,9 @@ namespace shogun
 		auto current_data = data;
 		for (auto&& stage : m_stages)
 		{
-			if (holds_alternative<std::shared_ptr<CTransformer>>(stage.second))
+			if (holds_alternative<std::shared_ptr<Transformer>>(stage.second))
 			{
-				auto transformer = shogun::get<std::shared_ptr<CTransformer>>(stage.second);
+				auto transformer = shogun::get<std::shared_ptr<Transformer>>(stage.second);
 				transformer->train_require_labels()
 				    ? transformer->fit(current_data, m_labels)
 				    : transformer->fit(current_data);
@@ -136,7 +136,7 @@ namespace shogun
 			}
 			else
 			{
-				auto machine = shogun::get<std::shared_ptr<CMachine>>(stage.second);
+				auto machine = shogun::get<std::shared_ptr<Machine>>(stage.second);
 				if (machine->train_require_labels())
 					machine->set_labels(m_labels);
 				machine->train(current_data);
@@ -145,19 +145,19 @@ namespace shogun
 		return true;
 	}
 
-	std::shared_ptr<CLabels> CPipeline::apply(std::shared_ptr<CFeatures> data)
+	std::shared_ptr<Labels> Pipeline::apply(std::shared_ptr<Features> data)
 	{
 		auto current_data = data;
 		for (auto&& stage : m_stages)
 		{
-			if (holds_alternative<std::shared_ptr<CTransformer>>(stage.second))
+			if (holds_alternative<std::shared_ptr<Transformer>>(stage.second))
 			{
-				auto transformer = shogun::get<std::shared_ptr<CTransformer>>(stage.second);
+				auto transformer = shogun::get<std::shared_ptr<Transformer>>(stage.second);
 				current_data = transformer->transform(current_data);
 			}
 			else
 			{
-				auto machine = shogun::get<std::shared_ptr<CMachine>>(stage.second);
+				auto machine = shogun::get<std::shared_ptr<Machine>>(stage.second);
 				return machine->apply(current_data);
 			}
 		}
@@ -165,7 +165,7 @@ namespace shogun
 		return nullptr; // unreachable
 	}
 
-	bool CPipeline::train_require_labels() const
+	bool Pipeline::train_require_labels() const
 	{
 		bool require_labels = false;
 
@@ -184,7 +184,7 @@ namespace shogun
 		return require_labels;
 	}
 
-	std::string CPipeline::to_string() const
+	std::string Pipeline::to_string() const
 	{
 		std::stringstream ss;
 
@@ -196,13 +196,13 @@ namespace shogun
 		return ss.str();
 	}
 
-	std::shared_ptr<CTransformer> CPipeline::get_transformer(const std::string& name) const
+	std::shared_ptr<Transformer> Pipeline::get_transformer(const std::string& name) const
 	{
 		for (auto&& stage : m_stages)
 		{
 			if (stage.first == name &&
-			    holds_alternative<std::shared_ptr<CTransformer>>(stage.second))
-				return shogun::get<std::shared_ptr<CTransformer>>(stage.second);
+			    holds_alternative<std::shared_ptr<Transformer>>(stage.second))
+				return shogun::get<std::shared_ptr<Transformer>>(stage.second);
 		}
 
 		SG_THROW(
@@ -212,24 +212,24 @@ namespace shogun
 		return nullptr;
 	}
 
-	std::shared_ptr<CMachine> CPipeline::get_machine() const
+	std::shared_ptr<Machine> Pipeline::get_machine() const
 	{
-		return shogun::get<std::shared_ptr<CMachine>>(m_stages.back().second);
+		return shogun::get<std::shared_ptr<Machine>>(m_stages.back().second);
 	}
 
-	void CPipeline::set_store_model_features(bool store_model)
+	void Pipeline::set_store_model_features(bool store_model)
 	{
 		get_machine()->set_store_model_features(store_model);
 	}
 
-	void CPipeline::store_model_features()
+	void Pipeline::store_model_features()
 	{
 		get_machine()->store_model_features();
 	}
 
-	std::shared_ptr<CSGObject> CPipeline::clone() const
+	std::shared_ptr<SGObject> Pipeline::clone() const
 	{
-		auto result = CMachine::clone()->as<CPipeline>();
+		auto result = Machine::clone()->as<Pipeline>();
 		for (auto&& stage : m_stages)
 		{
 			visit(
@@ -245,7 +245,7 @@ namespace shogun
 		return result;
 	}
 
-	EProblemType CPipeline::get_machine_problem_type() const
+	EProblemType Pipeline::get_machine_problem_type() const
 	{
 		return get_machine()->get_machine_problem_type();
 	}

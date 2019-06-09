@@ -78,11 +78,11 @@ enum EInferenceType
  * any implemented approximation. See
  * CInference::get_marginal_likelihood_estimate.
  */
-class CInference : public CDifferentiableFunction
+class Inference : public DifferentiableFunction
 {
 public:
 	/** default constructor */
-	CInference();
+	Inference();
 
 	/** constructor
 	 *
@@ -92,10 +92,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CInference(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
+	Inference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CInference();
+	virtual ~Inference();
 
 	/** return what type of inference we are, e.g. exact, FITC, Laplace, etc.
 	 *
@@ -170,7 +170,7 @@ public:
 	 */
 	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >>
 	get_negative_log_marginal_likelihood_derivatives(
-		std::shared_ptr<CMap<TParameter*, CSGObject*>> parameters);
+		std::shared_ptr<CMap<TParameter*, SGObject*>> parameters);
 
 	/** get alpha vector
 	 *
@@ -243,7 +243,7 @@ public:
 	 * of derivative with respect to that parameter.
 	 */
 	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> get_gradient(
-			std::shared_ptr<CMap<TParameter*, CSGObject*>> parameters)
+			std::shared_ptr<CMap<TParameter*, SGObject*>> parameters)
 	{
         return get_negative_log_marginal_likelihood_derivatives(parameters);
 	}
@@ -263,13 +263,13 @@ public:
 	*
 	* @return features
 	*/
-	virtual std::shared_ptr<CFeatures> get_features() {  return m_features; }
+	virtual std::shared_ptr<Features> get_features() {  return m_features; }
 
 	/** set features
 	*
 	* @param feat features to set
 	*/
-	virtual void set_features(std::shared_ptr<CFeatures> feat)
+	virtual void set_features(std::shared_ptr<Features> feat)
 	{
 
 
@@ -280,13 +280,13 @@ public:
 	 *
 	 * @return kernel
 	 */
-	virtual std::shared_ptr<CKernel> get_kernel() {  return m_kernel; }
+	virtual std::shared_ptr<Kernel> get_kernel() {  return m_kernel; }
 
 	/** set kernel
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual void set_kernel(std::shared_ptr<CKernel> kern)
+	virtual void set_kernel(std::shared_ptr<Kernel> kern)
 	{
 
 
@@ -297,13 +297,13 @@ public:
 	 *
 	 * @return mean
 	 */
-	virtual std::shared_ptr<CMeanFunction> get_mean() {  return m_mean; }
+	virtual std::shared_ptr<MeanFunction> get_mean() {  return m_mean; }
 
 	/** set mean
 	 *
 	 * @param m mean function to set
 	 */
-	virtual void set_mean(std::shared_ptr<CMeanFunction> m)
+	virtual void set_mean(std::shared_ptr<MeanFunction> m)
 	{
 
 
@@ -314,13 +314,13 @@ public:
 	 *
 	 * @return labels
 	 */
-	virtual std::shared_ptr<CLabels> get_labels() {  return m_labels; }
+	virtual std::shared_ptr<Labels> get_labels() {  return m_labels; }
 
 	/** set labels
 	 *
 	 * @param lab label to set
 	 */
-	virtual void set_labels(std::shared_ptr<CLabels> lab)
+	virtual void set_labels(std::shared_ptr<Labels> lab)
 	{
 
 
@@ -331,13 +331,13 @@ public:
 	 *
 	 * @return likelihood
 	 */
-	std::shared_ptr<CLikelihoodModel> get_model() {  return m_model; }
+	std::shared_ptr<LikelihoodModel> get_model() {  return m_model; }
 
 	/** set likelihood model
 	 *
 	 * @param mod model to set
 	 */
-	virtual void set_model(std::shared_ptr<CLikelihoodModel> mod)
+	virtual void set_model(std::shared_ptr<LikelihoodModel> mod)
 	{
 
 
@@ -461,19 +461,19 @@ protected:
 	std::shared_ptr<Minimizer> m_minimizer;
 
 	/** covariance function */
-	std::shared_ptr<CKernel> m_kernel;
+	std::shared_ptr<Kernel> m_kernel;
 
 	/** mean function */
-	std::shared_ptr<CMeanFunction> m_mean;
+	std::shared_ptr<MeanFunction> m_mean;
 
 	/** likelihood function to use */
-	std::shared_ptr<CLikelihoodModel> m_model;
+	std::shared_ptr<LikelihoodModel> m_model;
 
 	/** features to use */
-	std::shared_ptr<CFeatures> m_features;
+	std::shared_ptr<Features> m_features;
 
 	/** labels of features */
-	std::shared_ptr<CLabels> m_labels;
+	std::shared_ptr<Labels> m_labels;
 
 	/** alpha vector used in process mean calculation */
 	SGVector<float64_t> m_alpha;

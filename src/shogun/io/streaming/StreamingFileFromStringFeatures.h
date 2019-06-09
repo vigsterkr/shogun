@@ -14,24 +14,24 @@
 
 namespace shogun
 {
-/** @brief Class CStreamingFileFromStringFeatures is derived from
+/** @brief Class StreamingFileFromStringFeatures is derived from
  * CStreamingFile and provides an input source for the online
  * framework from a CStringFeatures object.
  */
-template <class T> class CStreamingFileFromStringFeatures: public CStreamingFileFromFeatures
+template <class T> class StreamingFileFromStringFeatures: public StreamingFileFromFeatures
 {
 public:
 	/**
 	 * Default constructor
 	 */
-	CStreamingFileFromStringFeatures();
+	StreamingFileFromStringFeatures();
 
 	/**
 	 * Constructor taking a StringFeatures object as arg
 	 *
 	 * @param feat StringFeatures object
 	 */
-	CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat);
+	StreamingFileFromStringFeatures(std::shared_ptr<StringFeatures<T>> feat);
 
 	/**
 	 * Constructor taking a StringFeatures object as arg
@@ -39,12 +39,12 @@ public:
 	 * @param feat StringFeatures object
 	 * @param lab Labels as float64_t*
 	 */
-	CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat, float64_t* lab);
+	StreamingFileFromStringFeatures(std::shared_ptr<StringFeatures<T>> feat, float64_t* lab);
 
 	/**
 	 * Destructor
 	 */
-	virtual ~CStreamingFileFromStringFeatures();
+	virtual ~StreamingFileFromStringFeatures();
 
 	/**
 	 * This function will be called for reading strings from the
@@ -88,12 +88,12 @@ private:
 	/**
 	 * Initialize members to defaults
 	 */
-	void init(std::shared_ptr<CStringFeatures<T>> feat=NULL);
+	void init(std::shared_ptr<StringFeatures<T>> feat=NULL);
 
 protected:
 
 	/// StringFeatures object
-	std::shared_ptr<CStringFeatures<T>> features;
+	std::shared_ptr<StringFeatures<T>> features;
 
 	/// Index of vector to be returned from the feature matrix
 	int32_t vector_num;
@@ -101,33 +101,33 @@ protected:
 };
 
 template <class T>
-CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures()
-	: CStreamingFileFromFeatures()
+StreamingFileFromStringFeatures<T>::StreamingFileFromStringFeatures()
+	: StreamingFileFromFeatures()
 {
 	init();
 }
 
 template <class T>
-CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat)
-	: CStreamingFileFromFeatures(feat)
+StreamingFileFromStringFeatures<T>::StreamingFileFromStringFeatures(std::shared_ptr<StringFeatures<T>> feat)
+	: StreamingFileFromFeatures(feat)
 {
 	init(feat);
 }
 
 template <class T>
-CStreamingFileFromStringFeatures<T>::CStreamingFileFromStringFeatures(std::shared_ptr<CStringFeatures<T>> feat, float64_t* lab)
-	: CStreamingFileFromFeatures(feat,lab)
+StreamingFileFromStringFeatures<T>::StreamingFileFromStringFeatures(std::shared_ptr<StringFeatures<T>> feat, float64_t* lab)
+	: StreamingFileFromFeatures(feat,lab)
 {
 	init(feat);
 }
 
 template <class T>
-CStreamingFileFromStringFeatures<T>::~CStreamingFileFromStringFeatures()
+StreamingFileFromStringFeatures<T>::~StreamingFileFromStringFeatures()
 {
 }
 
 template <class T>
-void CStreamingFileFromStringFeatures<T>::init(std::shared_ptr<CStringFeatures<T>> feat)
+void StreamingFileFromStringFeatures<T>::init(std::shared_ptr<StringFeatures<T>> feat)
 {
 	vector_num=0;
 	features = feat;
@@ -137,7 +137,7 @@ void CStreamingFileFromStringFeatures<T>::init(std::shared_ptr<CStringFeatures<T
 
 /* Functions to return the vector from the StringFeatures object */
 template <class T>
-void CStreamingFileFromStringFeatures<T>::get_string(T*& vector, int32_t& num_feat)
+void StreamingFileFromStringFeatures<T>::get_string(T*& vector, int32_t& num_feat)
 {
 	if (vector_num >= features->get_num_vectors())
 	{
@@ -158,7 +158,7 @@ void CStreamingFileFromStringFeatures<T>::get_string(T*& vector, int32_t& num_fe
 
 /* Functions to return the vector from the StringFeatures object with label */
 template <class T>
-void CStreamingFileFromStringFeatures<T>::get_string_and_label
+void StreamingFileFromStringFeatures<T>::get_string_and_label
 (T*& vector, int32_t& num_feat, float64_t& label)
 {
 	if (vector_num >= features->get_num_vectors())

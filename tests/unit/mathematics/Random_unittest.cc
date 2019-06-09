@@ -117,21 +117,21 @@ TEST(Random, normal_distrib)
 
 TEST(Random, random_uint64_1_2)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	for (int32_t i=0; i<10000; i++)
 	{
-		uint64_t r=CMath::random((uint64_t) 1, (uint64_t) 2);
+		uint64_t r=Math::random((uint64_t) 1, (uint64_t) 2);
 		EXPECT_TRUE(r == 1 || r == 2);
 	}
 }
 
 TEST(Random, random_uint64_0_10)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[10] = {0,0,0,0,0,0};
 	for (int32_t i=0; i<10000; i++)
 	{
-		uint64_t r=CMath::random((uint64_t) 0, (uint64_t) 9);
+		uint64_t r=Math::random((uint64_t) 0, (uint64_t) 9);
 		rnds[r]++;
 	}
 
@@ -142,21 +142,21 @@ TEST(Random, random_uint64_0_10)
 
 TEST(Random, random_int64_1_2)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	for (int32_t i=0; i<10000; i++)
 	{
-		int64_t r=CMath::random((int64_t) 1, (int64_t) 2);
+		int64_t r=Math::random((int64_t) 1, (int64_t) 2);
 		EXPECT_TRUE(r == 1 || r == 2);
 	}
 }
 
 TEST(Random, random_int64_0_10)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[10] = {0,0,0,0,0,0};
 	for (int32_t i=0; i<10000; i++)
 	{
-		int64_t r=CMath::random((int64_t) 0, (int64_t) 9);
+		int64_t r=Math::random((int64_t) 0, (int64_t) 9);
 		rnds[r]++;
 	}
 
@@ -167,21 +167,21 @@ TEST(Random, random_int64_0_10)
 
 TEST(Random, random_uint32_1_2)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	for (int32_t i=0; i<10000; i++)
 	{
-		uint32_t r=CMath::random((uint32_t) 1, (uint32_t) 2);
+		uint32_t r=Math::random((uint32_t) 1, (uint32_t) 2);
 		EXPECT_TRUE(r == 1 || r == 2);
 	}
 }
 
 TEST(Random, random_uint32_0_10)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[10] = {0,0,0,0,0,0};
 	for (int32_t i=0; i<10000; i++)
 	{
-		uint32_t r=CMath::random((uint32_t) 0, (uint32_t) 9);
+		uint32_t r=Math::random((uint32_t) 0, (uint32_t) 9);
 		rnds[r]++;
 	}
 
@@ -192,23 +192,23 @@ TEST(Random, random_uint32_0_10)
 
 TEST(Random, random_int32_1_2)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	for (int32_t i=0; i<10000; i++)
 	{
-		int32_t r=CMath::random((int32_t) 1, (int32_t) 2);
+		int32_t r=Math::random((int32_t) 1, (int32_t) 2);
 		EXPECT_TRUE(r == 1 || r == 2);
 	}
 }
 
 TEST(Random, random_int64_range)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[array_len];
 	for (uint32_t i=0; i<array_len; i++)
 		rnds[i]=0;
 	for (uint32_t i=0; i<n_runs; i++)
 	{
-		int64_t r=CMath::random((int64_t) 0, (int64_t) array_len-1);
+		int64_t r=Math::random((int64_t) 0, (int64_t) array_len-1);
 		rnds[r]++;
 	}
 
@@ -220,13 +220,13 @@ TEST(Random, random_int64_range)
 
 TEST(Random, random_uint64_range)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[array_len];
 	for (uint32_t i=0; i<array_len; i++)
 		rnds[i]=0;
 	for (uint32_t i=0; i<n_runs; i++)
 	{
-		uint64_t r=CMath::random((uint64_t) 0, (uint64_t) array_len-1);
+		uint64_t r=Math::random((uint64_t) 0, (uint64_t) array_len-1);
 		rnds[r]++;
 	}
 
@@ -238,13 +238,13 @@ TEST(Random, random_uint64_range)
 
 TEST(Random, random_int32_range)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[array_len];
 	for (uint32_t i=0; i<array_len; i++)
 		rnds[i]=0;
 	for (uint32_t i=0; i<n_runs; i++)
 	{
-		int32_t r=CMath::random((int32_t) 0, (int32_t) array_len-1);
+		int32_t r=Math::random((int32_t) 0, (int32_t) array_len-1);
 		rnds[r]++;
 	}
 
@@ -256,13 +256,13 @@ TEST(Random, random_int32_range)
 
 TEST(Random, random_uint32_range)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[array_len];
 	for (uint32_t i=0; i<array_len; i++)
 		rnds[i]=0;
 	for (uint32_t i=0; i<n_runs; i++)
 	{
-		uint32_t r=CMath::random((uint32_t) 0, (uint32_t) array_len-1);
+		uint32_t r=Math::random((uint32_t) 0, (uint32_t) array_len-1);
 		rnds[r]++;
 	}
 
@@ -294,13 +294,13 @@ TEST(Random, random_uint32_random_range)
 
 TEST(Random, random_float64_range)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	int rnds[array_len];
 	for (uint32_t i=0; i<array_len; i++)
 		rnds[i]=0;
 	for (uint32_t i=0; i<n_runs; i++)
 	{
-		int32_t r= (int32_t) CMath::random((float64_t) 0, (float64_t) array_len);
+		int32_t r= (int32_t) Math::random((float64_t) 0, (float64_t) array_len);
 		rnds[r]++;
 	}
 
@@ -312,14 +312,14 @@ TEST(Random, random_float64_range)
 
 TEST(Random, random_float64_range2)
 {
-	CMath::init_random(12345678);
+	Math::init_random(12345678);
 	float64_t min=1.0;
 	float64_t max=0.0;
 	for (uint32_t i=0; i<n_runs; i++)
 	{
-		float64_t r=CMath::random((float64_t) 0, (float64_t) 1.0);
-		min=CMath::min(min, r);
-		max=CMath::max(max, r);
+		float64_t r=Math::random((float64_t) 0, (float64_t) 1.0);
+		min=Math::min(min, r);
+		max=Math::max(max, r);
 	}
 	EXPECT_GE(max, 0.99999);
 	EXPECT_LE(min, 0.00001);
@@ -335,7 +335,7 @@ TEST(Random, random_std_normal_quantiles)
 
 	for (int64_t i=0; i<m; ++i)
 	{
-		float64_t quantile=CStatistics::normal_cdf(rand->std_normal_distrib(), 1);
+		float64_t quantile=Statistics::normal_cdf(rand->std_normal_distrib(), 1);
 		index_t idx=(int32_t)(quantile*counts.vlen);
 		counts[idx]++;
 	}

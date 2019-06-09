@@ -34,13 +34,13 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_laplace)
 	lab_train[0]=1;
 	lab_train[1]=-1;
 
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8);
-	auto mean=std::make_shared<CZeroMean>();
-	auto likelihood=std::make_shared<CLogitLikelihood>();
-	auto inf=std::make_shared<CSingleLaplaceInferenceMethod>(kernel,
+	auto kernel=std::make_shared<GaussianKernel>(10, 8);
+	auto mean=std::make_shared<ZeroMean>();
+	auto likelihood=std::make_shared<LogitLikelihood>();
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 	inf->set_scale(2.0);
 
@@ -67,13 +67,13 @@ TEST(InferenceMethod,get_marginal_likelihood_estimate_logit_ep)
 	lab_train[0]=1;
 	lab_train[1]=-1;
 
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8);
-	auto mean=std::make_shared<CZeroMean>();
-	auto likelihood=std::make_shared<CLogitLikelihood>();
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel, features_train, mean,
+	auto kernel=std::make_shared<GaussianKernel>(10, 8);
+	auto mean=std::make_shared<ZeroMean>();
+	auto likelihood=std::make_shared<LogitLikelihood>();
+	auto inf=std::make_shared<EPInferenceMethod>(kernel, features_train, mean,
 			labels_train, likelihood);
 	inf->set_scale(2.0);
 
@@ -107,16 +107,16 @@ TEST(InferenceMethod, compute_gradient)
 		Y[i] = std::sin(X(0, i));
 	}
 
-	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
-	auto label_train=std::make_shared<CRegressionLabels>(Y);
+	auto feat_train=std::make_shared<DenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<RegressionLabels>(Y);
 
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
-	auto mean=std::make_shared<CZeroMean>();
-	auto lik=std::make_shared<CGaussianLikelihood>();
+	auto kernel=std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<ZeroMean>();
+	auto lik=std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	SGMatrix<float64_t> L=inf->get_cholesky();

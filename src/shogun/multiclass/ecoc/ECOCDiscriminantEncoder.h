@@ -28,20 +28,20 @@ namespace shogun
  *   Application Dependent Design of Error Correcting Output Codes. TPAMI 2006.
  *
  */
-class CECOCDiscriminantEncoder: public CECOCEncoder
+class ECOCDiscriminantEncoder: public ECOCEncoder
 {
 public:
     /** constructor */
-    CECOCDiscriminantEncoder();
+    ECOCDiscriminantEncoder();
 
     /** destructor */
-    virtual ~CECOCDiscriminantEncoder();
+    virtual ~ECOCDiscriminantEncoder();
 
     /** set features */
-    void set_features(std::shared_ptr<CFeatures >features);
+    void set_features(std::shared_ptr<Features >features);
 
     /** set labels */
-    void set_labels(std::shared_ptr<CLabels >labels);
+    void set_labels(std::shared_ptr<Labels >labels);
 
     /** set sffs iterations
      * @param iterations number of sffs iterations
@@ -78,8 +78,8 @@ protected:
 
     SGMatrix<int32_t> m_codebook;
     int32_t m_code_idx;
-    std::shared_ptr<CMulticlassLabels> m_labels;
-    std::shared_ptr<CDenseFeatures<float64_t>> m_features;
+    std::shared_ptr<MulticlassLabels> m_labels;
+    std::shared_ptr<DenseFeatures<float64_t>> m_features;
     SGMatrix<float64_t> m_feats;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 };

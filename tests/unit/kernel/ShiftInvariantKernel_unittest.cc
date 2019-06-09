@@ -45,18 +45,18 @@ using namespace shogun;
 using std::iota;
 using std::for_each;
 
-class CShiftInvariantKernelMock : public CShiftInvariantKernel
+class ShiftInvariantKernelMock : public ShiftInvariantKernel
 {
 public:
-	CShiftInvariantKernelMock() : CShiftInvariantKernel()
+	ShiftInvariantKernelMock() : ShiftInvariantKernel()
 	{
-		m_distance=std::make_shared<CEuclideanDistance>();
+		m_distance=std::make_shared<EuclideanDistance>();
 
 	}
 
 	float64_t get_distance(int32_t a, int32_t b) const
 	{
-		return CShiftInvariantKernel::distance(a, b);
+		return ShiftInvariantKernel::distance(a, b);
 	}
 
 	MOCK_METHOD2(compute, float64_t(int32_t, int32_t));
@@ -80,11 +80,11 @@ TEST(ShiftInvariantKernel, precompute_distance_asymmetric)
 	for_each(data_1.data(), data_1.data()+data_1.size(), [&data_1](float64_t& val) { val=val/data_1.size(); });
 	for_each(data_2.data(), data_2.data()+data_2.size(), [&data_2](float64_t& val) { val=val/data_2.size(); });
 
-	auto feats_1=std::make_shared<CDenseFeatures<float64_t> >(data_1);
-	auto feats_2=std::make_shared<CDenseFeatures<float64_t> >(data_2);
+	auto feats_1=std::make_shared<DenseFeatures<float64_t> >(data_1);
+	auto feats_2=std::make_shared<DenseFeatures<float64_t> >(data_2);
 
-	auto kernel_1=std::make_shared<CShiftInvariantKernelMock>();
-	auto kernel_2=std::make_shared<CShiftInvariantKernelMock>();
+	auto kernel_1=std::make_shared<ShiftInvariantKernelMock>();
+	auto kernel_2=std::make_shared<ShiftInvariantKernelMock>();
 
 	kernel_1->init(feats_1, feats_2);
 	kernel_2->init(feats_1, feats_2);
@@ -106,10 +106,10 @@ TEST(ShiftInvariantKernel, precompute_distance_symmetric)
 	SGMatrix<float64_t> data(dim, N);
 	iota(data.data(), data.data()+data.size(), 1);
 	for_each(data.data(), data.data()+data.size(), [&data](float64_t& val) { val=val/data.size(); });
-	auto feats=std::make_shared<CDenseFeatures<float64_t> >(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t> >(data);
 
-	auto kernel_1=std::make_shared<CShiftInvariantKernelMock>();
-	auto kernel_2=std::make_shared<CShiftInvariantKernelMock>();
+	auto kernel_1=std::make_shared<ShiftInvariantKernelMock>();
+	auto kernel_2=std::make_shared<ShiftInvariantKernelMock>();
 
 	kernel_1->init(feats, feats);
 	kernel_2->init(feats, feats);

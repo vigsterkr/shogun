@@ -10,12 +10,12 @@
 
 using namespace shogun;
 
-CAttributeFeatures::CAttributeFeatures()
-: CFeatures(0)
+AttributeFeatures::AttributeFeatures()
+: Features(0)
 {
 }
 
-std::shared_ptr<CFeatures> CAttributeFeatures::get_attribute(char* attr_name)
+std::shared_ptr<Features> AttributeFeatures::get_attribute(char* attr_name)
 {
 	int32_t idx=find_attr_index(attr_name);
 	if (idx>=0)
@@ -26,14 +26,14 @@ std::shared_ptr<CFeatures> CAttributeFeatures::get_attribute(char* attr_name)
 	return NULL;
 }
 
-void CAttributeFeatures::get_attribute_by_index(int idx, const char* &attr_name, std::shared_ptr<CFeatures> &attr_obj)
+void AttributeFeatures::get_attribute_by_index(int idx, const char* &attr_name, std::shared_ptr<Features> &attr_obj)
 {
 		T_ATTRIBUTE a= features.get_element_safe(idx);
 		attr_name= a.attr_name;
 		attr_obj= a.attr_obj;
 }
 
-bool CAttributeFeatures::set_attribute(char* attr_name, std::shared_ptr<CFeatures> attr_obj)
+bool AttributeFeatures::set_attribute(char* attr_name, std::shared_ptr<Features> attr_obj)
 {
 	int32_t idx=find_attr_index(attr_name);
 	if (idx==-1)
@@ -46,7 +46,7 @@ bool CAttributeFeatures::set_attribute(char* attr_name, std::shared_ptr<CFeature
 	return features.set_element(a, idx);
 }
 
-bool CAttributeFeatures::del_attribute(char* attr_name)
+bool AttributeFeatures::del_attribute(char* attr_name)
 {
 	int32_t idx=find_attr_index(attr_name);
 
@@ -60,12 +60,12 @@ bool CAttributeFeatures::del_attribute(char* attr_name)
 	return false;
 }
 
-int32_t CAttributeFeatures::get_num_attributes()
+int32_t AttributeFeatures::get_num_attributes()
 {
 	return features.get_num_elements();
 }
 
-int32_t CAttributeFeatures::find_attr_index(char* attr_name)
+int32_t AttributeFeatures::find_attr_index(char* attr_name)
 {
 	int32_t n=features.get_num_elements();
 	for (int32_t i=0; i<n; i++)
@@ -77,7 +77,7 @@ int32_t CAttributeFeatures::find_attr_index(char* attr_name)
 	return -1;
 }
 
-CAttributeFeatures::~CAttributeFeatures()
+AttributeFeatures::~AttributeFeatures()
 {
 	int32_t n=features.get_num_elements();
 	for (int32_t i=0; i<n; i++)

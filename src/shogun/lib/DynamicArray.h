@@ -25,12 +25,12 @@ namespace shogun
  * etc. and for hi-level objects only stores pointers, which are not
  * automagically SG_REF'd/deleted.
  */
-template <class T> class CDynamicArray :public CSGObject
+template <class T> class DynamicArray :public SGObject
 {
 	public:
 		/** default constructor */
-		CDynamicArray()
-		: CSGObject(), m_array()
+		DynamicArray()
+		: SGObject(), m_array()
 		{
 			dim1_size=1;
 			dim2_size=1;
@@ -45,8 +45,8 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_dim2_size dimension 2
 		 * @param p_dim3_size dimension 3
 		 */
-		CDynamicArray(int32_t p_dim1_size, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
-		: CSGObject(), m_array(p_dim1_size*p_dim2_size*p_dim3_size)
+		DynamicArray(int32_t p_dim1_size, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
+		: SGObject(), m_array(p_dim1_size*p_dim2_size*p_dim3_size)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -62,8 +62,8 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CDynamicArray(T* p_array, int32_t p_dim1_size, bool p_free_array, bool p_copy_array)
-		: CSGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
+		DynamicArray(T* p_array, int32_t p_dim1_size, bool p_free_array, bool p_copy_array)
+		: SGObject(), m_array(p_array, p_dim1_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=1;
@@ -80,9 +80,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
+		DynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						bool p_free_array, bool p_copy_array)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
+		: SGObject(), m_array(p_array, p_dim1_size*p_dim2_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -100,9 +100,9 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_free_array if array must be freed
 		 * @param p_copy_array if array must be copied
 		 */
-		CDynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
+		DynamicArray(T* p_array, int32_t p_dim1_size, int32_t p_dim2_size,
 						int32_t p_dim3_size, bool p_free_array, bool p_copy_array)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
+		: SGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size, p_free_array, p_copy_array)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -118,8 +118,8 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param p_dim2_size dimension 2
 		 * @param p_dim3_size dimension 3
 		 */
-		CDynamicArray(const T* p_array, int32_t p_dim1_size=1, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
-		: CSGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size)
+		DynamicArray(const T* p_array, int32_t p_dim1_size=1, int32_t p_dim2_size=1, int32_t p_dim3_size=1)
+		: SGObject(), m_array(p_array, p_dim1_size*p_dim2_size*p_dim3_size)
 		{
 			dim1_size=p_dim1_size;
 			dim2_size=p_dim2_size;
@@ -128,7 +128,7 @@ template <class T> class CDynamicArray :public CSGObject
 			init();
 		}
 
-		virtual ~CDynamicArray() {}
+		virtual ~DynamicArray() {}
 
 		/** set the resize granularity
 		 *
@@ -527,7 +527,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 * @param orig original array
 		 * @return new array
 		 */
-		inline CDynamicArray<T>& operator=(CDynamicArray<T>& orig)
+		inline DynamicArray<T>& operator=(DynamicArray<T>& orig)
 		{
 			m_array=orig.m_array;
 			dim1_size=orig.dim1_size;
@@ -583,7 +583,7 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		virtual void load_serializable_pre() noexcept(false)
 		{
-			CSGObject::load_serializable_pre();
+			SGObject::load_serializable_pre();
 
 			m_array.resize_array(m_array.get_num_elements(), true);
 		}
@@ -598,13 +598,13 @@ template <class T> class CDynamicArray :public CSGObject
 		 */
 		virtual void save_serializable_pre() noexcept(false)
 		{
-			CSGObject::save_serializable_pre();
+			SGObject::save_serializable_pre();
 			m_array.resize_array(m_array.get_num_elements(), true);
 		}
 
-		virtual std::shared_ptr<CSGObject> clone() const
+		virtual std::shared_ptr<SGObject> clone() const
 		{
-			auto cloned = std::dynamic_pointer_cast<CDynamicArray>(CSGObject::clone());
+			auto cloned = std::dynamic_pointer_cast<DynamicArray>(SGObject::clone());
 			// Since the array vector is registered with
 			// current_num_elements as size (see parameter
 			// registration) the cloned version has less memory

@@ -38,7 +38,7 @@ namespace shogun
  * \f]
  *
  */
-class CRidgeKernelNormalizer : public CKernelNormalizer
+class RidgeKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** constructor
@@ -51,8 +51,8 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		 * - r=1e-10 and c=0.0 will add mean(diag(K))*1e-10 to the diagonal
 		 * - r=0.1 and c=1 will add 0.1 to the diagonal
 		 */
-		CRidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
-			: CKernelNormalizer()
+		RidgeKernelNormalizer(float64_t r=1e-10, float64_t c=0.0)
+			: KernelNormalizer()
 		{
 			/*SG_ADD(&scale, "scale", "Scale quotient by which kernel is scaled.",
 			    ParameterProperties::HYPER)*/;
@@ -63,13 +63,13 @@ class CRidgeKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~CRidgeKernelNormalizer()
+		virtual ~RidgeKernelNormalizer()
 		{
 		}
 
 		/** initialization of the normalizer (if needed)
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			if (scale<=0)
 			{

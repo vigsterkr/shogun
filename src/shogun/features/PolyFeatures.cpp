@@ -2,7 +2,7 @@
 
 using namespace shogun;
 
-CPolyFeatures::CPolyFeatures() :CDotFeatures()
+PolyFeatures::PolyFeatures() :DotFeatures()
 {
 	m_feat=NULL;
 	m_degree=0;
@@ -16,8 +16,8 @@ CPolyFeatures::CPolyFeatures() :CDotFeatures()
 	register_parameters();
 }
 
-CPolyFeatures::CPolyFeatures(std::shared_ptr<CDenseFeatures<float64_t>> feat, int32_t degree, bool normalize)
-	: CDotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL),
+PolyFeatures::PolyFeatures(std::shared_ptr<DenseFeatures<float64_t>> feat, int32_t degree, bool normalize)
+	: DotFeatures(), m_multi_index(NULL), m_multinomial_coefficients(NULL),
 		m_normalization_values(NULL)
 {
 	ASSERT(feat)
@@ -38,7 +38,7 @@ CPolyFeatures::CPolyFeatures(std::shared_ptr<CDenseFeatures<float64_t>> feat, in
 }
 
 
-CPolyFeatures::~CPolyFeatures()
+PolyFeatures::~PolyFeatures()
 {
 	SG_FREE(m_multi_index);
 	SG_FREE(m_multinomial_coefficients);
@@ -46,33 +46,33 @@ CPolyFeatures::~CPolyFeatures()
 
 }
 
-CPolyFeatures::CPolyFeatures(const CPolyFeatures & orig)
+PolyFeatures::PolyFeatures(const PolyFeatures & orig)
 {
 	SG_PRINT("CPolyFeatures:\n")
 	SG_NOTIMPLEMENTED
 };
 
-int32_t CPolyFeatures::get_dim_feature_space() const
+int32_t PolyFeatures::get_dim_feature_space() const
 {
 	return m_output_dimensions;
 }
 
-int32_t CPolyFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t PolyFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	return m_output_dimensions;
 }
 
-EFeatureType CPolyFeatures::get_feature_type() const
+EFeatureType PolyFeatures::get_feature_type() const
 {
 	return F_UNKNOWN;
 }
 
-EFeatureClass CPolyFeatures::get_feature_class() const
+EFeatureClass PolyFeatures::get_feature_class() const
 {
 	return C_POLY;
 }
 
-int32_t CPolyFeatures::get_num_vectors() const
+int32_t PolyFeatures::get_num_vectors() const
 {
 	if (m_feat)
 		return m_feat->get_num_vectors();
@@ -81,32 +81,32 @@ int32_t CPolyFeatures::get_num_vectors() const
 
 }
 
-void* CPolyFeatures::get_feature_iterator(int32_t vector_index)
+void* PolyFeatures::get_feature_iterator(int32_t vector_index)
 {
 	SG_NOTIMPLEMENTED
 	return NULL;
 }
 
-bool CPolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool PolyFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	SG_NOTIMPLEMENTED
 	return false;
 }
 
-void CPolyFeatures::free_feature_iterator(void* iterator)
+void PolyFeatures::free_feature_iterator(void* iterator)
 {
 	SG_NOTIMPLEMENTED
 }
 
 
 
-float64_t CPolyFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
+float64_t PolyFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
 
-	auto pf=std::static_pointer_cast<CPolyFeatures>(df);
+	auto pf=std::static_pointer_cast<PolyFeatures>(df);
 
 	int32_t len1;
 	bool do_free1;
@@ -136,7 +136,7 @@ float64_t CPolyFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df,
 	return sum;
 }
 
-float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t PolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
@@ -164,7 +164,7 @@ float64_t CPolyFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int3
 	m_feat->free_feature_vector(vec, len, do_free);
 	return sum;
 }
-void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void PolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	if (vec2_len != m_output_dimensions)
 		SG_ERROR("Dimensions don't match, vec2_dim=%d, m_output_dimensions=%d\n", vec2_len, m_output_dimensions)
@@ -188,13 +188,13 @@ void CPolyFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_
 			cnt++;
 		}
 		if (abs_val)
-			output=CMath::abs(output);
+			output=Math::abs(output);
 
 		vec2[j]+=alpha*output;
 	}
 	m_feat->free_feature_vector(vec, len, do_free);
 }
-void CPolyFeatures::store_normalization_values()
+void PolyFeatures::store_normalization_values()
 {
 	SG_FREE(m_normalization_values);
 
@@ -213,7 +213,7 @@ void CPolyFeatures::store_normalization_values()
 
 }
 
-void CPolyFeatures::store_multi_index()
+void PolyFeatures::store_multi_index()
 {
 	SG_FREE(m_multi_index);
 
@@ -229,7 +229,7 @@ void CPolyFeatures::store_multi_index()
 	SG_FREE(exponents);
 }
 
-void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree)
+void PolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** index, uint16_t* exponents, const int32_t degree)
 {
 	if (feat_idx==m_input_dimensions-1 || degree==0)
 	{
@@ -257,7 +257,7 @@ void CPolyFeatures::enumerate_multi_index(const int32_t feat_idx, uint16_t** ind
 
 }
 
-void CPolyFeatures::store_multinomial_coefficients()
+void PolyFeatures::store_multinomial_coefficients()
 {
 	SG_FREE(m_multinomial_coefficients);
 
@@ -285,7 +285,7 @@ void CPolyFeatures::store_multinomial_coefficients()
 	SG_FREE(exponents);
 }
 
-int32_t CPolyFeatures::bico2(int32_t n, int32_t k)
+int32_t PolyFeatures::bico2(int32_t n, int32_t k)
 {
 
 	/* for this problem k is usually small (<=degree),
@@ -310,7 +310,7 @@ int32_t CPolyFeatures::bico2(int32_t n, int32_t k)
 
 }
 
-int32_t CPolyFeatures::calc_feature_space_dimensions(int32_t N, int32_t D)
+int32_t PolyFeatures::calc_feature_space_dimensions(int32_t N, int32_t D)
 {
 	if (N==1)
 		return 1;
@@ -324,7 +324,7 @@ int32_t CPolyFeatures::calc_feature_space_dimensions(int32_t N, int32_t D)
 	return ret;
 }
 
-int32_t CPolyFeatures::multinomialcoef(int32_t* exps, int32_t len)
+int32_t PolyFeatures::multinomialcoef(int32_t* exps, int32_t len)
 {
 	int32_t ret = 1, i;
 	int32_t n = 0;
@@ -338,7 +338,7 @@ int32_t CPolyFeatures::multinomialcoef(int32_t* exps, int32_t len)
 
 /* gammln as implemented in the
  * second edition of Numerical Recipes in C */
-float64_t CPolyFeatures::gammln(float64_t xx)
+float64_t PolyFeatures::gammln(float64_t xx)
 {
     float64_t x,y,tmp,ser;
     static float64_t cof[6]={76.18009172947146,    -86.50532032941677,
@@ -354,7 +354,7 @@ float64_t CPolyFeatures::gammln(float64_t xx)
     return -tmp+log(2.5066282746310005*ser/x);
 }
 
-float64_t CPolyFeatures::factln(int32_t n)
+float64_t PolyFeatures::factln(int32_t n)
 {
 	static float64_t a[101];
 
@@ -364,20 +364,20 @@ float64_t CPolyFeatures::factln(int32_t n)
 	else return gammln(n+1.0);
 }
 
-int32_t CPolyFeatures::bico(int32_t n, int32_t k)
+int32_t PolyFeatures::bico(int32_t n, int32_t k)
 {
 	/* use floor to clean roundoff errors*/
 	return (int32_t) floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
 }
-std::shared_ptr<CFeatures> CPolyFeatures::duplicate() const
+std::shared_ptr<Features> PolyFeatures::duplicate() const
 {
-	return std::make_shared<CPolyFeatures>(*this);
+	return std::make_shared<PolyFeatures>(*this);
 }
 
-void CPolyFeatures::register_parameters()
+void PolyFeatures::register_parameters()
 {
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*)&m_feat, "features", "Features in original space.");
+	    (std::shared_ptr<SGObject>*)&m_feat, "features", "Features in original space.");
 	SG_ADD(
 	    &m_degree, "degree", "Degree of the polynomial kernel.", ParameterProperties::HYPER);
 	SG_ADD(&m_normalize, "normalize", "Normalize?");

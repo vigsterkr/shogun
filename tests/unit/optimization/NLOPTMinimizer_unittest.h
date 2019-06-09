@@ -54,7 +54,7 @@ private:
 	CPiecewiseQuadraticObject2 *m_obj;
 };
 
-class CPiecewiseQuadraticObject2: public CSGObject
+class CPiecewiseQuadraticObject2: public SGObject
 {
 friend class NLOPTTestCostFunction;
 public:

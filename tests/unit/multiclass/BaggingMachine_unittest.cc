@@ -16,12 +16,12 @@
 using namespace shogun;
 using ::testing::Return;
 
-class BaggingMachine : public ::testing::Test
+class BaggingMachineTest : public ::testing::Test
 {
 public:
-	std::shared_ptr<CDenseFeatures<float64_t>> features_test;
-	std::shared_ptr<CDenseFeatures<float64_t>> features_train;
-	std::shared_ptr<CMulticlassLabels> labels_train;
+	std::shared_ptr<DenseFeatures<float64_t>> features_test;
+	std::shared_ptr<DenseFeatures<float64_t>> features_train;
+	std::shared_ptr<MulticlassLabels> labels_train;
 
 	SGVector<bool> ft;
 	virtual void SetUp()
@@ -44,13 +44,13 @@ public:
 
 		generate_toy_data_weather(weather_data, lab);
 
-		features_train = std::make_shared<CDenseFeatures<float64_t>>(weather_data);
-		labels_train = std::make_shared<CMulticlassLabels>(lab);
+		features_train = std::make_shared<DenseFeatures<float64_t>>(weather_data);
+		labels_train = std::make_shared<MulticlassLabels>(lab);
 
 		SGMatrix<float64_t> test(4, 5);
 		SGVector<float64_t> test_labels(4);
 		generate_toy_data_weather(test, test_labels, false);
-		features_test = std::make_shared<CDenseFeatures<float64_t>>(test);
+		features_test = std::make_shared<DenseFeatures<float64_t>>(test);
 
 		auto feature_types = SGVector<bool>(4);
 
@@ -67,13 +67,13 @@ public:
 	}
 };
 
-TEST_F(BaggingMachine, classify_CART)
+TEST_F(BaggingMachineTest, classify_CART)
 {
-	auto cart=std::make_shared<CCARTree>();
-	auto cv=std::make_shared<CMajorityVote>();
+	auto cart=std::make_shared<CARTree>();
+	auto cv=std::make_shared<MajorityVote>();
 	cart->set_feature_types(ft);
 
-	auto c = std::make_shared<CBaggingMachine>(features_train, labels_train);
+	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
 
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
@@ -91,19 +91,19 @@ TEST_F(BaggingMachine, classify_CART)
 	EXPECT_EQ(1.0,res_vector[3]);
 	EXPECT_EQ(1.0,res_vector[4]);
 
-	auto eval = std::make_shared<CMulticlassAccuracy>();
+	auto eval = std::make_shared<MulticlassAccuracy>();
 	EXPECT_NEAR(0.642857,c->get_oob_error(eval),1e-6);
 
 
 }
 
-TEST_F(BaggingMachine, output_binary)
+TEST_F(BaggingMachineTest, output_binary)
 {
-	auto cart = std::make_shared<CCARTree>();
-	auto cv = std::make_shared<CMeanRule>();
+	auto cart = std::make_shared<CARTree>();
+	auto cv = std::make_shared<MeanRule>();
 
 	cart->set_feature_types(ft);
-	auto c = std::make_shared<CBaggingMachine>(features_train, labels_train);
+	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
 	c->parallel->set_num_threads(1);
 	c->set_machine(cart);
 	c->set_bag_size(14);
@@ -130,14 +130,14 @@ TEST_F(BaggingMachine, output_binary)
 
 }
 
-TEST_F(BaggingMachine, output_multiclass_probs_sum_to_one)
+TEST_F(BaggingMachineTest, output_multiclass_probs_sum_to_one)
 {
 
-	auto cart = std::make_shared<CCARTree>();
-	auto cv = std::make_shared<CMajorityVote>();
+	auto cart = std::make_shared<CARTree>();
+	auto cv = std::make_shared<MajorityVote>();
 
 	cart->set_feature_types(ft);
-	auto c = std::make_shared<CBaggingMachine>(features_train, labels_train);
+	auto c = std::make_shared<BaggingMachine>(features_train, labels_train);
 	c->set_machine(cart);
 	c->set_bag_size(14);
 	c->set_num_bags(10);

@@ -66,11 +66,11 @@ namespace shogun
  *
  * The reference pseudo code is the algorithm 3.3 of the GPML textbook
  */
-class CMultiLaplaceInferenceMethod: public CLaplaceInference
+class MultiLaplaceInferenceMethod: public LaplaceInference
 {
 public:
 	/** default constructor */
-	CMultiLaplaceInferenceMethod();
+	MultiLaplaceInferenceMethod();
 
 	/** constructor
 	 *
@@ -80,10 +80,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CMultiLaplaceInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
+	MultiLaplaceInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CMultiLaplaceInferenceMethod();
+	virtual ~MultiLaplaceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -102,9 +102,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CMultiLaplaceInferenceMethod object
+	 * @return casted MultiLaplaceInferenceMethod object
 	 */
-	static std::shared_ptr<CMultiLaplaceInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
+	static std::shared_ptr<MultiLaplaceInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** get negative log marginal likelihood
 	 *

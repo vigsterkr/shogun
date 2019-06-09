@@ -23,13 +23,13 @@ class GradientModelSelectionCostFunction;
 /** @brief Model selection class which searches for the best model by a
  * gradient-search.
  */
-class CGradientModelSelection : public CModelSelection
+class GradientModelSelection : public ModelSelection
 {
 friend class GradientModelSelectionCostFunction;
 
 public:
 	/** default constructor */
-	CGradientModelSelection();
+	GradientModelSelection();
 
 	/** constructor
 	 *
@@ -39,10 +39,10 @@ public:
 	 * @param machine_eval machine evaluation object
 	 * @param model_parameters parameters
 	 */
-	CGradientModelSelection(std::shared_ptr<CMachineEvaluation> machine_eval,
-			std::shared_ptr<CModelSelectionParameters> model_parameters=NULL);
+	GradientModelSelection(std::shared_ptr<MachineEvaluation> machine_eval,
+			std::shared_ptr<ModelSelectionParameters> model_parameters=NULL);
 
-	virtual ~CGradientModelSelection();
+	virtual ~GradientModelSelection();
 
 	/** method to select model via gradient search
 	 *
@@ -50,7 +50,7 @@ public:
 	 *
 	 * @return best combination of model parameters
 	 */
-	virtual std::shared_ptr<CParameterCombination> select_model(bool print_state=false);
+	virtual std::shared_ptr<ParameterCombination> select_model(bool print_state=false);
 
 	/** returns the name of the model selection object
 	 *

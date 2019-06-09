@@ -43,10 +43,10 @@ using namespace shogun;
 void get_data(SGMatrix<float64_t>& mat, SGVector<float64_t>& vec)
 {
 	for (index_t i = 0; i < mat.size(); ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = Math::randn_double();
 
 	for (index_t i = 0; i < vec.size(); ++i)
-		vec[i] = CMath::randn_double();
+		vec[i] = Math::randn_double();
 }
 
 TEST(DotIterator, dot)
@@ -57,7 +57,7 @@ TEST(DotIterator, dot)
 	SGVector<float64_t> vec(n_rows);
 	get_data(mat, vec);
 
-	auto feats = std::make_shared<CDenseFeatures<float64_t>>(mat);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(mat);
 
 	index_t i = 0;
 	for (const auto& v : DotIterator(feats))
@@ -80,7 +80,7 @@ TEST(DotIterator, add)
 	auto vec = SGVector<float64_t>(mat.num_rows);
 	auto res = SGVector<float64_t>(mat.num_rows);
 
-	auto feats = std::make_shared<CDenseFeatures<float64_t>>(mat);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(mat);
 
 	index_t i = 0;
 	for (const auto& v : DotIterator(feats))

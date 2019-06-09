@@ -17,32 +17,32 @@
 
 using namespace shogun;
 
-CScatterSVM::CScatterSVM()
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>()), scatter_type(NO_BIAS_LIBSVM),
+ScatterSVM::ScatterSVM()
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>()), scatter_type(NO_BIAS_LIBSVM),
   norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 	SG_UNSTABLE("CScatterSVM::CScatterSVM()", "\n")
 }
 
-CScatterSVM::CScatterSVM(SCATTER_TYPE type)
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>()), scatter_type(type),
+ScatterSVM::ScatterSVM(SCATTER_TYPE type)
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>()), scatter_type(type),
 	norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 }
 
-CScatterSVM::CScatterSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>(), C, k, lab), scatter_type(NO_BIAS_LIBSVM),
+ScatterSVM::ScatterSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab), scatter_type(NO_BIAS_LIBSVM),
 	norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
 }
 
-CScatterSVM::~CScatterSVM()
+ScatterSVM::~ScatterSVM()
 {
 	SG_FREE(norm_wc);
 	SG_FREE(norm_wcw);
 }
 
-void CScatterSVM::register_params()
+void ScatterSVM::register_params()
 {
 	/*m_parameters->add_vector(&norm_wc, &norm_wc_len, "norm_wc", "Norm of w_c");*/
 	watch_param("norm_wc", &norm_wc, &norm_wc_len);
@@ -67,7 +67,7 @@ void CScatterSVM::register_params()
 #endif // USE_SVMLIGHT
 }
 
-bool CScatterSVM::train_machine(std::shared_ptr<CFeatures> data)
+bool ScatterSVM::train_machine(std::shared_ptr<Features> data)
 {
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
@@ -97,7 +97,7 @@ bool CScatterSVM::train_machine(std::shared_ptr<CFeatures> data)
 		if (numc[i]>0)
 		{
 			Nc++;
-			Nmin=CMath::min(Nmin, numc[i]);
+			Nmin=Math::min(Nmin, numc[i]);
 		}
 
 	}
@@ -134,7 +134,7 @@ bool CScatterSVM::train_machine(std::shared_ptr<CFeatures> data)
 	return result;
 }
 
-bool CScatterSVM::train_no_bias_libsvm()
+bool ScatterSVM::train_no_bias_libsvm()
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -170,7 +170,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 	param.coef0 = 0;
 	param.nu = get_nu(); // Nu
 	auto prev_normalizer=m_kernel->get_normalizer();
-	m_kernel->set_normalizer(std::make_shared<CScatterKernelNormalizer>(
+	m_kernel->set_normalizer(std::make_shared<ScatterKernelNormalizer>(
 				m_num_classes-1, -1, m_labels, prev_normalizer));
 	param.kernel=m_kernel.get();
 	param.cache_size = m_kernel->get_cache_size();
@@ -209,7 +209,7 @@ bool CScatterSVM::train_no_bias_libsvm()
 		{
 			int32_t num_sv=model->nSV[i];
 
-			auto svm=std::make_shared<CSVM>(num_sv);
+			auto svm=std::make_shared<SVM>(num_sv);
 			svm->set_bias(model->rho[i+1]);
 			norm_wcw[i]=model->normwcw[i];
 
@@ -252,7 +252,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 	m_kernel->set_normalizer(n);
 	m_kernel->init_normalizer();
 
-	auto light=std::make_shared<CSVMLightOneClass>(get_C(), m_kernel);
+	auto light=std::make_shared<SVMLightOneClass>(get_C(), m_kernel);
 	light->set_linadd_enabled(false);
 	light->train();
 
@@ -274,7 +274,7 @@ bool CScatterSVM::train_no_bias_svmlight()
 }
 #endif //USE_SVMLIGHT
 
-bool CScatterSVM::train_testrule12()
+bool ScatterSVM::train_testrule12()
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -345,7 +345,7 @@ bool CScatterSVM::train_testrule12()
 		{
 			int32_t num_sv=model->nSV[i];
 
-			auto svm=std::make_shared<CSVM>(num_sv);
+			auto svm=std::make_shared<SVM>(num_sv);
 			svm->set_bias(model->rho[i+1]);
 			norm_wcw[i]=model->normwcw[i];
 
@@ -379,7 +379,7 @@ bool CScatterSVM::train_testrule12()
 		return false;
 }
 
-void CScatterSVM::compute_norm_wc()
+void ScatterSVM::compute_norm_wc()
 {
 	SG_FREE(norm_wc);
 	norm_wc = SG_MALLOC(float64_t, m_machines->get_num_elements());
@@ -410,7 +410,7 @@ void CScatterSVM::compute_norm_wc()
 	SGVector<float64_t>::display_vector(norm_wc, m_machines->get_num_elements(), "norm_wc");
 }
 
-std::shared_ptr<CLabels> CScatterSVM::classify_one_vs_rest()
+std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
 {
 	if (!m_kernel)
 	{
@@ -423,7 +423,7 @@ std::shared_ptr<CLabels> CScatterSVM::classify_one_vs_rest()
 
 	int32_t num_vectors=m_kernel->get_num_vec_rhs();
 
-	auto output=std::make_shared<CMulticlassLabels>(num_vectors);
+	auto output=std::make_shared<MulticlassLabels>(num_vectors);
 
 
 	if (scatter_type == TEST_RULE1)
@@ -479,7 +479,7 @@ std::shared_ptr<CLabels> CScatterSVM::classify_one_vs_rest()
 	{
 		ASSERT(m_machines->get_num_elements()>0)
 		ASSERT(num_vectors==output->get_num_labels())
-		std::vector<std::shared_ptr<CLabels>> outputs(m_machines->get_num_elements());
+		std::vector<std::shared_ptr<Labels>> outputs(m_machines->get_num_elements());
 
 		for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 		{
@@ -495,11 +495,11 @@ std::shared_ptr<CLabels> CScatterSVM::classify_one_vs_rest()
 		for (int32_t i=0; i<num_vectors; i++)
 		{
 			int32_t winner=0;
-			float64_t max_out=outputs[0]->as<CRegressionLabels>()->get_label(i)/norm_wc[0];
+			float64_t max_out=outputs[0]->as<RegressionLabels>()->get_label(i)/norm_wc[0];
 
 			for (int32_t j=1; j<m_machines->get_num_elements(); j++)
 			{
-				float64_t out=outputs[j]->as<CRegressionLabels>()->get_label(i)/norm_wc[j];
+				float64_t out=outputs[j]->as<RegressionLabels>()->get_label(i)/norm_wc[j];
 
 				if (out>max_out)
 				{
@@ -516,7 +516,7 @@ std::shared_ptr<CLabels> CScatterSVM::classify_one_vs_rest()
 	return output;
 }
 
-float64_t CScatterSVM::apply_one(int32_t num)
+float64_t ScatterSVM::apply_one(int32_t num)
 {
 	ASSERT(m_machines->get_num_elements()>0)
 	float64_t* outputs=SG_MALLOC(float64_t, m_machines->get_num_elements());

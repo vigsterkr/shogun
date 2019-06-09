@@ -21,20 +21,20 @@ namespace shogun
  *
  * @see CTask
  */
-class CTaskTree : public CTaskRelation
+class TaskTree : public TaskRelation
 {
 public:
 
 	/** default constructor */
-	CTaskTree();
+	TaskTree();
 
 	/** constructor
 	 * @param root_task root task of the tree
 	 */
-	CTaskTree(std::shared_ptr<CTask> root_task);
+	TaskTree(std::shared_ptr<Task> root_task);
 
 	/** destructor */
-	virtual ~CTaskTree();
+	virtual ~TaskTree();
 
 	/** get tasks indices */
 	virtual SGVector<index_t>* get_tasks_indices() const;
@@ -56,13 +56,13 @@ public:
 	 *
 	 * @return root task of the tree
 	 */
-	std::shared_ptr<CTask> get_root_task() const {  return m_root_task; }
+	std::shared_ptr<Task> get_root_task() const {  return m_root_task; }
 
 	/** set root task
 	 *
 	 * @param root_task task to set as root of the tree
 	 */
-	void set_root_task(std::shared_ptr<CTask> root_task) {   m_root_task = root_task; }
+	void set_root_task(std::shared_ptr<Task> root_task) {   m_root_task = root_task; }
 
 	/** get name
 	 *
@@ -79,7 +79,7 @@ public:
 protected:
 
 	/** root task of the tree */
-	std::shared_ptr<CTask> m_root_task;
+	std::shared_ptr<Task> m_root_task;
 
 };
 

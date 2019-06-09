@@ -24,9 +24,9 @@ TEST(MatrixOperator, cast_dense_double_complex)
 	m.set_const(1.0);
 
 	auto orig_op
-		=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+		=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 	auto casted_op
-		=std::make_shared<CDenseMatrixOperator<complex128_t>>(*static_cast<CDenseMatrixOperator<complex128_t>*>(*orig_op));
+		=std::make_shared<DenseMatrixOperator<complex128_t>>(*static_cast<DenseMatrixOperator<complex128_t>*>(*orig_op));
 
 	SGMatrix<float64_t> orig_m=orig_op->get_matrix_operator();
 	SGMatrix<complex128_t> casted_m=casted_op->get_matrix_operator();
@@ -46,13 +46,13 @@ TEST(MatrixOperator, cast_sparse_double_complex)
 	for (index_t i=0; i<size; ++i)
 		m(i,i)=1.0;
 
-	CSparseFeatures<float64_t> feat(m);
+	SparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> sm=feat.get_sparse_feature_matrix();
 
-	CSparseMatrixOperator<float64_t>* orig_op
-		=new CSparseMatrixOperator<float64_t>(sm);
-	CSparseMatrixOperator<complex128_t>* casted_op
-		=static_cast<CSparseMatrixOperator<complex128_t>*>(*orig_op);
+	SparseMatrixOperator<float64_t>* orig_op
+		=new SparseMatrixOperator<float64_t>(sm);
+	SparseMatrixOperator<complex128_t>* casted_op
+		=static_cast<SparseMatrixOperator<complex128_t>*>(*orig_op);
 
 	SGSparseMatrix<complex128_t> casted_m=casted_op->get_matrix_operator();
 	const SparseMatrix<complex128_t>& eig_casted

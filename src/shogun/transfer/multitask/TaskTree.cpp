@@ -22,7 +22,7 @@ struct task_tree_node_t
 	float64_t weight;
 };
 
-int32_t count_leaf_tasks_recursive(std::shared_ptr<CTask> subtree_root_block)
+int32_t count_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
 {
 	auto sub_tasks = subtree_root_block->get_subtasks();
 	int32_t n_sub_tasks = sub_tasks->get_num_elements();
@@ -34,25 +34,25 @@ int32_t count_leaf_tasks_recursive(std::shared_ptr<CTask> subtree_root_block)
 	else
 	{
 		int32_t sum = 0;
-		auto iterator = sub_tasks->get_first_element()->as<CTask>();
+		auto iterator = sub_tasks->get_first_element()->as<Task>();
 		do
 		{
 			sum += count_leaf_tasks_recursive(iterator);
 		}
-		while ((iterator = sub_tasks->get_next_element()->as<CTask>()) != NULL);
+		while ((iterator = sub_tasks->get_next_element()->as<Task>()) != NULL);
 
 
 		return sum;
 	}
 }
 
-void collect_tree_tasks_recursive(std::shared_ptr<CTask> subtree_root_block, vector<task_tree_node_t>* tree_nodes, int low)
+void collect_tree_tasks_recursive(std::shared_ptr<Task> subtree_root_block, vector<task_tree_node_t>* tree_nodes, int low)
 {
 	int32_t lower = low;
 	auto sub_blocks = subtree_root_block->get_subtasks();
 	if (sub_blocks->get_num_elements()>0)
 	{
-		auto iterator = sub_blocks->get_first_element()->as<CTask>();
+		auto iterator = sub_blocks->get_first_element()->as<Task>();
 		do
 		{
 			if (iterator->get_num_subtasks()>0)
@@ -66,12 +66,12 @@ void collect_tree_tasks_recursive(std::shared_ptr<CTask> subtree_root_block, vec
 			else
 				lower++;
 		}
-		while ((iterator = sub_blocks->get_next_element()->as<CTask>()) != NULL);
+		while ((iterator = sub_blocks->get_next_element()->as<Task>()) != NULL);
 	}
 
 }
 
-void collect_leaf_tasks_recursive(std::shared_ptr<CTask> subtree_root_block, std::shared_ptr<CList> list)
+void collect_leaf_tasks_recursive(std::shared_ptr<Task> subtree_root_block, std::shared_ptr<List> list)
 {
 	auto sub_blocks = subtree_root_block->get_subtasks();
 	if (sub_blocks->get_num_elements() == 0)
@@ -80,17 +80,17 @@ void collect_leaf_tasks_recursive(std::shared_ptr<CTask> subtree_root_block, std
 	}
 	else
 	{
-		auto iterator = sub_blocks->get_first_element()->as<CTask>();
+		auto iterator = sub_blocks->get_first_element()->as<Task>();
 		do
 		{
 			collect_leaf_tasks_recursive(iterator, list);
 		}
-		while ((iterator = sub_blocks->get_next_element()->as<CTask>()) != NULL);
+		while ((iterator = sub_blocks->get_next_element()->as<Task>()) != NULL);
 	}
 
 }
 
-int32_t count_leaft_tasks_recursive(std::shared_ptr<CTask> subtree_root_block)
+int32_t count_leaft_tasks_recursive(std::shared_ptr<Task> subtree_root_block)
 {
 	auto sub_blocks = subtree_root_block->get_subtasks();
 	int32_t r = 0;
@@ -100,37 +100,37 @@ int32_t count_leaft_tasks_recursive(std::shared_ptr<CTask> subtree_root_block)
 	}
 	else
 	{
-		auto iterator = sub_blocks->get_first_element()->as<CTask>();
+		auto iterator = sub_blocks->get_first_element()->as<Task>();
 		do
 		{
 			r += count_leaf_tasks_recursive(iterator);
 		}
-		while ((iterator = sub_blocks->get_next_element()->as<CTask>()) != NULL);
+		while ((iterator = sub_blocks->get_next_element()->as<Task>()) != NULL);
 	}
 
 	return r;
 }
 
-CTaskTree::CTaskTree() : CTaskRelation(),
+TaskTree::TaskTree() : TaskRelation(),
 	m_root_task(NULL)
 {
 
 }
 
-CTaskTree::CTaskTree(std::shared_ptr<CTask> root_task) : CTaskRelation(),
+TaskTree::TaskTree(std::shared_ptr<Task> root_task) : TaskRelation(),
 	m_root_task(NULL)
 {
 	set_root_task(root_task);
 }
 
-CTaskTree::~CTaskTree()
+TaskTree::~TaskTree()
 {
 
 }
 
-SGVector<index_t>* CTaskTree::get_tasks_indices() const
+SGVector<index_t>* TaskTree::get_tasks_indices() const
 {
-	auto blocks = std::make_shared<CList>(true);
+	auto blocks = std::make_shared<List>(true);
 	collect_leaf_tasks_recursive(m_root_task, blocks);
 	SG_DEBUG("Collected %d leaf blocks\n", blocks->get_num_elements())
 	//check_blocks_list(blocks);
@@ -141,7 +141,7 @@ SGVector<index_t>* CTaskTree::get_tasks_indices() const
 	//ind[0] = 0;
 	//
 	SGVector<index_t>* tasks_indices = SG_MALLOC(SGVector<index_t>, blocks->get_num_elements());
-	auto iterator = blocks->get_first_element()->as<CTask>();
+	auto iterator = blocks->get_first_element()->as<Task>();
 	do
 	{
 		tasks_indices[t_i] = iterator->get_indices();
@@ -150,19 +150,19 @@ SGVector<index_t>* CTaskTree::get_tasks_indices() const
 		//SG_DEBUG("Block = [%d,%d]\n", iterator->get_min_index(), iterator->get_max_index())
 		t_i++;
 	}
-	while ((iterator = blocks->get_next_element()->as<CTask>()) != NULL);
+	while ((iterator = blocks->get_next_element()->as<Task>()) != NULL);
 
 
 
 	return tasks_indices;
 }
 
-int32_t CTaskTree::get_num_tasks() const
+int32_t TaskTree::get_num_tasks() const
 {
 	return count_leaf_tasks_recursive(m_root_task);
 }
 
-SGVector<float64_t> CTaskTree::get_SLEP_ind_t()
+SGVector<float64_t> TaskTree::get_SLEP_ind_t()
 {
 	int n_blocks = get_num_tasks() - 1;
 	SG_DEBUG("Number of blocks = %d \n", n_blocks)

@@ -10,35 +10,35 @@
 
 using namespace shogun;
 
-CLinearStructuredOutputMachine::CLinearStructuredOutputMachine()
-: CStructuredOutputMachine()
+LinearStructuredOutputMachine::LinearStructuredOutputMachine()
+: StructuredOutputMachine()
 {
 	register_parameters();
 }
 
-CLinearStructuredOutputMachine::CLinearStructuredOutputMachine(
-		std::shared_ptr<CStructuredModel>  model,
-		std::shared_ptr<CStructuredLabels> labs)
-: CStructuredOutputMachine(model, labs)
+LinearStructuredOutputMachine::LinearStructuredOutputMachine(
+		std::shared_ptr<StructuredModel>  model,
+		std::shared_ptr<StructuredLabels> labs)
+: StructuredOutputMachine(model, labs)
 {
 	register_parameters();
 }
 
-CLinearStructuredOutputMachine::~CLinearStructuredOutputMachine()
+LinearStructuredOutputMachine::~LinearStructuredOutputMachine()
 {
 }
 
-void CLinearStructuredOutputMachine::set_w(SGVector< float64_t > w)
+void LinearStructuredOutputMachine::set_w(SGVector< float64_t > w)
 {
 	m_w = w;
 }
 
-SGVector< float64_t > CLinearStructuredOutputMachine::get_w() const
+SGVector< float64_t > LinearStructuredOutputMachine::get_w() const
 {
 	return m_w;
 }
 
-std::shared_ptr<CStructuredLabels> CLinearStructuredOutputMachine::apply_structured(std::shared_ptr<CFeatures> data)
+std::shared_ptr<StructuredLabels> LinearStructuredOutputMachine::apply_structured(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -52,7 +52,7 @@ std::shared_ptr<CStructuredLabels> CLinearStructuredOutputMachine::apply_structu
 	}
 
 	int num_input_vectors = model_features->get_num_vectors();
-	std::shared_ptr<CStructuredLabels> out;
+	std::shared_ptr<StructuredLabels> out;
 	out = m_model->structured_labels_factory(num_input_vectors);
 
 	for ( int32_t i = 0 ; i < num_input_vectors ; ++i )
@@ -66,11 +66,11 @@ std::shared_ptr<CStructuredLabels> CLinearStructuredOutputMachine::apply_structu
 	return out;
 }
 
-void CLinearStructuredOutputMachine::register_parameters()
+void LinearStructuredOutputMachine::register_parameters()
 {
 	SG_ADD(&m_w, "m_w", "Weight vector", ParameterProperties::MODEL);
 }
 
-void CLinearStructuredOutputMachine::store_model_features()
+void LinearStructuredOutputMachine::store_model_features()
 {
 }

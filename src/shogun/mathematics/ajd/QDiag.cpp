@@ -9,7 +9,7 @@
 using namespace shogun;
 using namespace Eigen;
 
-SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
+SGMatrix<float64_t> QDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64_t> V0,
 						double eps, int itermax)
 {
 	int N = C.dims[0];
@@ -27,7 +27,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		for (int i = 0; i < N; i++)
 		{
 			for (int j = 0; j < N; j++)
-				V(i,j) = CMath::randn_double();
+				V(i,j) = Math::randn_double();
 		}
 	}
 
@@ -160,7 +160,7 @@ SGMatrix<float64_t> CQDiag::diagonalize(SGNDArray<float64_t> C, SGMatrix<float64
 		crit.back() = crit.back() / (N*N - N);
 
 		if (iter > 1)
-			deltacrit = CMath::abs( crit[iter] - crit[iter-1] );
+			deltacrit = Math::abs( crit[iter] - crit[iter-1] );
 
 		iter++;
 	}

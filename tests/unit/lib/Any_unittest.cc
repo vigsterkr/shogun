@@ -79,7 +79,7 @@ public:
 	bool cloned = false;
 };
 
-class Object : public CSGObject
+class Object : public SGObject
 {
 public:
 	virtual const char* get_name() const override
@@ -87,7 +87,7 @@ public:
 		return "Object";
 	}
 
-	std::shared_ptr<CSGObject> create_empty() const override
+	std::shared_ptr<SGObject> create_empty() const override
 	{
 		return std::make_shared<Object>();
 	}
@@ -585,7 +585,7 @@ TEST(Any, free_array_sgobject)
 	auto obj = std::make_shared<Object>();
 
 	auto size = 4;
-	auto array = SG_MALLOC(CSGObject*, size);
+	auto array = SG_MALLOC(SGObject*, size);
 	for (auto i = 0; i < size; ++i)
 	{
 		array[i] = obj;

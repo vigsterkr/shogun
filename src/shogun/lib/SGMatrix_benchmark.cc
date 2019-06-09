@@ -22,7 +22,7 @@ static SGMatrix<float64_t> createRandomData(const benchmark::State& state)
 	{
 		for (index_t j=0; j<num_dim; j++)
 		{
-			mat(j,i) = CMath::random(0,1) + 0.5;
+			mat(j,i) = Math::random(0,1) + 0.5;
 		}
 	}
 	return mat;

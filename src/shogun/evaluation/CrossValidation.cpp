@@ -21,43 +21,43 @@
 
 using namespace shogun;
 
-CCrossValidation::CCrossValidation() : CMachineEvaluation()
+CrossValidation::CrossValidation() : MachineEvaluation()
 {
 	init();
 }
 
-CCrossValidation::CCrossValidation(
-    std::shared_ptr<CMachine> machine, std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels,
-    std::shared_ptr<CSplittingStrategy> splitting_strategy, std::shared_ptr<CEvaluation> evaluation_criterion,
+CrossValidation::CrossValidation(
+    std::shared_ptr<Machine> machine, std::shared_ptr<Features> features, std::shared_ptr<Labels> labels,
+    std::shared_ptr<SplittingStrategy> splitting_strategy, std::shared_ptr<Evaluation> evaluation_criterion,
     bool autolock)
-    : CMachineEvaluation(
+    : MachineEvaluation(
           machine, features, labels, splitting_strategy, evaluation_criterion,
           autolock)
 {
 	init();
 }
 
-CCrossValidation::CCrossValidation(
-    std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labels, std::shared_ptr<CSplittingStrategy> splitting_strategy,
-    std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock)
-    : CMachineEvaluation(
+CrossValidation::CrossValidation(
+    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
+    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock)
+    : MachineEvaluation(
           machine, labels, splitting_strategy, evaluation_criterion, autolock)
 {
 	init();
 }
 
-CCrossValidation::~CCrossValidation()
+CrossValidation::~CrossValidation()
 {
 }
 
-void CCrossValidation::init()
+void CrossValidation::init()
 {
 	m_num_runs = 1;
 
 	SG_ADD(&m_num_runs, "num_runs", "Number of repetitions");
 }
 
-std::shared_ptr<CEvaluationResult> CCrossValidation::evaluate_impl()
+std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl()
 {
 	/* if for some reason the do_unlock_frag is set, unlock */
 	if (m_do_unlock)
@@ -118,10 +118,10 @@ std::shared_ptr<CEvaluationResult> CCrossValidation::evaluate_impl()
 	}
 
 	/* construct evaluation result */
-	auto result = std::make_shared<CCrossValidationResult>();
-	result->set_mean(CStatistics::mean(results));
+	auto result = std::make_shared<CrossValidationResult>();
+	result->set_mean(Statistics::mean(results));
 	if (m_num_runs > 1)
-		result->set_std_dev(CStatistics::std_deviation(results));
+		result->set_std_dev(Statistics::std_deviation(results));
 	else
 		result->set_std_dev(0);
 
@@ -136,7 +136,7 @@ std::shared_ptr<CEvaluationResult> CCrossValidation::evaluate_impl()
 	return result;
 }
 
-void CCrossValidation::set_num_runs(int32_t num_runs)
+void CrossValidation::set_num_runs(int32_t num_runs)
 {
 	if (num_runs < 1)
 		SG_ERROR("%d is an illegal number of repetitions\n", num_runs)
@@ -144,7 +144,7 @@ void CCrossValidation::set_num_runs(int32_t num_runs)
 	m_num_runs = num_runs;
 }
 
-float64_t CCrossValidation::evaluate_one_run(
+float64_t CrossValidation::evaluate_one_run(
     int64_t index, std::shared_ptr<CrossValidationStorage> storage)
 {
 	SG_DEBUG("entering %s::evaluate_one_run()\n", get_name())
@@ -203,7 +203,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			fold->put("test_indices", subset_indices);
 			fold->put("predicted_labels", result_labels);
-			auto true_labels = m_labels->clone()->as<CLabels>();
+			auto true_labels = m_labels->clone()->as<Labels>();
 			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
@@ -240,7 +240,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			// TODO while these are not used through const interfaces,
 			// we unfortunately have to clone, even though these could be shared
 			auto features = as_features(m_features->clone());
-			auto labels = std::dynamic_pointer_cast<CLabels>(m_labels->clone());
+			auto labels = std::dynamic_pointer_cast<Labels>(m_labels->clone());
 			auto evaluation_criterion =
 			    as_evaluation(m_evaluation_criterion->clone());
 
@@ -310,7 +310,7 @@ float64_t CCrossValidation::evaluate_one_run(
 			/* evtl. update xvalidation output class */
 			fold->put("test_indices", subset_indices);
 			fold->put("predicted_labels", result_labels);
-			auto true_labels = labels->clone()->as<CLabels>();
+			auto true_labels = labels->clone()->as<Labels>();
 			fold->put("ground_truth_labels", true_labels);
 			fold->post_update_results();
 			fold->put("evaluation_result", results[i]);
@@ -325,7 +325,7 @@ float64_t CCrossValidation::evaluate_one_run(
 	}
 
 	/* build arithmetic mean of results */
-	float64_t mean = CStatistics::mean(results);
+	float64_t mean = Statistics::mean(results);
 
 	SG_DEBUG("leaving %s::evaluate_one_run()\n", get_name())
 	return mean;

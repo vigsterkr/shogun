@@ -20,51 +20,39 @@
 #include <shogun/mathematics/linalg/eigsolver/LanczosEigenSolver.h>
 
 using namespace shogun;
-using namespace Eigen;
 
 TEST(LanczosEigenSolver, compute)
 {
 	const int32_t size=4;
 	SGMatrix<float64_t> m(size, size);
-	m.set_const(CMath::random(50.0, 100.0));
+	m.set_const(Math::random(50.0, 100.0));
 
 	// Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=CMath::random(100.0, 10000.0);
+		m(i,i)=Math::random(100.0, 10000.0);
 
 	// Creating sparse linear operator to use with Lanczos
-	CSparseFeatures<float64_t> feat(m);
+	SparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
-	std::shared_ptr<CEigenSolver> eig_solver=NULL;
-
-	auto A=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
-
-
-	eig_solver=std::make_shared<CLanczosEigenSolver>(A);
+	auto A=std::make_shared<SparseMatrixOperator<float64_t>>(mat);
+	std::shared_ptr<EigenSolver> eig_solver=std::make_shared<LanczosEigenSolver>(A);
 	eig_solver->compute();
 
 	float64_t lanc_max_eig=eig_solver->get_max_eigenvalue();
 	float64_t lanc_min_eig=eig_solver->get_min_eigenvalue();
 
-
-
-
 	// create dense linear operator to use with direct eigensolver
-	auto B=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto B=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
-
-	eig_solver=std::make_shared<CDirectEigenSolver>(B);
+	eig_solver=std::make_shared<DirectEigenSolver>(B);
 	eig_solver->compute();
 
 	float64_t dir_max_eig=eig_solver->get_max_eigenvalue();
 	float64_t dir_min_eig=eig_solver->get_min_eigenvalue();
 
-
-
-
 	// compare these two
-	EXPECT_NEAR(CMath::abs(lanc_max_eig-dir_max_eig), 0.0, 1E-6);
-	EXPECT_NEAR(CMath::abs(lanc_min_eig-dir_min_eig), 0.0, 1E-6);
+	EXPECT_NEAR(Math::abs(lanc_max_eig-dir_max_eig), 0.0, 1E-6);
+	EXPECT_NEAR(Math::abs(lanc_min_eig-dir_min_eig), 0.0, 1E-6);
 }
 
 TEST(LanczosEigenSolver, compute_big_diag_matrix)
@@ -75,24 +63,23 @@ TEST(LanczosEigenSolver, compute_big_diag_matrix)
 	// create a sparse matrix
 	const index_t size=100;
 	SGSparseMatrix<float64_t> sm(size, size);
-	auto op=std::make_shared<CSparseMatrixOperator<float64_t>>(sm);
-
+	auto op=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
 
 	// set its diagonal
 	SGVector<float64_t> diag(size);
 	for (index_t i=0; i<size; ++i)
 	{
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)
+		diag[i]=Math::pow(Math::abs(sg_rand->std_normal_distrib()), difficulty)
 			+min_eigenvalue;
 	}
 	op->set_diagonal(diag);
 
-	auto eig_solver=std::make_shared<CLanczosEigenSolver>(op);
+	auto eig_solver=std::make_shared<LanczosEigenSolver>(op);
 
 	eig_solver->compute();
 
 	// test eigenvalues
-	Map<VectorXd> diag_map(diag.vector, diag.vlen);
+	Eigen::Map<Eigen::VectorXd> diag_map(diag.vector, diag.vlen);
 	float64_t actual_min_eig=diag_map.minCoeff();
 	float64_t actual_max_eig=diag_map.maxCoeff();
 	float64_t computed_min_eig=eig_solver->get_min_eigenvalue();
@@ -110,11 +97,11 @@ TEST(LanczosEigenSolver, set_eigenvalues_externally)
 	SGMatrix<float64_t> m(size, size);
 	m(0,0)=1;
 	m(1,1)=2;
-	auto A=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto A=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
 	float64_t min_eigenvalue=0.0001;
 	float64_t max_eigenvalue=100000.0;
-	auto eig_solver=std::make_shared<CLanczosEigenSolver>(A);
+	auto eig_solver=std::make_shared<LanczosEigenSolver>(A);
 	eig_solver->set_min_eigenvalue(min_eigenvalue);
 	eig_solver->set_max_eigenvalue(max_eigenvalue);
 

@@ -24,13 +24,13 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = Math::random(-100, 100);
 	}
 
-	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
 
-	auto labels = std::make_shared<CMultilabelSOLabels>(NUM_SAMPLES,
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
 
 	SGVector<int32_t> lab_1(1);
@@ -42,10 +42,10 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_1)
 	labels->set_sparse_label(0, lab_1);
 	labels->set_sparse_label(1, lab_012);
 
-	auto model = std::make_shared<CMultilabelCLRModel>(features, labels);
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
 
 
-	auto slabel_1 = std::make_shared<CSparseMultilabel>(lab_1);
+	auto slabel_1 = std::make_shared<SparseMultilabel>(lab_1);
 
 	SGVector<float64_t> psi_1 = model->get_joint_feature_vector(0,
 	                            slabel_1);
@@ -73,13 +73,13 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = Math::random(-100, 100);
 	}
 
-	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
 
-	auto labels = std::make_shared<CMultilabelSOLabels>(NUM_SAMPLES,
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
 
 	SGVector<int32_t> lab_1(1);
@@ -91,10 +91,10 @@ TEST(MultilabelCLRModel, get_joint_feature_vector_2)
 	labels->set_sparse_label(0, lab_1);
 	labels->set_sparse_label(1, lab_012);
 
-	auto model = std::make_shared<CMultilabelCLRModel>(features, labels);
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
 
 
-	auto slabel_012 = std::make_shared<CSparseMultilabel>(lab_012);
+	auto slabel_012 = std::make_shared<SparseMultilabel>(lab_012);
 
 
 	SGVector<float64_t> psi_2 = model->get_joint_feature_vector(1,
@@ -122,14 +122,14 @@ TEST(MultilabelCLRModel, delta_loss)
 	SGMatrix<float64_t> feats(DIMS, NUM_SAMPLES);
 	feats.zero();
 
-	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
 
-	auto labels = std::make_shared<CMultilabelSOLabels>(NUM_SAMPLES,
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
 
 
-	auto model = std::make_shared<CMultilabelCLRModel>(features, labels);
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
 
 
 	SGVector<int32_t> lab_012(3);
@@ -143,13 +143,13 @@ TEST(MultilabelCLRModel, delta_loss)
 	lab_0[0] = 0;
 	SGVector<int32_t> lab_nill(0);
 
-	auto slabel_012 = std::make_shared<CSparseMultilabel>(lab_012);
+	auto slabel_012 = std::make_shared<SparseMultilabel>(lab_012);
 
-	auto slabel_01 = std::make_shared<CSparseMultilabel>(lab_01);
+	auto slabel_01 = std::make_shared<SparseMultilabel>(lab_01);
 
-	auto slabel_0 = std::make_shared<CSparseMultilabel>(lab_0);
+	auto slabel_0 = std::make_shared<SparseMultilabel>(lab_0);
 
-	auto slabel_nill = std::make_shared<CSparseMultilabel>(lab_nill);
+	auto slabel_nill = std::make_shared<SparseMultilabel>(lab_nill);
 
 
 	float64_t delta_loss_1 = model->delta_loss(slabel_012, slabel_012);
@@ -179,13 +179,13 @@ TEST(MultilabelCLRModel, argmax)
 
 	for (index_t i = 0; i < DIMS * NUM_SAMPLES; i++)
 	{
-		feats[i] = CMath::random(-100, 100);
+		feats[i] = Math::random(-100, 100);
 	}
 
-	auto features = std::make_shared<CSparseFeatures<float64_t>>(feats);
+	auto features = std::make_shared<SparseFeatures<float64_t>>(feats);
 
 
-	auto labels = std::make_shared<CMultilabelSOLabels>(NUM_SAMPLES,
+	auto labels = std::make_shared<MultilabelSOLabels>(NUM_SAMPLES,
 	                NUM_CLASSES);
 
 	SGVector<int32_t> lab_2(1);
@@ -196,29 +196,29 @@ TEST(MultilabelCLRModel, argmax)
 	labels->set_sparse_label(0, lab_2);
 	labels->set_sparse_label(1, lab_01);
 
-	auto model = std::make_shared<CMultilabelCLRModel>(features, labels);
+	auto model = std::make_shared<MultilabelCLRModel>(features, labels);
 
 
 	SGVector<float64_t> w(model->get_dim());
 
 	for (index_t i = 0; i < w.vlen; i++)
 	{
-		w[i] = CMath::random(-1, 1);
+		w[i] = Math::random(-1, 1);
 	}
 
 	auto ret_1 = model->argmax(w, 0, true);
 
-	auto y_1 = ret_1->argmax->as<CSparseMultilabel>();
+	auto y_1 = ret_1->argmax->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_1 = y_1->get_data();
 
 	// calibrated/virtual label is considered to be last label
-	float64_t calibrated_score = features->as<CDotFeatures>()->dense_dot(0,
+	float64_t calibrated_score = features->as<DotFeatures>()->dense_dot(0,
 	                             w.vector + labels->get_num_classes() * DIMS, DIMS);
 
 	for (index_t i = 0; i < slabel_1.vlen; i++)
 	{
 		int32_t label = slabel_1[i];
-		float64_t score = features->as<CDotFeatures>()->dense_dot(0,
+		float64_t score = features->as<DotFeatures>()->dense_dot(0,
 		                  w.vector + label * DIMS, DIMS) - calibrated_score;
 
 		// true label in this case is lab_2
@@ -236,12 +236,12 @@ TEST(MultilabelCLRModel, argmax)
 
 	auto ret_2 = model->argmax(w, 0, false);
 
-	auto y_2 = ret_2->argmax->as<CSparseMultilabel>();
+	auto y_2 = ret_2->argmax->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_2 = y_2->get_data();
 
 	for (index_t i = 0; i < labels->get_num_classes(); i++)
 	{
-		float64_t score = features->as<CDotFeatures>()->dense_dot(0,
+		float64_t score = features->as<DotFeatures>()->dense_dot(0,
 		                  w.vector + i * DIMS, DIMS);
 
 		bool present = false;

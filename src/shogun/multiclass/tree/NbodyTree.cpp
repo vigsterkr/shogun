@@ -34,7 +34,7 @@
 using namespace shogun;
 
 CNbodyTree::CNbodyTree(int32_t leaf_size, EDistanceType d)
-: CTreeMachine<NbodyTreeNodeData>()
+: TreeMachine<NbodyTreeNodeData>()
 {
 	init();
 
@@ -42,7 +42,7 @@ CNbodyTree::CNbodyTree(int32_t leaf_size, EDistanceType d)
 	m_dist=d;
 }
 
-void CNbodyTree::build_tree(std::shared_ptr<CDenseFeatures<float64_t>> data)
+void CNbodyTree::build_tree(std::shared_ptr<DenseFeatures<float64_t>> data)
 {
 	REQUIRE(data,"data not set\n");
 	REQUIRE(m_leaf_size>0,"Leaf size should be greater than 0\n");
@@ -56,7 +56,7 @@ void CNbodyTree::build_tree(std::shared_ptr<CDenseFeatures<float64_t>> data)
 	set_root(recursive_build(0,m_data.num_cols-1));
 }
 
-void CNbodyTree::query_knn(std::shared_ptr<CDenseFeatures<float64_t>> data, int32_t k)
+void CNbodyTree::query_knn(std::shared_ptr<DenseFeatures<float64_t>> data, int32_t k)
 {
 	REQUIRE(data,"Query data not supplied\n")
 	REQUIRE(data->get_num_features()==m_data.num_rows,"query data dimension should be same as training data dimension\n")
@@ -69,7 +69,7 @@ void CNbodyTree::query_knn(std::shared_ptr<CDenseFeatures<float64_t>> data, int3
 
 	for (int32_t i=0;i<qfeats.num_cols;i++)
 	{
-		auto heap=std::make_shared<CKNNHeap>(k);
+		auto heap=std::make_shared<KNNHeap>(k);
 		std::shared_ptr<bnode_t> root;
 		if (m_root)
 			root=m_root->as<bnode_t>();
@@ -88,7 +88,7 @@ SGVector<float64_t> CNbodyTree::log_kernel_density(SGMatrix<float64_t> test, EKe
 
 	float64_t log_atol = std::log(atol * m_data.num_cols);
 	float64_t log_rtol = std::log(rtol);
-	float64_t log_kernel_norm=CKernelDensity::log_norm(kernel,h,dim);
+	float64_t log_kernel_norm=KernelDensity::log_norm(kernel,h,dim);
 	SGVector<float64_t> log_density(test.num_cols);
 	for (int32_t i=0;i<test.num_cols;i++)
 	{
@@ -101,9 +101,9 @@ SGVector<float64_t> CNbodyTree::log_kernel_density(SGMatrix<float64_t> test, EKe
 		min_max_dist(test.matrix+i*dim,root,lower_dist,upper_dist,dim);
 
 		float64_t min_bound = std::log(m_data.num_cols) +
-		                      CKernelDensity::log_kernel(kernel, upper_dist, h);
+		                      KernelDensity::log_kernel(kernel, upper_dist, h);
 		float64_t max_bound = std::log(m_data.num_cols) +
-		                      CKernelDensity::log_kernel(kernel, lower_dist, h);
+		                      KernelDensity::log_kernel(kernel, lower_dist, h);
 		float64_t spread=logdiffexp(max_bound,min_bound);
 
 		get_kde_single(root,test.matrix+i*dim,kernel,h,log_atol,log_rtol,log_kernel_norm,min_bound,spread,min_bound,spread);
@@ -121,9 +121,9 @@ SGVector<float64_t> CNbodyTree::log_kernel_density_dual(SGMatrix<float64_t> test
 
 	float64_t log_atol = std::log(atol * m_data.num_cols * test.num_cols);
 	float64_t log_rtol = std::log(rtol);
-	float64_t log_kernel_norm=CKernelDensity::log_norm(kernel,h,dim);
+	float64_t log_kernel_norm=KernelDensity::log_norm(kernel,h,dim);
 	SGVector<float64_t> log_density(test.num_cols);
-	log_density.fill_vector(log_density.vector,log_density.vlen,-CMath::INFTY);
+	log_density.fill_vector(log_density.vector,log_density.vlen,-Math::INFTY);
 
 	std::shared_ptr<bnode_t> rroot;
 	if (m_root)
@@ -132,9 +132,9 @@ SGVector<float64_t> CNbodyTree::log_kernel_density_dual(SGMatrix<float64_t> test
 	float64_t upper_dist=max_dist_dual(rroot,qroot);
 	float64_t lower_dist=min_dist_dual(rroot,qroot);
 	float64_t min_bound = std::log(test.num_cols) + std::log(m_data.num_cols) +
-	                      CKernelDensity::log_kernel(kernel, upper_dist, h);
+	                      KernelDensity::log_kernel(kernel, upper_dist, h);
 	float64_t max_bound = std::log(test.num_cols) + std::log(m_data.num_cols) +
-	                      CKernelDensity::log_kernel(kernel, lower_dist, h);
+	                      KernelDensity::log_kernel(kernel, lower_dist, h);
 	float64_t spread=logdiffexp(max_bound,min_bound);
 
 	kde_dual(rroot,qroot,qid,test,log_density,kernel,h,log_atol,log_rtol,log_kernel_norm,min_bound,spread,min_bound,spread);
@@ -164,7 +164,7 @@ SGMatrix<index_t> CNbodyTree::get_knn_indices()
 	return SGMatrix<index_t>();
 }
 
-void CNbodyTree::query_knn_single(std::shared_ptr<CKNNHeap> heap, float64_t mdist, std::shared_ptr<bnode_t> node, float64_t* arr, int32_t dim)
+void CNbodyTree::query_knn_single(std::shared_ptr<KNNHeap> heap, float64_t mdist, std::shared_ptr<bnode_t> node, float64_t* arr, int32_t dim)
 {
 	if (mdist>heap->get_max_dist())
 		return;
@@ -210,7 +210,7 @@ float64_t CNbodyTree::distance(index_t vec, float64_t* arr, int32_t dim)
 	return actual_dists(ret);
 }
 
-std::shared_ptr<CBinaryTreeMachineNode<NbodyTreeNodeData>> CNbodyTree::recursive_build(index_t start, index_t end)
+std::shared_ptr<BinaryTreeMachineNode<NbodyTreeNodeData>> CNbodyTree::recursive_build(index_t start, index_t end)
 {
 	auto node=std::make_shared<bnode_t>();
 	init_node(node,start,end);
@@ -258,7 +258,7 @@ void CNbodyTree::get_kde_single(std::shared_ptr<bnode_t> node,float64_t* data, E
 
 		for (int32_t i=node->data.start_idx;i<=node->data.end_idx;i++)
 		{
-			float64_t pt_eval=CKernelDensity::log_kernel(kernel,distance(m_vec_id[i],data,m_data.num_rows),h);
+			float64_t pt_eval=KernelDensity::log_kernel(kernel,distance(m_vec_id[i],data,m_data.num_rows),h);
 			min_bound_global=logsumexp(pt_eval,min_bound_global);
 		}
 
@@ -274,14 +274,14 @@ void CNbodyTree::get_kde_single(std::shared_ptr<bnode_t> node,float64_t* data, E
 
 	int32_t n_l=lchild->data.end_idx-lchild->data.start_idx+1;
 	float64_t lower_bound_childl =
-	    std::log(n_l) + CKernelDensity::log_kernel(kernel, upper_dist, h);
-	float64_t spread_childl=logdiffexp(log(n_l)+CKernelDensity::log_kernel(kernel,lower_dist,h),lower_bound_childl);
+	    std::log(n_l) + KernelDensity::log_kernel(kernel, upper_dist, h);
+	float64_t spread_childl=logdiffexp(log(n_l)+KernelDensity::log_kernel(kernel,lower_dist,h),lower_bound_childl);
 
 	min_max_dist(data,rchild,lower_dist,upper_dist,m_data.num_rows);
 	int32_t n_r=rchild->data.end_idx-rchild->data.start_idx+1;
 	float64_t lower_bound_childr =
-	    std::log(n_r) + CKernelDensity::log_kernel(kernel, upper_dist, h);
-	float64_t spread_childr=logdiffexp(log(n_r)+CKernelDensity::log_kernel(kernel,lower_dist,h),lower_bound_childr);
+	    std::log(n_r) + KernelDensity::log_kernel(kernel, upper_dist, h);
+	float64_t spread_childr=logdiffexp(log(n_r)+KernelDensity::log_kernel(kernel,lower_dist,h),lower_bound_childr);
 
 	// update global bounds
 	min_bound_global=logdiffexp(min_bound_global,min_bound_node);
@@ -332,10 +332,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 		// point by point evavuation of density
 		for (int32_t i=querynode->data.start_idx;i<=querynode->data.end_idx;i++)
 		{
-			float64_t q=-CMath::INFTY;
+			float64_t q=-Math::INFTY;
 			for (int32_t j=refnode->data.start_idx;j<=refnode->data.end_idx;j++)
 			{
-				float64_t pt_eval=CKernelDensity::log_kernel(kernel_type,distance(m_vec_id[j],qdata.matrix+dim*qid[i],dim),h);
+				float64_t pt_eval=KernelDensity::log_kernel(kernel_type,distance(m_vec_id[j],qdata.matrix+dim*qid[i],dim),h);
 				q=logsumexp(q,pt_eval);
 			}
 
@@ -359,10 +359,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 		int32_t refn_l=lchild->data.end_idx-lchild->data.start_idx+1;
 		float64_t lower_bound_childl =
 		    std::log(queryn) + std::log(refn_l) +
-		    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+		    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 		float64_t spread_childl = logdiffexp(
 		    std::log(queryn) + std::log(refn_l) +
-		        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+		        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 		    lower_bound_childl);
 
 		// compute bounds for query node and right child of ref node
@@ -371,10 +371,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 		int32_t refn_r=rchild->data.end_idx-rchild->data.start_idx+1;
 		float64_t lower_bound_childr =
 		    std::log(queryn) + std::log(refn_r) +
-		    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+		    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 		float64_t spread_childr = logdiffexp(
 		    std::log(queryn) + std::log(refn_r) +
-		        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+		        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 		    lower_bound_childr);
 
 		// update global bounds
@@ -409,10 +409,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 		float64_t upper_dist=max_dist_dual(refnode,lchild);
 		float64_t lower_bound_childl =
 		    std::log(query_nl) + std::log(ref_n) +
-		    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+		    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 		float64_t spread_childl = logdiffexp(
 		    std::log(query_nl) + std::log(ref_n) +
-		        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+		        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 		    lower_bound_childl);
 
 		// compute bounds for right child of query node and ref node
@@ -420,10 +420,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 		upper_dist=max_dist_dual(querynode,rchild);
 		float64_t lower_bound_childr =
 		    std::log(query_nr) + std::log(ref_n) +
-		    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+		    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 		float64_t spread_childr = logdiffexp(
 		    std::log(query_nr) + std::log(ref_n) +
-		        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+		        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 		    lower_bound_childr);
 
 		// update global bounds
@@ -459,10 +459,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 	float64_t upper_dist=max_dist_dual(querychildl,refchildl);
 	float64_t lower_bound_ll =
 	    std::log(queryn_l) + std::log(refn_l) +
-	    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+	    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 	float64_t spread_ll = logdiffexp(
 	    std::log(queryn_l) + std::log(refn_l) +
-	        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+	        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 	    lower_bound_ll);
 
 	// left-right bounds
@@ -470,10 +470,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 	upper_dist=max_dist_dual(querychildl,refchildr);
 	float64_t lower_bound_lr =
 	    std::log(queryn_l) + std::log(refn_r) +
-	    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+	    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 	float64_t spread_lr = logdiffexp(
 	    std::log(queryn_l) + std::log(refn_r) +
-	        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+	        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 	    lower_bound_lr);
 
 	// right-left bounds
@@ -481,10 +481,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 	upper_dist=max_dist_dual(querychildr,refchildl);
 	float64_t lower_bound_rl =
 	    std::log(queryn_r) + std::log(refn_l) +
-	    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+	    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 	float64_t spread_rl = logdiffexp(
 	    std::log(queryn_r) + std::log(refn_l) +
-	        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+	        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 	    lower_bound_rl);
 
 	// right-right bounds
@@ -492,10 +492,10 @@ void CNbodyTree::kde_dual(std::shared_ptr<bnode_t> refnode, std::shared_ptr<bnod
 	upper_dist=max_dist_dual(querychildr,refchildr);
 	float64_t lower_bound_rr =
 	    std::log(queryn_r) + std::log(refn_r) +
-	    CKernelDensity::log_kernel(kernel_type, upper_dist, h);
+	    KernelDensity::log_kernel(kernel_type, upper_dist, h);
 	float64_t spread_rr = logdiffexp(
 	    std::log(queryn_r) + std::log(refn_r) +
-	        CKernelDensity::log_kernel(kernel_type, lower_dist, h),
+	        KernelDensity::log_kernel(kernel_type, lower_dist, h),
 	    lower_bound_rr);
 
 	// update global bound and spread
@@ -537,12 +537,12 @@ void CNbodyTree::partition(index_t dim, index_t start, index_t end, index_t mid)
 		{
 			if (m_data(dim,m_vec_id[i])<m_data(dim,m_vec_id[right]))
 			{
-				CMath::swap(*(m_vec_id.vector+i),*(m_vec_id.vector+midindex));
+				Math::swap(*(m_vec_id.vector+i),*(m_vec_id.vector+midindex));
 				midindex+=1;
 			}
 		}
 
-		CMath::swap(*(m_vec_id.vector+midindex),*(m_vec_id.vector+right));
+		Math::swap(*(m_vec_id.vector+midindex),*(m_vec_id.vector+right));
 		if (midindex==mid)
 			break;
 		else if (midindex<mid)

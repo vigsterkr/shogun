@@ -36,17 +36,17 @@ using namespace shogun;
 
 TEST(DynamicObjectArray,clone)
 {
-	auto orig_array = std::make_shared<CDynamicObjectArray>();
+	auto orig_array = std::make_shared<DynamicObjectArray>();
 
 	// Something relatively simple to add
-	auto subset = std::make_shared<CSubset>();
+	auto subset = std::make_shared<Subset>();
 	orig_array->append_element(subset);
 
-	auto cloned_array = orig_array->clone()->as<CDynamicObjectArray>();
+	auto cloned_array = orig_array->clone()->as<DynamicObjectArray>();
 	// Expand the cloned array into reserved space to check if the cloned
 	// array has correctly allocated memory
 	for (index_t i=0; i < 100; ++i)
-		cloned_array->append_element(std::make_shared<CSubset>());
+		cloned_array->append_element(std::make_shared<Subset>());
 
 	// Check sizes
 	EXPECT_EQ(orig_array->get_num_elements(), 1);
@@ -58,12 +58,12 @@ TEST(DynamicObjectArray,clone)
 
 TEST(DynamicObjectArray, equals_after_resize)
 {
-	auto array1 = std::make_shared<CDynamicObjectArray>();
-	auto array2 = std::make_shared<CDynamicObjectArray>();
+	auto array1 = std::make_shared<DynamicObjectArray>();
+	auto array2 = std::make_shared<DynamicObjectArray>();
 
 	/* enforce a resize */
 	for (index_t i = 0; i < 1000; ++i)
-		array1->append_element(std::make_shared<CDynamicObjectArray>());
+		array1->append_element(std::make_shared<DynamicObjectArray>());
 
 	array1->reset_array();
 
@@ -76,10 +76,10 @@ TEST(DynamicObjectArray, equals_after_resize)
 
 TEST(DynamicObjectArray, equals_different)
 {
-	auto array1 = std::make_shared<CDynamicObjectArray>();
-	auto array2 = std::make_shared<CDynamicObjectArray>();
+	auto array1 = std::make_shared<DynamicObjectArray>();
+	auto array2 = std::make_shared<DynamicObjectArray>();
 
-	array1->append_element(std::make_shared<CDynamicObjectArray>());
+	array1->append_element(std::make_shared<DynamicObjectArray>());
 
 	EXPECT_FALSE(array1->equals(array2));
 	EXPECT_FALSE(array2->equals(array1));

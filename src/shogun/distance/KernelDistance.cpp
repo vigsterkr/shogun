@@ -13,13 +13,13 @@
 
 using namespace shogun;
 
-CKernelDistance::CKernelDistance() : CDistance()
+KernelDistance::KernelDistance() : Distance()
 {
 	init();
 }
 
-CKernelDistance::CKernelDistance(float64_t w, std::shared_ptr<CKernel> k)
-: CDistance()
+KernelDistance::KernelDistance(float64_t w, std::shared_ptr<Kernel> k)
+: Distance()
 {
 	init();
 
@@ -29,9 +29,9 @@ CKernelDistance::CKernelDistance(float64_t w, std::shared_ptr<CKernel> k)
 	
 }
 
-CKernelDistance::CKernelDistance(
-	std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t w , std::shared_ptr<CKernel> k)
-: CDistance()
+KernelDistance::KernelDistance(
+	std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t w , std::shared_ptr<Kernel> k)
+: Distance()
 {
 	init();
 
@@ -43,28 +43,28 @@ CKernelDistance::CKernelDistance(
 	init(l, r);
 }
 
-CKernelDistance::~CKernelDistance()
+KernelDistance::~KernelDistance()
 {
-	// important to have the cleanup of CDistance first, it calls get_name which
+	// important to have the cleanup of Distance first, it calls get_name which
 	// uses the distance
 	cleanup();
 	
 }
 
-bool CKernelDistance::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool KernelDistance::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
 	ASSERT(kernel)
 	kernel->init(l,r);
-	return CDistance::init(l,r);
+	return Distance::init(l,r);
 }
 
-float64_t CKernelDistance::compute(int32_t idx_a, int32_t idx_b)
+float64_t KernelDistance::compute(int32_t idx_a, int32_t idx_b)
 {
 	float64_t result=kernel->kernel(idx_a, idx_b);
 	return exp(-result/width);
 }
 
-void CKernelDistance::init()
+void KernelDistance::init()
 {
 	kernel = NULL;
 	width = 0.0;

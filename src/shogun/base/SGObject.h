@@ -42,7 +42,7 @@ class Parameter;
 class ParameterObserverInterface;
 class ObservedValue;
 class ParameterObserver;
-class CDynamicObjectArray;
+class DynamicObjectArray;
 
 template <class T>
 class ObservedValueTemplated;
@@ -57,7 +57,7 @@ class ObservedValueTemplated;
 namespace sgo_details
 {
 template <typename T1, typename T2>
-bool dispatch_array_type(const CSGObject* obj, const std::string& name,
+bool dispatch_array_type(const SGObject* obj, const std::string& name,
 		T2&& lambda);
 }
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -127,7 +127,7 @@ using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<s
  *
  * All objects can be cloned and compared (deep copy, recursively)
  */
-class CSGObject: public std::enable_shared_from_this<CSGObject>
+class SGObject: public std::enable_shared_from_this<SGObject>
 {
 public:
 	/** Definition of observed subject */
@@ -143,23 +143,23 @@ public:
 		SGSubscriber;
 
 	/** default constructor */
-	CSGObject();
+	SGObject();
 
 	/** copy constructor */
-	CSGObject(const CSGObject& orig);
+	SGObject(const SGObject& orig);
 
 	/** destructor */
-	virtual ~CSGObject();
+	virtual ~SGObject();
 
 	/** A shallow copy.
 	 * All the SGObject instance variables will be simply assigned and SG_REF-ed.
 	 */
-	virtual std::shared_ptr<CSGObject> shallow_copy() const;
+	virtual std::shared_ptr<SGObject> shallow_copy() const;
 
 	/** A deep copy.
 	 * All the instance variables will also be copied.
 	 */
-	virtual std::shared_ptr<CSGObject> deep_copy() const;
+	virtual std::shared_ptr<SGObject> deep_copy() const;
 
 	/** Returns the name of the SGSerializable instance.  It MUST BE
 	 *  the CLASS NAME without the prefixed `C'.
@@ -201,7 +201,7 @@ public:
 	 * @param ser where to save the object;
 	 * @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool serialize(std::shared_ptr<io::CSerializer> ser);
+	virtual bool serialize(std::shared_ptr<io::Serializer> ser);
 
 	/** Load this object from file.  If it will fail (returning FALSE)
 	 *  then this object will contain inconsistent data and should not
@@ -211,7 +211,7 @@ public:
 	 *
 	 *  @return TRUE if done, otherwise FALSE
 	 */
-	virtual bool deserialize(std::shared_ptr<io::CDeserializer> deser);
+	virtual bool deserialize(std::shared_ptr<io::Deserializer> deser);
 
 	/**
 	 * Return the description of a registered parameter given its name
@@ -249,7 +249,7 @@ public:
 	 *
 	 * @param dict dictionary of parameters to be built.
 	 */
-	void build_gradient_parameter_dictionary(std::shared_ptr<CMap<TParameter*, CSGObject*>> dict);
+	void build_gradient_parameter_dictionary(std::shared_ptr<CMap<TParameter*, SGObject*>> dict);
 
 	/** Checks if object has a class parameter identified by a name.
 	 *
@@ -425,7 +425,7 @@ public:
 		class X = typename std::enable_if<is_sg_base<T>::value>::type>
 	std::shared_ptr<T> get(const std::string& name, index_t index, std::nothrow_t) const
 	{
-		std::shared_ptr<CSGObject> result;
+		std::shared_ptr<SGObject> result;
 
 		auto get_lambda = [&index, &result](auto& array) {
 			result = array.at(index);
@@ -462,7 +462,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	std::shared_ptr<CSGObject> get(const std::string& name) const noexcept(false);
+	std::shared_ptr<SGObject> get(const std::string& name) const noexcept(false);
 
 	/** Untyped getter for an object class parameter, identified by a name.
 	 * Does not throw an error if class parameter object cannot be casted
@@ -471,7 +471,7 @@ public:
 	 * @param name name of the parameter
 	 * @return object parameter
 	 */
-	std::shared_ptr<CSGObject> get(const std::string& name, std::nothrow_t) const noexcept;
+	std::shared_ptr<SGObject> get(const std::string& name, std::nothrow_t) const noexcept;
 
 	/** Untyped getter for an object array class parameter, identified by a name
 	 * and an index.
@@ -482,7 +482,7 @@ public:
 	 * @index index of the parameter
 	 * @return object parameter
 	 */
-	std::shared_ptr<CSGObject> get(const std::string& name, index_t index) const;
+	std::shared_ptr<SGObject> get(const std::string& name, index_t index) const;
 
 	/** Typed setter for a non-object class parameter, identified by a name.
 	 *
@@ -492,7 +492,7 @@ public:
 	template <typename T,
 		      typename T2 = typename std::enable_if<
 		          !std::is_base_of<
-		              CSGObject, typename std::remove_pointer<T>::type>::value,
+		              SGObject, typename std::remove_pointer<T>::type>::value,
 		          T>::type>
 	void put(const std::string& name, T value)
 	{
@@ -622,10 +622,10 @@ public:
 	/** Specializes a provided object to the specified type.
 	 * Throws exception if the object cannot be specialized.
 	 *
-	 * @param sgo object of CSGObject base type
+	 * @param sgo object of SGObject base type
 	 * @return The requested type
 	 */
-	template<class T> static T* as(std::shared_ptr<CSGObject> sgo)
+	template<class T> static T* as(std::shared_ptr<SGObject> sgo)
 	{
 		REQUIRE(sgo, "No object provided!\n");
 		return sgo->as<T>();
@@ -873,7 +873,7 @@ protected:
 
 	/** Puts a pointer to a (lazily evaluated) function into the parameter map.
 	 * The bound function can modify the class members and can only be
-	 * invoked using CSGObject::run(name).
+	 * invoked using SGObject::run(name).
 	 *
 	 * @param name name of the parameter
 	 * @param method pointer to the method
@@ -905,14 +905,14 @@ public:
 	 * @param other object to compare with
 	 * @return true if all parameters are equal
 	 */
-	virtual bool equals(const CSGObject* other) const;
+	virtual bool equals(const SGObject* other) const;
 
 	/** Deep comparison of two objects.
 	 *
 	 * @param other object to compare with
 	 * @return true if all parameters are equal
 	 */
-	virtual bool equals(std::shared_ptr<const CSGObject> other) const;
+	virtual bool equals(std::shared_ptr<const SGObject> other) const;
 
 	/** Creates a clone of the current object. This is done via recursively
 	 * traversing all parameters, which corresponds to a deep copy.
@@ -922,7 +922,7 @@ public:
 	 * @return an identical copy of the given object, which is disjoint in memory.
 	 * NULL if the clone fails. Note that the returned object is SG_REF'ed
 	 */
-	virtual std::shared_ptr<CSGObject> clone() const;
+	virtual std::shared_ptr<SGObject> clone() const;
 
 	/**
 	 * Looks up the option name of a parameter given the enum value.
@@ -938,14 +938,14 @@ public:
 protected:
 	/** Returns an empty instance of own type.
 	 *
-	 * When inheriting from CSGObject from outside the main source tree (i.e.
+	 * When inheriting from SGObject from outside the main source tree (i.e.
 	 * customized classes, or in a unit test), then this method has to be
 	 * overloaded manually to return an empty instance.
 	 * Shogun can only instantiate empty class instances from its source tree.
 	 *
 	 * @return empty instance of own type
 	 */
-	virtual std::shared_ptr<CSGObject> create_empty() const;
+	virtual std::shared_ptr<SGObject> create_empty() const;
 
 	/** Initialises all parameters with ParameterProperties::AUTO flag */
 	void init_auto_params();
@@ -994,7 +994,7 @@ private:
 	AnyParameter get_function(const BaseTag& _tag) const;
 
 	/** Gets an incremental hash of all parameters as well as the parameters of
-	 * CSGObject children of the current object's parameters.
+	 * SGObject children of the current object's parameters.
 	 *
 	 * @param hash the computed hash returned by reference
 	 * @param carry value for Murmur3 incremental hash
@@ -1168,9 +1168,9 @@ protected:
 namespace sgo_details
 {
 template <typename T1, typename T2>
-bool dispatch_array_type(const CSGObject* obj, const std::string& name, T2&& lambda)
+bool dispatch_array_type(const SGObject* obj, const std::string& name, T2&& lambda)
 {
-	Tag<std::shared_ptr<CDynamicObjectArray>> tag_array_sg(name);
+	Tag<std::shared_ptr<DynamicObjectArray>> tag_array_sg(name);
 	if (obj->has(tag_array_sg))
 	{
 		auto dispatched = obj->get(tag_array_sg);
@@ -1200,39 +1200,39 @@ struct GetByNameIndex
 };
 
 template <typename T>
-std::shared_ptr<CSGObject> get_if_possible(const std::shared_ptr<const CSGObject>& obj, const std::string& name, GetByName)
+std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, const std::string& name, GetByName)
 {
 	return obj->has<T>(name) ? obj->get<T>(name) : nullptr;
 }
 
 template <typename T>
-std::shared_ptr<CSGObject> get_if_possible(const std::shared_ptr<const CSGObject>& obj, const std::string& name, GetByNameIndex how)
+std::shared_ptr<SGObject> get_if_possible(const std::shared_ptr<const SGObject>& obj, const std::string& name, GetByNameIndex how)
 {
-	std::shared_ptr<CSGObject> result = nullptr;
+	std::shared_ptr<SGObject> result = nullptr;
 	result = obj->get<T>(name, how.m_index, std::nothrow);
 	return result;
 }
 
 template<typename T>
-std::shared_ptr<CSGObject> get_dispatch_all_base_types(const std::shared_ptr<const CSGObject>& obj, const std::string& name,
+std::shared_ptr<SGObject> get_dispatch_all_base_types(const std::shared_ptr<const SGObject>& obj, const std::string& name,
 		T&& how)
 {
-	if (auto result = get_if_possible<CKernel>(obj, name, how))
+	if (auto result = get_if_possible<Kernel>(obj, name, how))
 		return result;
-	if (auto result = get_if_possible<CFeatures>(obj, name, how))
+	if (auto result = get_if_possible<Features>(obj, name, how))
 		return result;
-	if (auto result = get_if_possible<CMachine>(obj, name, how))
+	if (auto result = get_if_possible<Machine>(obj, name, how))
 		return result;
-	if (auto result = get_if_possible<CLabels>(obj, name, how))
+	if (auto result = get_if_possible<Labels>(obj, name, how))
 		return result;
-	if (auto result = get_if_possible<CEvaluationResult>(obj, name, how))
+	if (auto result = get_if_possible<EvaluationResult>(obj, name, how))
 		return result;
 
 	return nullptr;
 }
 
 template<class T>
-std::shared_ptr<CSGObject> get_by_tag(const std::shared_ptr<const CSGObject>& obj, const std::string& name,
+std::shared_ptr<SGObject> get_by_tag(const std::shared_ptr<const SGObject>& obj, const std::string& name,
 		T&& how)
 {
 	return get_dispatch_all_base_types(obj, name, how);

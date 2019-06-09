@@ -51,11 +51,11 @@ TEST_F(NeuralLogisticLayerTest, compute_activations)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	std::shared_ptr<CNeuralInputLayer> input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	// initialize logistic layer
-	auto layer=std::make_shared<CNeuralLogisticLayer>(9);
+	auto layer=std::make_shared<NeuralLogisticLayer>(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
@@ -91,11 +91,11 @@ TEST_F(NeuralLogisticLayerTest, compute_local_gradients)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	std::shared_ptr<CNeuralInputLayer> input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	// initialize the layer
-	auto layer=std::make_shared<CNeuralLogisticLayer>(9);
+	auto layer=std::make_shared<NeuralLogisticLayer>(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =

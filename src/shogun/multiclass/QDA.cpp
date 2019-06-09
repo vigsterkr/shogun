@@ -21,29 +21,29 @@
 using namespace shogun;
 using namespace Eigen;
 
-CQDA::CQDA() : CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+QDA::QDA() : NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 }
 
-CQDA::CQDA(float64_t tolerance, bool store_covs)
-: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+QDA::QDA(float64_t tolerance, bool store_covs)
+: NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	m_tolerance = tolerance;
 	m_store_covs = store_covs;
 }
 
-CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab)
-: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab)
+: NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
 	set_labels(trainlab);
 }
 
-CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance)
-: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance)
+: NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
@@ -51,8 +51,8 @@ CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<
 	m_tolerance = tolerance;
 }
 
-CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, bool store_covs)
-: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, bool store_covs)
+: NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
@@ -62,8 +62,8 @@ CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<
 
 
 
-CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance, bool store_covs)
-: CNativeMulticlassMachine(), m_num_classes(0), m_dim(0)
+QDA::QDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance, bool store_covs)
+: NativeMulticlassMachine(), m_num_classes(0), m_dim(0)
 {
 	init();
 	set_features(traindat);
@@ -72,20 +72,20 @@ CQDA::CQDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<
 	m_store_covs = store_covs;
 }
 
-CQDA::~CQDA()
+QDA::~QDA()
 {
 
 
 	cleanup();
 }
 
-void CQDA::init()
+void QDA::init()
 {
 	m_tolerance = 1e-4;
 	m_store_covs = false;
 	SG_ADD(&m_tolerance, "m_tolerance", "Tolerance member.", ParameterProperties::HYPER);
 	SG_ADD(&m_store_covs, "m_store_covs", "Store covariances member");
-	SG_ADD((std::shared_ptr<CSGObject>*) &m_features, "m_features", "Feature object.");
+	SG_ADD((std::shared_ptr<SGObject>*) &m_features, "m_features", "Feature object.");
 	SG_ADD(&m_means, "m_means", "Mean vectors list");
 	SG_ADD(&m_slog, "m_slog", "Vector used in classification");
 	SG_ADD(&m_dim, "m_dim", "dimension of feature space");
@@ -96,21 +96,21 @@ void CQDA::init()
 	m_features  = NULL;
 }
 
-void CQDA::cleanup()
+void QDA::cleanup()
 {
 	m_means=SGMatrix<float64_t>();
 
 	m_num_classes = 0;
 }
 
-std::shared_ptr<CMulticlassLabels> CQDA::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> QDA::apply_multiclass(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			SG_ERROR("Specified features are not of type DotFeatures\n")
 
-		set_features(data->as<CDotFeatures>());
+		set_features(data->as<DotFeatures>());
 	}
 
 	if ( !m_features )
@@ -120,7 +120,7 @@ std::shared_ptr<CMulticlassLabels> CQDA::apply_multiclass(std::shared_ptr<CFeatu
 	ASSERT(num_vecs > 0)
 	ASSERT( m_dim == m_features->get_dim_feature_space() )
 
-	auto rf = m_features->as<CDenseFeatures<float64_t>>();
+	auto rf = m_features->as<DenseFeatures<float64_t>>();
 
 	MatrixXd X(num_vecs, m_dim);
 	MatrixXd A(num_vecs, m_dim);
@@ -160,15 +160,15 @@ std::shared_ptr<CMulticlassLabels> CQDA::apply_multiclass(std::shared_ptr<CFeatu
 		}
 
 
-	auto out = std::make_shared<CMulticlassLabels>(num_vecs);
+	auto out = std::make_shared<MulticlassLabels>(num_vecs);
 
 	for (int i = 0 ; i < num_vecs; i++)
-		out->set_label(i, CMath::arg_max(norm2.data()+i, num_vecs, m_num_classes));
+		out->set_label(i, Math::arg_max(norm2.data()+i, num_vecs, m_num_classes));
 
 	return out;
 }
 
-bool CQDA::train_machine(std::shared_ptr<CFeatures> data)
+bool QDA::train_machine(std::shared_ptr<Features> data)
 {
 	if (!m_labels)
 		SG_ERROR("No labels allocated in QDA training\n")
@@ -176,9 +176,9 @@ bool CQDA::train_machine(std::shared_ptr<CFeatures> data)
 	if ( data )
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Speficied features are not of type CDotFeatures\n")
+			SG_ERROR("Speficied features are not of type DotFeatures\n")
 
-		set_features(data->as<CDotFeatures>());
+		set_features(data->as<DotFeatures>());
 	}
 
 	if (!m_features)
@@ -247,7 +247,7 @@ bool CQDA::train_machine(std::shared_ptr<CFeatures> data)
 	rot_dims[2] = m_num_classes;
 	SGNDArray< float64_t > rotations = SGNDArray< float64_t >(rot_dims, 3);
 
-	auto rf = m_features->as<CDenseFeatures<float64_t>>();
+	auto rf = m_features->as<DenseFeatures<float64_t>>();
 
 	m_means.zero();
 

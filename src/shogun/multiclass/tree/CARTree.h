@@ -78,17 +78,17 @@ namespace shogun
  * have gone from the node. \n
  * cf. http://pic.dhe.ibm.com/infocenter/spssstat/v20r0m0/index.jsp?topic=%2Fcom.ibm.spss.statistics.help%2Falg_tree-cart.htm
  */
-class CCARTree : public CTreeMachine<CARTreeNodeData>
+class CARTree : public TreeMachine<CARTreeNodeData>
 {
 public:
 	/** default constructor */
-	CCARTree();
+	CARTree();
 
 	/** constructor
 	 * @param attribute_types type of each predictive attribute (true for nominal, false for ordinal/continuous)
 	 * @param prob_type machine problem type - PT_MULTICLASS or PT_REGRESSION
 	 */
-	CCARTree(SGVector<bool> attribute_types, EProblemType prob_type=PT_MULTICLASS);
+	CARTree(SGVector<bool> attribute_types, EProblemType prob_type=PT_MULTICLASS);
 
 	/** constructor - to be used while using cross-validation pruning
 	 * @param attribute_types type of each predictive attribute (true for nominal, false for ordinal/continuous)
@@ -96,15 +96,15 @@ public:
 	 * @param num_folds number of subsets used in cross-valiation
 	 * @param cv_prune - whether to use cross-validation pruning
 	 */
-	CCARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds, bool cv_prune);
+	CARTree(SGVector<bool> attribute_types, EProblemType prob_type, int32_t num_folds, bool cv_prune);
 
 	/** destructor */
-	virtual ~CCARTree();
+	virtual ~CARTree();
 
 	/** set labels - automagically switch machine problem type based on type of labels supplied
 	 * @param lab labels
 	 */
-	virtual void set_labels(std::shared_ptr<CLabels> lab);
+	virtual void set_labels(std::shared_ptr<Labels> lab);
 
 	/** get name
 	 * @return class name CARTree
@@ -125,19 +125,19 @@ public:
 	 * @param lab labels supplied
 	 * @return true for valid labels, false for invalid labels
 	 */
-	virtual bool is_label_valid(std::shared_ptr<CLabels> lab) const;
+	virtual bool is_label_valid(std::shared_ptr<Labels> lab) const;
 
 	/** classify data using Classification Tree
 	 * @param data data to be classified
 	 * @return MulticlassLabels corresponding to labels of various test vectors
 	 */
-	virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 	/** Get regression labels using Regression Tree
 	 * @param data data whose regression output is needed
 	 * @return Regression output for various test vectors
 	 */
-	virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
+	virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
 	/** uses test dataset to choose best pruned subtree
 	 *
@@ -145,7 +145,7 @@ public:
 	 * @param gnd_truth test labels
 	 * @param weights weights of data points
 	 */
-	void prune_using_test_dataset(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<CLabels> gnd_truth, SGVector<float64_t> weights=SGVector<float64_t>());
+	void prune_using_test_dataset(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<Labels> gnd_truth, SGVector<float64_t> weights=SGVector<float64_t>());
 
 	/** set weights of data points
 	 * @param w vector of weights
@@ -230,7 +230,7 @@ public:
 	 */
 	void set_label_epsilon(float64_t epsilon);
 
-	void pre_sort_features(std::shared_ptr<CFeatures> data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
+	void pre_sort_features(std::shared_ptr<Features> data, SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
 	void set_sorted_features(SGMatrix<float64_t>& sorted_feats, SGMatrix<index_t>& sorted_indices);
 
@@ -239,7 +239,7 @@ protected:
 	 * @param data training data
 	 * @return true
 	 */
-	virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
+	virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	/** CARTtrain - recursive CART training method
 	 *
@@ -249,7 +249,7 @@ protected:
 	 * @param level current tree depth
 	 * @return pointer to the root of the CART subtree
 	 */
-	virtual std::shared_ptr<CBinaryTreeMachineNode<CARTreeNodeData>> CARTtrain(std::shared_ptr<CDenseFeatures<float64_t>> data, const SGVector<float64_t>& weights, std::shared_ptr<CDenseLabels> labels, int32_t level);
+	virtual std::shared_ptr<BinaryTreeMachineNode<CARTreeNodeData>> CARTtrain(std::shared_ptr<DenseFeatures<float64_t>> data, const SGVector<float64_t>& weights, std::shared_ptr<DenseLabels> labels, int32_t level);
 
 	/** modify labels for compute_best_attribute
 	 *
@@ -272,7 +272,7 @@ protected:
 	 * @param count_right stores number of feature values for right transition
 	 * @return index to the best attribute
 	 */
-	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<CDenseLabels> labels,
+	virtual index_t compute_best_attribute(const SGMatrix<float64_t>& mat, const SGVector<float64_t>& weights, std::shared_ptr<DenseLabels> labels,
 		SGVector<float64_t>& left, SGVector<float64_t>& right, SGVector<bool>& is_left_final, index_t &num_missing,
 		index_t &count_left, index_t &count_right, index_t subset_size=0, const SGVector<index_t>& active_indices=SGVector<index_t>());
 
@@ -363,14 +363,14 @@ protected:
 	 * @param current root of current subtree
 	 * @return classification/regression labels of input data
 	 */
-	std::shared_ptr<CLabels> apply_from_current_node(std::shared_ptr<CDenseFeatures<float64_t>> feats, std::shared_ptr<bnode_t> current);
+	std::shared_ptr<Labels> apply_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats, std::shared_ptr<bnode_t> current);
 
 	/** prune by cross validation
 	 *
 	 * @param data training data
 	 * @param folds the integer V for V-fold cross validation
 	 */
-	void prune_by_cross_validation(std::shared_ptr<CDenseFeatures<float64_t>> data, int32_t folds);
+	void prune_by_cross_validation(std::shared_ptr<DenseFeatures<float64_t>> data, int32_t folds);
 
 	/** computes error in classification/regression
 	 * for classification it eveluates weight_missclassified/total_weight
@@ -381,14 +381,14 @@ protected:
 	 * @param weights weights associated with the labels
 	 * @return error evaluated
 	 */
-	float64_t compute_error(std::shared_ptr<CLabels> labels, std::shared_ptr<CLabels> reference, SGVector<float64_t> weights) const;
+	float64_t compute_error(std::shared_ptr<Labels> labels, std::shared_ptr<Labels> reference, SGVector<float64_t> weights) const;
 
 	/** cost-complexity pruning
 	 *
 	 * @param tree the tree to be pruned
-	 * @return CDynamicObjectArray of pruned trees
+	 * @return DynamicObjectArray of pruned trees
 	 */
-	std::shared_ptr<CDynamicObjectArray> prune_tree(std::shared_ptr<CTreeMachine<CARTreeNodeData>> tree);
+	std::shared_ptr<DynamicObjectArray> prune_tree(std::shared_ptr<TreeMachine<CARTreeNodeData>> tree);
 
 	/** recursively finds alpha corresponding to weakest link(s)
 	 *

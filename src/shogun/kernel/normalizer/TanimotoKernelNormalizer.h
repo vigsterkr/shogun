@@ -21,21 +21,21 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{k({\bf x},{\bf x})+k({\bf x'},{\bf x'})-k({\bf x},{\bf x'})}
  * \f]
  */
-class CTanimotoKernelNormalizer : public CKernelNormalizer
+class TanimotoKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** default constructor
 		 * @param use_opt_diag - some kernels support faster diagonal compuation
 		 * via compute_diag(idx), this flag enables this
 		 */
-		CTanimotoKernelNormalizer(bool use_opt_diag=false)
-			: CKernelNormalizer(), diag_lhs(NULL), diag_rhs(NULL),
+		TanimotoKernelNormalizer(bool use_opt_diag=false)
+			: KernelNormalizer(), diag_lhs(NULL), diag_rhs(NULL),
 			use_optimized_diagonal_computation(use_opt_diag)
 		{
 		}
 
 		/** default destructor */
-		virtual ~CTanimotoKernelNormalizer()
+		virtual ~TanimotoKernelNormalizer()
 		{
 			SG_FREE(diag_lhs);
 			SG_FREE(diag_rhs);
@@ -43,7 +43,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			ASSERT(k)
 			int32_t num_lhs=k->get_num_vec_lhs();
@@ -113,7 +113,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 		 * alloc and compute the vector containing the square root of the
 		 * diagonal elements of this kernel.
 		 */
-		bool alloc_and_compute_diag(CKernel* k, float64_t* &v, int32_t num) const
+		bool alloc_and_compute_diag(Kernel* k, float64_t* &v, int32_t num) const
 		{
 			SG_FREE(v);
 			v=SG_MALLOC(float64_t, num);
@@ -122,7 +122,7 @@ class CTanimotoKernelNormalizer : public CKernelNormalizer
 			{
 				if (k->get_kernel_type() == K_COMMWORDSTRING)
 				{
-					auto cwsk = k->as<CCommWordStringKernel>();
+					auto cwsk = k->as<CommWordStringKernel>();
 					if (use_optimized_diagonal_computation)
 						v[i]=cwsk->compute_diag(i);
 					else

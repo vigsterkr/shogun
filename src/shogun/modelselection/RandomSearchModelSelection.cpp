@@ -15,52 +15,52 @@
 
 using namespace shogun;
 
-CRandomSearchModelSelection::CRandomSearchModelSelection() : CModelSelection()
+RandomSearchModelSelection::RandomSearchModelSelection() : ModelSelection()
 {
 	set_ratio(0.5);
 }
 
-CRandomSearchModelSelection::CRandomSearchModelSelection(
-		std::shared_ptr<CMachineEvaluation> machine_eval,
-		std::shared_ptr<CModelSelectionParameters> model_parameters, float64_t ratio)
-		: CModelSelection(machine_eval, model_parameters)
+RandomSearchModelSelection::RandomSearchModelSelection(
+		std::shared_ptr<MachineEvaluation> machine_eval,
+		std::shared_ptr<ModelSelectionParameters> model_parameters, float64_t ratio)
+		: ModelSelection(machine_eval, model_parameters)
 {
 	set_ratio(ratio);
 }
 
-CRandomSearchModelSelection::~CRandomSearchModelSelection()
+RandomSearchModelSelection::~RandomSearchModelSelection()
 {
 }
 
-std::shared_ptr<CParameterCombination> CRandomSearchModelSelection::select_model(bool print_state)
+std::shared_ptr<ParameterCombination> RandomSearchModelSelection::select_model(bool print_state)
 {
 	if (print_state)
 		SG_PRINT("Generating parameter combinations\n")
 
 	/* Retrieve all possible parameter combinations */
 	auto all_combinations=
-			std::static_pointer_cast<CDynamicObjectArray>(m_model_parameters->get_combinations());
+			std::static_pointer_cast<DynamicObjectArray>(m_model_parameters->get_combinations());
 
 	int32_t n_all_combinations=all_combinations->get_num_elements();
-	SGVector<index_t> combinations_indices=CStatistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations);
+	SGVector<index_t> combinations_indices=Statistics::sample_indices(n_all_combinations*m_ratio, n_all_combinations);
 
-	auto combinations=std::make_shared<CDynamicObjectArray>();
+	auto combinations=std::make_shared<DynamicObjectArray>();
 
 	for (int32_t i=0; i<combinations_indices.vlen; i++)
 		combinations->append_element(all_combinations->get_element(i));
 
-	auto best_result=std::make_shared<CCrossValidationResult>();
+	auto best_result=std::make_shared<CrossValidationResult>();
 
-	std::shared_ptr<CParameterCombination> best_combination=NULL;
+	std::shared_ptr<ParameterCombination> best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 	{
 		if (print_state) SG_PRINT("Direction is maximize\n")
-		best_result->set_mean(CMath::ALMOST_NEG_INFTY);
+		best_result->set_mean(Math::ALMOST_NEG_INFTY);
 	}
 	else
 	{
 		if (print_state) SG_PRINT("Direction is minimize\n")
-		best_result->set_mean(CMath::ALMOST_INFTY);
+		best_result->set_mean(Math::ALMOST_INFTY);
 	}
 
 	/* underlying learning machine */
@@ -70,7 +70,7 @@ std::shared_ptr<CParameterCombination> CRandomSearchModelSelection::select_model
 	for (auto i : SG_PROGRESS(range(combinations->get_num_elements())))
 	{
 		auto current_combination=
-				combinations->get_element<CParameterCombination>(i);
+				combinations->get_element<ParameterCombination>(i);
 
 		/* eventually print */
 		if (print_state)
@@ -84,7 +84,7 @@ std::shared_ptr<CParameterCombination> CRandomSearchModelSelection::select_model
 
 		/* note that this may implicitly lock and unlockthe machine */
 		auto result =
-		    m_machine_eval->evaluate()->as<CCrossValidationResult>();
+		    m_machine_eval->evaluate()->as<CrossValidationResult>();
 
 		if (print_state)
 			result->print_result();
@@ -95,7 +95,7 @@ std::shared_ptr<CParameterCombination> CRandomSearchModelSelection::select_model
 			if (result->get_mean() > best_result->get_mean())
 			{
 				best_combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 
 
@@ -104,7 +104,7 @@ std::shared_ptr<CParameterCombination> CRandomSearchModelSelection::select_model
 			else
 			{
 				auto combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 			}
 		}
@@ -116,7 +116,7 @@ std::shared_ptr<CParameterCombination> CRandomSearchModelSelection::select_model
 
 
 				best_combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 
 
@@ -125,7 +125,7 @@ std::shared_ptr<CParameterCombination> CRandomSearchModelSelection::select_model
 			else
 			{
 				auto combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 			}
 		}

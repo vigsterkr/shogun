@@ -37,7 +37,7 @@
 using namespace shogun;
 using namespace internal;
 
-Block::Block(std::shared_ptr<CFeatures> feats, index_t index, index_t size) : m_feats(feats)
+Block::Block(std::shared_ptr<Features> feats, index_t index, index_t size) : m_feats(feats)
 {
 	REQUIRE(m_feats, "Underlying feature object cannot be null!\n");
 
@@ -69,7 +69,7 @@ Block::~Block()
 
 }
 
-std::vector<Block> Block::create_blocks(std::shared_ptr<CFeatures> feats, index_t num_blocks, index_t size)
+std::vector<Block> Block::create_blocks(std::shared_ptr<Features> feats, index_t num_blocks, index_t size)
 {
 	std::vector<Block> vec;
 	for (index_t i=0; i<num_blocks; ++i)

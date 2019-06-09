@@ -18,12 +18,12 @@
 
 using namespace shogun;
 
-CDomainAdaptationSVM::CDomainAdaptationSVM() : CSVMLight()
+CDomainAdaptationSVM::CDomainAdaptationSVM() : SVMLight()
 {
 	init();
 }
 
-CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab, std::shared_ptr<CSVM> pre_svm, float64_t B_param) : CSVMLight(C, k, lab)
+CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> pre_svm, float64_t B_param) : SVMLight(C, k, lab)
 {
 	init();
 	init(pre_svm, B_param);
@@ -36,7 +36,7 @@ CDomainAdaptationSVM::~CDomainAdaptationSVM()
 }
 
 
-void CDomainAdaptationSVM::init(std::shared_ptr<CSVM> pre_svm, float64_t B_param)
+void CDomainAdaptationSVM::init(std::shared_ptr<SVM> pre_svm, float64_t B_param)
 {
 	REQUIRE(pre_svm != NULL, "Pre SVM should not be null");
 	// increase reference counts
@@ -79,7 +79,7 @@ bool CDomainAdaptationSVM::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVM::train_machine(std::shared_ptr<CFeatures> data)
+bool CDomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
 {
 
 	if (data)
@@ -113,7 +113,7 @@ bool CDomainAdaptationSVM::train_machine(std::shared_ptr<CFeatures> data)
 	this->set_linear_term(SGVector<float64_t>(lin_term, num_training_points));
 
 	//train SVM
-	bool success = CSVMLight::train_machine();
+	bool success = SVMLight::train_machine();
 
 
 	ASSERT(presvm)
@@ -123,7 +123,7 @@ bool CDomainAdaptationSVM::train_machine(std::shared_ptr<CFeatures> data)
 }
 
 
-std::shared_ptr<CSVM> CDomainAdaptationSVM::get_presvm()
+std::shared_ptr<SVM> CDomainAdaptationSVM::get_presvm()
 {
 
 	return presvm;
@@ -148,14 +148,14 @@ void CDomainAdaptationSVM::set_train_factor(float64_t factor)
 }
 
 
-std::shared_ptr<CBinaryLabels> CDomainAdaptationSVM::apply_binary(std::shared_ptr<CFeatures> data)
+std::shared_ptr<BinaryLabels> CDomainAdaptationSVM::apply_binary(std::shared_ptr<Features> data)
 {
 	ASSERT(data)
 	ASSERT(presvm->get_bias()==0.0)
 
 	int32_t num_examples = data->get_num_vectors();
 
-	auto out_current = CSVMLight::apply_binary(data);
+	auto out_current = SVMLight::apply_binary(data);
 
 	// recursive call if used on DomainAdaptationSVM object
 	auto out_presvm = presvm->apply_binary(data);
@@ -169,7 +169,7 @@ std::shared_ptr<CBinaryLabels> CDomainAdaptationSVM::apply_binary(std::shared_pt
 
 
 
-	return std::make_shared<CBinaryLabels>(out_combined);
+	return std::make_shared<BinaryLabels>(out_combined);
 
 }
 
@@ -179,7 +179,7 @@ void CDomainAdaptationSVM::init()
 	B = 0;
 	train_factor = 1.0;
 
-	SG_ADD((std::shared_ptr<CSGObject>*) &presvm, "presvm", "SVM to regularize against.");
+	SG_ADD((std::shared_ptr<SGObject>*) &presvm, "presvm", "SVM to regularize against.");
 	SG_ADD(&B, "B", "regularization parameter B.", ParameterProperties::HYPER);
 	SG_ADD(&train_factor, "train_factor",
 			"flag to switch off regularization in training.", ParameterProperties::HYPER);

@@ -21,13 +21,13 @@
 namespace shogun
 {
 /** @brief Positional PWM */
-class CPositionalPWM : public CDistribution
+class PositionalPWM : public Distribution
 {
 	public:
 		/** default constructor */
-		CPositionalPWM();
+		PositionalPWM();
 
-		virtual ~CPositionalPWM();
+		virtual ~PositionalPWM();
 
 		/** learn distribution
 		 *
@@ -35,7 +35,7 @@ class CPositionalPWM : public CDistribution
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train(std::shared_ptr<CFeatures> data=NULL);
+		virtual bool train(std::shared_ptr<Features> data=NULL);
 
 		/** get number of parameters in model
 		 *

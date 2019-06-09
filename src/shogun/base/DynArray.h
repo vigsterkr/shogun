@@ -16,7 +16,7 @@
 
 namespace shogun
 {
-template <class T> class CDynamicArray;
+template <class T> class DynamicArray;
 
 /** @brief Template Dynamic array class that creates an array that can
  * be used like a list or an array.
@@ -28,9 +28,9 @@ template <class T> class CDynamicArray;
  */
 template <class T> class DynArray
 {
-	template<class U> friend class CDynamicArray;
-	friend class CDynamicObjectArray;
-	friend class CCommUlongStringKernel;
+	template<class U> friend class DynamicArray;
+	friend class DynamicObjectArray;
+	friend class CommUlongStringKernel;
 
 	public:
 		/** constructor
@@ -447,7 +447,7 @@ template <class T> class DynArray
 			for (index_t i=0; i<=current_num_elements-1; ++i)
 				std::swap(
 					array[i],
-					array[CMath::random(i, current_num_elements - 1)]);
+					array[Math::random(i, current_num_elements - 1)]);
 		}
 
 		/** randomizes the array with external random state */

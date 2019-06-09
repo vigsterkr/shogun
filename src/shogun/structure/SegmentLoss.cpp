@@ -10,8 +10,8 @@
 
 using namespace shogun;
 
-CSegmentLoss::CSegmentLoss()
-	:CSGObject(),
+SegmentLoss::SegmentLoss()
+	:SGObject(),
 	m_segment_loss_matrix(1,1),
 	m_segment_loss(1,1,2),
 	m_segment_ids(NULL),
@@ -19,11 +19,11 @@ CSegmentLoss::CSegmentLoss()
 	m_num_segment_types(0)
 {
 }
-CSegmentLoss::~CSegmentLoss()
+SegmentLoss::~SegmentLoss()
 {
 }
 
-void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t n)
+void SegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t n)
 {
 	// here we need two matrices. Store it in one: 2N x N
 	if (2*m!=n)
@@ -34,17 +34,17 @@ void CSegmentLoss::set_segment_loss(float64_t* segment_loss, int32_t m, int32_t 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 }
 
-void CSegmentLoss::set_segment_ids(std::shared_ptr<CDynamicArray<int32_t>> segment_ids)
+void SegmentLoss::set_segment_ids(std::shared_ptr<DynamicArray<int32_t>> segment_ids)
 {
 	m_segment_ids = segment_ids;
 }
 
-void CSegmentLoss::set_segment_mask(std::shared_ptr<CDynamicArray<float64_t>> segment_mask)
+void SegmentLoss::set_segment_mask(std::shared_ptr<DynamicArray<float64_t>> segment_mask)
 {
 	m_segment_mask = segment_mask;
 }
 
-void CSegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
+void SegmentLoss::compute_loss(int32_t* all_pos, int32_t len)
 {
 #ifdef DEBUG
 	SG_PRINT("compute loss: len: %i, m_num_segment_types: %i\n", len, m_num_segment_types)

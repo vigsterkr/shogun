@@ -15,18 +15,18 @@
 
 using namespace shogun;
 
-CDistanceMachine::CDistanceMachine()
-: CMachine()
+DistanceMachine::DistanceMachine()
+: Machine()
 {
 	init();
 }
 
-CDistanceMachine::~CDistanceMachine()
+DistanceMachine::~DistanceMachine()
 {
 
 }
 
-void CDistanceMachine::init()
+void DistanceMachine::init()
 {
 	/* all distance machines should store their models, i.e. cluster centers
 	 * At least, it has to be ensured, that after calling train(), or in the
@@ -38,7 +38,7 @@ void CDistanceMachine::init()
 	SG_ADD(&distance, "distance", "Distance to use", ParameterProperties::HYPER);
 }
 
-void CDistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)
+void DistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1, index_t idx_a2, index_t idx_b)
 {
     int32_t num_threads;
     int32_t num_vec;
@@ -70,7 +70,7 @@ void CDistanceMachine::distances_lhs(SGVector<float64_t>& result, index_t idx_a1
     }
 }
 
-void CDistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1, index_t idx_b2, index_t idx_a)
+void DistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1, index_t idx_b2, index_t idx_a)
 {
     int32_t num_threads;
     int32_t num_vec;
@@ -102,7 +102,7 @@ void CDistanceMachine::distances_rhs(SGVector<float64_t>& result, index_t idx_b1
     }
 }
 
-std::shared_ptr<CMulticlassLabels> CDistanceMachine::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> DistanceMachine::apply_multiclass(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -111,7 +111,7 @@ std::shared_ptr<CMulticlassLabels> CDistanceMachine::apply_multiclass(std::share
 		distance->init(lhs, data);
 
 		/* build result labels and classify all elements of procedure */
-		auto result=std::make_shared<CMulticlassLabels>(data->get_num_vectors());
+		auto result=std::make_shared<MulticlassLabels>(data->get_num_vectors());
 		for (index_t i=0; i<data->get_num_vectors(); ++i)
 			result->set_label(i, apply_one(i));
 		return result;
@@ -125,7 +125,7 @@ std::shared_ptr<CMulticlassLabels> CDistanceMachine::apply_multiclass(std::share
 	return NULL;
 }
 
-float64_t CDistanceMachine::apply_one(int32_t num)
+float64_t DistanceMachine::apply_one(int32_t num)
 {
 	/* number of clusters */
 	auto lhs=distance->get_lhs();
@@ -151,20 +151,20 @@ float64_t CDistanceMachine::apply_one(int32_t num)
 	return best_index;
 }
 
-void CDistanceMachine::set_distance(std::shared_ptr<CDistance> d)
+void DistanceMachine::set_distance(std::shared_ptr<Distance> d)
 {
 
 
 	distance=d;
 }
 
-std::shared_ptr<CDistance> CDistanceMachine::get_distance() const
+std::shared_ptr<Distance> DistanceMachine::get_distance() const
 {
 
 	return distance;
 }
 
-void CDistanceMachine::store_model_features()
+void DistanceMachine::store_model_features()
 {
 	SG_ERROR("store_model_features not yet implemented for %s!\n",
 	         get_name());

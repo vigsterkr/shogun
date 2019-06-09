@@ -19,21 +19,21 @@
 namespace shogun
 {
 /** @brief the scatter kernel normalizer */
-class CScatterKernelNormalizer: public CKernelNormalizer
+class ScatterKernelNormalizer: public KernelNormalizer
 {
 
 public:
 	/** default constructor  */
-	CScatterKernelNormalizer() : CKernelNormalizer()
+	ScatterKernelNormalizer() : KernelNormalizer()
 	{
 		init();
 	}
 
 	/** default constructor
 	 */
-	CScatterKernelNormalizer(float64_t const_diag, float64_t const_offdiag,
-			std::shared_ptr<CLabels> labels,std::shared_ptr<CKernelNormalizer> normalizer=NULL)
-		: CKernelNormalizer()
+	ScatterKernelNormalizer(float64_t const_diag, float64_t const_offdiag,
+			std::shared_ptr<Labels> labels,std::shared_ptr<KernelNormalizer> normalizer=NULL)
+		: KernelNormalizer()
 	{
 		init();
 
@@ -44,11 +44,11 @@ public:
 		ASSERT(labels)
 
 		ASSERT(labels->get_label_type()==LT_MULTICLASS)
-		m_labels = labels->as<CMulticlassLabels>();
+		m_labels = labels->as<MulticlassLabels>();
 		labels->ensure_valid();
 
 		if (!normalizer)
-			normalizer=std::make_shared<CIdentityKernelNormalizer>();
+			normalizer=std::make_shared<IdentityKernelNormalizer>();
 
 		m_normalizer=normalizer;
 
@@ -59,7 +59,7 @@ public:
 	}
 
 	/** default destructor */
-	virtual ~CScatterKernelNormalizer()
+	virtual ~ScatterKernelNormalizer()
 	{
 
 
@@ -67,7 +67,7 @@ public:
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(CKernel* k)
+	virtual bool init(Kernel* k)
 	{
 		m_normalizer->init(k);
 		return true;
@@ -160,8 +160,8 @@ private:
 		SG_ADD(&m_const_offdiag, "m_const_offdiag",
 				"Factor to multiply to off-diagonal elements.", ParameterProperties::HYPER);
 
-		SG_ADD((std::shared_ptr<CSGObject>*) &m_labels, "m_labels", "Labels");
-		SG_ADD((std::shared_ptr<CSGObject>*) &m_normalizer, "m_normalizer", "Kernel normalizer.",
+		SG_ADD((std::shared_ptr<SGObject>*) &m_labels, "m_labels", "Labels");
+		SG_ADD((std::shared_ptr<SGObject>*) &m_normalizer, "m_normalizer", "Kernel normalizer.",
 		    ParameterProperties::HYPER);
 	}
 
@@ -173,10 +173,10 @@ protected:
 	float64_t m_const_offdiag;
 
 	/** labels **/
-	std::shared_ptr<CMulticlassLabels> m_labels;
+	std::shared_ptr<MulticlassLabels> m_labels;
 
 	/** labels **/
-	std::shared_ptr<CKernelNormalizer> m_normalizer;
+	std::shared_ptr<KernelNormalizer> m_normalizer;
 
 	/** upon testing which class to test for */
 	int32_t m_testing_class;

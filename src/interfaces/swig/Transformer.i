@@ -5,7 +5,7 @@
  */
 
 /* Remove C Prefix */
-%rename(Transformer) CTransformer;
+%shared_ptr(shogun::Transformer)
 
 /* Include Class Headers to make them visible from within the target language */
 %include <shogun/transformer/Transformer.h>

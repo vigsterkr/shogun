@@ -14,7 +14,7 @@
 
 using namespace shogun;
 
-CECOCRandomSparseEncoder::CECOCRandomSparseEncoder(int32_t maxiter, int32_t codelen,
+ECOCRandomSparseEncoder::ECOCRandomSparseEncoder(int32_t maxiter, int32_t codelen,
         float64_t pzero, float64_t pposone, float64_t pnegone)
     :m_maxiter(maxiter), m_codelen(codelen), m_pzero(pzero), m_pposone(pposone), m_pnegone(pnegone)
 {
@@ -24,7 +24,7 @@ CECOCRandomSparseEncoder::CECOCRandomSparseEncoder(int32_t maxiter, int32_t code
     init();
 }
 
-void CECOCRandomSparseEncoder::init()
+void ECOCRandomSparseEncoder::init()
 {
     SG_ADD(&m_maxiter, "maxiter", "max number of iterations");
     SG_ADD(&m_codelen, "codelen", "code length");
@@ -33,7 +33,7 @@ void CECOCRandomSparseEncoder::init()
     SG_ADD(&m_pnegone, "pnegone", "probability of -1");
 }
 
-void CECOCRandomSparseEncoder::set_probability(float64_t pzero, float64_t pposone, float64_t pnegone)
+void ECOCRandomSparseEncoder::set_probability(float64_t pzero, float64_t pposone, float64_t pnegone)
 {
     if (!check_probability(pzero, pposone, pnegone))
         SG_ERROR("probability of 0, +1 and -1 must sum to one")
@@ -43,7 +43,7 @@ void CECOCRandomSparseEncoder::set_probability(float64_t pzero, float64_t pposon
     m_pnegone = pnegone;
 }
 
-SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
+SGMatrix<int32_t> ECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
 {
     int32_t codelen = m_codelen;
     if (codelen <= 0)
@@ -69,7 +69,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             std::random_device rng;
             std::mt19937 urng(rng());
             std::shuffle(random_sel.begin(), random_sel.end(), urng);
-            if (CMath::random(0.0, 1.0) > 0.5)
+            if (Math::random(0.0, 1.0) > 0.5)
             {
                 codebook(i, random_sel[0]) = +1;
                 codebook(i, random_sel[1]) = -1;
@@ -83,7 +83,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
             // assign the remaining positions
             for (int32_t j=2; j < num_classes; ++j)
             {
-                float64_t randval = CMath::random(0.0, 1.0);
+                float64_t randval = Math::random(0.0, 1.0);
                 if (randval > m_pzero)
                 {
                     if (randval > m_pzero+m_pposone)
@@ -101,7 +101,7 @@ SGMatrix<int32_t> CECOCRandomSparseEncoder::create_codebook(int32_t num_classes)
         {
             for (int32_t j=i+1; j < num_classes; ++j)
             {
-                int32_t dist = CECOCUtil::hamming_distance(codebook.get_column_vector(i),
+                int32_t dist = ECOCUtil::hamming_distance(codebook.get_column_vector(i),
                         codebook.get_column_vector(j), codelen);
                 if (dist < min_dist)
                     min_dist = dist;

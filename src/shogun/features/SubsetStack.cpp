@@ -34,12 +34,12 @@
 
 using namespace shogun;
 
-CSubsetStack::CSubsetStack()
+SubsetStack::SubsetStack()
 {
 	init();
 }
 
-CSubsetStack::CSubsetStack(const CSubsetStack& other)
+SubsetStack::SubsetStack(const SubsetStack& other)
 {
 	init();
 
@@ -47,16 +47,16 @@ CSubsetStack::CSubsetStack(const CSubsetStack& other)
 	m_active_subset = other.m_active_subset;
 }
 
-void CSubsetStack::remove_all_subsets()
+void SubsetStack::remove_all_subsets()
 {
 	/* delete all active subsets, backwards due to DynArray implementation */
 	m_active_subsets_stack.clear();
 	m_active_subset = nullptr;
 }
 
-void CSubsetStack::init()
+void SubsetStack::init()
 {
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_active_subset, "active_subset",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_active_subset, "active_subset",
 			"Currently active subset");
 	SG_ADD(&m_active_subsets_stack, "active_subsets_stack",
 			"Stack of active subsets");
@@ -64,7 +64,7 @@ void CSubsetStack::init()
 	m_active_subset=NULL;
 }
 
-void CSubsetStack::add_subset(const SGVector<index_t>& subset)
+void SubsetStack::add_subset(const SGVector<index_t>& subset)
 {
 	/* if there are already subsets on stack, do some legality checks */
 	if (!m_active_subsets_stack.empty())
@@ -80,7 +80,7 @@ void CSubsetStack::add_subset(const SGVector<index_t>& subset)
 		}
 
 		/* check for range of indices */
-		index_t max_index=CMath::max(subset.vector, subset.vlen);
+		index_t max_index=Math::max(subset.vector, subset.vlen);
 		if (max_index>=latest->m_subset_idx.vlen)
 		{
 			subset.display_vector("subset");
@@ -114,14 +114,14 @@ void CSubsetStack::add_subset(const SGVector<index_t>& subset)
 		}
 
 		/* replace active subset */
-		m_active_subset=std::make_shared<CSubset>(new_active_subset);
+		m_active_subset=std::make_shared<Subset>(new_active_subset);
 
 
 	}
 	else
 	{
 		/* just use plain given subset since there is nothing to map */
-		m_active_subset=std::make_shared<CSubset>(subset);
+		m_active_subset=std::make_shared<Subset>(subset);
 
 	}
 
@@ -129,12 +129,12 @@ void CSubsetStack::add_subset(const SGVector<index_t>& subset)
 	m_active_subsets_stack.push_back(m_active_subset);
 }
 
-void CSubsetStack::add_subset_in_place(SGVector<index_t> subset)
+void SubsetStack::add_subset_in_place(SGVector<index_t> subset)
 {
 	SG_NOTIMPLEMENTED;
 }
 
-void CSubsetStack::remove_subset()
+void SubsetStack::remove_subset()
 {
 	index_t num_subsets=m_active_subsets_stack.size();
 	if (num_subsets)

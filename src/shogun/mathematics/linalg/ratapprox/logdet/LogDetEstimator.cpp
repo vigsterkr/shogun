@@ -22,34 +22,34 @@
 namespace shogun
 {
 
-CLogDetEstimator::CLogDetEstimator()
-	: CSGObject()
+LogDetEstimator::LogDetEstimator()
+	: SGObject()
 {
 	init();
 }
 
 #ifdef HAVE_LAPACK
-CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
-	: CSGObject()
+LogDetEstimator::LogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
+	: SGObject()
 {
 	init();
 
 	auto op=
-		std::make_shared<CSparseMatrixOperator<float64_t>>(sparse_mat);
+		std::make_shared<SparseMatrixOperator<float64_t>>(sparse_mat);
 
 	float64_t accuracy=1E-5;
 
-	auto eig_solver=std::make_shared<CLanczosEigenSolver>(op);
-	auto linear_solver=std::make_shared<CCGMShiftedFamilySolver>();
+	auto eig_solver=std::make_shared<LanczosEigenSolver>(op);
+	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
 
-	m_operator_log = std::make_shared<CLogRationalApproximationCGM>(
+	m_operator_log = std::make_shared<LogRationalApproximationCGM>(
 		op, eig_solver, linear_solver, accuracy);
 
 
 	#ifdef HAVE_COLPACK
-	m_trace_sampler=std::make_shared<CProbingSampler>(op,1,NATURAL,DISTANCE_TWO);
+	m_trace_sampler=std::make_shared<ProbingSampler>(op,1,NATURAL,DISTANCE_TWO);
 	#else
-	m_trace_sampler=std::make_shared<CNormalSampler>(op->get_dimension());
+	m_trace_sampler=std::make_shared<NormalSampler>(op->get_dimension());
 	#endif
 
 
@@ -60,9 +60,9 @@ CLogDetEstimator::CLogDetEstimator(SGSparseMatrix<float64_t> sparse_mat)
 }
 #endif //HAVE_LAPACK
 
-CLogDetEstimator::CLogDetEstimator(
-	std::shared_ptr<CTraceSampler> trace_sampler, std::shared_ptr<COperatorFunction<float64_t>> operator_log)
-	: CSGObject()
+LogDetEstimator::LogDetEstimator(
+	std::shared_ptr<TraceSampler> trace_sampler, std::shared_ptr<OperatorFunction<float64_t>> operator_log)
+	: SGObject()
 {
 	init();
 
@@ -73,37 +73,37 @@ CLogDetEstimator::CLogDetEstimator(
 
 }
 
-void CLogDetEstimator::init()
+void LogDetEstimator::init()
 {
 	m_trace_sampler=NULL;
 	m_operator_log=NULL;
 
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_trace_sampler, "trace_sampler",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_trace_sampler, "trace_sampler",
 		"Trace sampler for the log operator");
 
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_operator_log, "operator_log",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_operator_log, "operator_log",
 		"The log operator function");
 }
 
-CLogDetEstimator::~CLogDetEstimator()
+LogDetEstimator::~LogDetEstimator()
 {
 
 
 }
 
-std::shared_ptr<CTraceSampler> CLogDetEstimator::get_trace_sampler(void) const
+std::shared_ptr<TraceSampler> LogDetEstimator::get_trace_sampler(void) const
 {
 
 	return m_trace_sampler;
 }
 
-std::shared_ptr<COperatorFunction<float64_t>> CLogDetEstimator::get_operator_function(void) const
+std::shared_ptr<OperatorFunction<float64_t>> LogDetEstimator::get_operator_function(void) const
 {
 
 	return m_operator_log;
 }
 
-SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
+SGVector<float64_t> LogDetEstimator::sample(index_t num_estimates)
 {
 	SG_DEBUG("Entering\n");
 	SG_INFO("Computing %d log-det estimates\n", num_estimates);
@@ -150,7 +150,7 @@ SGVector<float64_t> CLogDetEstimator::sample(index_t num_estimates)
 	return samples;
 }
 
-SGMatrix<float64_t> CLogDetEstimator::sample_without_averaging(
+SGMatrix<float64_t> LogDetEstimator::sample_without_averaging(
 	index_t num_estimates)
 {
 	SG_DEBUG("Entering...\n")

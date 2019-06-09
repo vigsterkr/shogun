@@ -26,8 +26,8 @@ TEST(LBPPyrDotFeatures, dot_test)
 			mat(j,i) = j % image_height + i;
 	}
 
-	auto dense_feat = std::make_shared<CDenseFeatures<uint32_t>>(mat);
-	auto lbp_feat = std::make_shared<CLBPPyrDotFeatures>(dense_feat, image_width,
+	auto dense_feat = std::make_shared<DenseFeatures<uint32_t>>(mat);
+	auto lbp_feat = std::make_shared<LBPPyrDotFeatures>(dense_feat, image_width,
 			image_height, num_pyrs);
 
 	float64_t result = lbp_feat->dot(0, lbp_feat, 1);
@@ -52,8 +52,8 @@ TEST(LBPPyrDotFeatures, dense_dot_test)
 	for (index_t j=0; j<img_len; j++)
 		mat(j,1) = j % 20 + 1;
 
-	auto dense_feat = std::make_shared<CDenseFeatures<uint32_t>>(mat);
-	auto lbp_feat = std::make_shared<CLBPPyrDotFeatures>(dense_feat, image_width,
+	auto dense_feat = std::make_shared<DenseFeatures<uint32_t>>(mat);
+	auto lbp_feat = std::make_shared<LBPPyrDotFeatures>(dense_feat, image_width,
 			image_height, num_pyrs);
 
 	SGVector<char> vec = lbp_feat->get_transformed_image(1);
@@ -80,8 +80,8 @@ TEST(LBPPyrDotFeatures, add_to_dense_test)
 	for (index_t j=0; j<img_len; j++)
 		mat(j,1) = j % 20 + 1;
 
-	auto dense_feat = std::make_shared<CDenseFeatures<uint32_t>>(mat);
-	auto lbp_feat = std::make_shared<CLBPPyrDotFeatures>(dense_feat, image_width,
+	auto dense_feat = std::make_shared<DenseFeatures<uint32_t>>(mat);
+	auto lbp_feat = std::make_shared<LBPPyrDotFeatures>(dense_feat, image_width,
 			image_height, num_pyrs);
 
 	SGVector<char> tmp1 = lbp_feat->get_transformed_image(0);

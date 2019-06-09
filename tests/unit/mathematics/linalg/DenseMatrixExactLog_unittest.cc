@@ -31,11 +31,11 @@ TEST(DenseMatrixExactLog, dense_log_det)
 	mat(0,1)=1.0;
 	mat(1,0)=1.0;
 	mat(1,1)=3.0;
-	auto op=std::make_shared<CDenseMatrixOperator<float64_t>>(mat);
+	auto op=std::make_shared<DenseMatrixOperator<float64_t>>(mat);
 
 
 	// create operator function with the operator
-	auto op_func = new CDenseMatrixExactLog(op);
+	auto op_func = new DenseMatrixExactLog(op);
 
 
 	// its really important we call the precompute on the operato function
@@ -52,7 +52,7 @@ TEST(DenseMatrixExactLog, dense_log_det)
 		result += op_func->compute(s);
 	}
 
-	EXPECT_NEAR(result, CStatistics::log_det(mat), 1E-15);
+	EXPECT_NEAR(result, Statistics::log_det(mat), 1E-15);
 
 	// clean up
 

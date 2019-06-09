@@ -86,8 +86,8 @@ void ElasticNetPenalty::init()
 	m_l2_penalty=std::make_shared<L2Penalty>();
 	SG_ADD(&m_l1_ratio, "ElasticNetPenalty__m_l1_ratio",
 		"l1_ratio in ElasticNetPenalty");
-	SG_ADD((std::shared_ptr<CSGObject>*) &m_l1_penalty, "ElasticNetPenalty__m_l1_penalty",
+	SG_ADD((std::shared_ptr<SGObject>*) &m_l1_penalty, "ElasticNetPenalty__m_l1_penalty",
 		"l1_penalty in ElasticNetPenalty");
-	SG_ADD((std::shared_ptr<CSGObject>*) &m_l2_penalty, "ElasticNetPenalty__m_l2_penalty",
+	SG_ADD((std::shared_ptr<SGObject>*) &m_l2_penalty, "ElasticNetPenalty__m_l2_penalty",
 		"l2_penalty in ElasticNetPenalty");
 }

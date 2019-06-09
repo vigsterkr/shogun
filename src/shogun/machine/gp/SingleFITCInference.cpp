@@ -39,19 +39,19 @@
 using namespace shogun;
 using namespace Eigen;
 
-CSingleFITCInference::CSingleFITCInference() : CSingleSparseInference()
+SingleFITCInference::SingleFITCInference() : SingleSparseInference()
 {
 	init();
 }
 
-CSingleFITCInference::CSingleFITCInference(std::shared_ptr<CKernel> kern, std::shared_ptr<CFeatures> feat,
-		std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod, std::shared_ptr<CFeatures> lat)
-		: CSingleSparseInference(kern, feat, m, lab, mod, lat)
+SingleFITCInference::SingleFITCInference(std::shared_ptr<Kernel> kern, std::shared_ptr<Features> feat,
+		std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod, std::shared_ptr<Features> lat)
+		: SingleSparseInference(kern, feat, m, lab, mod, lat)
 {
 	init();
 }
 
-void CSingleFITCInference::init()
+void SingleFITCInference::init()
 {
 	SG_ADD(&m_al, "al", "alpha");
 	SG_ADD(&m_t, "t", "noise");
@@ -61,11 +61,11 @@ void CSingleFITCInference::init()
 	SG_ADD(&m_V, "V", "V");
 }
 
-CSingleFITCInference::~CSingleFITCInference()
+SingleFITCInference::~SingleFITCInference()
 {
 }
 
-SGVector<float64_t> CSingleFITCInference::get_derivative_related_cov_diagonal()
+SGVector<float64_t> SingleFITCInference::get_derivative_related_cov_diagonal()
 {
 	//time complexity O(m*n)
 	Map<MatrixXd> eigen_W(m_Rvdd.matrix, m_Rvdd.num_rows, m_Rvdd.num_cols);
@@ -78,7 +78,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_related_cov_diagonal()
 	return res;
 }
 
-float64_t CSingleFITCInference::get_derivative_related_cov_helper(
+float64_t SingleFITCInference::get_derivative_related_cov_helper(
 	SGMatrix<float64_t> dKuui, SGVector<float64_t> v, SGMatrix<float64_t> R)
 {
 	//time complexity O(m^2*n)
@@ -101,7 +101,7 @@ float64_t CSingleFITCInference::get_derivative_related_cov_helper(
 	return result;
 }
 
-float64_t CSingleFITCInference::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+float64_t SingleFITCInference::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
 	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui)
 {
 	//time complexity O(m^2*n)
@@ -123,7 +123,7 @@ float64_t CSingleFITCInference::get_derivative_related_cov(SGVector<float64_t> d
 	return get_derivative_related_cov(ddiagKi, dKuui, dKui, v, R);
 }
 
-float64_t CSingleFITCInference::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
+float64_t SingleFITCInference::get_derivative_related_cov(SGVector<float64_t> ddiagKi,
 	SGMatrix<float64_t> dKuui, SGMatrix<float64_t> dKui,
 	SGVector<float64_t> v, SGMatrix<float64_t> R)
 {
@@ -146,7 +146,7 @@ float64_t CSingleFITCInference::get_derivative_related_cov(SGVector<float64_t> d
 	return result;
 }
 
-float64_t CSingleFITCInference::get_derivative_related_mean(SGVector<float64_t> dmu)
+float64_t SingleFITCInference::get_derivative_related_mean(SGVector<float64_t> dmu)
 {
 	//time complexity O(n)
 	Map<VectorXd> eigen_al(m_al.vector, m_al.vlen);
@@ -154,7 +154,7 @@ float64_t CSingleFITCInference::get_derivative_related_mean(SGVector<float64_t> 
 	return -eigen_dmu.dot(eigen_al);
 }
 
-SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_mean(
+SGVector<float64_t> SingleFITCInference::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	//time complexity O(n)
@@ -176,7 +176,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_mean(
 	return result;
 }
 
-SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_inducing_noise(
+SGVector<float64_t> SingleFITCInference::get_derivative_wrt_inducing_noise(
 	const TParameter* param)
 {
 	//time complexity O(m^2*n)
@@ -207,7 +207,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_inducing_noise(
 	return result;
 }
 
-SGVector<float64_t> CSingleFITCInference::get_derivative_related_inducing_features(
+SGVector<float64_t> SingleFITCInference::get_derivative_related_inducing_features(
 	SGMatrix<float64_t> BdK, const TParameter* param)
 {
 	//time complexity depends on the implementation of the provided kernel
@@ -256,7 +256,7 @@ SGVector<float64_t> CSingleFITCInference::get_derivative_related_inducing_featur
 	return deriv_lat;
 }
 
-SGVector<float64_t> CSingleFITCInference::get_derivative_wrt_inducing_features(const TParameter* param)
+SGVector<float64_t> SingleFITCInference::get_derivative_wrt_inducing_features(const TParameter* param)
 {
 	//time complexity depends on the implementation of the provided kernel
 	//time complexity is at least O(max((p*n*m),(m^2*n))), where p is the dimension (#) of features

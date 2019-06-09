@@ -26,10 +26,10 @@ TEST(CombinedFeaturesTest,test_array_operations)
 		data_3[i] = 2*i;
 	}
 
-	auto comb_feat = std::make_shared<CCombinedFeatures>();
-	auto feat_1 = std::make_shared<CDenseFeatures<float64_t>>(data_1);
-	auto feat_2 = std::make_shared<CDenseFeatures<float64_t>>(data_2);
-	auto feat_3 = std::make_shared<CDenseFeatures<float64_t>>(data_3);
+	auto comb_feat = std::make_shared<CombinedFeatures>();
+	auto feat_1 = std::make_shared<DenseFeatures<float64_t>>(data_1);
+	auto feat_2 = std::make_shared<DenseFeatures<float64_t>>(data_2);
+	auto feat_3 = std::make_shared<DenseFeatures<float64_t>>(data_3);
 
 	if (comb_feat->append_feature_obj(feat_1))
 		EXPECT_EQ(comb_feat->get_num_feature_obj(),1);
@@ -43,9 +43,9 @@ TEST(CombinedFeaturesTest,test_array_operations)
 	comb_feat->delete_feature_obj(0);
 	EXPECT_EQ(comb_feat->get_num_feature_obj(),2);
 
-	auto f_1 = comb_feat->get_feature_obj(0)->as<CDenseFeatures<float64_t>>();
+	auto f_1 = comb_feat->get_feature_obj(0)->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> m_1 = f_1->get_feature_matrix();
-	auto f_2 = comb_feat->get_feature_obj(1)->as<CDenseFeatures<float64_t>>();
+	auto f_2 = comb_feat->get_feature_obj(1)->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> m_2 = f_2->get_feature_matrix();
 	for (index_t i=0; i < dim*n_1; i++)
 	{
@@ -75,20 +75,20 @@ TEST(CombinedFeaturesTest,create_merged_copy)
 
 	SGMatrix<float64_t> data_2(dim,n_2);
 	for (index_t i=0; i<dim*n_2; ++i)
-		data_2.matrix[i]=CMath::randn_double();
+		data_2.matrix[i]=Math::randn_double();
 
 //	data_1.display_matrix("data_2");
 
-	auto features_1=std::make_shared<CCombinedFeatures>();
-	auto features_2=std::make_shared<CCombinedFeatures>();
+	auto features_1=std::make_shared<CombinedFeatures>();
+	auto features_2=std::make_shared<CombinedFeatures>();
 
-	features_1->append_feature_obj(std::make_shared<CDenseFeatures<float64_t>>(data_1));
-	features_2->append_feature_obj(std::make_shared<CDenseFeatures<float64_t>>(data_2));
+	features_1->append_feature_obj(std::make_shared<DenseFeatures<float64_t>>(data_1));
+	features_2->append_feature_obj(std::make_shared<DenseFeatures<float64_t>>(data_2));
 
 	auto concatenation=features_1->create_merged_copy(features_2);
 
-	auto sub=concatenation->as<CCombinedFeatures>()->get_first_feature_obj();
-	auto casted_sub=sub->as<CDenseFeatures<float64_t>>();
+	auto sub=concatenation->as<CombinedFeatures>()->get_first_feature_obj();
+	auto casted_sub=sub->as<DenseFeatures<float64_t>>();
 	ASSERT(casted_sub);
 	SGMatrix<float64_t> concat_data=casted_sub->get_feature_matrix();
 //	concat_data.display_matrix("concat_data");

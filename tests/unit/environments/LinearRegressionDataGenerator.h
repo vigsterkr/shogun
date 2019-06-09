@@ -56,9 +56,9 @@ public:
 		test_size = num_samples - train_size;
 
 		coefficients = SGVector<float64_t>(coefficient_values);
-		SGMatrix<float64_t> feat_train_data = CDataGenerator::generate_gaussians(
+		SGMatrix<float64_t> feat_train_data = DataGenerator::generate_gaussians(
 				train_size, 1, n_dim);
-		SGMatrix<float64_t> feat_test_data = CDataGenerator::generate_gaussians(
+		SGMatrix<float64_t> feat_test_data = DataGenerator::generate_gaussians(
 				test_size, 1, n_dim);
 
 		SGVector<float64_t> label_train_data =
@@ -70,11 +70,11 @@ public:
 		linalg::add_scalar(label_train_data, bias);
 		linalg::add_scalar(label_test_data, bias);
 
-		features_train = std::make_shared<CDenseFeatures<float64_t>>(feat_train_data);
-		features_test = std::make_shared<CDenseFeatures<float64_t>>(feat_test_data);
+		features_train = std::make_shared<DenseFeatures<float64_t>>(feat_train_data);
+		features_test = std::make_shared<DenseFeatures<float64_t>>(feat_test_data);
 
-		labels_train = std::make_shared<CRegressionLabels>(label_train_data);
-		labels_test = std::make_shared<CRegressionLabels>(label_test_data);
+		labels_train = std::make_shared<RegressionLabels>(label_train_data);
+		labels_test = std::make_shared<RegressionLabels>(label_test_data);
 
 	}
 
@@ -141,16 +141,16 @@ public:
 
 protected:
 	// data for training
-	std::shared_ptr<CDenseFeatures<float64_t>> features_train;
+	std::shared_ptr<DenseFeatures<float64_t>> features_train;
 
 	// data for testing
-	std::shared_ptr<CDenseFeatures<float64_t>> features_test;
+	std::shared_ptr<DenseFeatures<float64_t>> features_test;
 
 	// training label
-	std::shared_ptr<CRegressionLabels> labels_train;
+	std::shared_ptr<RegressionLabels> labels_train;
 
 	// testing label
-	std::shared_ptr<CRegressionLabels> labels_test;
+	std::shared_ptr<RegressionLabels> labels_test;
 
 	// the size of generated of the training set
 	int32_t train_size;

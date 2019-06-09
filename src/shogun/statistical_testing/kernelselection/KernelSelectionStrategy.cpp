@@ -53,7 +53,7 @@
 using namespace shogun;
 using namespace internal;
 
-struct CKernelSelectionStrategy::Self
+struct KernelSelectionStrategy::Self
 {
 	Self();
 
@@ -66,7 +66,7 @@ struct CKernelSelectionStrategy::Self
 	index_t num_folds;
 	float64_t alpha;
 
-	void init_policy(std::shared_ptr<CMMD> estimator);
+	void init_policy(std::shared_ptr<MMD> estimator);
 
 	const static EKernelSelectionMethod default_method;
 	const static bool default_weighted;
@@ -75,18 +75,18 @@ struct CKernelSelectionStrategy::Self
 	const static float64_t default_alpha;
 };
 
-const EKernelSelectionMethod CKernelSelectionStrategy::Self::default_method=KSM_AUTO;
-const bool CKernelSelectionStrategy::Self::default_weighted=false;
-const index_t CKernelSelectionStrategy::Self::default_num_runs=10;
-const index_t CKernelSelectionStrategy::Self::default_num_folds=3;
-const float64_t CKernelSelectionStrategy::Self::default_alpha=0.05;
+const EKernelSelectionMethod KernelSelectionStrategy::Self::default_method=KSM_AUTO;
+const bool KernelSelectionStrategy::Self::default_weighted=false;
+const index_t KernelSelectionStrategy::Self::default_num_runs=10;
+const index_t KernelSelectionStrategy::Self::default_num_folds=3;
+const float64_t KernelSelectionStrategy::Self::default_alpha=0.05;
 
-CKernelSelectionStrategy::Self::Self() : policy(nullptr), method(default_method),
+KernelSelectionStrategy::Self::Self() : policy(nullptr), method(default_method),
 	weighted(default_weighted), num_runs(default_num_runs), num_folds(default_num_folds), alpha(default_alpha)
 {
 }
 
-void CKernelSelectionStrategy::Self::init_policy(std::shared_ptr<CMMD> estimator)
+void KernelSelectionStrategy::Self::init_policy(std::shared_ptr<MMD> estimator)
 {
 	switch (method)
 	{
@@ -120,7 +120,7 @@ void CKernelSelectionStrategy::Self::init_policy(std::shared_ptr<CMMD> estimator
 		if (weighted)
 		{
 			#ifdef USE_GPL_SHOGUN
-			auto casted_estimator=estimator->as<CStreamingMMD>();
+			auto casted_estimator=estimator->as<StreamingMMD>();
 			REQUIRE(casted_estimator, "Weighted kernel selection is not possible with MAXIMIZE_POWER!\n");
 			policy=std::make_unique<WeightedMaxTestPower>(kernel_mgr, estimator);
 			#else
@@ -143,19 +143,19 @@ void CKernelSelectionStrategy::Self::init_policy(std::shared_ptr<CMMD> estimator
 	}
 }
 
-CKernelSelectionStrategy::CKernelSelectionStrategy()
+KernelSelectionStrategy::KernelSelectionStrategy()
 {
 	init();
 }
 
-CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method, bool weighted)
+KernelSelectionStrategy::KernelSelectionStrategy(EKernelSelectionMethod method, bool weighted)
 {
 	init();
 	self->method=method;
 	self->weighted=weighted;
 }
 
-CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs,
+KernelSelectionStrategy::KernelSelectionStrategy(EKernelSelectionMethod method, index_t num_runs,
 	index_t num_folds, float64_t alpha)
 {
 	init();
@@ -165,77 +165,77 @@ CKernelSelectionStrategy::CKernelSelectionStrategy(EKernelSelectionMethod method
 	self->alpha=alpha;
 }
 
-void CKernelSelectionStrategy::init()
+void KernelSelectionStrategy::init()
 {
 	self=std::make_unique<Self>();
 }
 
-CKernelSelectionStrategy::~CKernelSelectionStrategy()
+KernelSelectionStrategy::~KernelSelectionStrategy()
 {
 	self->kernel_mgr.clear();
 }
 
-CKernelSelectionStrategy& CKernelSelectionStrategy::use_method(EKernelSelectionMethod method)
+KernelSelectionStrategy& KernelSelectionStrategy::use_method(EKernelSelectionMethod method)
 {
 	self->method=method;
 	return *this;
 }
 
-CKernelSelectionStrategy& CKernelSelectionStrategy::use_num_runs(index_t num_runs)
+KernelSelectionStrategy& KernelSelectionStrategy::use_num_runs(index_t num_runs)
 {
 	self->num_runs=num_runs;
 	return *this;
 }
 
-CKernelSelectionStrategy& CKernelSelectionStrategy::use_num_folds(index_t num_folds)
+KernelSelectionStrategy& KernelSelectionStrategy::use_num_folds(index_t num_folds)
 {
 	self->num_folds=num_folds;
 	return *this;
 }
 
-CKernelSelectionStrategy& CKernelSelectionStrategy::use_alpha(float64_t alpha)
+KernelSelectionStrategy& KernelSelectionStrategy::use_alpha(float64_t alpha)
 {
 	self->alpha=alpha;
 	return *this;
 }
 
-CKernelSelectionStrategy& CKernelSelectionStrategy::use_weighted(bool weighted)
+KernelSelectionStrategy& KernelSelectionStrategy::use_weighted(bool weighted)
 {
 	self->weighted=weighted;
 	return *this;
 }
 
-EKernelSelectionMethod CKernelSelectionStrategy::get_method() const
+EKernelSelectionMethod KernelSelectionStrategy::get_method() const
 {
 	return self->method;
 }
 
-index_t CKernelSelectionStrategy::get_num_runs() const
+index_t KernelSelectionStrategy::get_num_runs() const
 {
 	return self->num_runs;
 }
 
-index_t CKernelSelectionStrategy::get_num_folds() const
+index_t KernelSelectionStrategy::get_num_folds() const
 {
 	return self->num_folds;
 }
 
-float64_t CKernelSelectionStrategy::get_alpha() const
+float64_t KernelSelectionStrategy::get_alpha() const
 {
 	return self->alpha;
 }
 
-bool CKernelSelectionStrategy::get_weighted() const
+bool KernelSelectionStrategy::get_weighted() const
 {
 	return self->weighted;
 }
 
-void CKernelSelectionStrategy::add_kernel(std::shared_ptr<CKernel> kernel)
+void KernelSelectionStrategy::add_kernel(std::shared_ptr<Kernel> kernel)
 {
 	self->kernel_mgr.push_back(kernel);
 }
 
-std::shared_ptr<CKernel> CKernelSelectionStrategy::select_kernel(std::shared_ptr<CMMD> estimator)
+std::shared_ptr<Kernel> KernelSelectionStrategy::select_kernel(std::shared_ptr<MMD> estimator)
 {
 	auto num_kernels=self->kernel_mgr.num_kernels();
 	REQUIRE(num_kernels>0, "Number of kernels is 0. Please add kernels using add_kernel method!\n");
@@ -248,30 +248,30 @@ std::shared_ptr<CKernel> CKernelSelectionStrategy::select_kernel(std::shared_ptr
 }
 
 // TODO call this method when test train mode is turned off
-void CKernelSelectionStrategy::erase_intermediate_results()
+void KernelSelectionStrategy::erase_intermediate_results()
 {
 	self->policy=nullptr;
 	self->kernel_mgr.clear();
 }
 
-SGMatrix<float64_t> CKernelSelectionStrategy::get_measure_matrix()
+SGMatrix<float64_t> KernelSelectionStrategy::get_measure_matrix()
 {
 	REQUIRE(self->policy!=nullptr, "The kernel selection policy is not initialized!\n");
 	return self->policy->get_measure_matrix();
 }
 
-SGVector<float64_t> CKernelSelectionStrategy::get_measure_vector()
+SGVector<float64_t> KernelSelectionStrategy::get_measure_vector()
 {
 	REQUIRE(self->policy!=nullptr, "The kernel selection policy is not initialized!\n");
 	return self->policy->get_measure_vector();
 }
 
-const char* CKernelSelectionStrategy::get_name() const
+const char* KernelSelectionStrategy::get_name() const
 {
 	return "KernelSelectionStrategy";
 }
 
-const KernelManager& CKernelSelectionStrategy::get_kernel_mgr() const
+const KernelManager& KernelSelectionStrategy::get_kernel_mgr() const
 {
 	return self->kernel_mgr;
 }

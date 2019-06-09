@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CLabels;
+class Labels;
 
 /** @brief The class MulticlassOVREvaluation
  * used to compute evaluation parameters
@@ -24,20 +24,20 @@ class CLabels;
  * binary OvR decomposition and given binary
  * evaluation technique.
  */
-class CMulticlassOVREvaluation: public CEvaluation
+class MulticlassOVREvaluation: public Evaluation
 {
 public:
 	/** constructor */
-	CMulticlassOVREvaluation();
+	MulticlassOVREvaluation();
 
 	/** constructor */
-	CMulticlassOVREvaluation(std::shared_ptr<CBinaryClassEvaluation> binary_evaluation);
+	MulticlassOVREvaluation(std::shared_ptr<BinaryClassEvaluation> binary_evaluation);
 
 	/** destructor */
-	virtual ~CMulticlassOVREvaluation();
+	virtual ~MulticlassOVREvaluation();
 
 	/** set evaluation */
-	void set_binary_evaluation(std::shared_ptr<CBinaryClassEvaluation> binary_evaluation)
+	void set_binary_evaluation(std::shared_ptr<BinaryClassEvaluation> binary_evaluation)
 	{
 		
 		
@@ -45,7 +45,7 @@ public:
 	}
 
 	/** get evaluation */
-	std::shared_ptr<CBinaryClassEvaluation> get_binary_evaluation()
+	std::shared_ptr<BinaryClassEvaluation> get_binary_evaluation()
 	{
 		
 		return m_binary_evaluation;
@@ -56,7 +56,7 @@ public:
 	 * @param ground_truth labels assumed to be correct
 	 * @return mean of OvR binary evaluations
 	 */
-	virtual float64_t evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth);
+	virtual float64_t evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth);
 
 	/** returns last results per class */
 	SGVector<float64_t> get_last_results()
@@ -85,7 +85,7 @@ public:
 protected:
 
 	/** binary evaluation to be used */
-	std::shared_ptr<CBinaryClassEvaluation> m_binary_evaluation;
+	std::shared_ptr<BinaryClassEvaluation> m_binary_evaluation;
 
 	/** last per class results */
 	SGVector<float64_t> m_last_results;

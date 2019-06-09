@@ -16,19 +16,19 @@ namespace shogun
 /** @brief VarianceKernelNormalizer divides by the ``variance''
  *
  * This effectively normalizes the vectors in feature space to variance 1 (see
- * CVarianceKernelNormalizer)
+ * VarianceKernelNormalizer)
  *
  * \f[
  * k'({\bf x},{\bf x'}) = \frac{k({\bf x},{\bf x'})}{\frac{1}{N}\sum_{i=1}^N k({\bf x}_i, {\bf x}_i) - \sum_{i,j=1}^N, k({\bf x}_i,{\bf x'}_j)/N^2}
  * \f]
  */
-class CVarianceKernelNormalizer : public CKernelNormalizer
+class VarianceKernelNormalizer : public KernelNormalizer
 {
 	public:
 		/** default constructor
 		 */
-		CVarianceKernelNormalizer()
-			: CKernelNormalizer(), meandiff(1.0), sqrt_meandiff(1.0)
+		VarianceKernelNormalizer()
+			: KernelNormalizer(), meandiff(1.0), sqrt_meandiff(1.0)
 		{
 			/*SG_ADD(&meandiff, "meandiff", "Scaling constant.", ParameterProperties::HYPER)*/;
 			/*SG_ADD(&sqrt_meandiff, "sqrt_meandiff",
@@ -36,13 +36,13 @@ class CVarianceKernelNormalizer : public CKernelNormalizer
 		}
 
 		/** default destructor */
-		virtual ~CVarianceKernelNormalizer()
+		virtual ~VarianceKernelNormalizer()
 		{
 		}
 
 		/** initialization of the normalizer
          * @param k kernel */
-		virtual bool init(CKernel* k)
+		virtual bool init(Kernel* k)
 		{
 			ASSERT(k)
 			int32_t n=k->get_num_vec_lhs();

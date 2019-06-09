@@ -83,11 +83,11 @@ class MappedSparseMatrix
 
 
 /** @brief class to implement LibLinear */
-class CLibLinearMTL : public CLinearMachine
+class LibLinearMTL : public LinearMachine
 {
 	public:
 		/** default constructor  */
-		CLibLinearMTL();
+		LibLinearMTL();
 
 
 		/** constructor (using L2R_L1LOSS_SVC_DUAL as default)
@@ -96,12 +96,12 @@ class CLibLinearMTL : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab training labels
 		 */
-		CLibLinearMTL(
-			float64_t C, std::shared_ptr<CDotFeatures> traindat,
-			std::shared_ptr<CLabels> trainlab);
+		LibLinearMTL(
+			float64_t C, std::shared_ptr<DotFeatures> traindat,
+			std::shared_ptr<Labels> trainlab);
 
 		/** destructor */
-		virtual ~CLibLinearMTL();
+		virtual ~LibLinearMTL();
 
 
 		/** get classifier type
@@ -293,7 +293,7 @@ class CLibLinearMTL : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		/** set up parameters */

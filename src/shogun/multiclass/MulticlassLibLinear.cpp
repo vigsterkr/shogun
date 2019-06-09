@@ -15,22 +15,22 @@
 
 using namespace shogun;
 
-CMulticlassLibLinear::CMulticlassLibLinear() :
-	CLinearMulticlassMachine()
+MulticlassLibLinear::MulticlassLibLinear() :
+	LinearMulticlassMachine()
 {
 	register_parameters();
 	init_defaults();
 }
 
-CMulticlassLibLinear::CMulticlassLibLinear(float64_t C, std::shared_ptr<CDotFeatures> features, std::shared_ptr<CLabels> labs) :
-	CLinearMulticlassMachine(std::make_shared<CMulticlassOneVsRestStrategy>(),features,NULL,labs)
+MulticlassLibLinear::MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),features,NULL,labs)
 {
 	register_parameters();
 	init_defaults();
 	set_C(C);
 }
 
-void CMulticlassLibLinear::init_defaults()
+void MulticlassLibLinear::init_defaults()
 {
 	set_C(1.0);
 	set_epsilon(1e-2);
@@ -40,7 +40,7 @@ void CMulticlassLibLinear::init_defaults()
 	m_train_state = NULL;
 }
 
-void CMulticlassLibLinear::register_parameters()
+void MulticlassLibLinear::register_parameters()
 {
 	SG_ADD(&m_C, "C", "regularization constant",ParameterProperties::HYPER);
 	SG_ADD(&m_epsilon, "epsilon", "tolerance epsilon");
@@ -48,12 +48,12 @@ void CMulticlassLibLinear::register_parameters()
 	SG_ADD(&m_use_bias, "use_bias", "indicates whether bias should be used");
 }
 
-CMulticlassLibLinear::~CMulticlassLibLinear()
+MulticlassLibLinear::~MulticlassLibLinear()
 {
 	reset_train_state();
 }
 
-SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
+SGVector<int32_t> MulticlassLibLinear::get_support_vectors() const
 {
 	if (!m_train_state)
 		SG_ERROR("Please enable save_train_state option and train machine.\n")
@@ -70,7 +70,7 @@ SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
 	{
 		for (int32_t y=0; y<num_classes; y++)
 		{
-			if (CMath::abs(m_train_state->alpha[i*num_classes+y])>1e-6)
+			if (Math::abs(m_train_state->alpha[i*num_classes+y])>1e-6)
 			{
 				nz_idxs.push(i);
 				break;
@@ -82,15 +82,15 @@ SGVector<int32_t> CMulticlassLibLinear::get_support_vectors() const
 	return SGVector<int32_t>(nz_idxs.begin,num_nz);
 }
 
-SGMatrix<float64_t> CMulticlassLibLinear::obtain_regularizer_matrix() const
+SGMatrix<float64_t> MulticlassLibLinear::obtain_regularizer_matrix() const
 {
 	return SGMatrix<float64_t>();
 }
 
-bool CMulticlassLibLinear::train_machine(std::shared_ptr<CFeatures> data)
+bool MulticlassLibLinear::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
-		set_features(data->as<CDotFeatures>());
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(m_features)
 	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
@@ -120,14 +120,14 @@ bool CMulticlassLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 	for (int32_t i=0; i<num_vectors; i++)
 		C[i] = m_C;
 
-	Solver_MCSVM_CS solver(&mc_problem,num_classes,C,w0.matrix,m_epsilon,
+	Solver_MSVM_CS solver(&mc_problem,num_classes,C,w0.matrix,m_epsilon,
 	                       m_max_iter,m_max_train_time,m_train_state);
 	solver.solve();
 
 	m_machines->reset_array();
 	for (int32_t i=0; i<num_classes; i++)
 	{
-		auto machine = std::make_shared<CLinearMachine>();
+		auto machine = std::make_shared<LinearMachine>();
 		SGVector<float64_t> cw(mc_problem.n-bias_n);
 
 		for (int32_t j=0; j<mc_problem.n-bias_n; j++)

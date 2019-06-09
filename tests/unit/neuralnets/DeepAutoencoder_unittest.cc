@@ -44,25 +44,25 @@ using namespace shogun;
 
 TEST(DeepAutoencoder, pre_train)
 {
-	CMath::init_random(10);
+	Math::init_random(10);
 
 	int32_t num_features = 10;
 	int32_t num_examples = 100;
 
 	SGMatrix<float64_t> data(num_features, num_examples);
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		data[i] = CMath::random(-1.0,1.0);
+		data[i] = Math::random(-1.0,1.0);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(num_features));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(15));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(num_features));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(num_features));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(15));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(num_features));
 
-	CDeepAutoencoder ae(layers);
+	DeepAutoencoder ae(layers);
 
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	ae.pt_epsilon.set_const(1e-6);
 	ae.pre_train(features);
@@ -73,7 +73,7 @@ TEST(DeepAutoencoder, pre_train)
 
 	float64_t avg_diff = 0;
 	for (int32_t i=0; i<num_features*num_examples; i++)
-		avg_diff += CMath::abs(reconstructed_data[i]-data[i])/(num_examples*num_features);
+		avg_diff += Math::abs(reconstructed_data[i]-data[i])/(num_examples*num_features);
 
 	EXPECT_NEAR(0.0, avg_diff, 0.01);
 
@@ -83,24 +83,24 @@ TEST(DeepAutoencoder, pre_train)
 
 TEST(DeepAutoencoder, convert_to_neural_network)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(10));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(15));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(12));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(10));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(10));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(15));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(12));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(10));
 
-	CDeepAutoencoder ae(layers);
+	DeepAutoencoder ae(layers);
 
 	auto nn = ae.convert_to_neural_network();
 
 	SGMatrix<float64_t> x(10, 3);
 	for (int32_t i=0; i<x.num_rows*x.num_cols; i++)
-		x[i] = CMath::random(0.0,1.0);
+		x[i] = Math::random(0.0,1.0);
 
-	auto f = std::make_shared<CDenseFeatures<float64_t>>(x);
+	auto f = std::make_shared<DenseFeatures<float64_t>>(x);
 
 	auto f_transformed_nn = nn->transform(f);
 	auto f_transformed_ae = ae.transform(f);

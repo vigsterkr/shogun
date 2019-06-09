@@ -17,26 +17,26 @@
 
 using namespace shogun;
 
-CLibSVMFile::CLibSVMFile()
+LibSVMFile::LibSVMFile()
 {
 	init();
 }
 
-CLibSVMFile::CLibSVMFile(FILE* f, const char* name) :
-	CFile(f, name)
-{
-	init();
-	init_with_defaults();
-}
-
-CLibSVMFile::CLibSVMFile(const char* fname, char rw, const char* name) :
-	CFile(fname, rw, name)
+LibSVMFile::LibSVMFile(FILE* f, const char* name) :
+	File(f, name)
 {
 	init();
 	init_with_defaults();
 }
 
-CLibSVMFile::~CLibSVMFile()
+LibSVMFile::LibSVMFile(const char* fname, char rw, const char* name) :
+	File(fname, rw, name)
+{
+	init();
+	init_with_defaults();
+}
+
+LibSVMFile::~LibSVMFile()
 {
 
 
@@ -46,7 +46,7 @@ CLibSVMFile::~CLibSVMFile()
 
 }
 
-void CLibSVMFile::init()
+void LibSVMFile::init()
 {
 	m_delimiter_feat=0;
 
@@ -58,33 +58,33 @@ void CLibSVMFile::init()
 	m_line_reader=NULL;
 }
 
-void CLibSVMFile::init_with_defaults()
+void LibSVMFile::init_with_defaults()
 {
 	m_delimiter_feat=':';
 	m_delimiter_label=',';
 
-	m_whitespace_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
+	m_whitespace_tokenizer=std::make_shared<DelimiterTokenizer>(true);
 	m_whitespace_tokenizer->delimiters[' ']=1;
 
 
-	m_delimiter_feat_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
+	m_delimiter_feat_tokenizer=std::make_shared<DelimiterTokenizer>(true);
 	m_delimiter_feat_tokenizer->delimiters[m_delimiter_feat]=1;
 
 
-	m_delimiter_label_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
+	m_delimiter_label_tokenizer=std::make_shared<DelimiterTokenizer>(true);
 	m_delimiter_label_tokenizer->delimiters[m_delimiter_label]=1;
 
 
-	m_line_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
+	m_line_tokenizer=std::make_shared<DelimiterTokenizer>(true);
 	m_line_tokenizer->delimiters['\n']=1;
 
 
-	m_parser=std::make_shared<CParser>();
-	m_line_reader=std::make_shared<CLineReader>(file, m_line_tokenizer);
+	m_parser=std::make_shared<Parser>();
+	m_line_reader=std::make_shared<LineReader>(file, m_line_tokenizer);
 }
 
 #define GET_SPARSE_MATRIX(read_func, sg_type) \
-void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat, int32_t& num_vec) \
+void LibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat, int32_t& num_vec) \
 { \
 	SGVector<float64_t>* multilabel; \
 	int32_t num_classes; \
@@ -107,7 +107,7 @@ GET_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_SPARSE_MATRIX
 
 #define GET_LABELED_SPARSE_MATRIX(read_func, sg_type) \
-void CLibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat, int32_t& num_vec, \
+void LibSVMFile::get_sparse_matrix(SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat, int32_t& num_vec, \
 					float64_t*& labels,  bool load_labels) \
 { \
 	SGVector<float64_t>* multilabel; \
@@ -143,7 +143,7 @@ GET_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_LABELED_SPARSE_MATRIX
 
 #define GET_MULTI_LABELED_SPARSE_MATRIX(read_func, sg_type)                    \
-	void CLibSVMFile::get_sparse_matrix(                                       \
+	void LibSVMFile::get_sparse_matrix(                                       \
 	    SGSparseVector<sg_type>*& mat_feat, int32_t& num_feat,                 \
 	    int32_t& num_vec, SGVector<float64_t>*& multilabel,                    \
 	    int32_t& num_classes, bool load_labels)                                \
@@ -273,7 +273,7 @@ GET_MULTI_LABELED_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_MULTI_LABELED_SPARSE_MATRIX
 
 #define SET_SPARSE_MATRIX(format, sg_type) \
-void CLibSVMFile::set_sparse_matrix( \
+void LibSVMFile::set_sparse_matrix( \
 			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec) \
 { \
 	SGVector <float64_t>* labels = NULL; \
@@ -296,7 +296,7 @@ SET_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_SPARSE_MATRIX
 
 #define SET_LABELED_SPARSE_MATRIX(format, sg_type) \
-void CLibSVMFile::set_sparse_matrix( \
+void LibSVMFile::set_sparse_matrix( \
 			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec, \
 			const float64_t* labels) \
 { \
@@ -328,7 +328,7 @@ SET_LABELED_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_LABELED_SPARSE_MATRIX
 
 #define SET_MULTI_LABELED_SPARSE_MATRIX(format, sg_type) \
-void CLibSVMFile::set_sparse_matrix( \
+void LibSVMFile::set_sparse_matrix( \
 			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec, \
 			const SGVector<float64_t>* multilabel) \
 { \
@@ -380,7 +380,7 @@ SET_MULTI_LABELED_SPARSE_MATRIX(SCNi16, int16_t)
 SET_MULTI_LABELED_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_MULTI_LABELED_SPARSE_MATRIX
 
-int32_t CLibSVMFile::get_num_lines()
+int32_t LibSVMFile::get_num_lines()
 {
 	int32_t num_lines=0;
 	while (m_line_reader->has_next())
@@ -393,9 +393,9 @@ int32_t CLibSVMFile::get_num_lines()
 	return num_lines;
 }
 
-bool CLibSVMFile::is_feat_entry(const SGVector<char> entry)
+bool LibSVMFile::is_feat_entry(const SGVector<char> entry)
 {
-	auto parser = std::make_shared<CParser>();
+	auto parser = std::make_shared<Parser>();
 	parser->set_tokenizer(m_delimiter_feat_tokenizer);
 	parser->set_text(entry);
 	bool isfeat = false;

@@ -25,7 +25,7 @@ template<class ValueType>
 class JSONReaderVisitor;
 
 template<typename V>
-std::shared_ptr<CSGObject> object_reader(V& v, JSONReaderVisitor<V>* visitor);
+std::shared_ptr<SGObject> object_reader(V& v, JSONReaderVisitor<V>* visitor);
 
 extern const char* const kNameKey;
 extern const char* const kGenericKey;
@@ -130,7 +130,7 @@ public:
 		*v = next_element<std::string>(&ValueType::GetString);
 		SG_SDEBUG("reading std::string: %s", v->c_str());
 	}
-	void on(std::shared_ptr<CSGObject>* v) override
+	void on(std::shared_ptr<SGObject>* v) override
 	{
 		SG_SDEBUG("reading SGObject: ");
 		*v = object_reader(m_value_stack.top(), this);
@@ -299,7 +299,7 @@ private:
 	}
 
 private:
-	std::shared_ptr<CInputStream> m_stream;
+	std::shared_ptr<InputStream> m_stream;
 	string m_buffer;
 	size_t m_buffer_size;
 	size_t m_pos = 0;
@@ -309,7 +309,7 @@ private:
 };
 
 template<typename V>
-std::shared_ptr<CSGObject> object_reader(const V* v, JSONReaderVisitor<V>* visitor, std::shared_ptr<CSGObject> _this = nullptr)
+std::shared_ptr<SGObject> object_reader(const V* v, JSONReaderVisitor<V>* visitor, std::shared_ptr<SGObject> _this = nullptr)
 {
 	const V& value = *v;
 	REQUIRE(v != nullptr, "Value should be set!");
@@ -321,7 +321,7 @@ std::shared_ptr<CSGObject> object_reader(const V* v, JSONReaderVisitor<V>* visit
 	string obj_name(value[kNameKey].GetString());
 	REQUIRE(value.HasMember(kGenericKey), "Not a valid serialized SGObject, it does not have a 'generic'!")
 	EPrimitiveType primitive_type((EPrimitiveType) value[kGenericKey].GetInt());
-	std::shared_ptr<CSGObject> obj = nullptr;
+	std::shared_ptr<SGObject> obj = nullptr;
 	if (_this)
 	{
 		REQUIRE(_this->get_name() == obj_name, "");
@@ -359,17 +359,17 @@ std::shared_ptr<CSGObject> object_reader(const V* v, JSONReaderVisitor<V>* visit
 	return obj;
 }
 
-CJsonDeserializer::CJsonDeserializer() : CDeserializer()
+JsonDeserializer::JsonDeserializer() : Deserializer()
 {
 }
 
-CJsonDeserializer::~CJsonDeserializer()
+JsonDeserializer::~JsonDeserializer()
 {
 }
 
-std::shared_ptr<CSGObject> CJsonDeserializer::read_object()
+std::shared_ptr<SGObject> JsonDeserializer::read_object()
 {
-	CIStreamAdapter is(stream());
+	IStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!
 	Document reader;
 	reader.ParseStream<kParseNanAndInfFlag>(is);
@@ -381,9 +381,9 @@ std::shared_ptr<CSGObject> CJsonDeserializer::read_object()
 	);
 }
 
-void CJsonDeserializer::read(std::shared_ptr<CSGObject> _this)
+void JsonDeserializer::read(std::shared_ptr<SGObject> _this)
 {
-	CIStreamAdapter is(stream());
+	IStreamAdapter is(stream());
 	// FIXME: use SAX parser interface!
 	Document reader;
 	reader.ParseStream<kParseNanAndInfFlag>(is);

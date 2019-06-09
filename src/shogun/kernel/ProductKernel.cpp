@@ -10,14 +10,14 @@
 
 using namespace shogun;
 
-CProductKernel::CProductKernel(int32_t size) : CKernel(size)
+ProductKernel::ProductKernel(int32_t size) : Kernel(size)
 {
 	init();
 
 	SG_INFO("Product kernel created (%p)\n", this)
 }
 
-CProductKernel::~CProductKernel()
+ProductKernel::~ProductKernel()
 {
 	cleanup();
 
@@ -25,18 +25,18 @@ CProductKernel::~CProductKernel()
 	SG_INFO("Product kernel deleted (%p).\n", this)
 }
 
-//Adapted from CCombinedKernel
-bool CProductKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+//Adapted from CombinedKernel
+bool ProductKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CKernel::init(l,r);
+	Kernel::init(l,r);
 	ASSERT(l->get_feature_class()==C_COMBINED)
 	ASSERT(r->get_feature_class()==C_COMBINED)
 	ASSERT(l->get_feature_type()==F_UNKNOWN)
 	ASSERT(r->get_feature_type()==F_UNKNOWN)
 
-	std::shared_ptr<CFeatures> lf=NULL;
-	std::shared_ptr<CFeatures> rf=NULL;
-	std::shared_ptr<CKernel> k=NULL;
+	std::shared_ptr<Features> lf=NULL;
+	std::shared_ptr<Features> rf=NULL;
+	std::shared_ptr<Kernel> k=NULL;
 
 	bool result=true;
 
@@ -50,8 +50,8 @@ bool CProductKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeature
 		// skip over features - the custom kernel does not need any
 		if (k->get_kernel_type() != K_CUSTOM)
 		{
-			lf=(std::static_pointer_cast<CCombinedFeatures>(l))->get_feature_obj(f_idx);
-			rf=(std::static_pointer_cast<CCombinedFeatures>(r))->get_feature_obj(f_idx);
+			lf=(std::static_pointer_cast<CombinedFeatures>(l))->get_feature_obj(f_idx);
+			rf=(std::static_pointer_cast<CombinedFeatures>(r))->get_feature_obj(f_idx);
 			f_idx++;
 			if (!lf || !rf)
 			{
@@ -97,16 +97,16 @@ bool CProductKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeature
 		return false;
 	}
 
-	if ( (f_idx!=(std::static_pointer_cast<CCombinedFeatures>(l))->get_num_feature_obj()) ||
-			(f_idx!=(std::static_pointer_cast<CCombinedFeatures>(r))->get_num_feature_obj()) )
+	if ( (f_idx!=(std::static_pointer_cast<CombinedFeatures>(l))->get_num_feature_obj()) ||
+			(f_idx!=(std::static_pointer_cast<CombinedFeatures>(r))->get_num_feature_obj()) )
 		SG_ERROR("ProductKernel: Number of features/kernels does not match - bailing out\n")
 
 	initialized=true;
 	return true;
 }
 
-//Adapted from CCombinedKernel
-void CProductKernel::remove_lhs()
+//Adapted from CombinedKernel
+void ProductKernel::remove_lhs()
 {
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)
 	{
@@ -116,13 +116,13 @@ void CProductKernel::remove_lhs()
 
 
 	}
-	CKernel::remove_lhs();
+	Kernel::remove_lhs();
 
 	num_lhs=0;
 }
 
-//Adapted from CCombinedKernel
-void CProductKernel::remove_rhs()
+//Adapted from CombinedKernel
+void ProductKernel::remove_rhs()
 {
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)
 	{
@@ -131,13 +131,13 @@ void CProductKernel::remove_rhs()
 			k->remove_rhs();
 
 	}
-	CKernel::remove_rhs();
+	Kernel::remove_rhs();
 
 	num_rhs=0;
 }
 
-//Adapted from CCombinedKernel
-void CProductKernel::remove_lhs_and_rhs()
+//Adapted from CombinedKernel
+void ProductKernel::remove_lhs_and_rhs()
 {
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)
 	{
@@ -147,14 +147,14 @@ void CProductKernel::remove_lhs_and_rhs()
 
 	}
 
-	CKernel::remove_lhs_and_rhs();
+	Kernel::remove_lhs_and_rhs();
 
 	num_lhs=0;
 	num_rhs=0;
 }
 
-//Adapted from CCombinedKernel
-void CProductKernel::cleanup()
+//Adapted from CombinedKernel
+void ProductKernel::cleanup()
 {
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)
 	{
@@ -163,14 +163,14 @@ void CProductKernel::cleanup()
 
 	}
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 
 	num_lhs=0;
 	num_rhs=0;
 }
 
-//Adapted from CCombinedKernel
-void CProductKernel::list_kernels()
+//Adapted from CombinedKernel
+void ProductKernel::list_kernels()
 {
 	SG_INFO("BEGIN PRODUCT KERNEL LIST - ")
 	this->list_kernel();
@@ -184,8 +184,8 @@ void CProductKernel::list_kernels()
 	SG_INFO("END PRODUCT KERNEL LIST - ")
 }
 
-//Adapted from CCombinedKernel
-float64_t CProductKernel::compute(int32_t x, int32_t y)
+//Adapted from CombinedKernel
+float64_t ProductKernel::compute(int32_t x, int32_t y)
 {
 	float64_t result=1;
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)
@@ -198,18 +198,18 @@ float64_t CProductKernel::compute(int32_t x, int32_t y)
 	return result;
 }
 
-//Adapted from CCombinedKernel
-bool CProductKernel::precompute_subkernels()
+//Adapted from CombinedKernel
+bool ProductKernel::precompute_subkernels()
 {
 	if (get_num_subkernels()==0)
 		return false;
 
-	auto new_kernel_array=std::make_shared<CDynamicObjectArray>();
+	auto new_kernel_array=std::make_shared<DynamicObjectArray>();
 
 	for (index_t k_idx=0; k_idx<get_num_subkernels(); k_idx++)
 	{
 		auto k=get_kernel(k_idx);
-		new_kernel_array->append_element(std::make_shared<CCustomKernel>(k));
+		new_kernel_array->append_element(std::make_shared<CustomKernel>(k));
 
 	}
 
@@ -220,20 +220,20 @@ bool CProductKernel::precompute_subkernels()
 	return true;
 }
 
-void CProductKernel::init()
+void ProductKernel::init()
 {
 	initialized=false;
 
 	properties=KP_NONE;
-	kernel_array=std::make_shared<CDynamicObjectArray>();
+	kernel_array=std::make_shared<DynamicObjectArray>();
 
 
-	SG_ADD((std::shared_ptr<CSGObject>*) &kernel_array, "kernel_array", "Array of kernels",
+	SG_ADD((std::shared_ptr<SGObject>*) &kernel_array, "kernel_array", "Array of kernels",
 	    ParameterProperties::HYPER);
 	SG_ADD(&initialized, "initialized", "Whether kernel is ready to be used");
 }
 
-SGMatrix<float64_t> CProductKernel::get_parameter_gradient(
+SGMatrix<float64_t> ProductKernel::get_parameter_gradient(
 		const TParameter* param, index_t index)
 {
 	auto k=get_kernel(0);

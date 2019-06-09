@@ -21,12 +21,12 @@ using namespace Eigen;
 TEST(CustomKernelTest,add_row_subset)
 {
 	index_t m=3;
-	auto gen=std::make_shared<CMeanShiftDataGenerator>(0, 2);
+	auto gen=std::make_shared<MeanShiftDataGenerator>(0, 2);
 	auto feats=gen->get_streamed_features(m);
 
-	auto gauss=std::make_shared<CGaussianKernel>(10, 3);
+	auto gauss=std::make_shared<GaussianKernel>(10, 3);
 	gauss->init(feats, feats);
-	auto custom=std::make_shared<CCustomKernel>(gauss);
+	auto custom=std::make_shared<CustomKernel>(gauss);
 
 	SGVector<index_t> inds(m);
 	inds.range_fill();
@@ -34,7 +34,7 @@ TEST(CustomKernelTest,add_row_subset)
 	index_t num_runs=10;
 	for (index_t i=0; i<num_runs; ++i)
 	{
-		CMath::permute(inds);
+		Math::permute(inds);
 
 		feats->add_subset(inds);
 		custom->add_row_subset(inds);
@@ -46,7 +46,7 @@ TEST(CustomKernelTest,add_row_subset)
 //		gauss_matrix.display_matrix("gauss");
 //		gauss_matrix.display_matrix("custom");
 		for (index_t j=0; j<m*m; ++j)
-			EXPECT_LE(CMath::abs(gauss_matrix.matrix[j]-custom_matrix.matrix[j]), 1E-6);
+			EXPECT_LE(Math::abs(gauss_matrix.matrix[j]-custom_matrix.matrix[j]), 1E-6);
 
 		feats->remove_subset();
 		custom->remove_row_subset();
@@ -57,11 +57,11 @@ TEST(CustomKernelTest,add_row_subset)
 TEST(CustomKernelTest,add_row_subset_constructor)
 {
 	index_t n=4;
-	auto gen=std::make_shared<CMeanShiftDataGenerator>(1, 2, 0);
+	auto gen=std::make_shared<MeanShiftDataGenerator>(1, 2, 0);
 	auto feats=
-			gen->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
-	auto gaussian=std::make_shared<CGaussianKernel>(feats, feats, 2, 10);
-	auto main_kernel=std::make_shared<CCustomKernel>(gaussian);
+			gen->get_streamed_features(n)->as<DenseFeatures<float64_t>>();
+	auto gaussian=std::make_shared<GaussianKernel>(feats, feats, 2, 10);
+	auto main_kernel=std::make_shared<CustomKernel>(gaussian);
 
 	/* create custom kernel copy of gaussien and assert equalness */
 	SGMatrix<float64_t> kmg=gaussian->get_kernel_matrix();
@@ -69,11 +69,11 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	for (index_t i=0; i<n; ++i)
 	{
 		for (index_t j=0; j<n; ++j)
-			EXPECT_LE(CMath::abs(kmg(i, j)-km(i, j)), 1E-7);
+			EXPECT_LE(Math::abs(kmg(i, j)-km(i, j)), 1E-7);
 	}
 
 	/* create copy of custom kernel and assert equalness */
-	auto copy=std::make_shared<CCustomKernel>(km);
+	auto copy=std::make_shared<CustomKernel>(km);
 	SGMatrix<float64_t> kmc=copy->get_kernel_matrix();
 	for (index_t i=0; i<n; ++i)
 	{
@@ -85,11 +85,11 @@ TEST(CustomKernelTest,add_row_subset_constructor)
 	 * from this, assert equalness */
 	SGVector<index_t> inds(n);
 	inds.range_fill();
-	CMath::permute(inds);
+	Math::permute(inds);
 	main_kernel->add_row_subset(inds);
 	SGMatrix<float64_t> main_subset_matrix=main_kernel->get_kernel_matrix();
 	main_kernel->remove_row_subset();
-	auto main_subset_copy=std::make_shared<CCustomKernel>(main_subset_matrix);
+	auto main_subset_copy=std::make_shared<CustomKernel>(main_subset_matrix);
 	SGMatrix<float64_t> main_subset_copy_matrix=main_subset_copy->get_kernel_matrix();
 	for (index_t i=0; i<n; ++i)
 	{
@@ -132,13 +132,13 @@ TEST(CustomKernelTest,index_features_subset)
 	// Generate the features
 	SGMatrix<float64_t> data(3,n);
 	generate_data(data);
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 
 	// Generate the Kernels
-	auto gaussian=std::make_shared<CGaussianKernel>(feats, feats, 2, 10);
+	auto gaussian=std::make_shared<GaussianKernel>(feats, feats, 2, 10);
 
-	auto main_kernel=std::make_shared<CCustomKernel>(gaussian);
+	auto main_kernel=std::make_shared<CustomKernel>(gaussian);
 
 
 	/* create custom kernel copy of gaussien and assert equalness */
@@ -156,13 +156,13 @@ TEST(CustomKernelTest,index_features_subset)
 	SGVector<index_t> r_idx(n);
 	SGVector<index_t> c_idx(n);
 	r_idx.range_fill();
-	CMath::permute(r_idx);
+	Math::permute(r_idx);
 	c_idx.range_fill();
-	CMath::permute(c_idx);
+	Math::permute(c_idx);
 
 	/* Create IndexFeatures instances */
-	auto feat_r_idx = std::make_shared<CIndexFeatures>(r_idx);
-	auto feat_c_idx = std::make_shared<CIndexFeatures>(c_idx);
+	auto feat_r_idx = std::make_shared<IndexFeatures>(r_idx);
+	auto feat_c_idx = std::make_shared<IndexFeatures>(c_idx);
 
 
 
@@ -195,18 +195,18 @@ TEST(CustomKernelTest, sum_symmetric_block)
 	SGMatrix<float64_t> data_p(d, m);
 	Map<MatrixXd> data_pm(data_p.matrix, data_p.num_rows, data_p.num_cols);
 	data_pm=MatrixXd::Random(d, m);
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	// create feature Y
 	SGMatrix<float64_t> data_q(d, n);
 	Map<MatrixXd> data_qm(data_q.matrix, data_q.num_rows, data_q.num_cols);
 	data_qm=MatrixXd::Random(d, n);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	auto merged_feats=
-		feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
-	auto kernel=std::make_shared<CGaussianKernel>(merged_feats, merged_feats, 2);
-	auto precomputed_kernel=std::make_shared<CCustomKernel>(kernel);
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
+	auto kernel=std::make_shared<GaussianKernel>(merged_feats, merged_feats, 2);
+	auto precomputed_kernel=std::make_shared<CustomKernel>(kernel);
 
 	// first block - sum(K(X, X')), X!=X' (no diag)
 	float64_t sum1=kernel->sum_symmetric_block(0, m);
@@ -263,18 +263,18 @@ TEST(CustomKernelTest, sum_block)
 	SGMatrix<float64_t> data_p(d, m);
 	Map<MatrixXd> data_pm(data_p.matrix, data_p.num_rows, data_p.num_cols);
 	data_pm=MatrixXd::Random(d, m);
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	// create feature Y
 	SGMatrix<float64_t> data_q(d, n);
 	Map<MatrixXd> data_qm(data_q.matrix, data_q.num_rows, data_q.num_cols);
 	data_qm=MatrixXd::Random(d, n);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	auto merged_feats=
-		feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
-	auto kernel=std::make_shared<CGaussianKernel>(merged_feats, merged_feats, 2);
-	auto precomputed_kernel=std::make_shared<CCustomKernel>(kernel);
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
+	auto kernel=std::make_shared<GaussianKernel>(merged_feats, merged_feats, 2);
+	auto precomputed_kernel=std::make_shared<CustomKernel>(kernel);
 
 	// block - sum(K(X, Y))
 	float64_t sum1=kernel->sum_block(0, m, m, n);
@@ -307,18 +307,18 @@ TEST(CustomKernelTest, sum_block_no_diag)
 	SGMatrix<float64_t> data_p(d, m);
 	Map<MatrixXd> data_pm(data_p.matrix, data_p.num_rows, data_p.num_cols);
 	data_pm=MatrixXd::Random(d, m);
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	// create feature Y
 	SGMatrix<float64_t> data_q(d, n);
 	Map<MatrixXd> data_qm(data_q.matrix, data_q.num_rows, data_q.num_cols);
 	data_qm=MatrixXd::Random(d, n);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	auto merged_feats=
-		feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
-	auto kernel=std::make_shared<CGaussianKernel>(merged_feats, merged_feats, 2);
-	auto precomputed_kernel=std::make_shared<CCustomKernel>(kernel);
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
+	auto kernel=std::make_shared<GaussianKernel>(merged_feats, merged_feats, 2);
+	auto precomputed_kernel=std::make_shared<CustomKernel>(kernel);
 
 	// block - sum(K(X, Y)) (no diag)
 	float64_t sum1=kernel->sum_block(0, m, m, n, true);
@@ -351,18 +351,18 @@ TEST(CustomKernelTest, row_wise_sum_symmetric_block)
 	SGMatrix<float64_t> data_p(d, m);
 	Map<MatrixXd> data_pm(data_p.matrix, data_p.num_rows, data_p.num_cols);
 	data_pm=MatrixXd::Random(d, m);
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	// create feature Y
 	SGMatrix<float64_t> data_q(d, n);
 	Map<MatrixXd> data_qm(data_q.matrix, data_q.num_rows, data_q.num_cols);
 	data_qm=MatrixXd::Random(d, n);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	auto merged_feats=
-		feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
-	auto kernel=std::make_shared<CGaussianKernel>(merged_feats, merged_feats, 2);
-	auto precomputed_kernel=std::make_shared<CCustomKernel>(kernel);
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
+	auto kernel=std::make_shared<GaussianKernel>(merged_feats, merged_feats, 2);
+	auto precomputed_kernel=std::make_shared<CustomKernel>(kernel);
 
 	// first block - sum(K(X, X')), X!=X' (no diag)
 	SGVector<float64_t> sum1=kernel->row_wise_sum_symmetric_block(0, m);
@@ -431,18 +431,18 @@ TEST(CustomKernelTest, row_wise_sum_squared_sum_symmetric_block)
 	SGMatrix<float64_t> data_p(d, m);
 	Map<MatrixXd> data_pm(data_p.matrix, data_p.num_rows, data_p.num_cols);
 	data_pm=MatrixXd::Random(d, m);
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	// create feature Y
 	SGMatrix<float64_t> data_q(d, n);
 	Map<MatrixXd> data_qm(data_q.matrix, data_q.num_rows, data_q.num_cols);
 	data_qm=MatrixXd::Random(d, n);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	auto merged_feats=
-		feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
-	auto kernel=std::make_shared<CGaussianKernel>(merged_feats, merged_feats, 2);
-	auto precomputed_kernel=std::make_shared<CCustomKernel>(kernel);
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
+	auto kernel=std::make_shared<GaussianKernel>(merged_feats, merged_feats, 2);
+	auto precomputed_kernel=std::make_shared<CustomKernel>(kernel);
 
 	SGMatrix<float64_t> sum1, sum2;
 
@@ -537,18 +537,18 @@ TEST(CustomKernelTest, row_col_wise_sum_block)
 	SGMatrix<float64_t> data_p(d, m);
 	Map<MatrixXd> data_pm(data_p.matrix, data_p.num_rows, data_p.num_cols);
 	data_pm=MatrixXd::Random(d, m);
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	// create feature Y
 	SGMatrix<float64_t> data_q(d, n);
 	Map<MatrixXd> data_qm(data_q.matrix, data_q.num_rows, data_q.num_cols);
 	data_qm=MatrixXd::Random(d, n);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	auto merged_feats=
-		feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
-	auto kernel=std::make_shared<CGaussianKernel>(merged_feats, merged_feats, 2);
-	auto precomputed_kernel=std::make_shared<CCustomKernel>(kernel);
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
+	auto kernel=std::make_shared<GaussianKernel>(merged_feats, merged_feats, 2);
+	auto precomputed_kernel=std::make_shared<CustomKernel>(kernel);
 
 	// block - sum(K(X, Y))
 	SGVector<float64_t> sum1=kernel->row_col_wise_sum_block(0, m, m, n);
@@ -590,18 +590,18 @@ TEST(CustomKernelTest, row_col_wise_sum_block_no_diag)
 	SGMatrix<float64_t> data_p(d, m);
 	Map<MatrixXd> data_pm(data_p.matrix, data_p.num_rows, data_p.num_cols);
 	data_pm=MatrixXd::Random(d, m);
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	// create feature Y
 	SGMatrix<float64_t> data_q(d, n);
 	Map<MatrixXd> data_qm(data_q.matrix, data_q.num_rows, data_q.num_cols);
 	data_qm=MatrixXd::Random(d, n);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 
 	auto merged_feats=
-		feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
-	auto kernel=std::make_shared<CGaussianKernel>(merged_feats, merged_feats, 2);
-	auto precomputed_kernel=std::make_shared<CCustomKernel>(kernel);
+		feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
+	auto kernel=std::make_shared<GaussianKernel>(merged_feats, merged_feats, 2);
+	auto precomputed_kernel=std::make_shared<CustomKernel>(kernel);
 
 	// block - sum(K(X, Y))
 	SGVector<float64_t> sum1=kernel->row_col_wise_sum_block(0, m, m, n, true);

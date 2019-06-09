@@ -44,13 +44,13 @@
 
 using namespace shogun;
 
-CDeepAutoencoder::CDeepAutoencoder() : CAutoencoder()
+DeepAutoencoder::DeepAutoencoder() : Autoencoder()
 {
 	init();
 }
 
-CDeepAutoencoder::CDeepAutoencoder(std::shared_ptr<CDynamicObjectArray> layers, float64_t sigma):
-CAutoencoder()
+DeepAutoencoder::DeepAutoencoder(std::shared_ptr<DynamicObjectArray> layers, float64_t sigma):
+Autoencoder()
 {
 	set_layers(layers);
 	init();
@@ -77,7 +77,7 @@ CAutoencoder()
 	}
 }
 
-void CDeepAutoencoder::pre_train(std::shared_ptr<CFeatures> data)
+void DeepAutoencoder::pre_train(std::shared_ptr<Features> data)
 {
 	SGMatrix<float64_t> data_matrix = features_to_matrix(data);
 
@@ -86,26 +86,26 @@ void CDeepAutoencoder::pre_train(std::shared_ptr<CFeatures> data)
 	{
 		SG_INFO("Pre-training Layer %i\n", i);
 
-		auto ae_encoding_layer = get_layer(i)->clone()->as<CNeuralLayer>();
+		auto ae_encoding_layer = get_layer(i)->clone()->as<NeuralLayer>();
 
 		auto ae_decoding_layer =
-			get_layer(m_num_layers-i)->clone()->as<CNeuralLayer>();
+			get_layer(m_num_layers-i)->clone()->as<NeuralLayer>();
 
-		std::shared_ptr<CAutoencoder> ae = NULL;
+		std::shared_ptr<Autoencoder> ae = NULL;
 
 		if (strcmp(ae_encoding_layer->get_name(), "NeuralConvolutionalLayer")==0)
 		{
-			ae = std::make_shared<CAutoencoder>(
+			ae = std::make_shared<Autoencoder>(
 				ae_encoding_layer->get_width(),
 				ae_encoding_layer->get_height(),
 				get_layer(i-1)->get_num_neurons()
 				/(ae_encoding_layer->get_width()*ae_encoding_layer->get_height()),
-				ae_encoding_layer->as<CNeuralConvolutionalLayer>(),
-				ae_decoding_layer->as<CNeuralConvolutionalLayer>(), m_sigma);
+				ae_encoding_layer->as<NeuralConvolutionalLayer>(),
+				ae_decoding_layer->as<NeuralConvolutionalLayer>(), m_sigma);
 		}
 		else
 		{
-			ae = std::make_shared<CAutoencoder>(get_layer(i-1)->get_num_neurons(),
+			ae = std::make_shared<Autoencoder>(get_layer(i-1)->get_num_neurons(),
 				ae_encoding_layer, ae_decoding_layer, m_sigma);
 		}
 
@@ -131,7 +131,7 @@ void CDeepAutoencoder::pre_train(std::shared_ptr<CFeatures> data)
 		for (int32_t j=0; j<i; j++)
 			get_layer(j)->set_batch_size(data_matrix.num_cols);
 		SGMatrix<float64_t> ae_input_matrix = forward_propagate(data_matrix, i-1);
-		auto ae_input_features = std::make_shared<CDenseFeatures<float64_t>>(ae_input_matrix);
+		auto ae_input_features = std::make_shared<DenseFeatures<float64_t>>(ae_input_matrix);
 		for (int32_t j=0; j<i-1; j++)
 			get_layer(j)->set_batch_size(1);
 
@@ -154,27 +154,27 @@ void CDeepAutoencoder::pre_train(std::shared_ptr<CFeatures> data)
 	set_batch_size(1);
 }
 
-std::shared_ptr<CDenseFeatures< float64_t >> CDeepAutoencoder::transform(
-	std::shared_ptr<CDenseFeatures< float64_t >> data)
+std::shared_ptr<DenseFeatures< float64_t >> DeepAutoencoder::transform(
+	std::shared_ptr<DenseFeatures< float64_t >> data)
 {
 	SGMatrix<float64_t> transformed = forward_propagate(data, (m_num_layers-1)/2);
-	return std::make_shared<CDenseFeatures<float64_t>>(transformed);
+	return std::make_shared<DenseFeatures<float64_t>>(transformed);
 }
 
-std::shared_ptr<CDenseFeatures< float64_t >> CDeepAutoencoder::reconstruct(
-	std::shared_ptr<CDenseFeatures< float64_t >> data)
+std::shared_ptr<DenseFeatures< float64_t >> DeepAutoencoder::reconstruct(
+	std::shared_ptr<DenseFeatures< float64_t >> data)
 {
 	SGMatrix<float64_t> reconstructed = forward_propagate(data);
-	return std::make_shared<CDenseFeatures<float64_t>>(reconstructed);
+	return std::make_shared<DenseFeatures<float64_t>>(reconstructed);
 }
 
-std::shared_ptr<CNeuralNetwork> CDeepAutoencoder::convert_to_neural_network(
-	std::shared_ptr<CNeuralLayer> output_layer, float64_t sigma)
+std::shared_ptr<NeuralNetwork> DeepAutoencoder::convert_to_neural_network(
+	std::shared_ptr<NeuralLayer> output_layer, float64_t sigma)
 {
-	auto layers = std::make_shared<CDynamicObjectArray>();
+	auto layers = std::make_shared<DynamicObjectArray>();
 	for (int32_t i=0; i<=(m_num_layers-1)/2; i++)
 	{
-		auto layer = get_layer(i)->clone()->as<CNeuralLayer>();
+		auto layer = get_layer(i)->clone()->as<NeuralLayer>();
 		layer->autoencoder_position = NLAP_NONE;
 		layers->append_element(layer);
 
@@ -183,7 +183,7 @@ std::shared_ptr<CNeuralNetwork> CDeepAutoencoder::convert_to_neural_network(
 	if (output_layer != NULL)
 		layers->append_element(output_layer);
 
-	auto net = std::make_shared<CNeuralNetwork>(layers);
+	auto net = std::make_shared<NeuralNetwork>(layers);
 	net->quick_connect();
 	net->initialize_neural_network(sigma);
 
@@ -198,9 +198,9 @@ std::shared_ptr<CNeuralNetwork> CDeepAutoencoder::convert_to_neural_network(
 	return net;
 }
 
-float64_t CDeepAutoencoder::compute_error(SGMatrix< float64_t > targets)
+float64_t DeepAutoencoder::compute_error(SGMatrix< float64_t > targets)
 {
-	float64_t error = CNeuralNetwork::compute_error(targets);
+	float64_t error = NeuralNetwork::compute_error(targets);
 
 	if (m_contraction_coefficient != 0.0)
 
@@ -211,7 +211,7 @@ float64_t CDeepAutoencoder::compute_error(SGMatrix< float64_t > targets)
 	return error;
 }
 
-void CDeepAutoencoder::set_contraction_coefficient(float64_t coeff)
+void DeepAutoencoder::set_contraction_coefficient(float64_t coeff)
 {
 	m_contraction_coefficient = coeff;
 	for (int32_t i=1; i<=(m_num_layers-1)/2; i++)
@@ -220,13 +220,13 @@ void CDeepAutoencoder::set_contraction_coefficient(float64_t coeff)
 
 
 template <class T>
-SGVector<T> CDeepAutoencoder::get_section(SGVector<T> v, int32_t i)
+SGVector<T> DeepAutoencoder::get_section(SGVector<T> v, int32_t i)
 {
 	return SGVector<T>(v.vector+m_index_offsets[i],
 		get_layer(i)->get_num_parameters(), false);
 }
 
-void CDeepAutoencoder::init()
+void DeepAutoencoder::init()
 {
 	m_sigma = 0.01;
 

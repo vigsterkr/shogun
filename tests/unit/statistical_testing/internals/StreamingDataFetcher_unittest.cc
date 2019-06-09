@@ -49,9 +49,9 @@ TEST(StreamingDataFetcher, full_data)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
-	auto streaming_p = std::make_shared<CStreamingDenseFeatures<float64_t>>(feats_p);
+	auto streaming_p = std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	StreamingDataFetcher fetcher(streaming_p);
 	fetcher.set_num_samples(num_vec);
@@ -79,9 +79,9 @@ TEST(StreamingDataFetcher, block_data)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
-	auto streaming_p = std::make_shared<CStreamingDenseFeatures<float64_t>>(feats_p);
+	auto streaming_p = std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	StreamingDataFetcher fetcher(streaming_p);
 	fetcher.set_num_samples(num_vec);
@@ -113,9 +113,9 @@ TEST(StreamingDataFetcher, DISABLED_reset_functionality)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
-	auto streaming_p = std::make_shared<CStreamingDenseFeatures<float64_t>>(feats_p);
+	auto streaming_p = std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 	StreamingDataFetcher fetcher(streaming_p);
 	fetcher.set_num_samples(num_vec);

@@ -99,8 +99,8 @@ void FirstOrderMinimizer::init()
 	m_penalty_weight=0;
 	SG_ADD(&m_penalty_weight, "FirstOrderMinimizer__m_penalty_weight",
 		"penalty_weight in FirstOrderMinimizer");
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_penalty_type, "FirstOrderMinimizer__m_penalty_type",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_penalty_type, "FirstOrderMinimizer__m_penalty_type",
 		"penalty_type in FirstOrderMinimizer");
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_fun, "FirstOrderMinimizer__m_fun",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_fun, "FirstOrderMinimizer__m_fun",
 		"penalty_fun in FirstOrderMinimizer");
 }

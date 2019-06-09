@@ -20,11 +20,11 @@ TEST(LineReaderTest, constructor)
 {
 	FILE* fin=fopen(__FILE__, "r");
 
-	auto tokenizer=std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters['\n']=1;
 
 
-	auto reader=std::make_shared<CLineReader>(fin, tokenizer);
+	auto reader=std::make_shared<LineReader>(fin, tokenizer);
 	EXPECT_TRUE(reader->has_next());
 
 	fclose(fin);
@@ -39,11 +39,11 @@ TEST(LineReaderTest, read_yourself)
 
 	FILE* fin=fopen(__FILE__, "r");
 
-	auto tokenizer=std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters['\n']=1;
 
 
-	auto reader=std::make_shared<CLineReader>(max_line_length, fin, tokenizer);
+	auto reader=std::make_shared<LineReader>(max_line_length, fin, tokenizer);
 	EXPECT_TRUE(reader->has_next());
 
 	// read all strings from source code using LineReader

@@ -6,47 +6,47 @@
 
 using namespace shogun;
 
-CMKLClassification::CMKLClassification(std::shared_ptr<CSVM> s) : CMKL(s)
+MKLClassification::MKLClassification(std::shared_ptr<SVM> s) : MKL(s)
 {
 	if (!s)
 	{
 #ifdef USE_SVMLIGHT
-		s=std::make_shared<CSVMLight>();
+		s=std::make_shared<SVMLight>();
 #endif //USE_SVMLIGHT
 		if (!s)
-			s=std::make_shared<CLibSVM>();
+			s=std::make_shared<LibSVM>();
 		set_svm(s);
 	}
 }
 
-CMKLClassification::~CMKLClassification()
+MKLClassification::~MKLClassification()
 {
 }
-float64_t CMKLClassification::compute_sum_alpha()
+float64_t MKLClassification::compute_sum_alpha()
 {
 	float64_t suma=0;
 	int32_t nsv=svm->get_num_support_vectors();
 	for (int32_t i=0; i<nsv; i++)
-		suma+=CMath::abs(svm->get_alpha(i));
+		suma+=Math::abs(svm->get_alpha(i));
 
 	return suma;
 }
 
-void CMKLClassification::init_training()
+void MKLClassification::init_training()
 {
 	REQUIRE(m_labels, "Labels not set.\n");
 	REQUIRE(m_labels->get_num_labels(), "Number of labels is zero.\n");
 }
 
-std::shared_ptr<CMKLClassification> CMKLClassification::obtain_from_generic(std::shared_ptr<CMachine> machine)
+std::shared_ptr<MKLClassification> MKLClassification::obtain_from_generic(std::shared_ptr<Machine> machine)
 {
 	if (machine == NULL)
 		return NULL;
 
 	if (machine->get_classifier_type() != CT_MKLCLASSIFICATION)
-		SG_SERROR("Provided machine is not of type CMKLClassification!")
+		SG_SERROR("Provided machine is not of type MKLClassification!")
 
-	auto casted = std::dynamic_pointer_cast<CMKLClassification>(machine);
+	auto casted = std::dynamic_pointer_cast<MKLClassification>(machine);
 	
 	return casted;
 }

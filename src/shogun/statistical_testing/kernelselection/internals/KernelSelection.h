@@ -37,8 +37,8 @@
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
+class Kernel;
+class MMD;
 template <class> class SGVector;
 template <class> class SGMatrix;
 
@@ -50,16 +50,16 @@ class KernelManager;
 class KernelSelection
 {
 public:
-	KernelSelection(KernelManager&, std::shared_ptr<CMMD>);
+	KernelSelection(KernelManager&, std::shared_ptr<MMD>);
 	KernelSelection(const KernelSelection& other)=delete;
 	virtual ~KernelSelection();
 	KernelSelection& operator=(const KernelSelection& other)=delete;
-	virtual std::shared_ptr<CKernel> select_kernel()=0;
+	virtual std::shared_ptr<Kernel> select_kernel()=0;
 	virtual SGMatrix<float64_t> get_measure_matrix()=0;
 	virtual SGVector<float64_t> get_measure_vector()=0;
 protected:
 	const KernelManager& kernel_mgr;
-	std::shared_ptr<CMMD> estimator;
+	std::shared_ptr<MMD> estimator;
 	virtual void init_measures()=0;
 	virtual void compute_measures()=0;
 };

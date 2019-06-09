@@ -118,7 +118,7 @@ struct CrossValidationMMD : PermutationMMD
 					for (auto n=0; n<m_num_null_samples; ++n)
 					{
 						std::iota(m_permuted_inds.data(), m_permuted_inds.data()+m_permuted_inds.size(), 0);
-						CMath::permute(m_permuted_inds);
+						Math::permute(m_permuted_inds);
 
 						m_stack->add_subset(m_permuted_inds);
 						SGVector<index_t> inds=m_stack->get_last_subset()->get_subset_idx();
@@ -191,10 +191,10 @@ struct CrossValidationMMD : PermutationMMD
 		SGVector<int64_t> dummy_labels_x(m_n_x);
 		SGVector<int64_t> dummy_labels_y(m_n_y);
 
-		m_kfold_x=std::make_unique<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_x), m_num_folds);
-		m_kfold_y=std::make_unique<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_y), m_num_folds);
+		m_kfold_x=std::make_unique<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_x), m_num_folds);
+		m_kfold_y=std::make_unique<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_y), m_num_folds);
 
-		m_stack=std::make_unique<CSubsetStack>();
+		m_stack=std::make_unique<SubsetStack>();
 
 		const index_t size=m_n_x+m_n_y;
 		m_inverted_inds=SGVector<index_t>(size);
@@ -224,9 +224,9 @@ struct CrossValidationMMD : PermutationMMD
 	float64_t m_alpha;
 	static constexpr float64_t DEFAULT_ALPHA=0.05;
 
-	unique_ptr<CCrossValidationSplitting> m_kfold_x;
-	unique_ptr<CCrossValidationSplitting> m_kfold_y;
-	unique_ptr<CSubsetStack> m_stack;
+	unique_ptr<CrossValidationSplitting> m_kfold_x;
+	unique_ptr<CrossValidationSplitting> m_kfold_y;
+	unique_ptr<SubsetStack> m_stack;
 
 	SGVector<index_t> m_xy_inds;
 	SGVector<index_t> m_inverted_inds;

@@ -17,7 +17,7 @@ TEST(CircularBufferTest, constructor)
 	// default constructor
 	// buffer should be 0-sized
 	// w/o available and contained elements
-	auto buffer=std::make_shared<CCircularBuffer>();
+	auto buffer=std::make_shared<CircularBuffer>();
 	EXPECT_EQ(0, buffer->available());
 	EXPECT_EQ(0, buffer->num_bytes_contained());
 
@@ -25,7 +25,7 @@ TEST(CircularBufferTest, constructor)
 	// constructor with parameters
 	// now some elements are available
 	// but still none are contained
-	buffer=std::make_shared<CCircularBuffer>(buffer_size);
+	buffer=std::make_shared<CircularBuffer>(buffer_size);
 	EXPECT_EQ(buffer_size, buffer->available());
 	EXPECT_EQ(0, buffer->num_bytes_contained());
 
@@ -41,14 +41,14 @@ TEST(CircularBufferTest, push_pop)
 
 	// default constructor
 	// we cannot push to 0-sized buffer
-	auto buffer=std::make_shared<CCircularBuffer>();
+	auto buffer=std::make_shared<CircularBuffer>();
 	result=buffer->push(test_string);
 	EXPECT_EQ(0, result);
 
 
 	// push
 	// try write to buffer and check state
-	buffer=std::make_shared<CCircularBuffer>(buffer_size);
+	buffer=std::make_shared<CircularBuffer>(buffer_size);
 	result=buffer->push(test_string);
 	EXPECT_EQ(test_string.vlen, result);
 	EXPECT_EQ(buffer_size-test_string.vlen, buffer->available());
@@ -80,9 +80,9 @@ TEST(CircularBufferTest, stress_test)
 	SGVector<char> tmp_string;
 	SGVector<char> test_string((char*)"all your bayes are belong to us! ", 33, false);
 
-	auto buffer=std::make_shared<CCircularBuffer>(buffer_size);
+	auto buffer=std::make_shared<CircularBuffer>(buffer_size);
 
-	auto tokenizer=std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer=std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' ']=1;
 
 

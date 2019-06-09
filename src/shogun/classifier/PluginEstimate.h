@@ -28,9 +28,9 @@ namespace shogun
  * \f]
  *
  * \sa CLinearHMM
- * \sa CDistribution
+ * \sa Distribution
  * */
-class CPluginEstimate: public CMachine
+class PluginEstimate: public Machine
 {
 	public:
 
@@ -41,21 +41,21 @@ class CPluginEstimate: public CMachine
 		 * @param pos_pseudo pseudo for positive model
 		 * @param neg_pseudo pseudo for negative model
 		 */
-		CPluginEstimate(float64_t pos_pseudo=1e-10, float64_t neg_pseudo=1e-10);
-		virtual ~CPluginEstimate();
+		PluginEstimate(float64_t pos_pseudo=1e-10, float64_t neg_pseudo=1e-10);
+		virtual ~PluginEstimate();
 
 		/** classify objects
 		 *
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
+		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
 
 		/** set features
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(std::shared_ptr<CStringFeatures<uint16_t>> feat)
+		virtual void set_features(std::shared_ptr<StringFeatures<uint16_t>> feat)
 		{
 			
 			
@@ -66,7 +66,7 @@ class CPluginEstimate: public CMachine
 		 *
 		 * @return features
 		 */
-		virtual std::shared_ptr<CStringFeatures<uint16_t>> get_features() {  return features; }
+		virtual std::shared_ptr<StringFeatures<uint16_t>> get_features() {  return features; }
 
 		/// classify the test feature vector indexed by vec_idx
 		float64_t apply_one(int32_t vec_idx);
@@ -160,12 +160,12 @@ class CPluginEstimate: public CMachine
 			int32_t num_params;
 
 			
-			pos_model=std::make_shared<CLinearHMM>(seq_length, num_symbols);
+			pos_model=std::make_shared<LinearHMM>(seq_length, num_symbols);
 			
 
 
 			
-			neg_model=std::make_shared<CLinearHMM>(seq_length, num_symbols);
+			neg_model=std::make_shared<LinearHMM>(seq_length, num_symbols);
 			
 
 			num_params=pos_model->get_num_model_parameters();
@@ -206,7 +206,7 @@ class CPluginEstimate: public CMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	protected:
 		/** pseudo count for positive class */
@@ -215,12 +215,12 @@ class CPluginEstimate: public CMachine
 		float64_t m_neg_pseudo;
 
 		/** positive model */
-		std::shared_ptr<CLinearHMM> pos_model;
+		std::shared_ptr<LinearHMM> pos_model;
 		/** negative model */
-		std::shared_ptr<CLinearHMM> neg_model;
+		std::shared_ptr<LinearHMM> neg_model;
 
 		/** features */
-		std::shared_ptr<CStringFeatures<uint16_t>> features;
+		std::shared_ptr<StringFeatures<uint16_t>> features;
 };
 }
 #endif

@@ -16,7 +16,7 @@
 namespace shogun
 {
 
-class CDistance;
+class Distance;
 /** @brief InverseMultiQuadricKernel
 *
 * \f[
@@ -24,18 +24,18 @@ class CDistance;
 * \f]
 */
 
-class CInverseMultiQuadricKernel: public CKernel
+class InverseMultiQuadricKernel: public Kernel
 {
 public:
 	/** default constructor */
-	CInverseMultiQuadricKernel();
+	InverseMultiQuadricKernel();
 
 	/** constructor
 	 * @param cache size of cache
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(int32_t cache, float64_t coef, std::shared_ptr<CDistance> dist);
+	InverseMultiQuadricKernel(int32_t cache, float64_t coef, std::shared_ptr<Distance> dist);
 
 	/** constructor
 	 * @param l features left-side
@@ -43,14 +43,14 @@ public:
 	 * @param coef kernel parameter coef
 	 * @param dist distance to be used
 	 */
-	CInverseMultiQuadricKernel(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r, float64_t coef, std::shared_ptr<CDistance> dist);
+	InverseMultiQuadricKernel(std::shared_ptr<Features >l, std::shared_ptr<Features >r, float64_t coef, std::shared_ptr<Distance> dist);
 
 	/** initialize kernel with features
 	 * @param l features left-side
 	 * @param r features right-side
 	 * @return true if successful
 	 */
-	virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type
@@ -82,7 +82,7 @@ public:
 	 */
 	inline void set_coef(float64_t value) { this->coef = value; }
 
-	virtual ~CInverseMultiQuadricKernel();
+	virtual ~InverseMultiQuadricKernel();
 
 	/** Can (optionally) be overridden to post-initialize some
 	 *  member variables which are not PARAMETER::ADD'ed.  Make
@@ -98,7 +98,7 @@ protected:
 
 	/** distance to be used
 	 */
-	std::shared_ptr<CDistance> distance;
+	std::shared_ptr<Distance> distance;
 
 	/** theta parameter of kernel - coefficient
 	 */

@@ -39,7 +39,7 @@ TEST(IndexFeaturesTest,basic_create)
 	index_t vlen = 10;
 	SGVector<index_t> index_vector(vlen);
 	index_vector.range_fill();
-	auto index_features = std::make_shared<CIndexFeatures>(index_vector);
+	auto index_features = std::make_shared<IndexFeatures>(index_vector);
 
 	EXPECT_EQ(index_features->get_num_vectors(), vlen);
 	EXPECT_EQ(index_features->get_feature_class(), C_INDEX);
@@ -58,13 +58,13 @@ TEST(IndexFeaturesTest,subset_copy)
 	index_t vlen = 10;
 	SGVector<index_t> index_vector(vlen);
 	index_vector.range_fill();
-	CMath::permute(index_vector);
+	Math::permute(index_vector);
 
 	SGVector<index_t> sub_idx(vlen/2);
 	sub_idx.range_fill();
-	CMath::permute(sub_idx);
+	Math::permute(sub_idx);
 
-	auto index_features = std::make_shared<CIndexFeatures>(index_vector);
+	auto index_features = std::make_shared<IndexFeatures>(index_vector);
 
 	index_features->add_subset(sub_idx);
 
@@ -85,8 +85,8 @@ TEST(IndexFeaturesTest,duplicate)
 	index_t vlen = 10;
 	SGVector<index_t> index_vector(vlen);
 	index_vector.range_fill();
-	auto index_features = std::make_shared<CIndexFeatures>(index_vector);
-	auto index_features_dup = index_features->duplicate()->as<CIndexFeatures>();
+	auto index_features = std::make_shared<IndexFeatures>(index_vector);
+	auto index_features_dup = index_features->duplicate()->as<IndexFeatures>();
 
 	EXPECT_EQ(index_features->get_num_vectors(), index_features_dup->get_num_vectors());
 

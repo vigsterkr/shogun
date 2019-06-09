@@ -44,22 +44,22 @@ TEST(LibSVR,epsilon_svr_apply)
 	feat_test[4]=1.9;
 
 	/* shogun representation */
-	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(
 			feat_train);
-	auto features_test=std::make_shared<CDenseFeatures<float64_t>>(
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(
 			feat_test);
 
-	auto kernel=std::make_shared<CGaussianKernel>(rbf_width);
+	auto kernel=std::make_shared<GaussianKernel>(rbf_width);
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_EPSILON_SVR;
-	CLibSVR* svm=new CLibSVR(svm_C, svm_eps, kernel, labels_train, st);
+	LibSVR* svm=new LibSVR(svm_C, svm_eps, kernel, labels_train, st);
 	svm->train();
 
 	/* predict */
 	auto predicted_labels =
-	    svm->apply(features_test)->as<CRegressionLabels>();
+	    svm->apply(features_test)->as<RegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
 	EXPECT_NEAR(predicted_labels->get_labels()[0], 2.44343, 1E-5);
@@ -68,7 +68,7 @@ TEST(LibSVR,epsilon_svr_apply)
 	EXPECT_NEAR(predicted_labels->get_labels()[3], 1.57767, 1E-5);
 	EXPECT_NEAR(predicted_labels->get_labels()[4], 2.34949, 1E-5);
 
-	EXPECT_NEAR(CMath::abs(svm->get_bias()), 1.60903, 1E-5);
+	EXPECT_NEAR(Math::abs(svm->get_bias()), 1.60903, 1E-5);
 	EXPECT_EQ(svm->get_num_support_vectors(), 5);
 
 	 /* clean up */
@@ -109,22 +109,22 @@ TEST(LibSVR,nu_svr_apply)
 	feat_test[4]=1.9;
 
 	/* shogun representation */
-	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(
 			feat_train);
-	auto features_test=std::make_shared<CDenseFeatures<float64_t>>(
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(
 			feat_test);
 
-	auto kernel=std::make_shared<CGaussianKernel>(rbf_width);
+	auto kernel=std::make_shared<GaussianKernel>(rbf_width);
 	kernel->init(features_train, features_train);
 
 	LIBSVR_SOLVER_TYPE st=LIBSVR_NU_SVR;
-	CLibSVR* svm=new CLibSVR(svm_C, svm_nu, kernel, labels_train, st);
+	LibSVR* svm=new LibSVR(svm_C, svm_nu, kernel, labels_train, st);
 	svm->train();
 
 	/* predict */
 	auto predicted_labels =
-	    svm->apply(features_test)->as<CRegressionLabels>();
+	    svm->apply(features_test)->as<RegressionLabels>();
 
 	/* LibSVM regression comparison (with easy.py script) */
 	EXPECT_NEAR(predicted_labels->get_labels()[0], 2.18062, 1E-5);
@@ -133,7 +133,7 @@ TEST(LibSVR,nu_svr_apply)
 	EXPECT_NEAR(predicted_labels->get_labels()[3], 2.09295, 1E-5);
 	EXPECT_NEAR(predicted_labels->get_labels()[4], 2.17949, 1E-5);
 
-	EXPECT_NEAR(CMath::abs(svm->get_bias()), 2.0625, 1E-5);
+	EXPECT_NEAR(Math::abs(svm->get_bias()), 2.0625, 1E-5);
 	EXPECT_EQ(svm->get_num_support_vectors(), 3);
 
 	 /* clean up */

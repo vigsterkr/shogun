@@ -12,43 +12,43 @@ namespace shogun {
 
 enum KernelName;
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures()
+RandomFourierDotFeatures::RandomFourierDotFeatures()
 {
 	init(NOT_SPECIFIED, SGVector<float64_t>());
 }
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures(std::shared_ptr<CDotFeatures> features,
+RandomFourierDotFeatures::RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features,
 	int32_t D, KernelName kernel_name, SGVector<float64_t> params)
-: CRandomKitchenSinksDotFeatures(features, D)
+: RandomKitchenSinksDotFeatures(features, D)
 {
 	init(kernel_name, params);
 	random_coeff = generate_random_coefficients();
 }
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures(std::shared_ptr<CDotFeatures> features,
+RandomFourierDotFeatures::RandomFourierDotFeatures(std::shared_ptr<DotFeatures> features,
 	int32_t D, KernelName kernel_name, SGVector<float64_t> params,
 	SGMatrix<float64_t> coeff)
-: CRandomKitchenSinksDotFeatures(features, D, coeff)
+: RandomKitchenSinksDotFeatures(features, D, coeff)
 {
 	init(kernel_name, params);
 }
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures(std::shared_ptr<CFile> loader)
+RandomFourierDotFeatures::RandomFourierDotFeatures(std::shared_ptr<File> loader)
 {
 	SG_NOTIMPLEMENTED;
 }
 
-CRandomFourierDotFeatures::CRandomFourierDotFeatures(const CRandomFourierDotFeatures& orig)
-: CRandomKitchenSinksDotFeatures(orig)
+RandomFourierDotFeatures::RandomFourierDotFeatures(const RandomFourierDotFeatures& orig)
+: RandomKitchenSinksDotFeatures(orig)
 {
 	init(orig.kernel, orig.kernel_params);
 }
 
-CRandomFourierDotFeatures::~CRandomFourierDotFeatures()
+RandomFourierDotFeatures::~RandomFourierDotFeatures()
 {
 }
 
-	void CRandomFourierDotFeatures::init(
+	void RandomFourierDotFeatures::init(
 	    KernelName kernel_name, SGVector<float64_t> params)
 	{
 		kernel = kernel_name;
@@ -64,23 +64,23 @@ CRandomFourierDotFeatures::~CRandomFourierDotFeatures()
 		    ParameterProperties::NONE, SG_OPTIONS(GAUSSIAN, NOT_SPECIFIED));
 	}
 
-std::shared_ptr<CFeatures> CRandomFourierDotFeatures::duplicate() const
+std::shared_ptr<Features> RandomFourierDotFeatures::duplicate() const
 {
-	return std::make_shared<CRandomFourierDotFeatures>(*this);
+	return std::make_shared<RandomFourierDotFeatures>(*this);
 }
 
-const char* CRandomFourierDotFeatures::get_name() const
+const char* RandomFourierDotFeatures::get_name() const
 {
 	return "RandomFourierDotFeatures";
 }
 
-float64_t CRandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
+float64_t RandomFourierDotFeatures::post_dot(float64_t dot_result, index_t par_idx) const
 {
 	dot_result += random_coeff(random_coeff.num_rows-1, par_idx);
 	return std::cos(dot_result) * constant;
 }
 
-SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector()
+SGVector<float64_t> RandomFourierDotFeatures::generate_random_parameter_vector()
 {
 	SGVector<float64_t> vec(feats->get_dim_feature_space()+1);
 	switch (kernel)
@@ -89,10 +89,10 @@ SGVector<float64_t> CRandomFourierDotFeatures::generate_random_parameter_vector(
 			for (index_t i=0; i<vec.vlen-1; i++)
 			{
 				vec[i] = std::sqrt((float64_t)1 / kernel_params[0]) *
-				         std::sqrt(2.0) * CMath::normal_random(0.0, 1);
+				         std::sqrt(2.0) * Math::normal_random(0.0, 1);
 			}
 
-			vec[vec.vlen-1] = CMath::random(0.0, 2 * CMath::PI);
+			vec[vec.vlen-1] = Math::random(0.0, 2 * Math::PI);
 			break;
 
 		default:

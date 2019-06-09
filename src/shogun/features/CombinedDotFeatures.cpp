@@ -13,18 +13,16 @@
 
 using namespace shogun;
 
-constexpr float64_t CCombinedDotFeatures::initial_weight = 1.0;
+constexpr float64_t CombinedDotFeatures::initial_weight = 1.0;
 
-CCombinedDotFeatures::CCombinedDotFeatures() : CDotFeatures()
+CombinedDotFeatures::CombinedDotFeatures() : DotFeatures()
 {
 	init();
-
-
 	update_dim_feature_space_and_num_vec();
 }
 
-CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures& orig)
-    : CDotFeatures(orig), feature_array(orig.feature_array),
+CombinedDotFeatures::CombinedDotFeatures(const CombinedDotFeatures& orig)
+    : DotFeatures(orig), feature_array(orig.feature_array),
       feature_weights(orig.feature_weights), num_vectors(orig.num_vectors),
       num_dimensions(orig.num_dimensions)
 {
@@ -32,17 +30,17 @@ CCombinedDotFeatures::CCombinedDotFeatures(const CCombinedDotFeatures& orig)
 	update_dim_feature_space_and_num_vec();
 }
 
-std::shared_ptr<CFeatures> CCombinedDotFeatures::duplicate() const
+std::shared_ptr<Features> CombinedDotFeatures::duplicate() const
 {
-	return std::make_shared<CCombinedDotFeatures>(*this);
+	return std::make_shared<CombinedDotFeatures>(*this);
 }
 
-CCombinedDotFeatures::~CCombinedDotFeatures()
+CombinedDotFeatures::~CombinedDotFeatures()
 {
 
 }
 
-void CCombinedDotFeatures::list_feature_objs()
+void CombinedDotFeatures::list_feature_objs()
 {
 	SG_INFO("BEGIN COMBINED DOTFEATURES LIST (%d, %d) - ", num_vectors, num_dimensions)
 	this->list_feature_obj();
@@ -57,7 +55,7 @@ void CCombinedDotFeatures::list_feature_objs()
 	this->list_feature_obj();
 }
 
-void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
+void CombinedDotFeatures::update_dim_feature_space_and_num_vec()
 {
 	int32_t dim=0;
 	int32_t vec=-1;
@@ -81,14 +79,14 @@ void CCombinedDotFeatures::update_dim_feature_space_and_num_vec()
 	SG_DEBUG("vecs=%d, dims=%d\n", num_vectors, num_dimensions)
 }
 
-float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatures> df, int32_t vec_idx2) const
+float64_t CombinedDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<DotFeatures> df, int32_t vec_idx2) const
 {
 	float64_t result=0;
 
 	ASSERT(df)
 	ASSERT(df->get_feature_type() == get_feature_type())
 	ASSERT(df->get_feature_class() == get_feature_class())
-	auto cf = std::static_pointer_cast<CCombinedDotFeatures>(df);
+	auto cf = std::static_pointer_cast<CombinedDotFeatures>(df);
 
 	// check that both have same number of feature objects inside
 	ASSERT(get_num_feature_obj()==cf->get_num_feature_obj())
@@ -109,7 +107,7 @@ float64_t CCombinedDotFeatures::dot(int32_t vec_idx1, std::shared_ptr<CDotFeatur
 	return result;
 }
 
-float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
+float64_t CombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec2, int32_t vec2_len) const
 {
 	float64_t result=0;
 
@@ -127,7 +125,7 @@ float64_t CCombinedDotFeatures::dense_dot(int32_t vec_idx1, const float64_t* vec
 	return result;
 }
 
-void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
+void CombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int32_t stop, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(stop > start)
 	ASSERT(dim==num_dimensions)
@@ -152,7 +150,7 @@ void CCombinedDotFeatures::dense_dot_range(float64_t* output, int32_t start, int
 	}
 }
 
-void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
+void CombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t num, float64_t* output, float64_t* alphas, float64_t* vec, int32_t dim, float64_t b) const
 {
 	ASSERT(num > 0)
 	ASSERT(dim==num_dimensions)
@@ -177,7 +175,7 @@ void CCombinedDotFeatures::dense_dot_range_subset(int32_t* sub_index, int32_t nu
 	}
 }
 
-void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
+void CombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, float64_t* vec2, int32_t vec2_len, bool abs_val) const
 {
 	uint32_t offs=0;
 
@@ -191,7 +189,7 @@ void CCombinedDotFeatures::add_to_dense_vec(float64_t alpha, int32_t vec_idx1, f
 	}
 }
 
-void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
+void* CombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 {
 	combined_feature_iterator* it=SG_MALLOC(combined_feature_iterator, 1);
 
@@ -202,7 +200,7 @@ void* CCombinedDotFeatures::get_feature_iterator(int32_t vector_index)
 	return it;
 }
 
-bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
+bool CombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, void* iterator)
 {
 	ASSERT(iterator)
 	combined_feature_iterator* it = (combined_feature_iterator*) iterator;
@@ -231,7 +229,7 @@ bool CCombinedDotFeatures::get_next_feature(int32_t& index, float64_t& value, vo
 	return false;
 }
 
-void CCombinedDotFeatures::free_feature_iterator(void* iterator)
+void CombinedDotFeatures::free_feature_iterator(void* iterator)
 {
 	if (iterator)
 	{
@@ -243,12 +241,12 @@ void CCombinedDotFeatures::free_feature_iterator(void* iterator)
 	}
 }
 
-std::shared_ptr<CDotFeatures> CCombinedDotFeatures::get_feature_obj(int32_t idx) const
+std::shared_ptr<DotFeatures> CombinedDotFeatures::get_feature_obj(int32_t idx) const
 {
-	return feature_array->get_element<CDotFeatures>(idx);
+	return feature_array->get_element<DotFeatures>(idx);
 }
 
-bool CCombinedDotFeatures::insert_feature_obj(std::shared_ptr<CDotFeatures> obj, int32_t idx)
+bool CombinedDotFeatures::insert_feature_obj(std::shared_ptr<DotFeatures> obj, int32_t idx)
 {
 	ASSERT(obj)
 	bool result=feature_array->insert_element(obj, idx);
@@ -258,7 +256,7 @@ bool CCombinedDotFeatures::insert_feature_obj(std::shared_ptr<CDotFeatures> obj,
 	return result;
 }
 
-bool CCombinedDotFeatures::append_feature_obj(std::shared_ptr<CDotFeatures> obj)
+bool CombinedDotFeatures::append_feature_obj(std::shared_ptr<DotFeatures> obj)
 {
 	ASSERT(obj)
 	int n = get_num_feature_obj();
@@ -268,7 +266,7 @@ bool CCombinedDotFeatures::append_feature_obj(std::shared_ptr<CDotFeatures> obj)
 	return n+1==get_num_feature_obj();
 }
 
-bool CCombinedDotFeatures::delete_feature_obj(int32_t idx)
+bool CombinedDotFeatures::delete_feature_obj(int32_t idx)
 {
 	bool succesful_deletion = feature_array->delete_element(idx);
 	if (succesful_deletion)
@@ -278,12 +276,12 @@ bool CCombinedDotFeatures::delete_feature_obj(int32_t idx)
 	return succesful_deletion;
 }
 
-int32_t CCombinedDotFeatures::get_num_feature_obj() const
+int32_t CombinedDotFeatures::get_num_feature_obj() const
 {
 	return feature_array->get_num_elements();
 }
 
-int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num) const
+int32_t CombinedDotFeatures::get_nnz_features_for_vector(int32_t num) const
 {
 	int32_t result=0;
 
@@ -296,7 +294,7 @@ int32_t CCombinedDotFeatures::get_nnz_features_for_vector(int32_t num) const
 	return result;
 }
 
-SGVector<float64_t> CCombinedDotFeatures::get_subfeature_weights() const
+SGVector<float64_t> CombinedDotFeatures::get_subfeature_weights() const
 {
 	int32_t num_weights = get_num_feature_obj();
 	ASSERT(num_weights > 0)
@@ -307,7 +305,7 @@ SGVector<float64_t> CCombinedDotFeatures::get_subfeature_weights() const
 	return weights;
 }
 
-void CCombinedDotFeatures::set_subfeature_weights(const SGVector<float64_t>& weights)
+void CombinedDotFeatures::set_subfeature_weights(const SGVector<float64_t>& weights)
 {
 	ASSERT(weights.vlen==get_num_feature_obj())
 
@@ -315,13 +313,13 @@ void CCombinedDotFeatures::set_subfeature_weights(const SGVector<float64_t>& wei
 	    weights.vector, weights.vector + weights.vlen, feature_weights.begin());
 }
 
-float64_t CCombinedDotFeatures::get_subfeature_weight(index_t idx) const
+float64_t CombinedDotFeatures::get_subfeature_weight(index_t idx) const
 {
 	ASSERT(idx >= 0 && (size_t)idx < feature_weights.size())
 	return feature_weights[idx];
 }
 
-void CCombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
+void CombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
 {
 	REQUIRE(
 	    idx >= 0 && (size_t)idx < feature_weights.size(),
@@ -330,13 +328,13 @@ void CCombinedDotFeatures::set_subfeature_weight(index_t idx, float64_t weight)
 	feature_weights[idx] = weight;
 }
 
-void CCombinedDotFeatures::init()
+void CombinedDotFeatures::init()
 {
-	feature_array=std::make_shared<CDynamicObjectArray>();
+	feature_array=std::make_shared<DynamicObjectArray>();
 	register_params();
 }
 
-void CCombinedDotFeatures::register_params()
+void CombinedDotFeatures::register_params()
 {
 	SG_ADD(
 	    &num_dimensions, "num_dimensions", "Total number of dimensions.");

@@ -41,30 +41,30 @@ TEST(KernelPCA, transform)
 	load_data(train_matrix, test_matrix);
 
 	auto train_feats =
-	    std::make_shared<CDenseFeatures<float64_t>>(train_matrix);
+	    std::make_shared<DenseFeatures<float64_t>>(train_matrix);
 
 	auto test_feats =
-	    std::make_shared<CDenseFeatures<float64_t>>(test_matrix);
+	    std::make_shared<DenseFeatures<float64_t>>(test_matrix);
 
 
 
 
-	auto kernel = std::make_shared<CGaussianKernel>();
+	auto kernel = std::make_shared<GaussianKernel>();
 
 	kernel->set_width(1);
 
-	auto kpca = std::make_shared<CKernelPCA>(kernel);
+	auto kpca = std::make_shared<KernelPCA>(kernel);
 
 	kpca->set_target_dim(target_dim);
 	kpca->fit(train_feats);
 
 	SGMatrix<float64_t> embedding = kpca->transform(test_feats)
-	                                    ->as<CDenseFeatures<float64_t>>()
+	                                    ->as<DenseFeatures<float64_t>>()
 	                                    ->get_feature_matrix();
 
 	// allow embedding with opposite sign
 	for (index_t i = 0; i < num_test_vectors * target_dim; ++i)
-		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
+		EXPECT_NEAR(Math::abs(embedding[i]), Math::abs(resdata[i]), 1E-6);
 
 
 
@@ -79,14 +79,14 @@ TEST(KernelPCA, apply_to_feature_vector)
 	load_data(train_matrix, test_vector);
 
 	auto train_feats =
-	    std::make_shared<CDenseFeatures<float64_t>>(train_matrix);
+	    std::make_shared<DenseFeatures<float64_t>>(train_matrix);
 
 
-	auto kernel = std::make_shared<CGaussianKernel>();
+	auto kernel = std::make_shared<GaussianKernel>();
 
 	kernel->set_width(1);
 
-	auto kpca = std::make_shared<CKernelPCA>(kernel);
+	auto kpca = std::make_shared<KernelPCA>(kernel);
 
 	kpca->set_target_dim(target_dim);
 	kpca->fit(train_feats);
@@ -95,7 +95,7 @@ TEST(KernelPCA, apply_to_feature_vector)
 
 	// allow embedding with opposite sign
 	for (index_t i = 0; i < target_dim; ++i)
-		EXPECT_NEAR(CMath::abs(embedding[i]), CMath::abs(resdata[i]), 1E-6);
+		EXPECT_NEAR(Math::abs(embedding[i]), Math::abs(resdata[i]), 1E-6);
 
 
 

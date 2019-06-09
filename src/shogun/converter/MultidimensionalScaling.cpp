@@ -18,7 +18,7 @@
 
 using namespace shogun;
 
-CMultidimensionalScaling::CMultidimensionalScaling() : CEmbeddingConverter()
+MultidimensionalScaling::MultidimensionalScaling() : EmbeddingConverter()
 {
 	m_eigenvalues = SGVector<float64_t>();
 	m_landmark_number = 3;
@@ -27,7 +27,7 @@ CMultidimensionalScaling::CMultidimensionalScaling() : CEmbeddingConverter()
 	init();
 }
 
-void CMultidimensionalScaling::init()
+void MultidimensionalScaling::init()
 {
 	SG_ADD(&m_eigenvalues, "eigenvalues", "eigenvalues of last embedding");
 	SG_ADD(&m_landmark, "landmark",
@@ -36,16 +36,16 @@ void CMultidimensionalScaling::init()
 	    "the number of landmarks for approximation", ParameterProperties::HYPER);
 }
 
-CMultidimensionalScaling::~CMultidimensionalScaling()
+MultidimensionalScaling::~MultidimensionalScaling()
 {
 }
 
-SGVector<float64_t> CMultidimensionalScaling::get_eigenvalues() const
+SGVector<float64_t> MultidimensionalScaling::get_eigenvalues() const
 {
 	return m_eigenvalues;
 }
 
-void CMultidimensionalScaling::set_landmark_number(int32_t num)
+void MultidimensionalScaling::set_landmark_number(int32_t num)
 {
 	if (num<3)
 		SG_ERROR("Number of landmarks should be greater than 3 to make triangulation possible while %d given.",
@@ -53,27 +53,27 @@ void CMultidimensionalScaling::set_landmark_number(int32_t num)
 	m_landmark_number = num;
 }
 
-int32_t CMultidimensionalScaling::get_landmark_number() const
+int32_t MultidimensionalScaling::get_landmark_number() const
 {
 	return m_landmark_number;
 }
 
-void CMultidimensionalScaling::set_landmark(bool landmark)
+void MultidimensionalScaling::set_landmark(bool landmark)
 {
 	m_landmark = landmark;
 }
 
-bool CMultidimensionalScaling::get_landmark() const
+bool MultidimensionalScaling::get_landmark() const
 {
 	return m_landmark;
 }
 
-const char* CMultidimensionalScaling::get_name() const
+const char* MultidimensionalScaling::get_name() const
 {
 	return "MultidimensionalScaling";
 };
 
-std::shared_ptr<CDenseFeatures<float64_t>> CMultidimensionalScaling::embed_distance(std::shared_ptr<CDistance> distance)
+std::shared_ptr<DenseFeatures<float64_t>> MultidimensionalScaling::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	if (m_landmark)
@@ -94,8 +94,8 @@ std::shared_ptr<CDenseFeatures<float64_t>> CMultidimensionalScaling::embed_dista
 	return tapkee_embed(parameters);
 }
 
-std::shared_ptr<CFeatures>
-CMultidimensionalScaling::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+MultidimensionalScaling::transform(std::shared_ptr<Features> features, bool inplace)
 {
 
 	ASSERT(m_distance)

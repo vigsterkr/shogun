@@ -25,25 +25,25 @@ template <class T> class SGString;
 
 /** @brief store plif arrays for all transitions in the model
  */
-class CPlifMatrix: public CSGObject
+class PlifMatrix: public SGObject
 {
 	public:
-		using PlifVector = std::vector<std::shared_ptr<CPlifBase>>;
+		using PlifVector = std::vector<std::shared_ptr<PlifBase>>;
 		/** constructor
 		 *
 		 */
-		CPlifMatrix();
+		PlifMatrix();
 
 		/** destructor
 		 *
 		 */
-		~CPlifMatrix();
+		~PlifMatrix();
 
 		/** get array of all plifs
 		 *
 		 * @return plif array
 		 */
-		inline std::vector<std::shared_ptr<CPlif>> get_PEN() { return m_PEN; }
+		inline std::vector<std::shared_ptr<Plif>> get_PEN() { return m_PEN; }
 
 		/** get plif matrix
 		 *
@@ -192,7 +192,7 @@ class CPlifMatrix: public CSGObject
 	protected:
 
 		/** array of plifs*/
-		std::vector<std::shared_ptr<CPlif>> m_PEN;
+		std::vector<std::shared_ptr<Plif>> m_PEN;
 
 		/** number of plifs */
 		int32_t m_num_plifs;
@@ -207,7 +207,7 @@ class CPlifMatrix: public CSGObject
 		int m_feat_dim3;
 
 		/** plif ids*/
-		CDynamicArray<int32_t> m_ids;
+		DynamicArray<int32_t> m_ids;
 
 		/** plif matrix */
 		PlifVector m_plif_matrix;

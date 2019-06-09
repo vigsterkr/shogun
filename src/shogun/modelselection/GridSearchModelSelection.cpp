@@ -14,42 +14,42 @@
 
 using namespace shogun;
 
-CGridSearchModelSelection::CGridSearchModelSelection() : CModelSelection()
+GridSearchModelSelection::GridSearchModelSelection() : ModelSelection()
 {
 }
 
-CGridSearchModelSelection::CGridSearchModelSelection(
-		std::shared_ptr<CMachineEvaluation> machine_eval,
-		std::shared_ptr<CModelSelectionParameters> model_parameters)
-		: CModelSelection(machine_eval, model_parameters)
+GridSearchModelSelection::GridSearchModelSelection(
+		std::shared_ptr<MachineEvaluation> machine_eval,
+		std::shared_ptr<ModelSelectionParameters> model_parameters)
+		: ModelSelection(machine_eval, model_parameters)
 {
 }
 
-CGridSearchModelSelection::~CGridSearchModelSelection()
+GridSearchModelSelection::~GridSearchModelSelection()
 {
 }
 
-std::shared_ptr<CParameterCombination> CGridSearchModelSelection::select_model(bool print_state)
+std::shared_ptr<ParameterCombination> GridSearchModelSelection::select_model(bool print_state)
 {
 	if (print_state)
 		SG_PRINT("Generating parameter combinations\n")
 
 	/* Retrieve all possible parameter combinations */
 	auto combinations=
-			m_model_parameters->get_combinations()->as<CDynamicObjectArray>();
+			m_model_parameters->get_combinations()->as<DynamicObjectArray>();
 
-	auto best_result=std::make_shared<CCrossValidationResult>();
+	auto best_result=std::make_shared<CrossValidationResult>();
 
-	std::shared_ptr<CParameterCombination> best_combination=NULL;
+	std::shared_ptr<ParameterCombination> best_combination=NULL;
 	if (m_machine_eval->get_evaluation_direction()==ED_MAXIMIZE)
 	{
 		if (print_state) SG_PRINT("Direction is maximize\n")
-		best_result->set_mean(CMath::ALMOST_NEG_INFTY);
+		best_result->set_mean(Math::ALMOST_NEG_INFTY);
 	}
 	else
 	{
 		if (print_state) SG_PRINT("Direction is minimize\n")
-		best_result->set_mean(CMath::ALMOST_INFTY);
+		best_result->set_mean(Math::ALMOST_INFTY);
 	}
 
 	/* underlying learning machine */
@@ -58,7 +58,7 @@ std::shared_ptr<CParameterCombination> CGridSearchModelSelection::select_model(b
 	/* apply all combinations and search for best one */
 	for (auto i : SG_PROGRESS(range(combinations->get_num_elements())))
 	{
-		auto current_combination=combinations->get_element<CParameterCombination>(i);
+		auto current_combination=combinations->get_element<ParameterCombination>(i);
 
 		/* eventually print */
 		if (print_state)
@@ -72,7 +72,7 @@ std::shared_ptr<CParameterCombination> CGridSearchModelSelection::select_model(b
 
 		/* note that this may implicitly lock and unlockthe machine */
 		auto result =
-		    m_machine_eval->evaluate()->as<CCrossValidationResult>();
+		    m_machine_eval->evaluate()->as<CrossValidationResult>();
 
 		if (print_state)
 			result->print_result();
@@ -86,7 +86,7 @@ std::shared_ptr<CParameterCombination> CGridSearchModelSelection::select_model(b
 
 
 				best_combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 
 
@@ -95,7 +95,7 @@ std::shared_ptr<CParameterCombination> CGridSearchModelSelection::select_model(b
 			else
 			{
 				auto combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 			}
 		}
@@ -107,7 +107,7 @@ std::shared_ptr<CParameterCombination> CGridSearchModelSelection::select_model(b
 
 
 				best_combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 
 
@@ -116,7 +116,7 @@ std::shared_ptr<CParameterCombination> CGridSearchModelSelection::select_model(b
 			else
 			{
 				auto combination=
-						combinations->get_element<CParameterCombination>(i);
+						combinations->get_element<ParameterCombination>(i);
 
 			}
 		}

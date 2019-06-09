@@ -7,16 +7,19 @@
 /*%warnfilter(302) apply;
 %warnfilter(302) apply_generic;*/
 
-%rename(Machine) CMachine;
-%rename(PipelineBuilder) CPipelineBuilder;
-%rename(Pipeline) CPipeline;
+%shared_ptr(shogun::Machine)
+%shared_ptr(shogun::PipelineBuilder)
+%shared_ptr(shogun::Pipeline)
+%shared_ptr(shogun::LinearMachine)
+%shared_ptr(shogun::DistanceMachine)
+%shared_ptr(shogun::IterativeMachine<LinearMachine>)
 
 #if defined(SWIGPYTHON) || defined(SWIGOCTAVE) || defined(SWIGRUBY) || defined(SWIGLUA) || defined(SWIGR)
 
 %define APPLY_MULTICLASS(CLASS)
     %extend CLASS
     {
-        std::shared_ptr<shogun::CMulticlassLabels> apply(std::shared_ptr<shogun::CFeatures> data=NULL)
+        std::shared_ptr<MulticlassLabels> apply(std::shared_ptr<Features> data=NULL)
         {
             return $self->apply_multiclass(data);
         }
@@ -26,7 +29,7 @@
 %define APPLY_BINARY(CLASS)
     %extend CLASS
     {
-        std::shared_ptr<shogun::CBinaryLabels> apply(std::shared_ptr<shogun::CFeatures> data=NULL)
+        std::shared_ptr<BinaryLabels> apply(std::shared_ptr<Features> data=NULL)
         {
             return $self->apply_binary(data);
         }
@@ -36,7 +39,7 @@
 %define APPLY_REGRESSION(CLASS)
     %extend CLASS
     {
-        std::shared_ptr<shogun::CRegressionLabels> apply(std::shared_ptr<shogun::CFeatures> data=NULL)
+        std::shared_ptr<RegressionLabels> apply(std::shared_ptr<Features> data=NULL)
         {
             return $self->apply_regression(data);
         }
@@ -46,7 +49,7 @@
 %define APPLY_STRUCTURED(CLASS)
     %extend CLASS
     {
-        std::shared_ptr<shogun::CStructuredLabels> apply(std::shared_ptr<shogun::CFeatures> data=NULL)
+        std::shared_ptr<StructuredLabels> apply(std::shared_ptr<Features> data=NULL)
         {
             return $self->apply_structured(data);
         }
@@ -56,77 +59,77 @@
 %define APPLY_LATENT(CLASS)
     %extend CLASS
     {
-        std::shared_ptr<shogun::CLatentLabels> apply(std::shared_ptr<shogun::CFeatures> data=NULL)
+        std::shared_ptr<CLatentLabels> apply(std::shared_ptr<Features> data=NULL)
         {
             return $self->apply_latent(data);
         }
     }
 %enddef
 
-APPLY_MULTICLASS(shogun::CMulticlassMachine);
-APPLY_MULTICLASS(shogun::CKernelMulticlassMachine);
-APPLY_MULTICLASS(shogun::CLinearMulticlassMachine);
-APPLY_MULTICLASS(shogun::CDistanceMachine);
+APPLY_MULTICLASS(MulticlassMachine);
+APPLY_MULTICLASS(KernelMulticlassMachine);
+APPLY_MULTICLASS(LinearMulticlassMachine);
+APPLY_MULTICLASS(DistanceMachine);
 
-APPLY_BINARY(shogun::CLinearMachine);
-APPLY_BINARY(shogun::CKernelMachine);
+APPLY_BINARY(LinearMachine);
+APPLY_BINARY(KernelMachine);
 #ifdef USE_GPL_SHOGUN
-APPLY_BINARY(shogun::CWDSVMOcas);
+APPLY_BINARY(CWDSVMOcas);
 #endif //USE_GPL_SHOGUN
-APPLY_BINARY(shogun::CPluginEstimate);
+APPLY_BINARY(PluginEstimate);
 #ifdef USE_GPL_SHOGUN
-APPLY_BINARY(shogun::CGaussianProcessClassification);
+APPLY_BINARY(GaussianProcessClassification);
 #endif //USE_GPL_SHOGUN
 
 #if USE_SVMLIGHT
-APPLY_REGRESSION(shogun::CSVRLight);
+APPLY_REGRESSION(SVRLight);
 #endif //USE_SVMLIGHT
-APPLY_REGRESSION(shogun::CMKLRegression);
+APPLY_REGRESSION(MKLRegression);
 #ifdef HAVE_LAPACK
-APPLY_REGRESSION(shogun::CLeastSquaresRegression);
-APPLY_REGRESSION(shogun::CLeastAngleRegression);
+APPLY_REGRESSION(LeastSquaresRegression);
+APPLY_REGRESSION(LeastAngleRegression);
 #endif
 #ifdef USE_GPL_SHOGUN
-APPLY_REGRESSION(shogun::CGaussianProcessRegression);
+APPLY_REGRESSION(GaussianProcessRegression);
 #endif //USE_GPL_SHOGUN
 
-APPLY_STRUCTURED(shogun::CStructuredOutputMachine);
-APPLY_STRUCTURED(shogun::CLinearStructuredOutputMachine);
-APPLY_STRUCTURED(shogun::CKernelStructuredOutputMachine);
+APPLY_STRUCTURED(StructuredOutputMachine);
+APPLY_STRUCTURED(LinearStructuredOutputMachine);
+APPLY_STRUCTURED(KernelStructuredOutputMachine);
 #ifdef USE_MOSEK
-APPLY_STRUCTURED(shogun::CPrimalMosekSOSVM);
+APPLY_STRUCTURED(CPrimalMosekSOSVM);
 #endif
 #ifdef USE_GPL_SHOGUN
-APPLY_STRUCTURED(shogun::CDualLibQPBMSOSVM);
-APPLY_LATENT(shogun::CLatentSVM);
+APPLY_STRUCTURED(CDualLibQPBMSOSVM);
+APPLY_LATENT(LatentSVM);
 #endif //USE_GPL_SHOGUN
 
-%rename(apply_generic) CMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CMulticlassMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CKernelMulticlassMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CLinearMulticlassMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CCDistanceMachineMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CLinearMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CKernelMachine::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) Machine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) MulticlassMachine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) KernelMulticlassMachine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) LinearMulticlassMachine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) DistanceMachineMachine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) LinearMachine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) KernelMachine::apply(std::shared_ptr<Features> data=NULL);
 #ifdef USE_GPL_SHOGUN
-%rename(apply_generic) CWDSVMOcas::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) CWDSVMOcas::apply(std::shared_ptr<Features> data=NULL);
 #endif //USE_GPL_SHOGUN
-%rename(apply_generic) CPluginEstimate::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) PluginEstimate::apply(std::shared_ptr<Features> data=NULL);
 #ifdef USE_SVMLIGHT
-%rename(apply_generic) CSVRLight::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) SVRLight::apply(std::shared_ptr<Features> data=NULL);
 #endif //USE_SVMLIGHT
-%rename(apply_generic) CMKLRegression::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) MKLRegression::apply(std::shared_ptr<Features> data=NULL);
 #ifdef HAVE_LAPACK
-%rename(apply_generic) CLeastSquaresRegression::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CLeastAngleRegression::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) LeastSquaresRegression::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) LeastAngleRegression::apply(std::shared_ptr<Features> data=NULL);
 #endif
-%rename(apply_generic) CGaussianProcessRegression::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) GaussianProcessRegression::apply(std::shared_ptr<Features> data=NULL);
 
-%rename(apply_generic) CStructuredOutputMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CLinearStructuredOutputMachine::apply(std::shared_ptr<CFeatures> data=NULL);
-%rename(apply_generic) CKernelStructuredOutputMachine::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) StructuredOutputMachine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) LinearStructuredOutputMachine::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) KernelStructuredOutputMachine::apply(std::shared_ptr<Features> data=NULL);
 #ifdef USE_MOSEK
-%rename(apply_generic) CPrimalMosekSOSVM::apply(std::shared_ptr<CFeatures> data=NULL);
+%rename(apply_generic) CPrimalMosekSOSVM::apply(std::shared_ptr<Features> data=NULL);
 #endif
 
 #undef APPLY_MULTICLASS

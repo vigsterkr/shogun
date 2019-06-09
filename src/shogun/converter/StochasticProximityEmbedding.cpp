@@ -12,8 +12,8 @@
 
 using namespace shogun;
 
-CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
-	CEmbeddingConverter()
+StochasticProximityEmbedding::StochasticProximityEmbedding() :
+	EmbeddingConverter()
 {
 	// Initialize to default values
 	m_k         = 12;
@@ -25,7 +25,7 @@ CStochasticProximityEmbedding::CStochasticProximityEmbedding() :
 	init();
 }
 
-void CStochasticProximityEmbedding::init()
+void StochasticProximityEmbedding::init()
 {
 	SG_ADD(&m_k, "m_k", "Number of neighbors");
 	SG_ADD(&m_tolerance, "m_tolerance", "Regularization parameter");
@@ -35,11 +35,11 @@ void CStochasticProximityEmbedding::init()
 	    ParameterProperties::NONE, SG_OPTIONS(SPE_GLOBAL, SPE_LOCAL));
 }
 
-CStochasticProximityEmbedding::~CStochasticProximityEmbedding()
+StochasticProximityEmbedding::~StochasticProximityEmbedding()
 {
 }
 
-void CStochasticProximityEmbedding::set_k(int32_t k)
+void StochasticProximityEmbedding::set_k(int32_t k)
 {
 	if ( k <= 0 )
 		SG_ERROR("Number of neighbors k must be greater than 0")
@@ -47,22 +47,22 @@ void CStochasticProximityEmbedding::set_k(int32_t k)
 	m_k = k;
 }
 
-int32_t CStochasticProximityEmbedding::get_k() const
+int32_t StochasticProximityEmbedding::get_k() const
 {
 	return m_k;
 }
 
-void CStochasticProximityEmbedding::set_strategy(ESPEStrategy strategy)
+void StochasticProximityEmbedding::set_strategy(ESPEStrategy strategy)
 {
 	m_strategy = strategy;
 }
 
-ESPEStrategy CStochasticProximityEmbedding::get_strategy() const
+ESPEStrategy StochasticProximityEmbedding::get_strategy() const
 {
 	return m_strategy;
 }
 
-void CStochasticProximityEmbedding::set_tolerance(float32_t tolerance)
+void StochasticProximityEmbedding::set_tolerance(float32_t tolerance)
 {
 	if ( tolerance <= 0 )
 		SG_ERROR("Tolerance regularization parameter must be greater "
@@ -71,12 +71,12 @@ void CStochasticProximityEmbedding::set_tolerance(float32_t tolerance)
 	m_tolerance = tolerance;
 }
 
-int32_t CStochasticProximityEmbedding::get_tolerance() const
+int32_t StochasticProximityEmbedding::get_tolerance() const
 {
 	return m_tolerance;
 }
 
-void CStochasticProximityEmbedding::set_nupdates(int32_t nupdates)
+void StochasticProximityEmbedding::set_nupdates(int32_t nupdates)
 {
 	if ( nupdates <= 0 )
 		SG_ERROR("The number of updates must be greater than 0")
@@ -84,35 +84,35 @@ void CStochasticProximityEmbedding::set_nupdates(int32_t nupdates)
 	m_nupdates = nupdates;
 }
 
-int32_t CStochasticProximityEmbedding::get_nupdates() const
+int32_t StochasticProximityEmbedding::get_nupdates() const
 {
 	return m_nupdates;
 }
 
-void CStochasticProximityEmbedding::set_max_iteration(const int32_t max_iteration)
+void StochasticProximityEmbedding::set_max_iteration(const int32_t max_iteration)
 {
 	m_max_iteration = max_iteration;
 }
 
-int32_t CStochasticProximityEmbedding::get_max_iteration() const
+int32_t StochasticProximityEmbedding::get_max_iteration() const
 {
 	return m_max_iteration;
 }
 
-const char * CStochasticProximityEmbedding::get_name() const
+const char * StochasticProximityEmbedding::get_name() const
 {
 	return "StochasticProximityEmbedding";
 }
 
-std::shared_ptr<CFeatures>
-CStochasticProximityEmbedding::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+StochasticProximityEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	if ( !features )
 		SG_ERROR("Features are required to apply SPE\n")
 
 	// Shorthand for the DenseFeatures
 	auto simple_features =
-		std::static_pointer_cast<CDenseFeatures<float64_t>>(features);
+		std::static_pointer_cast<DenseFeatures<float64_t>>(features);
 
 
 	// Get and check the number of vectors
@@ -133,7 +133,7 @@ CStochasticProximityEmbedding::transform(std::shared_ptr<CFeatures> features, bo
 	return embedding;
 }
 
-std::shared_ptr<CDenseFeatures< float64_t >> CStochasticProximityEmbedding::embed_distance(std::shared_ptr<CDistance> distance)
+std::shared_ptr<DenseFeatures< float64_t >> StochasticProximityEmbedding::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;

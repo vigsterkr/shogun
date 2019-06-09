@@ -47,7 +47,7 @@ namespace shogun
 /** @brief This class implements genaralized tree for N-body problems like k-NN, kernel density estimation, 2 point
  * correlation.
  */
-class CNbodyTree : public CTreeMachine<NbodyTreeNodeData>
+class CNbodyTree : public TreeMachine<NbodyTreeNodeData>
 {
 public:
 
@@ -75,14 +75,14 @@ public:
 	 *
 	 * @param data data for tree formation
 	 */
-	void build_tree(std::shared_ptr<CDenseFeatures<float64_t>> data);
+	void build_tree(std::shared_ptr<DenseFeatures<float64_t>> data);
 
 	/** apply knn
 	 *
 	 * @param data vectors whose KNNs are required
 	 * @param k K value in KNN
 	 */
-	void query_knn(std::shared_ptr<CDenseFeatures<float64_t>> data, int32_t k);
+	void query_knn(std::shared_ptr<DenseFeatures<float64_t>> data, int32_t k);
 
 	/** get log of kernel density at query points
 	 *
@@ -196,7 +196,7 @@ protected:
 		if (m_dist==D_EUCLIDEAN)
 			return d*d;
 		else if (m_dist==D_MANHATTAN)
-			return CMath::abs(d);
+			return Math::abs(d);
 		else
 			SG_ERROR("distance metric not recognized\n");
 
@@ -213,7 +213,7 @@ private:
 	 * @param arr current query vector
 	 * @param dim dimension of query vector
 	 */
-	void query_knn_single(std::shared_ptr<CKNNHeap> heap, float64_t min_dist, std::shared_ptr<bnode_t> node, float64_t* arr, int32_t dim);
+	void query_knn_single(std::shared_ptr<KNNHeap> heap, float64_t min_dist, std::shared_ptr<bnode_t> node, float64_t* arr, int32_t dim);
 
 	/** find kde at each query point
 	 *
@@ -259,7 +259,7 @@ private:
 	 * @param end index of index vector for building subtree
 	 * @return root of subtree built
 	 */
-	std::shared_ptr<CBinaryTreeMachineNode<NbodyTreeNodeData>> recursive_build(index_t start, index_t end);
+	std::shared_ptr<BinaryTreeMachineNode<NbodyTreeNodeData>> recursive_build(index_t start, index_t end);
 
 	/** rearrange vec_idx between start and end to enable partitioning
 	 *
@@ -285,9 +285,9 @@ private:
 	 */
 	inline float64_t logsumexp(float64_t x, float64_t y)
 	{
-		float64_t a=CMath::max(x,y);
-		if (a==-CMath::INFTY)
-			return -CMath::INFTY;
+		float64_t a=Math::max(x,y);
+		if (a==-Math::INFTY)
+			return -Math::INFTY;
 
 		return a + std::log(std::exp(x - a) + std::exp(y - a));
 	}
@@ -301,7 +301,7 @@ private:
 	inline float64_t logdiffexp(float64_t x, float64_t y)
 	{
 		if (x<=y)
-			return -CMath::INFTY;
+			return -Math::INFTY;
 
 		return x + std::log(1 - std::exp(y - x));
 	}

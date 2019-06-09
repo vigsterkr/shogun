@@ -35,8 +35,8 @@
 
 using namespace shogun;
 
-CKernelDensity::CKernelDensity(float64_t bandwidth, EKernelType kernel, EDistanceType dist, EEvaluationMode eval, int32_t leaf_size, float64_t atol, float64_t rtol)
-: CDistribution()
+KernelDensity::KernelDensity(float64_t bandwidth, EKernelType kernel, EDistanceType dist, EEvaluationMode eval, int32_t leaf_size, float64_t atol, float64_t rtol)
+: Distribution()
 {
 	init();
 
@@ -49,37 +49,37 @@ CKernelDensity::CKernelDensity(float64_t bandwidth, EKernelType kernel, EDistanc
 	m_kernel_type=kernel;
 }
 
-CKernelDensity::~CKernelDensity()
+KernelDensity::~KernelDensity()
 {
 
 }
 
-bool CKernelDensity::train(std::shared_ptr<CFeatures> data)
+bool KernelDensity::train(std::shared_ptr<Features> data)
 {
 	REQUIRE(data,"Data not supplied\n")
-	auto dense_data=std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(data);
+	auto dense_data=std::dynamic_pointer_cast<DenseFeatures<float64_t>>(data);
 
 
 	switch (m_eval)
 	{
 		case EM_KDTREE_SINGLE:
 		{
-			tree=std::make_shared<CKDTree>(m_leaf_size,m_dist);
+			tree=std::make_shared<KDTree>(m_leaf_size,m_dist);
 			break;
 		}
 		case EM_BALLTREE_SINGLE:
 		{
-			tree=std::make_shared<CBallTree>(m_leaf_size,m_dist);
+			tree=std::make_shared<BallTree>(m_leaf_size,m_dist);
 			break;
 		}
 		case EM_KDTREE_DUAL:
 		{
-			tree=std::make_shared<CKDTree>(m_leaf_size,m_dist);
+			tree=std::make_shared<KDTree>(m_leaf_size,m_dist);
 			break;
 		}
 		case EM_BALLTREE_DUAL:
 		{
-			tree=std::make_shared<CBallTree>(m_leaf_size,m_dist);
+			tree=std::make_shared<BallTree>(m_leaf_size,m_dist);
 			break;
 		}
 		default:
@@ -92,7 +92,7 @@ bool CKernelDensity::train(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-SGVector<float64_t> CKernelDensity::get_log_density(std::shared_ptr<CDenseFeatures<float64_t>> test, int32_t leaf_size)
+SGVector<float64_t> KernelDensity::get_log_density(std::shared_ptr<DenseFeatures<float64_t>> test, int32_t leaf_size)
 {
 	REQUIRE(test,"data not supplied\n")
 
@@ -101,17 +101,17 @@ SGVector<float64_t> CKernelDensity::get_log_density(std::shared_ptr<CDenseFeatur
 
 	std::shared_ptr<CNbodyTree> query_tree=NULL;
 	if (m_eval==EM_KDTREE_DUAL)
-		query_tree=std::make_shared<CKDTree>(leaf_size,m_dist);
+		query_tree=std::make_shared<KDTree>(leaf_size,m_dist);
 	else if (m_eval==EM_BALLTREE_DUAL)
-		query_tree=std::make_shared<CBallTree>(leaf_size,m_dist);
+		query_tree=std::make_shared<BallTree>(leaf_size,m_dist);
 	else
 		SG_ERROR("Evaluation mode not identified\n");
 
 	query_tree->build_tree(test);
-	std::shared_ptr<CBinaryTreeMachineNode<NbodyTreeNodeData>> qroot=NULL;
+	std::shared_ptr<BinaryTreeMachineNode<NbodyTreeNodeData>> qroot=NULL;
 	auto root=query_tree->get_root();
 	if (root)
-		qroot=std::dynamic_pointer_cast<CBinaryTreeMachineNode<NbodyTreeNodeData>>(root);
+		qroot=std::dynamic_pointer_cast<BinaryTreeMachineNode<NbodyTreeNodeData>>(root);
 	else
 		SG_ERROR("Query tree root not found!\n")
 
@@ -124,31 +124,31 @@ SGVector<float64_t> CKernelDensity::get_log_density(std::shared_ptr<CDenseFeatur
 	return ret;
 }
 
-int32_t CKernelDensity::get_num_model_parameters()
+int32_t KernelDensity::get_num_model_parameters()
 {
 	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
-float64_t CKernelDensity::get_log_model_parameter(int32_t num_param)
+float64_t KernelDensity::get_log_model_parameter(int32_t num_param)
 {
 	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
-float64_t CKernelDensity::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t KernelDensity::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
-float64_t CKernelDensity::get_log_likelihood_example(int32_t num_example)
+float64_t KernelDensity::get_log_likelihood_example(int32_t num_example)
 {
 	SG_NOTIMPLEMENTED;
 	return 0;
 }
 
-void CKernelDensity::init()
+void KernelDensity::init()
 {
 	m_bandwidth=1.0;
 	m_eval=EM_KDTREE_SINGLE;
@@ -163,5 +163,5 @@ void CKernelDensity::init()
 	SG_ADD(&m_leaf_size,"m_leaf_size","leaf size");
 	SG_ADD(&m_atol,"m_atol","absolute tolerance");
 	SG_ADD(&m_rtol,"m_rtol","relative tolerance");
-	SG_ADD((std::shared_ptr<CSGObject>*) &tree,"tree","tree");
+	SG_ADD((std::shared_ptr<SGObject>*) &tree,"tree","tree");
 }

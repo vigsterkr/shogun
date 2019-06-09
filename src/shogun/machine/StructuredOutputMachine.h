@@ -17,10 +17,10 @@
 namespace shogun
 {
 
-class CFeatures;
-class CLabels;
-class CLossFunction;
-class CStructuredLabels;
+class Features;
+class Labels;
+class LossFunction;
+class StructuredLabels;
 struct TMultipleCPinfo;
 
 /** The structured empirical risk types, corresponding to different training objectives [1].
@@ -37,39 +37,39 @@ enum EStructRiskType
 	CUSTOMIZED_RISK = 4
 };
 
-class CStructuredModel;
+class StructuredModel;
 
 /** TODO doc */
-class CStructuredOutputMachine : public CMachine
+class StructuredOutputMachine : public Machine
 {
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_STRUCTURED);
 
 		/** deafult constructor */
-		CStructuredOutputMachine();
+		StructuredOutputMachine();
 
 		/** standard constructor
 		 *
 		 * @param model structured model with application specific functions
 		 * @param labs structured labels
 		 */
-		CStructuredOutputMachine(std::shared_ptr<CStructuredModel> model, std::shared_ptr<CStructuredLabels> labs);
+		StructuredOutputMachine(std::shared_ptr<StructuredModel> model, std::shared_ptr<StructuredLabels> labs);
 
 		/** destructor */
-		virtual ~CStructuredOutputMachine();
+		virtual ~StructuredOutputMachine();
 
 		/** set structured model
 		 *
 		 * @param model structured model to set
 		 */
-		void set_model(std::shared_ptr<CStructuredModel> model);
+		void set_model(std::shared_ptr<StructuredModel> model);
 
 		/** get structured model
 		 *
 		 * @return structured model
 		 */
-		std::shared_ptr<CStructuredModel> get_model() const;
+		std::shared_ptr<StructuredModel> get_model() const;
 
 		/** @return object name */
 		virtual const char* get_name() const
@@ -81,31 +81,31 @@ class CStructuredOutputMachine : public CMachine
 		 *
 		 * @param lab labels
 		 */
-		virtual void set_labels(std::shared_ptr<CLabels> lab);
+		virtual void set_labels(std::shared_ptr<Labels> lab);
 
 		/** set features
 		 *
 		 * @param f features
 		 */
-		void set_features(std::shared_ptr<CFeatures> f);
+		void set_features(std::shared_ptr<Features> f);
 
 		/** get features
 		 *
 		 * @return features
 		 */
-		std::shared_ptr<CFeatures> get_features() const;
+		std::shared_ptr<Features> get_features() const;
 
 		/** set surrogate loss function
 		 *
 		 * @param loss loss function to set
 		 */
-		void set_surrogate_loss(std::shared_ptr<CLossFunction> loss);
+		void set_surrogate_loss(std::shared_ptr<LossFunction> loss);
 
 		/** get surrogate loss function
 		 *
 		 * @return loss function
 		 */
-		std::shared_ptr<CLossFunction> get_surrogate_loss() const;
+		std::shared_ptr<LossFunction> get_surrogate_loss() const;
 
 		/** computes the value of the risk function and sub-gradient at given point
 		 *
@@ -119,7 +119,7 @@ class CStructuredOutputMachine : public CMachine
 				TMultipleCPinfo* info=0, EStructRiskType rtype = N_SLACK_MARGIN_RESCALING);
 
 		/** @return training progress helper */
-		std::shared_ptr<CSOSVMHelper> get_helper() const;
+		std::shared_ptr<SOSVMHelper> get_helper() const;
 
 		/** set verbose
 		 * NOTE that track verbose information including primal objectives,
@@ -207,21 +207,21 @@ class CStructuredOutputMachine : public CMachine
 
 	protected:
 		/** the model that contains the application dependent modules */
-		std::shared_ptr<CStructuredModel> m_model;
+		std::shared_ptr<StructuredModel> m_model;
 
 		/** the surrogate loss, for SOSVM, fixed to Hinge loss,
 		 * other non-convex losses such as Ramp loss are also applicable,
 		 * will be extended in the future
 		 */
-		std::shared_ptr<CLossFunction> m_surrogate_loss;
+		std::shared_ptr<LossFunction> m_surrogate_loss;
 
 		/** the helper that records primal objectives, duality gaps etc */
-		std::shared_ptr<CSOSVMHelper> m_helper;
+		std::shared_ptr<SOSVMHelper> m_helper;
 
 		/** verbose outputs and statistics */
 		bool m_verbose;
 
-}; /* class CStructuredOutputMachine */
+}; /* class StructuredOutputMachine */
 
 } /* namespace shogun */
 

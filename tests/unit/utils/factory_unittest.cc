@@ -9,20 +9,18 @@
 
 using namespace shogun;
 
-class GaussianKernel;
-
 TEST(Factory, kernel)
 {
 	auto obj = kernel("GaussianKernel");
 	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(obj->as<CGaussianKernel>() != nullptr);
+	EXPECT_TRUE(obj->as<GaussianKernel>() != nullptr);
 }
 
 TEST(Factory, machine)
 {
 	auto obj = machine("LibSVM");
 	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(obj->as<CLibSVM>() != nullptr);
+	EXPECT_TRUE(obj->as<LibSVM>() != nullptr);
 }
 
 TEST(Factory, features_from_matrix)
@@ -30,7 +28,7 @@ TEST(Factory, features_from_matrix)
 	SGMatrix<float64_t> mat(2, 3);
 	auto obj = features(mat);
 	EXPECT_TRUE(obj != nullptr);
-	EXPECT_TRUE(obj->as<CDenseFeatures<float64_t>>() != nullptr);
+	EXPECT_TRUE(obj->as<DenseFeatures<float64_t>>() != nullptr);
 }
 
 // FIXME
@@ -51,16 +49,16 @@ TEST(Factory, DISABLED_string_features_from_file)
 	}
 
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
-	auto file_save = std::make_shared<CCSVFile>(filename.c_str(), 'w');
+	auto file_save = std::make_shared<CSVFile>(filename.c_str(), 'w');
 	string_list.save(file_save.get());
 	file_save->close();
 
-	auto file_load = std::make_shared<CCSVFile>(filename.c_str(), 'r');
+	auto file_load = std::make_shared<CSVFile>(filename.c_str(), 'r');
 	auto obj = string_features(file_load, DNA, PT_CHAR);
 	file_load->close();
 
 	EXPECT_TRUE(obj.get() != nullptr);
-	auto cast = obj->as<CStringFeatures<char>>();
+	auto cast = obj->as<StringFeatures<char>>();
 	auto loaded_string_list = cast->get_string_list();
 
 	EXPECT_EQ(loaded_string_list.num_strings, string_list.num_strings);
@@ -81,12 +79,12 @@ void test_label_factory_spawns_correct_type(
 {
 	std::string filename = "Factory-labels_from_file.XXXXXX";
 	generate_temp_filename(const_cast<char*>(filename.c_str()));
-	auto file_save = std::make_shared<CCSVFile>(filename.c_str(), 'w');
+	auto file_save = std::make_shared<CSVFile>(filename.c_str(), 'w');
 	vec.save(file_save.get());
 	file_save->close();
 
-	auto file_load = std::make_shared<CCSVFile>(filename.c_str(), 'r');
-	std::shared_ptr<CLabels> obj= labels(file_load);
+	auto file_load = std::make_shared<CSVFile>(filename.c_str(), 'r');
+	std::shared_ptr<Labels> obj= labels(file_load);
 	file_load->close();
 
 	EXPECT_TRUE(obj != nullptr);
@@ -112,16 +110,16 @@ TEST(Factory, DISABLED_labels_binary_from_file)
 	SGVector<float64_t> vec;
 
 	vec = {-1, -1, 1, 1};
-	test_label_factory_spawns_correct_type<CBinaryLabels>(vec);
+	test_label_factory_spawns_correct_type<BinaryLabels>(vec);
 
 	vec = {-1};
-	test_label_factory_spawns_correct_type<CBinaryLabels>(vec);
+	test_label_factory_spawns_correct_type<BinaryLabels>(vec);
 
 	vec = {1, 1};
-	test_label_factory_spawns_correct_type<CBinaryLabels>(vec);
+	test_label_factory_spawns_correct_type<BinaryLabels>(vec);
 
 	vec = {0, 1};
-	test_label_factory_spawns_correct_type<CBinaryLabels>(vec, true);
+	test_label_factory_spawns_correct_type<BinaryLabels>(vec, true);
 }
 
 //fixme
@@ -130,23 +128,23 @@ TEST(Factory, DISABLED_labels_multiclass_from_file)
 	SGVector<float64_t> vec;
 
 	vec = {0, 1, 2};
-	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec);
+	test_label_factory_spawns_correct_type<MulticlassLabels>(vec);
 
 	vec = {0};
-	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec);
+	test_label_factory_spawns_correct_type<MulticlassLabels>(vec);
 
 	vec = {1, 1, 3, 4};
-	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec);
+	test_label_factory_spawns_correct_type<MulticlassLabels>(vec);
 
 	// should create binary
 	vec = {1, 1};
-	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec, true);
+	test_label_factory_spawns_correct_type<MulticlassLabels>(vec, true);
 	vec = {1, -1};
-	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec, true);
+	test_label_factory_spawns_correct_type<MulticlassLabels>(vec, true);
 
 	// should create regression
 	vec = {1, 1.1};
-	test_label_factory_spawns_correct_type<CMulticlassLabels>(vec, true);
+	test_label_factory_spawns_correct_type<MulticlassLabels>(vec, true);
 }
 
 //fixme
@@ -155,18 +153,18 @@ TEST(Factory, DISABLED_labels_regression_from_file)
 	SGVector<float64_t> vec;
 
 	vec = {1.0, 1.1};
-	test_label_factory_spawns_correct_type<CRegressionLabels>(vec);
+	test_label_factory_spawns_correct_type<RegressionLabels>(vec);
 
 	// should create binary
 	vec = {-1, 1};
-	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
+	test_label_factory_spawns_correct_type<RegressionLabels>(vec, true);
 	vec = {1, 1};
-	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
+	test_label_factory_spawns_correct_type<RegressionLabels>(vec, true);
 	vec = {-1, -1};
-	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
+	test_label_factory_spawns_correct_type<RegressionLabels>(vec, true);
 
 	// should create multiclass
 	vec = {0, 1};
-	test_label_factory_spawns_correct_type<CRegressionLabels>(vec, true);
+	test_label_factory_spawns_correct_type<RegressionLabels>(vec, true);
 }
 #endif

@@ -21,26 +21,26 @@ using namespace shogun;
 
 namespace shogun
 {
-CKMeansMiniBatch::CKMeansMiniBatch():CKMeansBase()
+KMeansMiniBatch::KMeansMiniBatch():KMeansBase()
 {
 	init_mb_params();
 }
 
-CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, std::shared_ptr<CDistance> d_i, bool use_kmpp_i):CKMeansBase(k_i, d_i, use_kmpp_i)
+KMeansMiniBatch::KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, bool use_kmpp_i):KMeansBase(k_i, d_i, use_kmpp_i)
 {
 	init_mb_params();
 }
 
-CKMeansMiniBatch::CKMeansMiniBatch(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i):CKMeansBase(k_i, d_i, centers_i)
+KMeansMiniBatch::KMeansMiniBatch(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i):KMeansBase(k_i, d_i, centers_i)
 {
 	init_mb_params();
 }
 
-CKMeansMiniBatch::~CKMeansMiniBatch()
+KMeansMiniBatch::~KMeansMiniBatch()
 {
 }
 
-void CKMeansMiniBatch::minibatch_KMeans()
+void KMeansMiniBatch::minibatch_KMeans()
 {
 	REQUIRE(batch_size>0,
 		"batch size not set to positive value. Current batch size %d \n", batch_size);
@@ -50,8 +50,8 @@ void CKMeansMiniBatch::minibatch_KMeans()
 		max_iter);
 
 	auto lhs=
-		distance->get_lhs()->as<CDenseFeatures<float64_t>>();
-	auto rhs_mus=std::make_shared<CDenseFeatures<float64_t>>(mus);
+		distance->get_lhs()->as<DenseFeatures<float64_t>>();
+	auto rhs_mus=std::make_shared<DenseFeatures<float64_t>>(mus);
 	auto rhs_cache=distance->replace_rhs(rhs_mus);
 	int32_t XSize=lhs->get_num_vectors();
 	int32_t dims=lhs->get_num_features();
@@ -100,7 +100,7 @@ void CKMeansMiniBatch::minibatch_KMeans()
 	distance->replace_rhs(rhs_cache);
 }
 
-SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
+SGVector<int32_t> KMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 {
 	SGVector<int32_t> chosen=SGVector<int32_t>(num);
 	SGVector<int32_t> ret=SGVector<int32_t>(b);
@@ -108,7 +108,7 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 	int32_t ch=0;
 	while (ch<b)
 	{
-		const int32_t n=CMath::random(0,num-1);
+		const int32_t n=Math::random(0,num-1);
 		if (chosen[n]==0)
 		{
 			chosen[n]+=1;
@@ -119,7 +119,7 @@ SGVector<int32_t> CKMeansMiniBatch::mbchoose_rand(int32_t b, int32_t num)
 	return ret;
 }
 
-void CKMeansMiniBatch::init_mb_params()
+void KMeansMiniBatch::init_mb_params()
 {
 	batch_size=100;
 
@@ -127,7 +127,7 @@ void CKMeansMiniBatch::init_mb_params()
 		&batch_size, "batch_size", "batch size for mini-batch KMeans");
 }
 
-bool CKMeansMiniBatch::train_machine(std::shared_ptr<CFeatures> data)
+bool KMeansMiniBatch::train_machine(std::shared_ptr<Features> data)
 {
 	initialize_training(data);
 	minibatch_KMeans();

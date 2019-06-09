@@ -17,22 +17,22 @@
 
 using namespace shogun;
 
-CCommWordStringKernel::CCommWordStringKernel()
-: CStringKernel<uint16_t>()
+CommWordStringKernel::CommWordStringKernel()
+: StringKernel<uint16_t>()
 {
 	init();
 }
 
-CCommWordStringKernel::CCommWordStringKernel(int32_t size, bool s)
-: CStringKernel<uint16_t>(size)
+CommWordStringKernel::CommWordStringKernel(int32_t size, bool s)
+: StringKernel<uint16_t>(size)
 {
 	init();
 	use_sign=s;
 }
 
-CCommWordStringKernel::CCommWordStringKernel(
-	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r,
-	bool s, int32_t size) : CStringKernel<uint16_t>(size)
+CommWordStringKernel::CommWordStringKernel(
+	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r,
+	bool s, int32_t size) : StringKernel<uint16_t>(size)
 {
 	init();
 	use_sign=s;
@@ -41,7 +41,7 @@ CCommWordStringKernel::CCommWordStringKernel(
 }
 
 
-bool CCommWordStringKernel::init_dictionary(int32_t size)
+bool CommWordStringKernel::init_dictionary(int32_t size)
 {
 	dictionary_weights=SGVector<float64_t>(size);
 	SG_DEBUG("using dictionary of %d words\n", size)
@@ -50,22 +50,22 @@ bool CCommWordStringKernel::init_dictionary(int32_t size)
 	return dictionary_weights.vector!=NULL;
 }
 
-CCommWordStringKernel::~CCommWordStringKernel()
+CommWordStringKernel::~CommWordStringKernel()
 {
 	cleanup();
 
 	SG_FREE(dict_diagonal_optimization);
 }
 
-bool CCommWordStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool CommWordStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<uint16_t>::init(l,r);
+	StringKernel<uint16_t>::init(l,r);
 
 	if (use_dict_diagonal_optimization)
 	{
 		SG_FREE(dict_diagonal_optimization);
-		auto sf_l = std::dynamic_pointer_cast<CStringFeatures<uint16_t>>(l);
-		auto sf_r = std::dynamic_pointer_cast<CStringFeatures<uint16_t>>(r);
+		auto sf_l = std::dynamic_pointer_cast<StringFeatures<uint16_t>>(l);
+		auto sf_r = std::dynamic_pointer_cast<StringFeatures<uint16_t>>(r);
 		dict_diagonal_optimization=SG_MALLOC(int32_t, int32_t(sf_l->get_num_symbols()));
 		ASSERT(sf_l->get_num_symbols() == sf_r->get_num_symbols())
 	}
@@ -73,17 +73,17 @@ bool CCommWordStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<C
 	return init_normalizer();
 }
 
-void CCommWordStringKernel::cleanup()
+void CommWordStringKernel::cleanup()
 {
 	delete_optimization();
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CCommWordStringKernel::compute_diag(int32_t idx_a)
+float64_t CommWordStringKernel::compute_diag(int32_t idx_a)
 {
 	int32_t alen;
-	auto l = std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs);
-	auto r = std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
+	auto l = std::static_pointer_cast<StringFeatures<uint16_t>>(lhs);
+	auto r = std::static_pointer_cast<StringFeatures<uint16_t>>(rhs);
 
 	bool free_av;
 	uint16_t* av=l->get_feature_vector(idx_a, alen, free_av);
@@ -123,14 +123,14 @@ float64_t CCommWordStringKernel::compute_diag(int32_t idx_a)
 	return result;
 }
 
-float64_t CCommWordStringKernel::compute_helper(
+float64_t CommWordStringKernel::compute_helper(
 	int32_t idx_a, int32_t idx_b, bool do_sort)
 {
 	int32_t alen, blen;
 	bool free_av, free_bv;
 
-	auto l = std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs);
-	auto r = std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
+	auto l = std::static_pointer_cast<StringFeatures<uint16_t>>(lhs);
+	auto r = std::static_pointer_cast<StringFeatures<uint16_t>>(rhs);
 
 	uint16_t* av=l->get_feature_vector(idx_a, alen, free_av);
 	uint16_t* bv=r->get_feature_vector(idx_b, blen, free_bv);
@@ -144,7 +144,7 @@ float64_t CCommWordStringKernel::compute_helper(
 		{
 			avec=SG_MALLOC(uint16_t, alen);
 			sg_memcpy(avec, av, sizeof(uint16_t)*alen);
-			CMath::radix_sort(avec, alen);
+			Math::radix_sort(avec, alen);
 		}
 		else
 			avec=NULL;
@@ -153,7 +153,7 @@ float64_t CCommWordStringKernel::compute_helper(
 		{
 			bvec=SG_MALLOC(uint16_t, blen);
 			sg_memcpy(bvec, bv, sizeof(uint16_t)*blen);
-			CMath::radix_sort(bvec, blen);
+			Math::radix_sort(bvec, blen);
 		}
 		else
 			bvec=NULL;
@@ -225,11 +225,11 @@ float64_t CCommWordStringKernel::compute_helper(
 	return result;
 }
 
-void CCommWordStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
+void CommWordStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 {
 	int32_t len=-1;
 	bool free_vec;
-	uint16_t* vec=(std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs))->
+	uint16_t* vec=(std::static_pointer_cast<StringFeatures<uint16_t>>(lhs))->
 		get_feature_vector(vec_idx, len, free_vec);
 
 	if (len>0)
@@ -267,16 +267,16 @@ void CCommWordStringKernel::add_to_normal(int32_t vec_idx, float64_t weight)
 		set_is_initialized(true);
 	}
 
-	(std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs))->free_feature_vector(vec, vec_idx, free_vec);
+	(std::static_pointer_cast<StringFeatures<uint16_t>>(lhs))->free_feature_vector(vec, vec_idx, free_vec);
 }
 
-void CCommWordStringKernel::clear_normal()
+void CommWordStringKernel::clear_normal()
 {
 	dictionary_weights.zero();
 	set_is_initialized(false);
 }
 
-bool CCommWordStringKernel::init_optimization(
+bool CommWordStringKernel::init_optimization(
 	int32_t count, int32_t* IDX, float64_t* weights)
 {
 	delete_optimization();
@@ -299,7 +299,7 @@ bool CCommWordStringKernel::init_optimization(
 	return true;
 }
 
-bool CCommWordStringKernel::delete_optimization()
+bool CommWordStringKernel::delete_optimization()
 {
 	SG_DEBUG("deleting CCommWordStringKernel optimization\n")
 
@@ -307,7 +307,7 @@ bool CCommWordStringKernel::delete_optimization()
 	return true;
 }
 
-float64_t CCommWordStringKernel::compute_optimized(int32_t i)
+float64_t CommWordStringKernel::compute_optimized(int32_t i)
 {
 	if (!get_is_initialized())
 	{
@@ -318,7 +318,7 @@ float64_t CCommWordStringKernel::compute_optimized(int32_t i)
 	float64_t result = 0;
 	int32_t len = -1;
 	bool free_vec;
-	uint16_t* vec=(std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs))->
+	uint16_t* vec=(std::static_pointer_cast<StringFeatures<uint16_t>>(rhs))->
 		get_feature_vector(i, len, free_vec);
 
 	int32_t j, last_j=0;
@@ -352,16 +352,16 @@ float64_t CCommWordStringKernel::compute_optimized(int32_t i)
 
 		result=normalizer->normalize_rhs(result, i);
 	}
-	(std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs))->free_feature_vector(vec, i, free_vec);
+	(std::static_pointer_cast<StringFeatures<uint16_t>>(rhs))->free_feature_vector(vec, i, free_vec);
 	return result;
 }
 
-float64_t* CCommWordStringKernel::compute_scoring(
+float64_t* CommWordStringKernel::compute_scoring(
 	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
 	int32_t num_suppvec, int32_t* IDX, float64_t* alphas, bool do_init)
 {
 	ASSERT(lhs)
-	auto str=(std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs));
+	auto str=(std::static_pointer_cast<StringFeatures<uint16_t>>(lhs));
 	num_feat=1;//str->get_max_vector_length();
 	auto alpha=str->get_alphabet();
 	ASSERT(alpha)
@@ -375,7 +375,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 	num_sym=0;
 
 	for (int32_t i=0; i<order; i++)
-		num_sym+=CMath::pow((int32_t) num_words,i+1);
+		num_sym+=Math::pow((int32_t) num_words,i+1);
 
 	SG_DEBUG("num_words:%d, order:%d, len:%d sz:%d (len*sz:%d)\n", num_words, order,
 			num_feat, num_sym, num_feat*num_sym);
@@ -388,12 +388,12 @@ float64_t* CCommWordStringKernel::compute_scoring(
 		init_optimization(num_suppvec, IDX, alphas);
 
 	uint32_t kmer_mask=0;
-	uint32_t words=CMath::pow((int32_t) num_words,(int32_t) order);
+	uint32_t words=Math::pow((int32_t) num_words,(int32_t) order);
 
 	for (int32_t o=0; o<max_degree; o++)
 	{
 		float64_t* contrib=&target[offset];
-		offset+=CMath::pow((int32_t) num_words,(int32_t) o+1);
+		offset+=Math::pow((int32_t) num_words,(int32_t) o+1);
 
 		kmer_mask=(kmer_mask<<(num_bits)) | str->get_masked_symbols(0xffff, 1);
 
@@ -425,7 +425,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 			}
 
 			float64_t marginalizer=
-				1.0/CMath::pow((int32_t) num_words,(int32_t) m_sym);
+				1.0/Math::pow((int32_t) num_words,(int32_t) m_sym);
 
 			for (uint32_t i=0; i<words; i++)
 			{
@@ -449,7 +449,7 @@ float64_t* CCommWordStringKernel::compute_scoring(
 				}
 				else
 				{
-					for (uint32_t j=0; j< (uint32_t) CMath::pow((int32_t) num_words, (int32_t) o_sym); j++)
+					for (uint32_t j=0; j< (uint32_t) Math::pow((int32_t) num_words, (int32_t) o_sym); j++)
 					{
 						uint32_t c=x | ((j & jmer_mask) << (num_bits*jl));
 #ifdef DEBUG_COMMSCORING
@@ -479,18 +479,18 @@ float64_t* CCommWordStringKernel::compute_scoring(
 }
 
 
-char* CCommWordStringKernel::compute_consensus(
+char* CommWordStringKernel::compute_consensus(
 	int32_t &result_len, int32_t num_suppvec, int32_t* IDX, float64_t* alphas)
 {
 	ASSERT(lhs)
 	ASSERT(IDX)
 	ASSERT(alphas)
 
-	auto str=(std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs));
+	auto str=(std::static_pointer_cast<StringFeatures<uint16_t>>(lhs));
 	int32_t num_words=(int32_t) str->get_num_symbols();
 	int32_t num_feat=str->get_max_vector_length();
 	int64_t total_len=((int64_t) num_feat) * num_words;
-	auto alpha=(std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs))->get_alphabet();
+	auto alpha=(std::static_pointer_cast<StringFeatures<uint16_t>>(lhs))->get_alphabet();
 	ASSERT(alpha)
 	int32_t num_bits=alpha->get_num_bits();
 	int32_t order=str->get_order();
@@ -584,7 +584,7 @@ char* CCommWordStringKernel::compute_consensus(
 	return result;
 }
 
-void CCommWordStringKernel::init()
+void CommWordStringKernel::init()
 {
 	use_sign=false;
 	use_dict_diagonal_optimization=false;
@@ -592,7 +592,7 @@ void CCommWordStringKernel::init()
 
 	properties |= KP_LINADD;
 	init_dictionary(1<<(sizeof(uint16_t)*8));
-	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>(use_dict_diagonal_optimization));
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>(use_dict_diagonal_optimization));
 
 	SG_ADD(&dictionary_weights,  "dictionary_weights",
 			"Dictionary for applying kernel.");

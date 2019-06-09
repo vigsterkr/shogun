@@ -22,34 +22,34 @@
 namespace shogun
 {
 
-/** @brief A CNode is an element of a CTaxonomy, which is used to describe hierarchical
+/** @brief A Node is an element of a CTaxonomy, which is used to describe hierarchical
  *	structure between tasks.
  *
  */
-class CNode: public CSGObject
+class Node: public SGObject
 {
 public:
-	using NodeSet = std::set<std::shared_ptr<CNode>>;
+	using NodeSet = std::set<std::shared_ptr<Node>>;
 	/** default constructor
 	 */
-    CNode()
+    Node()
     {
         parent = NULL;
         beta = 1.0;
         node_id = 0;
     }
 
-    virtual ~CNode()
+    virtual ~Node()
     {
     }
 
     /** get a list of all ancestors of this node
-     *  @return set of CNodes
+     *  @return set of Nodes
 	 */
-    CNode::NodeSet get_path_root()
+    Node::NodeSet get_path_root()
     {
-        CNode::NodeSet nodes_on_path;
-        std::shared_ptr<CNode> node = shared_from_this()->as<CNode>();
+        Node::NodeSet nodes_on_path;
+        std::shared_ptr<Node> node = shared_from_this()->as<Node>();
         while (node != NULL) {
             nodes_on_path.insert(node);
             node = node->parent;
@@ -64,8 +64,8 @@ public:
     {
 
         std::vector<int32_t> task_ids;
-        std::deque<std::shared_ptr<CNode>> grey_nodes;
-        grey_nodes.push_back(shared_from_this()->as<CNode>());
+        std::deque<std::shared_ptr<Node>> grey_nodes;
+        grey_nodes.push_back(shared_from_this()->as<Node>());
 
         while(grey_nodes.size() > 0)
         {
@@ -88,9 +88,9 @@ public:
     /** add child to current node
 	 *  @param node child node
 	 */
-    void add_child(std::shared_ptr<CNode >node)
+    void add_child(std::shared_ptr<Node >node)
     {
-        node->parent = shared_from_this()->as<CNode>();
+        node->parent = shared_from_this()->as<Node>();
         this->children.push_back(node);
     }
 
@@ -125,10 +125,10 @@ public:
 protected:
 
 	/** parent node **/
-	std::shared_ptr<CNode> parent;
+	std::shared_ptr<Node> parent;
 
 	/** list of child nodes **/
-	std::vector<std::shared_ptr<CNode>> children;
+	std::vector<std::shared_ptr<Node>> children;
 
 	/** identifier of node **/
 	int32_t node_id;
@@ -149,7 +149,7 @@ public:
 	 */
 	CTaxonomy()
 	{
-		root = std::make_shared<CNode>();
+		root = std::make_shared<Node>();
 		nodes.push_back(root);
 
 		name2id = std::map<std::string, int32_t>();
@@ -167,7 +167,7 @@ public:
 	 *  @param task_id task identifier
 	 *  @return node with id task_id
 	 */
-	std::shared_ptr<CNode> get_node(int32_t task_id) const {
+	std::shared_ptr<Node> get_node(int32_t task_id) const {
 		return nodes[task_id];
 	}
 
@@ -184,13 +184,13 @@ public:
 	 *  @param child_name name of child
 	 *  @param beta weight of child
 	 */
-	std::shared_ptr<CNode> add_node(std::string parent_name, std::string child_name, float64_t beta)
+	std::shared_ptr<Node> add_node(std::string parent_name, std::string child_name, float64_t beta)
 	{
 		if (child_name=="")	SG_SERROR("child_name empty")
 		if (parent_name=="") SG_SERROR("parent_name empty")
 
 
-		auto child_node = std::make_shared<CNode>();
+		auto child_node = std::make_shared<Node>();
 
 		child_node->beta = beta;
 
@@ -223,13 +223,13 @@ public:
 	 *  @param node_rhs node of right hand side
 	 *  @return intersection of the two sets of ancestors
 	 */
-	CNode::NodeSet intersect_root_path(std::shared_ptr<CNode> node_lhs, std::shared_ptr<CNode> node_rhs) const
+	Node::NodeSet intersect_root_path(std::shared_ptr<CNode> node_lhs, std::shared_ptr<CNode> node_rhs) const
 	{
 
-		CNode::NodeSet root_path_lhs = node_lhs->get_path_root();
-		CNode::NodeSet root_path_rhs = node_rhs->get_path_root();
+		Node::NodeSet root_path_lhs = node_lhs->get_path_root();
+		Node::NodeSet root_path_rhs = node_rhs->get_path_root();
 
-		CNode::NodeSet intersection;
+		Node::NodeSet intersection;
 
 		std::set_intersection(root_path_lhs.begin(), root_path_lhs.end(),
 							  root_path_rhs.begin(), root_path_rhs.end(),
@@ -251,11 +251,11 @@ public:
 		auto node_rhs = get_node(task_rhs);
 
 		// compute intersection of paths to root
-		CNode::NodeSet intersection = intersect_root_path(node_lhs, node_rhs);
+		Node::NodeSet intersection = intersect_root_path(node_lhs, node_rhs);
 
 		// sum up weights
 		float64_t gamma = 0;
-		for (CNode::NodeSet::const_iterator p = intersection.begin(); p != intersection.end(); ++p) {
+		for (Node::NodeSet::const_iterator p = intersection.begin(); p != intersection.end(); ++p) {
 
 			gamma += (*p)->beta;
 		}
@@ -357,11 +357,11 @@ public:
 protected:
 
 	/** root */
-	std::shared_ptr<CNode> root;
+	std::shared_ptr<Node> root;
 	/** name 2 id */
 	std::map<std::string, int32_t> name2id;
 	/** nodes */
-	std::vector<std::shared_ptr<CNode>> nodes;
+	std::vector<std::shared_ptr<Node>> nodes;
 	/** task histogram */
 	std::map<int32_t, float64_t> task_histogram;
 
@@ -370,14 +370,14 @@ protected:
 /** @brief The MultitaskKernel allows Multitask Learning via a modified kernel function based on taxonomy.
  *
  */
-class CMultitaskKernelTreeNormalizer: public CMultitaskKernelMklNormalizer
+class MultitaskKernelTreeNormalizer: public MultitaskKernelMklNormalizer
 {
 
 public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelTreeNormalizer() : CMultitaskKernelMklNormalizer()
+	MultitaskKernelTreeNormalizer() : MultitaskKernelMklNormalizer()
 	{
 	}
 
@@ -387,9 +387,9 @@ public:
 	 * @param task_rhs task vector with containing task_id for each example for right hand side
 	 * @param tax taxonomy
 	 */
-	CMultitaskKernelTreeNormalizer(std::vector<std::string> task_lhs,
+	MultitaskKernelTreeNormalizer(std::vector<std::string> task_lhs,
 								   std::vector<std::string> task_rhs,
-								   CTaxonomy tax) : CMultitaskKernelMklNormalizer()
+								   CTaxonomy tax) : MultitaskKernelMklNormalizer()
 	{
 
 		taxonomy = tax;
@@ -405,7 +405,7 @@ public:
 
 
 	/** default destructor */
-	virtual ~CMultitaskKernelTreeNormalizer()
+	virtual ~MultitaskKernelTreeNormalizer()
 	{
 	}
 
@@ -580,9 +580,9 @@ public:
 	/** casts kernel normalizer to multitask kernel tree normalizer
 	 * @param n kernel normalizer to cast
 	 */
-	std::shared_ptr<CMultitaskKernelTreeNormalizer> KernelNormalizerToMultitaskKernelTreeNormalizer(std::shared_ptr<CKernelNormalizer> n)
+	std::shared_ptr<MultitaskKernelTreeNormalizer> KernelNormalizerToMultitaskKernelTreeNormalizer(std::shared_ptr<KernelNormalizer> n)
 	{
-		return std::dynamic_pointer_cast<CMultitaskKernelTreeNormalizer>(n);
+		return std::dynamic_pointer_cast<MultitaskKernelTreeNormalizer>(n);
 	}
 
 protected:

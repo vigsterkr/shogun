@@ -98,7 +98,7 @@ public:
 	virtual const char* get_name() const { return "ClassificationForTestCostFunction2"; }
 };
 
-class CRegressionExample: public CSGObject
+class CRegressionExample: public SGObject
 {
 friend class RegressionForTestCostFunction;
 public:

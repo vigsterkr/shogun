@@ -49,18 +49,18 @@ namespace shogun
  * specified using template specifier.
  */
 template <typename T>
-class CTreeMachineNode
-	: public CSGObject
+class TreeMachineNode
+	: public SGObject
 {
 public:
 	/** constructor */
-	CTreeMachineNode() : CSGObject()
+	TreeMachineNode() : SGObject()
 	{
 		init();
 	}
 
 	/** destructor */
-	virtual ~CTreeMachineNode()
+	virtual ~TreeMachineNode()
 	{
 
 	}
@@ -89,7 +89,7 @@ public:
 	/** set parent node
 	 * @param par parent node
 	 */
-	void parent(std::shared_ptr<CTreeMachineNode<T>> par)
+	void parent(std::shared_ptr<TreeMachineNode<T>> par)
 	{
 		m_parent=par;
 	}
@@ -97,7 +97,7 @@ public:
 	/** get parent node
 	 * @return pointer to parent node
 	 */
-	std::shared_ptr<CTreeMachineNode<T>> parent()
+	std::shared_ptr<TreeMachineNode<T>> parent()
 	{
 		return m_parent;
 	}
@@ -105,28 +105,28 @@ public:
 	/** set children
 	 * @param children dynamic array of pointers to children
 	 */
-	virtual void set_children(std::shared_ptr<CDynamicObjectArray> children)
+	virtual void set_children(std::shared_ptr<DynamicObjectArray> children)
 	{
 		m_children->reset_array();
 		for (int32_t i=0; i<children->get_num_elements(); i++)
 		{
-			add_child(children->get_element<CTreeMachineNode<T>>(i));
+			add_child(children->get_element<TreeMachineNode<T>>(i));
 		}
 	}
 
 	/** add child
 	 * @param child pointer to child node
 	 */
-	virtual void add_child(std::shared_ptr<CTreeMachineNode<T>> child)
+	virtual void add_child(std::shared_ptr<TreeMachineNode<T>> child)
 	{
 		m_children->push_back(child);
-		child->parent(shared_from_this()->template as<CTreeMachineNode<T>>());
+		child->parent(shared_from_this()->template as<TreeMachineNode<T>>());
 	}
 
 	/** get children
 	 * @return dynamic array of pointers to children
 	 */
-	virtual std::shared_ptr<CDynamicObjectArray> get_children()
+	virtual std::shared_ptr<DynamicObjectArray> get_children()
 	{
 
 		return m_children;
@@ -134,16 +134,16 @@ public:
 
 	// FIXME: not the best idea to make this public
 	// but at least then add a template for this...
-	using CSGObject::watch_param;
+	using SGObject::watch_param;
 
 private:
 	/** initialize parameters in constructor */
 	void init()
 	{
 		m_machine=-1;
-		m_children=std::make_shared<CDynamicObjectArray>();
+		m_children=std::make_shared<DynamicObjectArray>();
 
-		SG_ADD((std::shared_ptr<CSGObject>*)&m_parent,"m_parent", "Parent node");
+		SG_ADD((std::shared_ptr<SGObject>*)&m_parent,"m_parent", "Parent node");
 		SG_ADD(&m_machine,"m_machine", "Index of associated machine");
 		register_params(data, this);
 	}
@@ -154,13 +154,13 @@ public:
 
 protected:
 	/** parent node */
-	std::shared_ptr<CTreeMachineNode<T>> m_parent;
+	std::shared_ptr<TreeMachineNode<T>> m_parent;
 
 	/** machine index */
 	int32_t m_machine;
 
 	/** Dynamic array of pointers to children */
-	std::shared_ptr<CDynamicObjectArray> m_children;
+	std::shared_ptr<DynamicObjectArray> m_children;
 };
 
 } /* namespace shogun */

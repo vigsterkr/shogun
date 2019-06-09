@@ -31,19 +31,19 @@ TEST(StructuredAccuracy, evaluate_multilabel_so_labels)
 		lab_3[i] = i;
 	}
 
-	auto m_labels_1 = std::make_shared<CMultilabelSOLabels>(1, 5);
+	auto m_labels_1 = std::make_shared<MultilabelSOLabels>(1, 5);
 	
 	m_labels_1->set_sparse_label(0, lab_1);
 
-	auto m_labels_2 = std::make_shared<CMultilabelSOLabels>(1, 5);
+	auto m_labels_2 = std::make_shared<MultilabelSOLabels>(1, 5);
 	
 	m_labels_2->set_sparse_label(0, lab_2);
 
-	auto m_labels_3 = std::make_shared<CMultilabelSOLabels>(1, 5);
+	auto m_labels_3 = std::make_shared<MultilabelSOLabels>(1, 5);
 	
 	m_labels_3->set_sparse_label(0, lab_3);
 
-	auto evaluator = std::make_shared<CStructuredAccuracy>();
+	auto evaluator = std::make_shared<StructuredAccuracy>();
 	
 
 	float64_t acc;

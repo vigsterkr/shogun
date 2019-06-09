@@ -48,8 +48,8 @@ class RegressionTestEnvironment : public ::testing::Environment
 {
 private:
 	const index_t n_train = 20, n_test = 15, n_dim = 4;
-	std::shared_ptr<CDenseFeatures<float64_t>> features_train, features_test;
-	std::shared_ptr<CRegressionLabels> labels_train, labels_test;
+	std::shared_ptr<DenseFeatures<float64_t>> features_train, features_test;
+	std::shared_ptr<RegressionLabels> labels_train, labels_test;
 
 public:
 	virtual void SetUp()
@@ -57,10 +57,10 @@ public:
 		sg_rand->set_seed(57);
 
 		SGMatrix<float64_t> feat_train_data =
-		    CDataGenerator::generate_gaussians(n_train, 1, n_dim);
+		    DataGenerator::generate_gaussians(n_train, 1, n_dim);
 
 		SGMatrix<float64_t> feat_test_data =
-		    CDataGenerator::generate_gaussians(n_test, 1, n_dim);
+		    DataGenerator::generate_gaussians(n_test, 1, n_dim);
 
 		SGVector<float64_t> w(n_dim);
 		w.random(-1, 1);
@@ -71,11 +71,11 @@ public:
 		SGVector<float64_t> label_test_data =
 		    linalg::matrix_prod(feat_test_data, w, true);
 
-		features_train = std::make_shared<CDenseFeatures<float64_t>>(feat_train_data);
-		labels_train = std::make_shared<CRegressionLabels>(label_train_data);
+		features_train = std::make_shared<DenseFeatures<float64_t>>(feat_train_data);
+		labels_train = std::make_shared<RegressionLabels>(label_train_data);
 
-		features_test = std::make_shared<CDenseFeatures<float64_t>>(feat_test_data);
-		labels_test = std::make_shared<CRegressionLabels>(label_test_data);
+		features_test = std::make_shared<DenseFeatures<float64_t>>(feat_test_data);
+		labels_test = std::make_shared<RegressionLabels>(label_test_data);
 
 	}
 

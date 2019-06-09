@@ -17,17 +17,17 @@
 namespace shogun
 {
 
-	class CMachineEvaluation;
-	class CCrossValidationOutput;
+	class MachineEvaluation;
+	class CrossValidationOutput;
 	class CrossValidationStorage;
-	class CList;
+	class List;
 
 	/** @brief type to encapsulate the results of an evaluation run.
 	 */
-	class CCrossValidationResult : public CEvaluationResult
+	class CrossValidationResult : public EvaluationResult
 	{
 	public:
-		CCrossValidationResult()
+		CrossValidationResult()
 		{
 			SG_ADD(&mean, "mean", "Mean of results");
 			SG_ADD(
@@ -132,11 +132,11 @@ namespace shogun
 	 * objects (might be changed later).
 	 *
 	 */
-	class CCrossValidation : public CMachineEvaluation
+	class CrossValidation : public MachineEvaluation
 	{
 	public:
 		/** constructor */
-		CCrossValidation();
+		CrossValidation();
 
 		/** constructor
 		 * @param machine learning machine to use
@@ -147,10 +147,10 @@ namespace shogun
 		 * @param autolock whether machine should be auto-locked before
 		 * evaluation
 		 */
-		CCrossValidation(
-			std::shared_ptr<CMachine> machine, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CLabels> labels, std::shared_ptr<CSplittingStrategy> splitting_strategy,
-			std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock = true);
+		CrossValidation(
+			std::shared_ptr<Machine> machine, std::shared_ptr<Features> features,
+			std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
+			std::shared_ptr<Evaluation> evaluation_criterion, bool autolock = true);
 
 		/** constructor, for use with custom kernels (no features)
 		 * @param machine learning machine to use
@@ -159,13 +159,13 @@ namespace shogun
 		 * @param evaluation_criterion evaluation criterion to use
 		 * @param autolock autolock
 		 */
-		CCrossValidation(
-		    std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labels,
-		    std::shared_ptr<CSplittingStrategy> splitting_strategy,
-		    std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock = true);
+		CrossValidation(
+		    std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
+		    std::shared_ptr<SplittingStrategy> splitting_strategy,
+		    std::shared_ptr<Evaluation> evaluation_criterion, bool autolock = true);
 
 		/** destructor */
-		virtual ~CCrossValidation();
+		virtual ~CrossValidation();
 
 		/** setter for the number of runs to use for evaluation */
 		void set_num_runs(int32_t num_runs);
@@ -184,7 +184,7 @@ namespace shogun
 		 * Does the actual evaluation.
 		 * @return the cross-validation result
 		 */
-		virtual std::shared_ptr<CEvaluationResult> evaluate_impl();
+		virtual std::shared_ptr<EvaluationResult> evaluate_impl();
 
 	protected:
 	protected:

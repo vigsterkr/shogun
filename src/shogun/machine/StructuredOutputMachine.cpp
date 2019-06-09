@@ -14,84 +14,84 @@
 
 using namespace shogun;
 
-CStructuredOutputMachine::CStructuredOutputMachine()
-: CMachine(), m_model(NULL), m_surrogate_loss(NULL)
+StructuredOutputMachine::StructuredOutputMachine()
+: Machine(), m_model(NULL), m_surrogate_loss(NULL)
 {
 	register_parameters();
 }
 
-CStructuredOutputMachine::CStructuredOutputMachine(
-		std::shared_ptr<CStructuredModel>  model,
-		std::shared_ptr<CStructuredLabels> labs)
-: CMachine(), m_model(model), m_surrogate_loss(NULL)
+StructuredOutputMachine::StructuredOutputMachine(
+		std::shared_ptr<StructuredModel>  model,
+		std::shared_ptr<StructuredLabels> labs)
+: Machine(), m_model(model), m_surrogate_loss(NULL)
 {
 
 	set_labels(labs);
 	register_parameters();
 }
 
-CStructuredOutputMachine::~CStructuredOutputMachine()
+StructuredOutputMachine::~StructuredOutputMachine()
 {
 
 
 
 }
 
-void CStructuredOutputMachine::set_model(std::shared_ptr<CStructuredModel> model)
+void StructuredOutputMachine::set_model(std::shared_ptr<StructuredModel> model)
 {
 
 
 	m_model = model;
 }
 
-std::shared_ptr<CStructuredModel> CStructuredOutputMachine::get_model() const
+std::shared_ptr<StructuredModel> StructuredOutputMachine::get_model() const
 {
 
 	return m_model;
 }
 
-void CStructuredOutputMachine::register_parameters()
+void StructuredOutputMachine::register_parameters()
 {
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_model, "m_model", "Structured model");
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_model, "m_model", "Structured model");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_surrogate_loss, "m_surrogate_loss", "Surrogate loss");
 	SG_ADD(&m_verbose, "verbose", "Verbosity flag");
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_helper, "helper", "Training helper");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_helper, "helper", "Training helper");
 
 	m_verbose = false;
 	m_helper = NULL;
 }
 
-void CStructuredOutputMachine::set_labels(std::shared_ptr<CLabels> lab)
+void StructuredOutputMachine::set_labels(std::shared_ptr<Labels> lab)
 {
-	CMachine::set_labels(lab);
+	Machine::set_labels(lab);
 	REQUIRE(m_model != NULL, "please call set_model() before set_labels()\n");
-	m_model->set_labels(lab->as<CStructuredLabels>());
+	m_model->set_labels(lab->as<StructuredLabels>());
 }
 
-void CStructuredOutputMachine::set_features(std::shared_ptr<CFeatures> f)
+void StructuredOutputMachine::set_features(std::shared_ptr<Features> f)
 {
 	m_model->set_features(f);
 }
 
-std::shared_ptr<CFeatures> CStructuredOutputMachine::get_features() const
+std::shared_ptr<Features> StructuredOutputMachine::get_features() const
 {
 	return m_model->get_features();
 }
 
-void CStructuredOutputMachine::set_surrogate_loss(std::shared_ptr<CLossFunction> loss)
+void StructuredOutputMachine::set_surrogate_loss(std::shared_ptr<LossFunction> loss)
 {
 
 
 	m_surrogate_loss = loss;
 }
 
-std::shared_ptr<CLossFunction> CStructuredOutputMachine::get_surrogate_loss() const
+std::shared_ptr<LossFunction> StructuredOutputMachine::get_surrogate_loss() const
 {
 
 	return m_surrogate_loss;
 }
 
-float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	int32_t dim = m_model->get_dim();
 
@@ -126,31 +126,31 @@ float64_t CStructuredOutputMachine::risk_nslack_margin_rescale(SGVector<float64_
 	return R;
 }
 
-float64_t CStructuredOutputMachine::risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_nslack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_nslack_slack_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_1slack_margin_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_1slack_margin_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_1slack_slack_rescale(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_1slack_slack_rescale() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
+float64_t StructuredOutputMachine::risk_customized_formulation(SGVector<float64_t>& subgrad, SGVector<float64_t>& W, TMultipleCPinfo* info)
 {
 	SG_ERROR("%s::risk_customized_formulation() has not been implemented!\n", get_name());
 	return 0.0;
 }
 
-float64_t CStructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<float64_t>& W,
+float64_t StructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<float64_t>& W,
 		TMultipleCPinfo* info, EStructRiskType rtype)
 {
 	float64_t ret = 0.0;
@@ -179,7 +179,7 @@ float64_t CStructuredOutputMachine::risk(SGVector<float64_t>& subgrad, SGVector<
 	return ret;
 }
 
-std::shared_ptr<CSOSVMHelper> CStructuredOutputMachine::get_helper() const
+std::shared_ptr<SOSVMHelper> StructuredOutputMachine::get_helper() const
 {
 	if (m_helper == NULL)
 	{
@@ -191,12 +191,12 @@ std::shared_ptr<CSOSVMHelper> CStructuredOutputMachine::get_helper() const
 	return m_helper;
 }
 
-void CStructuredOutputMachine::set_verbose(bool verbose)
+void StructuredOutputMachine::set_verbose(bool verbose)
 {
 	m_verbose = verbose;
 }
 
-bool CStructuredOutputMachine::get_verbose() const
+bool StructuredOutputMachine::get_verbose() const
 {
 	return m_verbose;
 }

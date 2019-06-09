@@ -87,6 +87,6 @@ void DescendUpdaterWithCorrection::update_variable(SGVector<float64_t> variable_
 void DescendUpdaterWithCorrection::init()
 {
 	m_correction=NULL;
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_correction, "DescendUpdaterWithCorrection__m_correction",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_correction, "DescendUpdaterWithCorrection__m_correction",
 		"correction in DescendUpdaterWithCorrection");
 }

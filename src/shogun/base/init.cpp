@@ -37,10 +37,10 @@ namespace shogun
 	std::shared_ptr<SGIO> sg_io=NULL;
 	std::shared_ptr<Version> sg_version=NULL;
 	std::shared_ptr<CRandom> sg_rand=NULL;
-	std::unique_ptr<CSignal> sg_signal(nullptr);
+	std::unique_ptr<Signal> sg_signal(nullptr);
 	std::unique_ptr<SGLinalg> sg_linalg(nullptr);
 
-	// Two global variables to over-ride CMath::fequals for certain
+	// Two global variables to over-ride Math::fequals for certain
 	// serialization
 	// unit tests to pass. These should be removed if possible and serialization
 	// formats should be fixed.
@@ -72,7 +72,7 @@ namespace shogun
 		if (!sg_linalg)
 			sg_linalg = std::unique_ptr<SGLinalg>(new shogun::SGLinalg());
 		if (!sg_signal)
-			sg_signal = std::unique_ptr<CSignal>(new shogun::CSignal());
+			sg_signal = std::unique_ptr<Signal>(new shogun::Signal());
 
 		sg_print_message=print_message;
 		sg_print_warning=print_warning;
@@ -102,9 +102,9 @@ namespace shogun
 		sg_parallel.reset();
 		sg_io.reset();
 
-		delete CSignal::m_subscriber;
-		delete CSignal::m_observable;
-		delete CSignal::m_subject;
+		delete Signal::m_subscriber;
+		delete Signal::m_observable;
+		delete Signal::m_subject;
 
 #ifdef HAVE_PROTOBUF
 		::google::protobuf::ShutdownProtobufLibrary();
@@ -171,7 +171,7 @@ namespace shogun
 		return sg_rand;
 	}
 
-	CSignal* get_global_signal()
+	Signal* get_global_signal()
 	{
 		return sg_signal.get();
 	}

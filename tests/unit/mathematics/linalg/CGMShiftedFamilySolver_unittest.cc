@@ -30,24 +30,24 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_noshift)
 
 	// diagonal Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=CMath::pow(2, i);
+		m(i,i)=Math::pow(2, i);
 
 	// constant vector of the system
 	SGVector<float64_t> b(size);
 	b.set_const(0.5);
 
 	// Creating sparse system to solve with CG_M
-	CSparseFeatures<float64_t> feat(m);
+	SparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 	auto A
-		=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
+		=std::make_shared<SparseMatrixOperator<float64_t>>(mat);
 
 	// Solve with CG_M
-	CCGMShiftedFamilySolver cg_m_linear_solver;
+	CGMShiftedFamilySolver cg_m_linear_solver;
 	SGVector<float64_t> x_sh=cg_m_linear_solver.solve(A, b);
 
 	// checking with plain CG solver since shift is zero
-	CConjugateGradientSolver cg_linear_solver;
+	ConjugateGradientSolver cg_linear_solver;
 	SGVector<float64_t> x=cg_linear_solver.solve(A, b);
 
 	Map<VectorXd> x_sh_map(x_sh.vector, x_sh.vlen);
@@ -66,7 +66,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 
 	// diagonal Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=CMath::pow(2, i);
+		m(i,i)=Math::pow(2, i);
 
 	// constant vector of the system
 	SGVector<float64_t> b(size);
@@ -83,13 +83,13 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	weights.set_const(1.0);
 
 	// Creating sparse system to solve with CG_M
-	CSparseFeatures<float64_t> feat(m);
+	SparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 	auto A
-		=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
+		=std::make_shared<SparseMatrixOperator<float64_t>>(mat);
 
 	// Solve with CG_M
-	CCGMShiftedFamilySolver cg_m_linear_solver;
+	CGMShiftedFamilySolver cg_m_linear_solver;
 	SGVector<complex128_t> x_sh
 		=cg_m_linear_solver.solve_shifted_weighted(A, b, shifts, weights);
 
@@ -97,12 +97,12 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_real_shift)
 	for (index_t i=0; i<size; ++i)
 		m(i,i)=m(i,i)+shift;
 
-	CSparseFeatures<float64_t> feat2(m);
+	SparseFeatures<float64_t> feat2(m);
 	mat=feat2.get_sparse_feature_matrix();
 
-	A=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
+	A=std::make_shared<SparseMatrixOperator<float64_t>>(mat);
 
-	CConjugateGradientSolver cg_linear_solver;
+	ConjugateGradientSolver cg_linear_solver;
 	SGVector<float64_t> x=cg_linear_solver.solve(A, b);
 
 	Map<VectorXcd> x_sh_map(x_sh.vector, x_sh.vlen);
@@ -121,7 +121,7 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 
 	// diagonal Hermintian matrix
 	for (index_t i=0; i<size; ++i)
-		m(i,i)=CMath::pow(2, i);
+		m(i,i)=Math::pow(2, i);
 
 	// constant vector of the system
 	SGVector<float64_t> b(size);
@@ -138,13 +138,13 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 	weights.set_const(1.0);
 
 	// Creating sparse system to solve with CG_M
-	CSparseFeatures<float64_t> feat(m);
+	SparseFeatures<float64_t> feat(m);
 	SGSparseMatrix<float64_t> mat=feat.get_sparse_feature_matrix();
 	auto A
-		=std::make_shared<CSparseMatrixOperator<float64_t>>(mat);
+		=std::make_shared<SparseMatrixOperator<float64_t>>(mat);
 
 	// Solve with CG_M
-	CCGMShiftedFamilySolver cg_m_linear_solver;
+	CGMShiftedFamilySolver cg_m_linear_solver;
 	SGVector<complex128_t> x_sh
 		=cg_m_linear_solver.solve_shifted_weighted(A, b, shifts, weights);
 
@@ -155,9 +155,9 @@ TEST(CGMShiftedFamilySolver, solve_shifted_weight_complex_shift)
 		m2(i,i)=m(i,i)+shift;
 
 	auto B
-		=std::make_shared<CDenseMatrixOperator<complex128_t>>(m2);
+		=std::make_shared<DenseMatrixOperator<complex128_t>>(m2);
 
-	CDirectLinearSolverComplex direct_solver;
+	DirectLinearSolverComplex direct_solver;
 	SGVector<complex128_t> x=direct_solver.solve(B, b);
 
 	Map<VectorXcd> x_sh_map(x_sh.vector, x_sh.vlen);

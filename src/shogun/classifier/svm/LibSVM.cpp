@@ -11,30 +11,30 @@
 
 using namespace shogun;
 
-CLibSVM::CLibSVM()
-: CSVM(), solver_type(LIBSVM_C_SVC)
+LibSVM::LibSVM()
+: SVM(), solver_type(LIBSVM_C_SVC)
 {
 	register_params();
 }
 
-CLibSVM::CLibSVM(LIBSVM_SOLVER_TYPE st)
-: CSVM(), solver_type(st)
+LibSVM::LibSVM(LIBSVM_SOLVER_TYPE st)
+: SVM(), solver_type(st)
 {
 	register_params();
 }
 
 
-CLibSVM::CLibSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab, LIBSVM_SOLVER_TYPE st)
-: CSVM(C, k, lab), solver_type(st)
+LibSVM::LibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, LIBSVM_SOLVER_TYPE st)
+: SVM(C, k, lab), solver_type(st)
 {
 	register_params();
 }
 
-CLibSVM::~CLibSVM()
+LibSVM::~LibSVM()
 {
 }
 
-void CLibSVM::register_params()
+void LibSVM::register_params()
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvm_solver_type",
@@ -42,7 +42,7 @@ void CLibSVM::register_params()
 	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 
-bool CLibSVM::train_machine(std::shared_ptr<CFeatures> data)
+bool LibSVM::train_machine(std::shared_ptr<Features> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -153,7 +153,7 @@ bool CLibSVM::train_machine(std::shared_ptr<CFeatures> data)
 		int32_t num_sv=model->l;
 
 		create_new_model(num_sv);
-		CSVM::set_objective(model->objective);
+		SVM::set_objective(model->objective);
 
 		float64_t sgn=model->label[0];
 

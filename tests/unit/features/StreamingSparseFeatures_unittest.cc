@@ -45,14 +45,14 @@ TEST(StreamingSparseFeaturesTest, parse_file)
       data[i].features[j].entry=rand->random(0., max_entry_value);
     }
   }
-  auto fout = std::make_shared<CLibSVMFile>(fname, 'w');
+  auto fout = std::make_shared<LibSVMFile>(fname, 'w');
   fout->set_sparse_matrix(data, num_feat, num_vec, labels);
 
 
 
-  auto file = std::make_shared<CStreamingAsciiFile>(fname);
+  auto file = std::make_shared<StreamingAsciiFile>(fname);
   auto stream_features =
-    std::make_shared<CStreamingSparseFeatures<float64_t>>(file, true, 8);
+    std::make_shared<StreamingSparseFeatures<float64_t>>(file, true, 8);
 
   stream_features->start_parser();
   index_t i = 0;

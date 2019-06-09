@@ -14,10 +14,10 @@
 namespace shogun
 {
 
-class CDenseFeaturesMock : public CDenseFeatures<float64_t>
+class DenseFeaturesMock : public DenseFeatures<float64_t>
 {
 public:
-	CDenseFeaturesMock(SGMatrix<float64_t> data) : CDenseFeatures<float64_t>(data)
+	DenseFeaturesMock(SGMatrix<float64_t> data) : DenseFeatures<float64_t>(data)
 	{
 	}
 
@@ -48,17 +48,17 @@ TEST(DenseFeaturesTest,create_merged_copy)
 
 	SGMatrix<float64_t> data_2(dim,n_2);
 	for (index_t i=0; i<dim*n_2; ++i)
-		data_2.matrix[i]=CMath::randn_double();
+		data_2.matrix[i]=Math::randn_double();
 
 	//data_2.display_matrix("data_2");
 
-	auto features_1=std::make_shared<CDenseFeatures<float64_t>>(data_1);
-	auto features_2=std::make_shared<CDenseFeatures<float64_t>>(data_2);
+	auto features_1=std::make_shared<DenseFeatures<float64_t>>(data_1);
+	auto features_2=std::make_shared<DenseFeatures<float64_t>>(data_2);
 
 	auto concatenation=features_1->create_merged_copy(features_2);
 
 	SGMatrix<float64_t> concat_data=
-			concatenation->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+			concatenation->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 	//concat_data.display_matrix("concat_data");
 
 	/* check for equality with data_1 */
@@ -86,8 +86,8 @@ TEST(DenseFeaturesTest, create_merged_copy_with_subsets)
 	SGMatrix<float64_t> data_2(dim, n_2);
 	std::iota(data_2.matrix, data_2.matrix + data_2.size(), data_2.size());
 
-	auto features_1=std::make_shared<CDenseFeatures<float64_t> >(data_1);
-	auto features_2=std::make_shared<CDenseFeatures<float64_t> >(data_2);
+	auto features_1=std::make_shared<DenseFeatures<float64_t> >(data_1);
+	auto features_2=std::make_shared<DenseFeatures<float64_t> >(data_2);
 
 	SGVector<index_t> subset_1(n_1/2);
 	subset_1.random(0, n_1-1);
@@ -105,7 +105,7 @@ TEST(DenseFeaturesTest, create_merged_copy_with_subsets)
 	std::copy(active_data_2.matrix, active_data_2.matrix+active_data_2.size(),
 			expected_merged_mat.matrix+active_data_1.size());
 
-	auto merged=features_1->create_merged_copy(features_2)->as<CDenseFeatures<float64_t>>();
+	auto merged=features_1->create_merged_copy(features_2)->as<DenseFeatures<float64_t>>();
 	SGMatrix<float64_t> merged_mat = merged->get_feature_matrix();
 
 	ASSERT_EQ(expected_merged_mat.num_rows, merged_mat.num_rows);
@@ -127,14 +127,14 @@ TEST(DenseFeaturesTest, copy_dimension_subset)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i]=i;
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<index_t> dims(dim/2);
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i]=CMath::random(0, dim-1);
+		dims[i]=Math::random(0, dim-1);
 
 	auto f_reduced=
-		features->copy_dimension_subset(dims)->as<CDenseFeatures<float64_t>>();
+		features->copy_dimension_subset(dims)->as<DenseFeatures<float64_t>>();
 
 	SGMatrix<float64_t> data_reduced=f_reduced->get_feature_matrix();
 
@@ -157,20 +157,20 @@ TEST(DenseFeaturesTest, copy_dimension_subset_with_subsets)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i]=i;
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<index_t> inds(n/2);
 	for (index_t i=0; i<inds.vlen; ++i)
-		inds[i]=CMath::random(0, n-1);
+		inds[i]=Math::random(0, n-1);
 
 	features->add_subset(inds);
 
 	SGVector<index_t> dims(dim/2);
 	for (index_t i=0; i<dims.vlen; ++i)
-		dims[i]=CMath::random(0, dim-1);
+		dims[i]=Math::random(0, dim-1);
 
 	auto f_reduced=
-		features->copy_dimension_subset(dims)->as<CDenseFeatures<float64_t>>();
+		features->copy_dimension_subset(dims)->as<DenseFeatures<float64_t>>();
 
 	SGMatrix<float64_t> data_reduced=f_reduced->get_feature_matrix();
 	for (index_t i=0; i<data_reduced.num_rows; ++i)
@@ -193,12 +193,12 @@ TEST(DenseFeaturesTest, shallow_copy_subset_data)
 	SGVector<index_t> inds(n/2);
 	inds.random(0, n-1);
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 	features->add_subset(inds);
 	auto features_copy = features->shallow_subset_copy();
 
 	SGMatrix<float64_t> orig_matrix=features->get_feature_matrix();
-	SGMatrix<float64_t> copy_matrix=features_copy->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	SGMatrix<float64_t> copy_matrix=features_copy->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 
 
 	for (index_t i=0; i<dim; ++i)
@@ -219,7 +219,7 @@ TEST(DenseFeaturesTest, copy_feature_matrix)
 	SGVector<index_t> inds(n/2);
 	inds.random(0, n-1);
 
-	auto features=std::make_shared<CDenseFeaturesMock>(data);
+	auto features=std::make_shared<DenseFeaturesMock>(data);
 	features->add_subset(inds);
 
 	index_t offset=3;
@@ -255,7 +255,7 @@ TEST(DenseFeaturesTest, view)
 	{
 		data[i] = i;
 	}
-	auto feats_original = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats_original = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<index_t> subset1{0, 2, 3};
 	auto feats_subset1 = view(feats_original, subset1);

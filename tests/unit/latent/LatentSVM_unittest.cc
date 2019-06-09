@@ -18,10 +18,10 @@ TEST(LatentModel, argmax_h)
 	using ::testing::_;
 	using ::testing::NiceMock;
 
-	NiceMock<MockCLatentModel> model;
+	NiceMock<MockLatentModel> model;
 	int32_t dim = 10, samples = 20;
 	SGVector<float64_t> a(dim);
-	auto data = std::make_shared<CData>();
+	auto data = std::make_shared<Data>();
 
 	ON_CALL(model, get_dim())
 		.WillByDefault(Return(dim));
@@ -47,7 +47,7 @@ TEST(LatentSVM, ctor)
 	using ::testing::AtLeast;
 	using ::testing::Exactly;
 
-	auto model = std::make_shared<MockCLatentModel>();
+	auto model = std::make_shared<MockLatentModel>();
 	int32_t dim = 10, samples = 20;
 
 	ON_CALL(*model, get_dim())
@@ -59,7 +59,7 @@ TEST(LatentSVM, ctor)
 	EXPECT_CALL(*model, get_dim())
 		.Times(Exactly(1));
 
-	auto lsvm = std::make_shared<CLatentSVM>(model, 10);
+	auto lsvm = std::make_shared<LatentSVM>(model, 10);
 
 
 }
@@ -74,12 +74,12 @@ TEST(LatentSVM, apply)
 	using ::testing::_;
 	using ::testing::NiceMock;
 
-	auto model = std::make_shared<NiceMock<MockCLatentModel>>();
+	auto model = std::make_shared<NiceMock<MockLatentModel>>();
 	int32_t dim = 10, samples = 20;
 	SGMatrix<float64_t> feats(dim, samples);
-	auto dense_feats = std::make_shared<CDenseFeatures<float64_t>>(feats);
-	auto data = std::make_shared<CData>();
-	auto f = std::make_shared<CLatentFeatures>(samples);
+	auto dense_feats = std::make_shared<DenseFeatures<float64_t>>(feats);
+	auto data = std::make_shared<Data>();
+	auto f = std::make_shared<LatentFeatures>(samples);
 
 	ON_CALL(*model, get_dim())
 		.WillByDefault(Return(dim));
@@ -99,7 +99,7 @@ TEST(LatentSVM, apply)
 		.WillOnce(Return(dense_feats));
 
 
-	auto lsvm = std::make_shared<CLatentSVM>(model, 10);
+	auto lsvm = std::make_shared<LatentSVM>(model, 10);
 
 	lsvm->apply(f);
 

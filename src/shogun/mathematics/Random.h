@@ -28,7 +28,7 @@ namespace shogun
 	 * number generator.
 	 *
 	 * */
-	class CRandom : public CSGObject
+	class CRandom : public SGObject
 	{
 		public:
 			/** default ctor */

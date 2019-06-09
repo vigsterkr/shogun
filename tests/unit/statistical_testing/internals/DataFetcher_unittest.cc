@@ -48,7 +48,7 @@ TEST(DataFetcher, full_data)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	DataFetcher fetcher(feats_p);
@@ -76,7 +76,7 @@ TEST(DataFetcher, block_data)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	DataFetcher fetcher(feats_p);
@@ -109,7 +109,7 @@ TEST(DataFetcher, reset_functionality)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	DataFetcher fetcher(feats_p);

@@ -29,13 +29,13 @@ namespace shogun
  * This specific implementation was adapted from the infLaplace.m file in the
  * GPML toolbox.
  */
-class CSingleLaplaceInferenceMethod: public CLaplaceInference
+class SingleLaplaceInferenceMethod: public LaplaceInference
 {
-friend class CSingleLaplaceNewtonOptimizer; 
+friend class SingleLaplaceNewtonOptimizer; 
 friend class SingleLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
-	CSingleLaplaceInferenceMethod();
+	SingleLaplaceInferenceMethod();
 
 	/** constructor
 	 *
@@ -45,10 +45,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CSingleLaplaceInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
+	SingleLaplaceInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CSingleLaplaceInferenceMethod();
+	virtual ~SingleLaplaceInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -65,9 +65,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CSingleLaplaceInferenceMethod object
+	 * @return casted SingleLaplaceInferenceMethod object
 	 */
-	static std::shared_ptr<CSingleLaplaceInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
+	static std::shared_ptr<SingleLaplaceInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -240,19 +240,19 @@ protected:
 
 
 /** @brief The build-in minimizer for SingleLaplaceInference */
-class CSingleLaplaceNewtonOptimizer: public Minimizer
+class SingleLaplaceNewtonOptimizer: public Minimizer
 {
 public:
-	CSingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
+	SingleLaplaceNewtonOptimizer() :Minimizer() {  init(); }
 
 	virtual const char* get_name() const { return "SingleLaplaceNewtonOptimizer"; }
 
-	virtual ~CSingleLaplaceNewtonOptimizer() {  }
+	virtual ~SingleLaplaceNewtonOptimizer() {  }
 
 	/** Set the inference method
 	 * @param obj the inference method
 	 */
-	void set_target(std::shared_ptr<CSingleLaplaceInferenceMethod >obj);
+	void set_target(std::shared_ptr<SingleLaplaceInferenceMethod >obj);
 
 	/** Unset the inference method
 	 * @param is_unref do we SG_UNREF the method
@@ -293,7 +293,7 @@ private:
 	void init();
 
 	/** the inference method */
-	std::shared_ptr<CSingleLaplaceInferenceMethod >m_obj;
+	std::shared_ptr<SingleLaplaceInferenceMethod >m_obj;
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;

@@ -24,7 +24,7 @@ TEST(HashedDenseFeaturesTest, dot)
 	}
 
 	int32_t hashing_dim = 8;
-	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
+	auto h_feats = std::make_shared<HashedDenseFeatures<float64_t>>(data, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -33,7 +33,7 @@ TEST(HashedDenseFeaturesTest, dot)
 		SGVector<float64_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -62,7 +62,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim, true);
+	auto h_feats = std::make_shared<HashedDenseFeatures<float64_t>>(data, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -71,7 +71,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dot)
 		SGVector<float64_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -82,15 +82,15 @@ TEST(HashedDenseFeaturesTest, quadratic_dot)
 			{
 				if (k!=j)
 				{
-					uint32_t hash_j = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
-					uint32_t hash_k = CHash::MurmurHash3((uint8_t* ) &k, sizeof (index_t), k);
+					uint32_t hash_j = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+					uint32_t hash_k = Hash::MurmurHash3((uint8_t* ) &k, sizeof (index_t), k);
 					uint32_t hash = (hash_j ^ hash_k) % hashing_dim;
 					tmp[hash] += data(j,i) * data(k,i);
 				}
 				else
 				{
 					index_t n_idx = j * dim + k;
-					uint32_t hash = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx);
+					uint32_t hash = Hash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx);
 					tmp[hash % hashing_dim] += data(j,i) * data(k,i);
 				}
 			}
@@ -120,7 +120,7 @@ TEST(HashedDenseFeaturesTest, dense_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
+	auto h_feats = std::make_shared<HashedDenseFeatures<float64_t>>(data, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -129,7 +129,7 @@ TEST(HashedDenseFeaturesTest, dense_dot)
 		SGVector<float64_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -158,7 +158,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dense_dot)
 	}
 
 	int32_t hashing_dim = 8;
-	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim, true);
+	auto h_feats = std::make_shared<HashedDenseFeatures<float64_t>>(data, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -167,7 +167,7 @@ TEST(HashedDenseFeaturesTest, quadratic_dense_dot)
 		SGVector<float64_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -178,15 +178,15 @@ TEST(HashedDenseFeaturesTest, quadratic_dense_dot)
 			{
 				if (k!=j)
 				{
-					uint32_t hash_j = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
-					uint32_t hash_k = CHash::MurmurHash3((uint8_t* ) &k, sizeof (index_t), k);
+					uint32_t hash_j = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+					uint32_t hash_k = Hash::MurmurHash3((uint8_t* ) &k, sizeof (index_t), k);
 					uint32_t hash = (hash_j ^ hash_k) % hashing_dim;
 					tmp[hash] += data(j,i) * data(k,i);
 				}
 				else
 				{
 					index_t n_idx = j * dim + k;
-					uint32_t hash = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx);
+					uint32_t hash = Hash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx);
 					tmp[hash % hashing_dim] += data(j,i) * data(k,i);
 				}
 			}
@@ -216,7 +216,7 @@ TEST(HashedDenseFeaturesTest, add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
+	auto h_feats = std::make_shared<HashedDenseFeatures<float64_t>>(data, hashing_dim);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<n; i++)
@@ -225,7 +225,7 @@ TEST(HashedDenseFeaturesTest, add_to_dense)
 		SGVector<float64_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -256,7 +256,7 @@ TEST(HashedDenseFeaturesTest, quadratic_add_to_dense)
 	}
 
 	int32_t hashing_dim = 8;
-	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim, true);
+	auto h_feats = std::make_shared<HashedDenseFeatures<float64_t>>(data, hashing_dim, true);
 	EXPECT_EQ(h_feats->get_num_vectors(), n);
 
 	for (index_t i=0; i<3; i++)
@@ -265,7 +265,7 @@ TEST(HashedDenseFeaturesTest, quadratic_add_to_dense)
 		SGVector<float64_t>::fill_vector(tmp, hashing_dim, 0);
 		for (index_t j=0; j<dim; j++)
 		{
-			uint32_t hash = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+			uint32_t hash = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
 			hash = hash % hashing_dim;
 			tmp[hash] += data(j,i);
 		}
@@ -276,15 +276,15 @@ TEST(HashedDenseFeaturesTest, quadratic_add_to_dense)
 			{
 				if (k!=j)
 				{
-					uint32_t hash_j = CHash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
-					uint32_t hash_k = CHash::MurmurHash3((uint8_t* ) &k, sizeof (index_t), k);
+					uint32_t hash_j = Hash::MurmurHash3((uint8_t* ) &j, sizeof (index_t), j);
+					uint32_t hash_k = Hash::MurmurHash3((uint8_t* ) &k, sizeof (index_t), k);
 					uint32_t hash = (hash_j ^ hash_k) % hashing_dim;
 					tmp[hash] += data(j,i) * data(k,i);
 				}
 				else
 				{
 					index_t n_idx = j * dim + k;
-					uint32_t hash = CHash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx);
+					uint32_t hash = Hash::MurmurHash3((uint8_t* ) &n_idx, sizeof (index_t), n_idx);
 					tmp[hash % hashing_dim] += data(j,i) * data(k,i);
 				}
 			}
@@ -315,12 +315,12 @@ TEST(HashedDenseFeaturesTest, dense_comparison)
 	}
 
 	int32_t hashing_dim = 300;
-	auto h_feats = std::make_shared<CHashedDenseFeatures<float64_t>>(data, hashing_dim);
-	auto d_feats = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto h_feats = std::make_shared<HashedDenseFeatures<float64_t>>(data, hashing_dim);
+	auto d_feats = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<float64_t> dense_vec(hashing_dim);
 	for (index_t i=0; i<hashing_dim; i++)
-		dense_vec[i] = CMath::random(-hashing_dim, hashing_dim);
+		dense_vec[i] = Math::random(-hashing_dim, hashing_dim);
 
 	for (index_t i=0; i<n; i++)
 		EXPECT_EQ(h_feats->dot(i, h_feats, i), d_feats->dot(i, d_feats, i));

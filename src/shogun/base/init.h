@@ -22,7 +22,7 @@ namespace shogun
 	class Parallel;
 	class CRandom;
 	class SGLinalg;
-	class CSignal;
+	class Signal;
 
 	/** This function must be called before libshogun is used. Usually shogun
 	 * does
@@ -65,23 +65,23 @@ namespace shogun
 	std::shared_ptr<SGIO> get_global_io();
 
 	/** @return the globally over-ridden floating point epsilon for
-	 * CMath::fequals
+	 * Math::fequals
 	 */
 	float64_t get_global_fequals_epsilon();
 
-	/** Globally over-ride the floating point epsilon for CMath::fequals.
-	 * Hack required for CSGObject::equals checks for certain serialization
+	/** Globally over-ride the floating point epsilon for Math::fequals.
+	 * Hack required for SGObject::equals checks for certain serialization
 	 * formats.
 	 * @param fequals_epsilon new epsilon to use
 	 */
 	void set_global_fequals_epsilon(float64_t fequals_epsilon);
 
-	/** @return whether global linient check for CMath::fequals is enabled
+	/** @return whether global linient check for Math::fequals is enabled
 	 */
 	bool get_global_fequals_tolerant();
 
-	/** Globally enable linient check for CMath::fequals.
-	 * Hack required for CSGObject::equals checks for certain serialization
+	/** Globally enable linient check for Math::fequals.
+	 * Hack required for SGObject::equals checks for certain serialization
 	 * formats.
 	 * @param fequals_tolerant whether or not to use tolerant check
 	 */
@@ -135,7 +135,7 @@ SGLinalg* get_global_linalg();
  *
  * @return linalg object
  */
-CSignal* get_global_signal();
+Signal* get_global_signal();
 
 /** Checks environment variables and modifies global objects
  */

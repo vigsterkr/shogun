@@ -13,7 +13,7 @@ using namespace shogun;
 
 TEST(MultilabelSOLabels, constructor_zero_args)
 {
-	auto ml = std::make_shared<CMultilabelSOLabels>();
+	auto ml = std::make_shared<MultilabelSOLabels>();
 
 	ASSERT_TRUE(ml != NULL);
 
@@ -25,7 +25,7 @@ TEST(MultilabelSOLabels, constructor_zero_args)
 
 TEST(MultilabelSOLabels, constructor_one_arg)
 {
-	auto ml = std::make_shared<CMultilabelSOLabels>(2);
+	auto ml = std::make_shared<MultilabelSOLabels>(2);
 
 	ASSERT_TRUE(ml != NULL);
 
@@ -37,7 +37,7 @@ TEST(MultilabelSOLabels, constructor_one_arg)
 
 TEST(MultilabelSOLabels, constructor_two_args)
 {
-	auto ml = std::make_shared<CMultilabelSOLabels>(5, 6);
+	auto ml = std::make_shared<MultilabelSOLabels>(5, 6);
 
 	ASSERT_TRUE(ml != NULL);
 
@@ -49,7 +49,7 @@ TEST(MultilabelSOLabels, constructor_two_args)
 
 TEST(MultilabelSOLabels, set_sparse_label)
 {
-	auto ml = std::make_shared<CMultilabelSOLabels>(1, 2);
+	auto ml = std::make_shared<MultilabelSOLabels>(1, 2);
 
 	ASSERT_TRUE(ml != NULL);
 
@@ -61,7 +61,7 @@ TEST(MultilabelSOLabels, set_sparse_label)
 	lab[1] = 1;
 	ml->set_sparse_label(0, lab);
 
-	auto  slabel = ml->get_label(0)->as<CSparseMultilabel>();
+	auto  slabel = ml->get_label(0)->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_data = slabel->get_data();
 
 	for (int i = 0; i < slabel_data.vlen; i++)
@@ -73,7 +73,7 @@ TEST(MultilabelSOLabels, set_sparse_label)
 
 TEST(MultilabelSOLabels, set_label)
 {
-	auto ml = std::make_shared<CMultilabelSOLabels>(1, 2);
+	auto ml = std::make_shared<MultilabelSOLabels>(1, 2);
 
 	ASSERT(ml != NULL);
 
@@ -83,11 +83,11 @@ TEST(MultilabelSOLabels, set_label)
 	SGVector<int32_t> lab(2);
 	lab[0] = 0;
 	lab[1] = 1;
-	auto  slabel = std::make_shared<CSparseMultilabel>(lab);
+	auto  slabel = std::make_shared<SparseMultilabel>(lab);
 
 	ml->set_label(0, slabel);
 
-	auto  slabel_out = ml->get_label(0)->as<CSparseMultilabel>();
+	auto  slabel_out = ml->get_label(0)->as<SparseMultilabel>();
 	SGVector<int32_t> slabel_data = slabel_out->get_data();
 
 	for (index_t i = 0; i < slabel_data.vlen; i++)
@@ -101,7 +101,7 @@ TEST(MultilabelSOLabels, set_label)
 
 TEST(MultilabelSOLabels, set_sparse_labels)
 {
-	auto ml = std::make_shared<CMultilabelSOLabels>(2, 3);
+	auto ml = std::make_shared<MultilabelSOLabels>(2, 3);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 2);
@@ -122,7 +122,7 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 
 	for (int i = 0; i < ml->get_num_labels(); i++)
 	{
-		auto  slabel = ml->get_label(i)->as<CSparseMultilabel>();
+		auto  slabel = ml->get_label(i)->as<SparseMultilabel>();
 		SGVector<int32_t> slabel_data = slabel->get_data();
 		SGVector<int32_t> lab = labels[i];
 		EXPECT_EQ(slabel_data.vlen, lab.vlen);
@@ -140,7 +140,7 @@ TEST(MultilabelSOLabels, set_sparse_labels)
 
 TEST(MultilabelSOLabels, to_dense)
 {
-	auto ml = std::make_shared<CMultilabelSOLabels>(2, 3);
+	auto ml = std::make_shared<MultilabelSOLabels>(2, 3);
 	ASSERT_TRUE(ml != NULL);
 
 	EXPECT_EQ(ml->get_num_labels(), 2);
@@ -161,8 +161,8 @@ TEST(MultilabelSOLabels, to_dense)
 
 	for (int i = 0; i < ml->get_num_labels(); i++)
 	{
-		auto  slabel = ml->get_label(0)->as<CSparseMultilabel>();
-		SGVector<float64_t> slabel_dense_data = CMultilabelSOLabels::to_dense(slabel, ml->get_num_classes(), 1, 0);
+		auto  slabel = ml->get_label(0)->as<SparseMultilabel>();
+		SGVector<float64_t> slabel_dense_data = MultilabelSOLabels::to_dense(slabel, ml->get_num_classes(), 1, 0);
 		EXPECT_EQ(slabel_dense_data.vlen, ml->get_num_classes());
 	}
 

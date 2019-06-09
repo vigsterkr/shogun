@@ -49,7 +49,7 @@ public:
 		SG_SDEBUG("read floatmax_t with value %Lf\n", *v);
 	}
 
-	void on_object(S& s, std::shared_ptr<CSGObject>* v)
+	void on_object(S& s, std::shared_ptr<SGObject>* v)
 	{
 		SG_SDEBUG("reading SGObject: ");
 		*v = object_reader(s, this);
@@ -90,13 +90,13 @@ struct InputStreamAdapter
 		// ignore
 	}
 
-	std::shared_ptr<CInputStream> m_stream;
+	std::shared_ptr<InputStream> m_stream;
 	string m_buffer;
 	error_condition m_status;
 };
 
 template<typename Reader>
-std::shared_ptr<CSGObject> object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, std::shared_ptr<CSGObject> _this = nullptr)
+std::shared_ptr<SGObject> object_reader(Reader& reader, BitseryReaderVisitor<Reader>* visitor, std::shared_ptr<SGObject> _this = nullptr)
 {
 	size_t obj_magic;
 	reader.value8b(obj_magic);
@@ -107,7 +107,7 @@ std::shared_ptr<CSGObject> object_reader(Reader& reader, BitseryReaderVisitor<Re
 	reader.text1b(obj_name, 64);
 	uint16_t primitive_type;
 	reader.value2b(primitive_type);
-	std::shared_ptr<CSGObject> obj = nullptr;
+	std::shared_ptr<SGObject> obj = nullptr;
 	if (_this)
 	{
 		REQUIRE(_this->get_name() == obj_name, "");
@@ -149,15 +149,15 @@ std::shared_ptr<CSGObject> object_reader(Reader& reader, BitseryReaderVisitor<Re
 using InputAdapter = AdapterReader<InputStreamAdapter, bitsery::DefaultConfig>;
 using BitseryDeserializer = BasicDeserializer<InputAdapter>;
 
-CBitseryDeserializer::CBitseryDeserializer() : CDeserializer()
+BitseryDeserializer::BitseryDeserializer() : CDeserializer()
 {
 }
 
-CBitseryDeserializer::~CBitseryDeserializer()
+BitseryDeserializer::~BitseryDeserializer()
 {
 }
 
-std::shared_ptr<CSGObject> CBitseryDeserializer::read_object()
+std::shared_ptr<SGObject> BitseryDeserializer::read_object()
 {
 	InputStreamAdapter adapter { stream() };
 	BitseryDeserializer deser {std::move(adapter)};
@@ -165,7 +165,7 @@ std::shared_ptr<CSGObject> CBitseryDeserializer::read_object()
 	return object_reader(deser, addressof(reader_visitor));
 }
 
-void CBitseryDeserializer::read(std::shared_ptr<CSGObject> _this)
+void BitseryDeserializer::read(std::shared_ptr<SGObject> _this)
 {
 	InputStreamAdapter adapter { stream() };
 	BitseryDeserializer deser {std::move(adapter)};

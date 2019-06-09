@@ -48,10 +48,10 @@ using namespace std;
 using namespace Eigen;
 using namespace shogun;
 
-CFisherLDA::CFisherLDA(
+FisherLDA::FisherLDA(
     int32_t num_dimensions, EFLDAMethod method, float64_t thresh,
     float64_t gamma, bool bdc_svd)
-    : CDensePreprocessor<float64_t>()
+    : DensePreprocessor<float64_t>()
 {
 	initialize_parameters();
 	m_num_dim = num_dimensions;
@@ -61,7 +61,7 @@ CFisherLDA::CFisherLDA(
 	m_bdc_svd = bdc_svd;
 }
 
-void CFisherLDA::initialize_parameters()
+void FisherLDA::initialize_parameters()
 {
 	m_method=AUTO_FLDA;
 	m_threshold=0.01;
@@ -87,16 +87,16 @@ void CFisherLDA::initialize_parameters()
 			CLASSIC_FLDA));
 }
 
-CFisherLDA::~CFisherLDA()
+FisherLDA::~FisherLDA()
 {
 }
 
-void CFisherLDA::fit(std::shared_ptr<CFeatures> features)
+void FisherLDA::fit(std::shared_ptr<Features> features)
 {
 	SG_SERROR("Labels for the given features are not specified!\n");
 }
 
-void CFisherLDA::fit(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabels> labels)
+void FisherLDA::fit(std::shared_ptr<Features> features, std::shared_ptr<Labels> labels)
 {
 	REQUIRE(features, "Features are not provided!\n")
 
@@ -108,7 +108,7 @@ void CFisherLDA::fit(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabel
 	    "the type MulticlassLabels! you provided %s\n",
 	    labels->get_name());
 
-	auto dense_features = features->as<CDenseFeatures<float64_t>>();
+	auto dense_features = features->as<DenseFeatures<float64_t>>();
 	auto mc =
 	    multiclass_labels(labels);
 
@@ -138,8 +138,8 @@ void CFisherLDA::fit(std::shared_ptr<CFeatures> features, std::shared_ptr<CLabel
 		solver_classic(dense_features, mc);
 }
 
-void CFisherLDA::solver_canvar(
-    std::shared_ptr<CDenseFeatures<float64_t>> features, std::shared_ptr<CMulticlassLabels> labels)
+void FisherLDA::solver_canvar(
+    std::shared_ptr<DenseFeatures<float64_t>> features, std::shared_ptr<MulticlassLabels> labels)
 {
 	auto solver = std::unique_ptr<LDACanVarSolver<float64_t>>(
 	    new LDACanVarSolver<float64_t>(
@@ -149,8 +149,8 @@ void CFisherLDA::solver_canvar(
 	m_eigenvalues_vector = solver->get_eigenvalues();
 }
 
-void CFisherLDA::solver_classic(
-    std::shared_ptr<CDenseFeatures<float64_t>> features, std::shared_ptr<CMulticlassLabels> labels)
+void FisherLDA::solver_classic(
+    std::shared_ptr<DenseFeatures<float64_t>> features, std::shared_ptr<MulticlassLabels> labels)
 {
 	SGMatrix<float64_t> data = features->get_feature_matrix();
 	index_t num_features = data.num_rows;
@@ -186,7 +186,7 @@ void CFisherLDA::solver_classic(
 	// corresponding to their respective eigenvalues
 	m_transformation_matrix = SGMatrix<float64_t>(num_features, m_num_dim);
 
-	auto args = CMath::argsort(eigenvalues);
+	auto args = Math::argsort(eigenvalues);
 	for (index_t i = 0; i < m_num_dim; i++)
 	{
 		index_t k = args[num_features - i - 1];
@@ -195,14 +195,14 @@ void CFisherLDA::solver_classic(
 	}
 }
 
-void CFisherLDA::cleanup()
+void FisherLDA::cleanup()
 {
 	m_transformation_matrix=SGMatrix<float64_t>();
 	m_mean_vector=SGVector<float64_t>();
 	m_eigenvalues_vector=SGVector<float64_t>();
 }
 
-SGMatrix<float64_t> CFisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
+SGMatrix<float64_t> FisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
 {
 	auto num_vectors = matrix.num_cols;
 	auto num_features = matrix.num_rows;
@@ -230,7 +230,7 @@ SGMatrix<float64_t> CFisherLDA::apply_to_matrix(SGMatrix<float64_t> matrix)
 	return matrix;
 }
 
-SGVector<float64_t> CFisherLDA::apply_to_feature_vector(SGVector<float64_t> vector)
+SGVector<float64_t> FisherLDA::apply_to_feature_vector(SGVector<float64_t> vector)
 {
 	SGVector<float64_t> result = SGVector<float64_t>(m_num_dim);
 	Map<VectorXd> resultVec(result.vector, m_num_dim);
@@ -245,17 +245,17 @@ SGVector<float64_t> CFisherLDA::apply_to_feature_vector(SGVector<float64_t> vect
 	return result;
 }
 
-SGMatrix<float64_t> CFisherLDA::get_transformation_matrix()
+SGMatrix<float64_t> FisherLDA::get_transformation_matrix()
 {
 	return m_transformation_matrix;
 }
 
-SGVector<float64_t> CFisherLDA::get_eigenvalues()
+SGVector<float64_t> FisherLDA::get_eigenvalues()
 {
 	return m_eigenvalues_vector;
 }
 
-SGVector<float64_t> CFisherLDA::get_mean()
+SGVector<float64_t> FisherLDA::get_mean()
 {
 	return m_mean_vector;
 }

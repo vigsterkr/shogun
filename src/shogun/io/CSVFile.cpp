@@ -15,44 +15,44 @@
 
 using namespace shogun;
 
-CCSVFile::CCSVFile()
+CSVFile::CSVFile()
 {
 	init();
 }
 
-CCSVFile::CCSVFile(FILE* f, const char* name) :
-	CFile(f, name)
+CSVFile::CSVFile(FILE* f, const char* name) :
+	File(f, name)
 {
 	init();
 	init_with_defaults();
 }
 
 #ifdef HAVE_FDOPEN
-CCSVFile::CCSVFile(int fd, const char* mode, const char* name) :
-	CFile(fd, mode, name)
+CSVFile::CSVFile(int fd, const char* mode, const char* name) :
+	File(fd, mode, name)
 {
 	init();
 	init_with_defaults();
 }
 #endif
 
-CCSVFile::CCSVFile(const char* fname, char rw, const char* name) :
-	CFile(fname, rw, name)
+CSVFile::CSVFile(const char* fname, char rw, const char* name) :
+	File(fname, rw, name)
 {
 	init();
 	init_with_defaults();
 }
 
-CCSVFile::~CCSVFile()
+CSVFile::~CSVFile()
 {
 }
 
-void CCSVFile::set_transpose(bool value)
+void CSVFile::set_transpose(bool value)
 {
 	is_data_transposed=value;
 }
 
-void CCSVFile::set_delimiter(char delimiter)
+void CSVFile::set_delimiter(char delimiter)
 {
 	m_tokenizer->delimiters[m_delimiter]=0;
 
@@ -62,12 +62,12 @@ void CCSVFile::set_delimiter(char delimiter)
 	m_tokenizer->delimiters[' ']=1;
 }
 
-void CCSVFile::set_lines_to_skip(int32_t num_lines)
+void CSVFile::set_lines_to_skip(int32_t num_lines)
 {
 	m_num_to_skip=num_lines;
 }
 
-int32_t CCSVFile::get_stats(int32_t& num_tokens)
+int32_t CSVFile::get_stats(int32_t& num_tokens)
 {
 	int32_t num_lines=0;
 	num_tokens=-1;
@@ -96,41 +96,41 @@ int32_t CCSVFile::get_stats(int32_t& num_tokens)
 	return num_lines;
 }
 
-void CCSVFile::init()
+void CSVFile::init()
 {
 	is_data_transposed=false;
 	m_delimiter=0;
 	m_num_to_skip=0;
 }
 
-void CCSVFile::init_with_defaults()
+void CSVFile::init_with_defaults()
 {
 	is_data_transposed=false;
 	m_delimiter=',';
 
-	m_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
+	m_tokenizer=std::make_shared<DelimiterTokenizer>(true);
 	m_tokenizer->delimiters[m_delimiter]=1;
 	m_tokenizer->delimiters[' ']=1;
 
 
-	m_line_tokenizer=std::make_shared<CDelimiterTokenizer>(true);
+	m_line_tokenizer=std::make_shared<DelimiterTokenizer>(true);
 	m_line_tokenizer->delimiters['\n']=1;
 
 
-	m_parser=std::make_shared<CParser>();
+	m_parser=std::make_shared<Parser>();
 	m_parser->set_tokenizer(m_tokenizer);
 
-	m_line_reader=std::make_shared<CLineReader>(file, m_line_tokenizer);
+	m_line_reader=std::make_shared<LineReader>(file, m_line_tokenizer);
 }
 
-void CCSVFile::skip_lines(int32_t num_lines)
+void CSVFile::skip_lines(int32_t num_lines)
 {
 	for (int32_t i=0; i<num_lines; i++)
 		m_line_reader->skip_line();
 }
 
 #define GET_VECTOR(read_func, sg_type) \
-void CCSVFile::get_vector(sg_type*& vector, int32_t& len) \
+void CSVFile::get_vector(sg_type*& vector, int32_t& len) \
 { \
 	if (!m_line_reader->has_next()) \
 		return; \
@@ -169,7 +169,7 @@ GET_VECTOR(read_ulong, uint64_t)
 #undef GET_VECTOR
 
 #define GET_MATRIX(read_func, sg_type) \
-void CCSVFile::get_matrix(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
+void CSVFile::get_matrix(sg_type*& matrix, int32_t& num_feat, int32_t& num_vec) \
 { \
 	int32_t num_lines=0; \
 	int32_t num_tokens=-1; \
@@ -230,7 +230,7 @@ GET_MATRIX(read_ulong, uint64_t)
 #undef GET_MATRIX
 
 #define GET_NDARRAY(read_func, sg_type) \
-void CCSVFile::get_ndarray(sg_type*& array, int32_t*& dims, int32_t& num_dims) \
+void CSVFile::get_ndarray(sg_type*& array, int32_t*& dims, int32_t& num_dims) \
 { \
 	SG_NOTIMPLEMENTED \
 }
@@ -245,7 +245,7 @@ GET_NDARRAY(read_word, uint16_t)
 #undef GET_NDARRAY
 
 #define GET_SPARSE_MATRIX(read_func, sg_type) \
-void CCSVFile::get_sparse_matrix( \
+void CSVFile::get_sparse_matrix( \
 			SGSparseVector<sg_type>*& matrix, int32_t& num_feat, int32_t& num_vec) \
 { \
 	SG_NOTIMPLEMENTED \
@@ -267,7 +267,7 @@ GET_SPARSE_MATRIX(read_ulong, uint64_t)
 #undef GET_SPARSE_MATRIX
 
 #define SET_VECTOR(format, sg_type) \
-void CCSVFile::set_vector(const sg_type* vector, int32_t len) \
+void CSVFile::set_vector(const sg_type* vector, int32_t len) \
 { \
 	SG_SET_LOCALE_C; \
 	\
@@ -302,7 +302,7 @@ SET_VECTOR(SCNu16, uint16_t)
 #undef SET_VECTOR
 
 #define SET_MATRIX(format, sg_type) \
-void CCSVFile::set_matrix(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
+void CSVFile::set_matrix(const sg_type* matrix, int32_t num_feat, int32_t num_vec) \
 { \
 	SG_SET_LOCALE_C; \
 	\
@@ -345,7 +345,7 @@ SET_MATRIX(SCNu16, uint16_t)
 #undef SET_MATRIX
 
 #define SET_SPARSE_MATRIX(format, sg_type) \
-void CCSVFile::set_sparse_matrix( \
+void CSVFile::set_sparse_matrix( \
 			const SGSparseVector<sg_type>* matrix, int32_t num_feat, int32_t num_vec) \
 { \
 	SG_NOTIMPLEMENTED \
@@ -366,7 +366,7 @@ SET_SPARSE_MATRIX(SCNi16, int16_t)
 SET_SPARSE_MATRIX(SCNu16, uint16_t)
 #undef SET_SPARSE_MATRIX
 
-void CCSVFile::get_string_list(
+void CSVFile::get_string_list(
 			SGString<char>*& strings, int32_t& num_str,
 			int32_t& max_string_len)
 {
@@ -397,7 +397,7 @@ void CCSVFile::get_string_list(
 }
 
 #define GET_STRING_LIST(sg_type) \
-void CCSVFile::get_string_list( \
+void CSVFile::get_string_list( \
 			SGString<sg_type>*& strings, int32_t& num_str, \
 			int32_t& max_string_len) \
 { \
@@ -417,7 +417,7 @@ GET_STRING_LIST(int16_t)
 GET_STRING_LIST(uint16_t)
 #undef GET_STRING_LIST
 
-void CCSVFile::set_string_list(
+void CSVFile::set_string_list(
 			const SGString<char>* strings, int32_t num_str)
 {
 	for (int32_t i=0; i<num_str; i++)
@@ -429,7 +429,7 @@ void CCSVFile::set_string_list(
 }
 
 #define SET_STRING_LIST(sg_type) \
-void CCSVFile::set_string_list( \
+void CSVFile::set_string_list( \
 			const SGString<sg_type>* strings, int32_t num_str) \
 { \
 	SG_NOTIMPLEMENTED \

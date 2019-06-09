@@ -19,7 +19,7 @@ class ShareBoostOptimizer
 {
 public:
 	/** constructor */
-	ShareBoostOptimizer(std::shared_ptr<CShareBoost >sb, bool verbose=false)
+	ShareBoostOptimizer(std::shared_ptr<ShareBoost >sb, bool verbose=false)
 		:m_sb(sb), m_verbose(verbose) {  }
 	/** destructor */
 	~ShareBoostOptimizer() {  }
@@ -44,7 +44,7 @@ private:
 			int ls
 			);
 
-	std::shared_ptr<CShareBoost >m_sb;
+	std::shared_ptr<ShareBoost >m_sb;
 	bool m_verbose;
 };
 

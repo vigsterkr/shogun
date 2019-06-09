@@ -14,21 +14,21 @@
 
 using namespace shogun;
 
-CMPDSVM::CMPDSVM()
-: CSVM()
+MPDSVM::MPDSVM()
+: SVM()
 {
 }
 
-CMPDSVM::CMPDSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
-: CSVM(C, k, lab)
+MPDSVM::MPDSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: SVM(C, k, lab)
 {
 }
 
-CMPDSVM::~CMPDSVM()
+MPDSVM::~MPDSVM()
 {
 }
 
-bool CMPDSVM::train_machine(std::shared_ptr<CFeatures> data)
+bool MPDSVM::train_machine(std::shared_ptr<Features> data)
 {
 	auto labels = binary_labels(m_labels);
 
@@ -56,7 +56,7 @@ bool CMPDSVM::train_machine(std::shared_ptr<CFeatures> data)
 	const float64_t dualeps=eps*n; //heuristic
 	int64_t niter=0;
 
-	kernel_cache = std::make_shared<CCache<KERNELCACHE_ELEM>>(kernel->get_cache_size(), n, n);
+	kernel_cache = std::make_shared<Cache<KERNELCACHE_ELEM>>(kernel->get_cache_size(), n, n);
 	float64_t* alphas=SG_MALLOC(float64_t, n);
 	float64_t* dalphas=SG_MALLOC(float64_t, n);
 	//float64_t* hessres=SG_MALLOC(float64_t, 2*n);
@@ -99,17 +99,17 @@ bool CMPDSVM::train_machine(std::shared_ptr<CFeatures> data)
 		COMPUTATION_CONTROLLERS
 		int32_t maxpidx=-1;
 		float64_t maxpviol = -1;
-		//float64_t maxdviol = CMath::abs(detas[0]);
-		float64_t maxdviol = CMath::abs(detas);
+		//float64_t maxdviol = Math::abs(detas[0]);
+		float64_t maxdviol = Math::abs(detas);
 		bool free_alpha=false;
 
-		//if (CMath::abs(detas[1])> maxdviol)
-		//maxdviol=CMath::abs(detas[1]);
+		//if (Math::abs(detas[1])> maxdviol)
+		//maxdviol=Math::abs(detas[1]);
 
 		// compute kkt violations with correct sign ...
 		for (int32_t i=0; i<n; i++)
 		{
-			float64_t v=CMath::abs(dalphas[i]);
+			float64_t v=Math::abs(dalphas[i]);
 
 			if (alphas[i] > 0 && alphas[i] < d)
 				free_alpha=true;
@@ -137,7 +137,7 @@ bool CMPDSVM::train_machine(std::shared_ptr<CFeatures> data)
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
-		//stopfac = CMath::max(etas[1], 1e-10);
+		//stopfac = Math::max(etas[1], 1e-10);
 		//else
 		//stopfac = 1;
 

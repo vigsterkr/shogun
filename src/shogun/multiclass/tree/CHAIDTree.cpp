@@ -35,23 +35,23 @@
 
 using namespace shogun;
 
-const float64_t CCHAIDTree::MISSING=CMath::MAX_REAL_NUMBER;
+const float64_t CHAIDTree::MISSING=Math::MAX_REAL_NUMBER;
 
-CCHAIDTree::CCHAIDTree()
-: CTreeMachine<CHAIDTreeNodeData>()
+CHAIDTree::CHAIDTree()
+: TreeMachine<CHAIDTreeNodeData>()
 {
 	init();
 }
 
-CCHAIDTree::CCHAIDTree(int32_t dependent_vartype)
-: CTreeMachine<CHAIDTreeNodeData>()
+CHAIDTree::CHAIDTree(int32_t dependent_vartype)
+: TreeMachine<CHAIDTreeNodeData>()
 {
 	init();
 	m_dependent_vartype=dependent_vartype;
 }
 
-CCHAIDTree::CCHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_types, int32_t num_breakpoints)
-: CTreeMachine<CHAIDTreeNodeData>()
+CHAIDTree::CHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_types, int32_t num_breakpoints)
+: TreeMachine<CHAIDTreeNodeData>()
 {
 	init();
 	m_dependent_vartype=dependent_vartype;
@@ -59,11 +59,11 @@ CCHAIDTree::CCHAIDTree(int32_t dependent_vartype, SGVector<int32_t> feature_type
 	m_num_breakpoints=num_breakpoints;
 }
 
-CCHAIDTree::~CCHAIDTree()
+CHAIDTree::~CHAIDTree()
 {
 }
 
-EProblemType CCHAIDTree::get_machine_problem_type() const
+EProblemType CHAIDTree::get_machine_problem_type() const
 {
 	switch (m_dependent_vartype)
 	{
@@ -80,7 +80,7 @@ EProblemType CCHAIDTree::get_machine_problem_type() const
 	return PT_MULTICLASS;
 }
 
-bool CCHAIDTree::is_label_valid(std::shared_ptr<CLabels> lab) const
+bool CHAIDTree::is_label_valid(std::shared_ptr<Labels> lab) const
 {
 	switch (m_dependent_vartype)
 	{
@@ -97,27 +97,27 @@ bool CCHAIDTree::is_label_valid(std::shared_ptr<CLabels> lab) const
 	return false;
 }
 
-std::shared_ptr<CMulticlassLabels> CCHAIDTree::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> CHAIDTree::apply_multiclass(std::shared_ptr<Features> data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
-	return apply_tree(data)->as<CMulticlassLabels>();
+	return apply_tree(data)->as<MulticlassLabels>();
 }
 
-std::shared_ptr<CRegressionLabels> CCHAIDTree::apply_regression(std::shared_ptr<CFeatures> data)
+std::shared_ptr<RegressionLabels> CHAIDTree::apply_regression(std::shared_ptr<Features> data)
 {
 	REQUIRE(data, "Data required for regression in apply_regression\n")
 
-	return apply_tree(data)->as<CRegressionLabels>();
+	return apply_tree(data)->as<RegressionLabels>();
 }
 
-void CCHAIDTree::set_weights(SGVector<float64_t> w)
+void CHAIDTree::set_weights(SGVector<float64_t> w)
 {
 	m_weights=w;
 	m_weights_set=true;
 }
 
-SGVector<float64_t> CCHAIDTree::get_weights() const
+SGVector<float64_t> CHAIDTree::get_weights() const
 {
 	if (!m_weights_set)
 		SG_ERROR("weights not set\n");
@@ -125,38 +125,38 @@ SGVector<float64_t> CCHAIDTree::get_weights() const
 	return m_weights;
 }
 
-void CCHAIDTree::clear_weights()
+void CHAIDTree::clear_weights()
 {
 	m_weights=SGVector<float64_t>();
 	m_weights_set=false;
 }
 
-void CCHAIDTree::set_feature_types(SGVector<int32_t> ft)
+void CHAIDTree::set_feature_types(SGVector<int32_t> ft)
 {
 	m_feature_types=ft;
 }
 
-SGVector<int32_t> CCHAIDTree::get_feature_types() const
+SGVector<int32_t> CHAIDTree::get_feature_types() const
 {
 	return m_feature_types;
 }
 
-void CCHAIDTree::clear_feature_types()
+void CHAIDTree::clear_feature_types()
 {
 	m_feature_types=SGVector<int32_t>();
 }
 
-void CCHAIDTree::set_dependent_vartype(int32_t var)
+void CHAIDTree::set_dependent_vartype(int32_t var)
 {
 	REQUIRE(((var==0)||(var==1)||(var==2)), "Expected 0 or 1 or 2 as argument. %d received\n",var)
 	m_dependent_vartype=var;
 }
 
-bool CCHAIDTree::train_machine(std::shared_ptr<CFeatures> data)
+bool CHAIDTree::train_machine(std::shared_ptr<Features> data)
 {
 	REQUIRE(data, "Data required for training\n")
 
-	auto feats=data->as<CDenseFeatures<float64_t>>();
+	auto feats=data->as<DenseFeatures<float64_t>>();
 
 	REQUIRE(m_feature_types.vlen==feats->get_num_features(),"Either feature types are not set or the number of feature types specified"
 	" (%d here) is not the same as the number of features in data matrix (%d here)\n",m_feature_types.vlen,feats->get_num_features())
@@ -197,14 +197,14 @@ bool CCHAIDTree::train_machine(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-std::shared_ptr<CTreeMachineNode<CHAIDTreeNodeData>> CCHAIDTree::CHAIDtrain(std::shared_ptr<CFeatures> data, SGVector<float64_t> weights, std::shared_ptr<CLabels> labels, int32_t level)
+std::shared_ptr<TreeMachineNode<CHAIDTreeNodeData>> CHAIDTree::CHAIDtrain(std::shared_ptr<Features> data, SGVector<float64_t> weights, std::shared_ptr<Labels> labels, int32_t level)
 {
 	REQUIRE(data,"data matrix cannot be empty\n");
 	REQUIRE(labels,"labels cannot be NULL\n");
 
 	auto node=std::make_shared<node_t>();
-	SGVector<float64_t> labels_vec=labels->as<CDenseLabels>()->get_labels();
-	SGMatrix<float64_t> mat=data->as<CDenseFeatures<float64_t>>()->get_feature_matrix();
+	SGVector<float64_t> labels_vec=labels->as<DenseLabels>()->get_labels();
+	SGMatrix<float64_t> mat=data->as<DenseFeatures<float64_t>>()->get_feature_matrix();
 	int32_t num_feats=mat.num_rows;
 	int32_t num_vecs=mat.num_cols;
 
@@ -218,7 +218,7 @@ std::shared_ptr<CTreeMachineNode<CHAIDTreeNodeData>> CCHAIDTree::CHAIDtrain(std:
 	else if (m_dependent_vartype==0 || m_dependent_vartype==1)
 	{
 		SGVector<float64_t> lab=labels_vec.clone();
-		CMath::qsort(lab);
+		Math::qsort(lab);
 		// stores max total weight for a single label
 		int32_t max=weights[0];
 		// stores one of the indices having max total weight
@@ -303,7 +303,7 @@ std::shared_ptr<CTreeMachineNode<CHAIDTreeNodeData>> CCHAIDTree::CHAIDtrain(std:
 	}
 
 	// choose best attribute for splitting
-	float64_t min_pv=CMath::MAX_REAL_NUMBER;
+	float64_t min_pv=Math::MAX_REAL_NUMBER;
 	SGVector<int32_t> cat_min;
 	int32_t attr_min=-1;
 	for (int32_t i=0;i<num_feats;i++)
@@ -343,7 +343,7 @@ std::shared_ptr<CTreeMachineNode<CHAIDTreeNodeData>> CCHAIDTree::CHAIDtrain(std:
 		if (cat_min[i]!=i)
 			continue;
 
-		auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
+		auto feat_index=std::make_shared<DynamicArray<int32_t>>();
 		for (int32_t j=0;j<num_vecs;j++)
 		{
 			for (int32_t k=0;k<unum;k++)
@@ -405,7 +405,7 @@ std::shared_ptr<CTreeMachineNode<CHAIDTreeNodeData>> CCHAIDTree::CHAIDtrain(std:
 	return node;
 }
 
-SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats, SGVector<float64_t> labels,
+SGVector<int32_t> CHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats, SGVector<float64_t> labels,
 							SGVector<float64_t> weights, float64_t &pv)
 {
 	SGVector<float64_t> ufeats=feats.clone();
@@ -442,7 +442,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 
 		// scan all allowable pairs of categories to find most similar one
 		int32_t cat_index_max=-1;
-		float64_t max_merge_pv=CMath::MIN_REAL_NUMBER;
+		float64_t max_merge_pv=Math::MIN_REAL_NUMBER;
 		for (int32_t i=0;i<inum_cat-1;i++)
 		{
 			if (cat[i]==cat[i+1])
@@ -451,8 +451,8 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 			int32_t cat_index=i;
 
 			// compute p-value
-			auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
-			auto feat_cat=std::make_shared<CDynamicArray<int32_t>>();
+			auto feat_index=std::make_shared<DynamicArray<int32_t>>();
+			auto feat_cat=std::make_shared<DynamicArray<int32_t>>();
 			for (int32_t j=0;j<feats.vlen;j++)
 			{
 				for (int32_t k=0;k<inum_cat;k++)
@@ -546,7 +546,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_ordinal(SGVector<float64_t> feats
 	return cat;
 }
 
-SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats, SGVector<float64_t> labels,
+SGVector<int32_t> CHAIDTree::merge_categories_nominal(SGVector<float64_t> feats, SGVector<float64_t> labels,
 								SGVector<float64_t> weights, float64_t &pv)
 {
 	SGVector<float64_t> ufeats=feats.clone();
@@ -569,7 +569,7 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 			break;
 
 		// assimilate all category labels left
-		auto leftcat=std::make_shared<CDynamicArray<int32_t>>();
+		auto leftcat=std::make_shared<DynamicArray<int32_t>>();
 		for (int32_t i=0;i<cat.vlen;i++)
 		{
 			if (cat[i]==i)
@@ -577,15 +577,15 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 		}
 
 		// consider all pairs for merging
-		float64_t max_merge_pv=CMath::MIN_REAL_NUMBER;
+		float64_t max_merge_pv=Math::MIN_REAL_NUMBER;
 		int32_t cat1_max=-1;
 		int32_t cat2_max=-1;
 		for (int32_t i=0;i<leftcat->get_num_elements()-1;i++)
 		{
 			for (int32_t j=i+1;j<leftcat->get_num_elements();j++)
 			{
-				auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
-				auto feat_cat=std::make_shared<CDynamicArray<int32_t>>();
+				auto feat_index=std::make_shared<DynamicArray<int32_t>>();
+				auto feat_cat=std::make_shared<DynamicArray<int32_t>>();
 				for (int32_t k=0;k<feats.vlen;k++)
 				{
 					for (int32_t l=0;l<inum_cat;l++)
@@ -662,9 +662,9 @@ SGVector<int32_t> CCHAIDTree::merge_categories_nominal(SGVector<float64_t> feats
 	return cat;
 }
 
-std::shared_ptr<CLabels> CCHAIDTree::apply_tree(std::shared_ptr<CFeatures> data)
+std::shared_ptr<Labels> CHAIDTree::apply_tree(std::shared_ptr<Features> data)
 {
-	auto feats=data->as<CDenseFeatures<float64_t>>();
+	auto feats=data->as<DenseFeatures<float64_t>>();
 
 	// modify test data matrix (continuous to ordinal)
 	if (m_cont_breakpoints.num_cols>0)
@@ -674,7 +674,7 @@ std::shared_ptr<CLabels> CCHAIDTree::apply_tree(std::shared_ptr<CFeatures> data)
 	return apply_from_current_node(fmat, m_root);
 }
 
-std::shared_ptr<CLabels> CCHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, std::shared_ptr<node_t> current)
+std::shared_ptr<Labels> CHAIDTree::apply_from_current_node(SGMatrix<float64_t> fmat, std::shared_ptr<node_t> current)
 {
 	REQUIRE(current != NULL, "The tree cannot be empty.\n");
 	int32_t num_vecs=fmat.num_cols;
@@ -715,23 +715,23 @@ std::shared_ptr<CLabels> CCHAIDTree::apply_from_current_node(SGMatrix<float64_t>
 	switch (get_machine_problem_type())
 	{
 		case PT_MULTICLASS:
-			return std::make_shared<CMulticlassLabels>(labels);
+			return std::make_shared<MulticlassLabels>(labels);
 		case PT_REGRESSION:
-			return std::make_shared<CRegressionLabels>(labels);
+			return std::make_shared<RegressionLabels>(labels);
 		default:
 			SG_ERROR("Undefined problem type\n")
 	}
 
-	return std::make_shared<CMulticlassLabels>();
+	return std::make_shared<MulticlassLabels>();
 }
 
-bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t> feats, SGVector<float64_t> labels,
+bool CHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_t> feats, SGVector<float64_t> labels,
 									 		SGVector<float64_t> weights)
 {
 	// assimilate category indices other than missing (last cell of cat vector stores category index for missing)
 	// sanity check
 	REQUIRE(cat[cat.vlen-1]==cat.vlen-1,"last category is expected to be stored for MISSING. Hence it is expected to be un-merged\n")
-	auto cat_ind=std::make_shared<CDynamicArray<int32_t>>();
+	auto cat_ind=std::make_shared<DynamicArray<int32_t>>();
 	for (int32_t i=0;i<cat.vlen-1;i++)
 	{
 		if (cat[i]==i)
@@ -739,11 +739,11 @@ bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_
 	}
 
 	// find most similar category to MISSING
-	float64_t max_pv_pair=CMath::MIN_REAL_NUMBER;
+	float64_t max_pv_pair=Math::MIN_REAL_NUMBER;
 	int32_t cindex_max=-1;
 	for (int32_t i=0;i<cat_ind->get_num_elements();i++)
 	{
-		auto feat_index=std::make_shared<CDynamicArray<int32_t>>();
+		auto feat_index=std::make_shared<DynamicArray<int32_t>>();
 		for (int32_t j=0;j<feats.vlen;j++)
 		{
 			if ((feats[j]==cat_ind->get_element(i)) || feats[j]==MISSING)
@@ -797,7 +797,7 @@ bool CCHAIDTree::handle_missing_ordinal(SGVector<int32_t> cat, SGVector<float64_
 	return false;
 }
 
-float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int32_t fnum_cat, int32_t ft, bool is_missing)
+float64_t CHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int32_t fnum_cat, int32_t ft, bool is_missing)
 {
 
 	if (inum_cat==fnum_cat)
@@ -828,11 +828,11 @@ float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int
 	    case 1:
 	    {
 		    if (!is_missing)
-			    return CMath::nchoosek(inum_cat - 1, fnum_cat - 1) * up_value;
+			    return Math::nchoosek(inum_cat - 1, fnum_cat - 1) * up_value;
 		    else
 			    return up_value *
-			           (CMath::nchoosek(inum_cat - 2, fnum_cat - 2) +
-			            fnum_cat * CMath::nchoosek(inum_cat - 2, fnum_cat - 1));
+			           (Math::nchoosek(inum_cat - 2, fnum_cat - 2) +
+			            fnum_cat * Math::nchoosek(inum_cat - 2, fnum_cat - 1));
 	    }
 	    default:
 		    SG_ERROR(
@@ -844,7 +844,7 @@ float64_t CCHAIDTree::adjusted_p_value(float64_t up_value, int32_t inum_cat, int
 	return 0.0;
 }
 
-float64_t CCHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights)
+float64_t CHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights)
 {
 	switch (m_dependent_vartype)
 	{
@@ -859,14 +859,14 @@ float64_t CCHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labe
 			if (x2 == 0)
 				return 1;
 			else
-				return 1-CStatistics::chi2_cdf(x2,(r-1)*(c-1));
+				return 1-Statistics::chi2_cdf(x2,(r-1)*(c-1));
 		}
 		case 1:
 		{
 			int32_t r=0;
 			int32_t c=0;
 			float64_t h2=likelihood_ratio_statistic(feat,labels,weights,r,c);
-			return 1-CStatistics::chi2_cdf(h2,(r-1));
+			return 1-Statistics::chi2_cdf(h2,(r-1));
 		}
 		case 2:
 		{
@@ -877,7 +877,7 @@ float64_t CCHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labe
 			if (nf==num_cat)
 				return 1.0;
 
-			return 1-CStatistics::fdistribution_cdf(f,num_cat-1,nf-num_cat);
+			return 1-Statistics::fdistribution_cdf(f,num_cat-1,nf-num_cat);
 		}
 		default:
 			SG_ERROR("Dependent variable type must be either 0 or 1 or 2. It is currently set as %d\n",m_dependent_vartype)
@@ -886,7 +886,7 @@ float64_t CCHAIDTree::p_value(SGVector<float64_t> feat, SGVector<float64_t> labe
 	return -1.0;
 }
 
-float64_t CCHAIDTree::anova_f_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights, int32_t &r)
+float64_t CHAIDTree::anova_f_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights, int32_t &r)
 {
 	// compute y_bar
 	float64_t y_bar=0.;
@@ -925,8 +925,8 @@ float64_t CCHAIDTree::anova_f_statistic(SGVector<float64_t> feat, SGVector<float
 		{
 			if (feat[n]==ufeat[i])
 			{
-				nu+=weights[n]*CMath::pow(((numer[i]/denom[i])-y_bar),2);
-				de+=weights[n]*CMath::pow((labels[n]-(numer[i]/denom[i])),2);
+				nu+=weights[n]*Math::pow(((numer[i]/denom[i])-y_bar),2);
+				de+=weights[n]*Math::pow((labels[n]-(numer[i]/denom[i])),2);
 			}
 		}
 	}
@@ -939,7 +939,7 @@ float64_t CCHAIDTree::anova_f_statistic(SGVector<float64_t> feat, SGVector<float
 	return nu/de;
 }
 
-float64_t CCHAIDTree::likelihood_ratio_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels,
+float64_t CHAIDTree::likelihood_ratio_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels,
 						SGVector<float64_t> weights, int32_t &r, int32_t &c)
 {
 	SGVector<float64_t> ufeat=feat.clone();
@@ -997,7 +997,7 @@ float64_t CCHAIDTree::likelihood_ratio_statistic(SGVector<float64_t> feat, SGVec
 	return 2*ret;
 }
 
-float64_t CCHAIDTree::pchi2_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights,
+float64_t CHAIDTree::pchi2_statistic(SGVector<float64_t> feat, SGVector<float64_t> labels, SGVector<float64_t> weights,
 												int32_t &r, int32_t &c)
 {
 	SGVector<float64_t> ufeat=feat.clone();
@@ -1044,13 +1044,13 @@ float64_t CCHAIDTree::pchi2_statistic(SGVector<float64_t> feat, SGVector<float64
 	for (int32_t i=0;i<r;i++)
 	{
 		for (int32_t j=0;j<c;j++)
-			ret+=CMath::pow((ct(i,j)-expected_cf(i,j)),2)/expected_cf(i,j);
+			ret+=Math::pow((ct(i,j)-expected_cf(i,j)),2)/expected_cf(i,j);
 	}
 
 	return ret;
 }
 
-SGMatrix<float64_t> CCHAIDTree::expected_cf_row_effects_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt, SGVector<float64_t> score)
+SGMatrix<float64_t> CHAIDTree::expected_cf_row_effects_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt, SGVector<float64_t> score)
 {
 	int32_t r=ct.num_rows;
 	int32_t c=ct.num_cols;
@@ -1122,7 +1122,7 @@ SGMatrix<float64_t> CCHAIDTree::expected_cf_row_effects_model(SGMatrix<int32_t> 
 		{
 			float64_t sum=0.;
 			for (int32_t i=0;i<r;i++)
-				sum+=wt(i,j)*alpha[i]*CMath::pow(gamma[i],(score[j]-s_bar));
+				sum+=wt(i,j)*alpha[i]*Math::pow(gamma[i],(score[j]-s_bar));
 
 			beta[j]=(col_sum[j]-0.f)/sum;
 		}
@@ -1133,7 +1133,7 @@ SGMatrix<float64_t> CCHAIDTree::expected_cf_row_effects_model(SGMatrix<int32_t> 
 		for (int32_t i=0;i<r;i++)
 		{
 			for (int32_t j=0;j<c;j++)
-				m_star(i,j)=wt(i,j)*alpha[i]*beta[j]*CMath::pow(gamma[i],score[j]-s_bar);
+				m_star(i,j)=wt(i,j)*alpha[i]*beta[j]*Math::pow(gamma[i],score[j]-s_bar);
 		}
 
 		for (int32_t i=0;i<r;i++)
@@ -1143,7 +1143,7 @@ SGMatrix<float64_t> CCHAIDTree::expected_cf_row_effects_model(SGMatrix<int32_t> 
 			for (int32_t j=0;j<c;j++)
 			{
 				numer+=(score[j]-s_bar)*(ct(i,j)-m_star(i,j));
-				denom+=CMath::pow((score[j]-s_bar),2)*m_star(i,j);
+				denom+=Math::pow((score[j]-s_bar),2)*m_star(i,j);
 			}
 
 			g[i]=1+numer/denom;
@@ -1160,8 +1160,8 @@ SGMatrix<float64_t> CCHAIDTree::expected_cf_row_effects_model(SGMatrix<int32_t> 
 		{
 			for (int32_t j=0;j<c;j++)
 			{
-				m_kplus(i,j)=wt(i,j)*alpha[i]*beta[j]*CMath::pow(gamma[i],(score[j]-s_bar));
-				float64_t abs_diff=CMath::abs(m_kplus(i,j)-m_k(i,j));
+				m_kplus(i,j)=wt(i,j)*alpha[i]*beta[j]*Math::pow(gamma[i],(score[j]-s_bar));
+				float64_t abs_diff=Math::abs(m_kplus(i,j)-m_k(i,j));
 				if (abs_diff>max_diff)
 					max_diff=abs_diff;
 			}
@@ -1175,7 +1175,7 @@ SGMatrix<float64_t> CCHAIDTree::expected_cf_row_effects_model(SGMatrix<int32_t> 
 	return m_k;
 }
 
-SGMatrix<float64_t> CCHAIDTree::expected_cf_indep_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt)
+SGMatrix<float64_t> CHAIDTree::expected_cf_indep_model(SGMatrix<int32_t> ct, SGMatrix<float64_t> wt)
 {
 	int32_t r=ct.num_rows;
 	int32_t c=ct.num_cols;
@@ -1259,7 +1259,7 @@ SGMatrix<float64_t> CCHAIDTree::expected_cf_indep_model(SGMatrix<int32_t> ct, SG
 				for (int32_t j=0;j<c;j++)
 				{
 					m_kplus(i,j)=wt(i,j)*alpha[i]*beta[j];
-					float64_t abs_diff=CMath::abs(m_kplus(i,j)-m_k(i,j));
+					float64_t abs_diff=Math::abs(m_kplus(i,j)-m_k(i,j));
 					if (abs_diff>max_diff)
 						max_diff=abs_diff;
 				}
@@ -1277,7 +1277,7 @@ SGMatrix<float64_t> CCHAIDTree::expected_cf_indep_model(SGMatrix<int32_t> ct, SG
 	return ret;
 }
 
-float64_t CCHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector<float64_t> weights, float64_t &mean)
+float64_t CHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector<float64_t> weights, float64_t &mean)
 {
 	mean=0;
 	float64_t total_weight=0;
@@ -1295,7 +1295,7 @@ float64_t CCHAIDTree::sum_of_squared_deviation(SGVector<float64_t> lab, SGVector
 	return dev;
 }
 
-bool CCHAIDTree::continuous_to_ordinal(std::shared_ptr<CDenseFeatures<float64_t>> feats)
+bool CHAIDTree::continuous_to_ordinal(std::shared_ptr<DenseFeatures<float64_t>> feats)
 {
 	// assimilate continuous breakpoints
 	int32_t count_cont=0;
@@ -1330,7 +1330,7 @@ bool CCHAIDTree::continuous_to_ordinal(std::shared_ptr<CDenseFeatures<float64_t>
 		for (int32_t j=0;j<values.vlen;j++)
 			values[j]=feats->get_feature_vector(j)[cont_ind[i]];
 
-		CMath::qsort(values);
+		Math::qsort(values);
 
 		for (int32_t j=0;j<m_num_breakpoints;j++)
 		{
@@ -1354,7 +1354,7 @@ bool CCHAIDTree::continuous_to_ordinal(std::shared_ptr<CDenseFeatures<float64_t>
 	return true;
 }
 
-void CCHAIDTree::modify_data_matrix(std::shared_ptr<CDenseFeatures<float64_t>> feats)
+void CHAIDTree::modify_data_matrix(std::shared_ptr<DenseFeatures<float64_t>> feats)
 {
 	int32_t c=0;
 	for (int32_t i=0;i<feats->get_num_features();i++)
@@ -1379,7 +1379,7 @@ void CCHAIDTree::modify_data_matrix(std::shared_ptr<CDenseFeatures<float64_t>> f
 	}
 }
 
-void CCHAIDTree::init()
+void CHAIDTree::init()
 {
 	m_feature_types=SGVector<int32_t>();
 	m_weights=SGVector<float64_t>();

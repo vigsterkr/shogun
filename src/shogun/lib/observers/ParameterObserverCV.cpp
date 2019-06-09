@@ -43,16 +43,16 @@
 
 using namespace shogun;
 
-CParameterObserverCV::CParameterObserverCV(bool verbose)
+ParameterObserverCV::ParameterObserverCV(bool verbose)
     : ParameterObserver(), m_verbose(verbose)
 {
 }
 
-CParameterObserverCV::~CParameterObserverCV()
+ParameterObserverCV::~ParameterObserverCV()
 {
 }
 
-void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
+void ParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 {
 	try
 	{
@@ -73,15 +73,15 @@ void CParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 	}
 }
 
-void CParameterObserverCV::on_error(std::exception_ptr ptr)
+void ParameterObserverCV::on_error(std::exception_ptr ptr)
 {
 }
 
-void CParameterObserverCV::on_complete()
+void ParameterObserverCV::on_complete()
 {
 }
 
-void CParameterObserverCV::print_observed_value(
+void ParameterObserverCV::print_observed_value(
     std::shared_ptr<CrossValidationStorage> value) const
 {
 	for (index_t i = 0; i < value->get<index_t>("num_folds"); i++)
@@ -108,26 +108,26 @@ void CParameterObserverCV::print_observed_value(
 	}
 }
 
-void CParameterObserverCV::print_machine_information(std::shared_ptr<CMachine> machine) const
+void ParameterObserverCV::print_machine_information(std::shared_ptr<Machine> machine) const
 {
-	if (std::dynamic_pointer_cast<CLinearMachine>(machine))
+	if (std::dynamic_pointer_cast<LinearMachine>(machine))
 	{
-		auto linear_machine = std::static_pointer_cast<CLinearMachine>(machine);
+		auto linear_machine = std::static_pointer_cast<LinearMachine>(machine);
 		linear_machine->get_w().display_vector("Learned Weights = ");
 		SG_PRINT("Learned Bias = %f\n", linear_machine->get_bias())
 	}
 
-	if (std::dynamic_pointer_cast<CKernelMachine>(machine))
+	if (std::dynamic_pointer_cast<KernelMachine>(machine))
 	{
-		auto kernel_machine = machine->as<CKernelMachine>();
+		auto kernel_machine = machine->as<KernelMachine>();
 		kernel_machine->get_alphas().display_vector("Learned alphas = ");
 		SG_PRINT("Learned Bias = %f\n", kernel_machine->get_bias())
 	}
 
-	if (std::dynamic_pointer_cast<CLinearMulticlassMachine>(machine) ||
-	    std::dynamic_pointer_cast<CKernelMulticlassMachine>(machine))
+	if (std::dynamic_pointer_cast<LinearMulticlassMachine>(machine) ||
+	    std::dynamic_pointer_cast<KernelMulticlassMachine>(machine))
 	{
-		auto mc_machine = machine->as<CMulticlassMachine>();
+		auto mc_machine = machine->as<MulticlassMachine>();
 		for (int i = 0; i < mc_machine->get_num_machines(); i++)
 		{
 			auto sub_machine = mc_machine->get_machine(i);
@@ -135,21 +135,22 @@ void CParameterObserverCV::print_machine_information(std::shared_ptr<CMachine> m
 		}
 	}
 
-	if (std::dynamic_pointer_cast<CMKL>(machine))
+	if (std::dynamic_pointer_cast<MKL>(machine))
 	{
-		auto mkl = machine->as<CMKL>();
-		auto kernel = mkl->get_kernel()->as<CCombinedKernel>();
+		auto mkl = machine->as<MKL>();
+		auto kernel = mkl->get_kernel()->as<CombinedKernel>();
 		kernel->get_subkernel_weights().display_vector(
 		    "MKL sub-kernel weights =");
 
 	}
 
-	if (std::dynamic_pointer_cast<CMKLMulticlass>(machine))
+	if (std::dynamic_pointer_cast<MKLMulticlass>(machine))
 	{
-		auto mkl = machine->as<CMKLMulticlass>();
-		auto kernel = mkl->get_kernel()->as<CCombinedKernel>();
+		auto mkl = machine->as<MKLMulticlass>();
+		auto kernel = mkl->get_kernel()->as<CombinedKernel>();
 		kernel->get_subkernel_weights().display_vector(
 		    "MKL sub-kernel weights =");
 
 	}
 }
+

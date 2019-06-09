@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-float64_t CClusteringMutualInformation::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
+float64_t ClusteringMutualInformation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted && ground_truth)
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)
@@ -66,5 +66,5 @@ float64_t CClusteringMutualInformation::evaluate(std::shared_ptr<CLabels> predic
 		entropy_p += -G_colsum[i] * log(G_colsum[i])/log(2.);
 	}
 
-	return mutual_info / CMath::max(entropy_g, entropy_p);
+	return mutual_info / Math::max(entropy_g, entropy_p);
 }

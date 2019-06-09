@@ -20,20 +20,20 @@
 using namespace shogun;
 
 
-CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear() : CLibLinear(L2R_L1LOSS_SVC_DUAL)
+DomainAdaptationSVMLinear::DomainAdaptationSVMLinear() : LibLinear(L2R_L1LOSS_SVC_DUAL)
 {
 	init(NULL, 0.0);
 }
 
 
-CDomainAdaptationSVMLinear::CDomainAdaptationSVMLinear(float64_t C, std::shared_ptr<CDotFeatures> f, std::shared_ptr<CLabels> lab, std::shared_ptr<CLinearMachine> pre_svm, float64_t B_param) : CLibLinear(C, f, lab)
+DomainAdaptationSVMLinear::DomainAdaptationSVMLinear(float64_t C, std::shared_ptr<DotFeatures> f, std::shared_ptr<Labels> lab, std::shared_ptr<LinearMachine> pre_svm, float64_t B_param) : LibLinear(C, f, lab)
 {
 	init(pre_svm, B_param);
 
 }
 
 
-CDomainAdaptationSVMLinear::~CDomainAdaptationSVMLinear()
+DomainAdaptationSVMLinear::~DomainAdaptationSVMLinear()
 {
 
 
@@ -41,7 +41,7 @@ CDomainAdaptationSVMLinear::~CDomainAdaptationSVMLinear()
 }
 
 
-void CDomainAdaptationSVMLinear::init(std::shared_ptr<CLinearMachine> pre_svm, float64_t B_param)
+void DomainAdaptationSVMLinear::init(std::shared_ptr<LinearMachine> pre_svm, float64_t B_param)
 {
 
 	if (pre_svm)
@@ -69,7 +69,7 @@ void CDomainAdaptationSVMLinear::init(std::shared_ptr<CLinearMachine> pre_svm, f
 }
 
 
-bool CDomainAdaptationSVMLinear::is_presvm_sane()
+bool DomainAdaptationSVMLinear::is_presvm_sane()
 {
 
 	if (!presvm) {
@@ -92,10 +92,10 @@ bool CDomainAdaptationSVMLinear::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVMLinear::train_machine(std::shared_ptr<CFeatures> train_data)
+bool DomainAdaptationSVMLinear::train_machine(std::shared_ptr<Features> train_data)
 {
 
-	std::shared_ptr<CDotFeatures> tmp_data;
+	std::shared_ptr<DotFeatures> tmp_data;
 
 	if (m_labels->get_label_type() != LT_BINARY)
 		SG_ERROR("DomainAdaptationSVMLinear requires binary labels\n")
@@ -105,10 +105,10 @@ bool CDomainAdaptationSVMLinear::train_machine(std::shared_ptr<CFeatures> train_
 		if (!train_data->has_property(FP_DOT))
 			SG_ERROR("DotFeatures expected\n")
 
-		if (m_labels->as<CBinaryLabels>()->get_num_labels() != train_data->get_num_vectors())
+		if (m_labels->as<BinaryLabels>()->get_num_labels() != train_data->get_num_vectors())
 			SG_ERROR("Number of training vectors does not match number of labels\n")
 
-		tmp_data = train_data->as<CDotFeatures>();
+		tmp_data = train_data->as<DotFeatures>();
 	}
 	else
 	{
@@ -169,9 +169,9 @@ bool CDomainAdaptationSVMLinear::train_machine(std::shared_ptr<CFeatures> train_
 	//train SVM
 	if (train_data)
 	{
-		success = CLibLinear::train_machine(train_data);
+		success = LibLinear::train_machine(train_data);
 	} else {
-		success = CLibLinear::train_machine();
+		success = LibLinear::train_machine();
 	}
 
 	//ASSERT(presvm)
@@ -181,37 +181,37 @@ bool CDomainAdaptationSVMLinear::train_machine(std::shared_ptr<CFeatures> train_
 }
 
 
-std::shared_ptr<CLinearMachine> CDomainAdaptationSVMLinear::get_presvm()
+std::shared_ptr<LinearMachine> DomainAdaptationSVMLinear::get_presvm()
 {
 	return presvm;
 }
 
 
-float64_t CDomainAdaptationSVMLinear::get_B()
+float64_t DomainAdaptationSVMLinear::get_B()
 {
 	return B;
 }
 
 
-float64_t CDomainAdaptationSVMLinear::get_train_factor()
+float64_t DomainAdaptationSVMLinear::get_train_factor()
 {
 	return train_factor;
 }
 
 
-void CDomainAdaptationSVMLinear::set_train_factor(float64_t factor)
+void DomainAdaptationSVMLinear::set_train_factor(float64_t factor)
 {
 	train_factor = factor;
 }
 
 
-std::shared_ptr<CBinaryLabels> CDomainAdaptationSVMLinear::apply_binary(std::shared_ptr<CFeatures> data)
+std::shared_ptr<BinaryLabels> DomainAdaptationSVMLinear::apply_binary(std::shared_ptr<Features> data)
 {
 	ASSERT(presvm->get_bias()==0.0)
 
 	int32_t num_examples = data->get_num_vectors();
 
-	auto out_current = CLibLinear::apply_binary(data);
+	auto out_current = LibLinear::apply_binary(data);
 
 	SGVector<float64_t> out_combined(num_examples);
 	if (presvm)
@@ -229,7 +229,7 @@ std::shared_ptr<CBinaryLabels> CDomainAdaptationSVMLinear::apply_binary(std::sha
 
 
 
-	return std::make_shared<CBinaryLabels>(out_combined);
+	return std::make_shared<BinaryLabels>(out_combined);
 }
 
 #endif //HAVE_LAPACK

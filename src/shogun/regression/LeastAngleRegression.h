@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-class CFeatures;
+class Features;
 
 /** @brief Class for Least Angle Regression, can be used to solve LASSO.
  *
@@ -68,25 +68,25 @@ class CFeatures;
  * }
  * @endcode
  */
-class CLeastAngleRegression: public CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>
+class LeastAngleRegression: public DenseRealDispatch<LeastAngleRegression, LinearMachine>
 {
-	friend class CDenseRealDispatch<CLeastAngleRegression, CLinearMachine>;
+	friend class DenseRealDispatch<LeastAngleRegression, LinearMachine>;
 public:
 
 	/** problem type */
 	MACHINE_PROBLEM_TYPE(PT_REGRESSION);
 
 	/** Default constructor */
-	CLeastAngleRegression();
+	LeastAngleRegression();
 
 	/** default constructor
 	 *
 	 * @param lasso - when true, it runs the LASSO, when false, it runs LARS
 	 * */
-	CLeastAngleRegression(bool lasso);
+	LeastAngleRegression(bool lasso);
 
 	/** default destructor */
-	virtual ~CLeastAngleRegression();
+	virtual ~LeastAngleRegression();
 
 	/** switch estimator
 	 *
@@ -173,7 +173,7 @@ protected:
 	*/
 	template <typename ST, typename U = typename std::enable_if_t<
 		                       std::is_floating_point<ST>::value>>
-	bool train_machine_templated(std::shared_ptr<CDenseFeatures<ST>> data);
+	bool train_machine_templated(std::shared_ptr<DenseFeatures<ST>> data);
 
 private:
 	/** Initialize and register parameters */

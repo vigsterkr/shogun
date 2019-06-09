@@ -26,15 +26,15 @@ using namespace ColPack;
 namespace shogun
 {
 
-CProbingSampler::CProbingSampler() : CTraceSampler()
+ProbingSampler::ProbingSampler() : TraceSampler()
 {
 	init();
 }
 
-CProbingSampler::CProbingSampler(
-	std::shared_ptr<CSparseMatrixOperator<float64_t>> matrix_operator, int64_t power,
+ProbingSampler::ProbingSampler(
+	std::shared_ptr<SparseMatrixOperator<float64_t>> matrix_operator, int64_t power,
 	EOrderingVariant ordering, EColoringVariant coloring)
-	: CTraceSampler(matrix_operator->get_dimension())
+	: TraceSampler(matrix_operator->get_dimension())
 {
 	init();
 
@@ -44,7 +44,7 @@ CProbingSampler::CProbingSampler(
 	m_coloring=coloring;
 }
 
-void CProbingSampler::init()
+void ProbingSampler::init()
 {
 	m_matrix_operator=NULL;
 	m_power=1;
@@ -61,27 +61,27 @@ void CProbingSampler::init()
 	SG_ADD(&m_is_precomputed, "is_precomputed",
 		"flag that is true if already precomputed");
 
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_matrix_operator, "matrix_operator",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_matrix_operator, "matrix_operator",
 		"the sparse-matrix linear opeator for coloring");
 		*/
 }
 
-CProbingSampler::~CProbingSampler()
+ProbingSampler::~ProbingSampler()
 {
 }
 
-void CProbingSampler::set_coloring_vector(SGVector<int32_t> coloring_vector)
+void ProbingSampler::set_coloring_vector(SGVector<int32_t> coloring_vector)
 {
 	m_coloring_vector=coloring_vector;
 	m_is_precomputed=true;
 }
 
-SGVector<int32_t> CProbingSampler::get_coloring_vector() const
+SGVector<int32_t> ProbingSampler::get_coloring_vector() const
 {
 	return m_coloring_vector;
 }
 
-void CProbingSampler::precompute()
+void ProbingSampler::precompute()
 {
 	SG_DEBUG("Entering\n");
 
@@ -184,7 +184,7 @@ void CProbingSampler::precompute()
 	SG_DEBUG("Leaving\n");
 }
 
-SGVector<float64_t> CProbingSampler::sample(index_t idx) const
+SGVector<float64_t> ProbingSampler::sample(index_t idx) const
 {
 	REQUIRE(idx<m_num_samples, "Given index (%d) must be smaller than "
 			"number of samples to draw (%d)\n", idx, m_num_samples);

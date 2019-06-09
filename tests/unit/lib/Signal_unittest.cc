@@ -44,7 +44,7 @@ using namespace rxcpp;
 
 TEST(Signal, return_to_prompt_test)
 {
-	CSignal tmp;
+	Signal tmp;
 	int on_next_v = 0;
 	int on_complete_v = 0;
 	auto sub = rxcpp::make_subscriber<int>(
@@ -55,13 +55,13 @@ TEST(Signal, return_to_prompt_test)
 
 	EXPECT_TRUE(on_complete_v == 1);
 	EXPECT_TRUE(on_next_v == 0);
-	CSignal::reset_handler();
+	Signal::reset_handler();
 }
 
 TEST(Signal, prematurely_stop_computation_test)
 {
 
-	CSignal tmp;
+	Signal tmp;
 	int on_next_v = 0;
 	int on_complete_v = 0;
 	auto sub = rxcpp::make_subscriber<int>(
@@ -72,13 +72,13 @@ TEST(Signal, prematurely_stop_computation_test)
 
 	EXPECT_TRUE(on_next_v == 1);
 	EXPECT_TRUE(on_complete_v == 0);
-	CSignal::reset_handler();
+	Signal::reset_handler();
 }
 
 TEST(Signal, pause_computation_test)
 {
 
-	CSignal tmp;
+	Signal tmp;
 	int on_next_v = 0;
 	int on_complete_v = 0;
 	auto sub = rxcpp::make_subscriber<int>(
@@ -95,5 +95,5 @@ TEST(Signal, pause_computation_test)
 
 	EXPECT_TRUE(on_next_v == 2);
 	EXPECT_TRUE(on_complete_v == 0);
-	CSignal::reset_handler();
+	Signal::reset_handler();
 }

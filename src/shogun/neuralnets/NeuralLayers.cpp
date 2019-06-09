@@ -42,68 +42,68 @@
 
 using namespace shogun;
 
-CNeuralLayers::CNeuralLayers() : CSGObject(), m_layers(std::make_shared<CDynamicObjectArray>())
+NeuralLayers::NeuralLayers() : SGObject(), m_layers(std::make_shared<DynamicObjectArray>())
 {
 }
 
-CNeuralLayers::~CNeuralLayers()
+NeuralLayers::~NeuralLayers()
 {
 
 }
 
-std::shared_ptr<CNeuralLayers> CNeuralLayers::input(int32_t size)
+std::shared_ptr<NeuralLayers> NeuralLayers::input(int32_t size)
 {
-	return with_layer(std::make_shared<CNeuralInputLayer>(size));
+	return with_layer(std::make_shared<NeuralInputLayer>(size));
 }
 
-std::shared_ptr<CNeuralLayers> CNeuralLayers::logistic(int32_t size)
+std::shared_ptr<NeuralLayers> NeuralLayers::logistic(int32_t size)
 {
-	return with_layer(std::make_shared<CNeuralLogisticLayer>(size));
+	return with_layer(std::make_shared<NeuralLogisticLayer>(size));
 }
 
-std::shared_ptr<CNeuralLayers> CNeuralLayers::linear(int32_t size)
+std::shared_ptr<NeuralLayers> NeuralLayers::linear(int32_t size)
 {
-	return with_layer(std::make_shared<CNeuralLinearLayer>(size));
+	return with_layer(std::make_shared<NeuralLinearLayer>(size));
 }
 
-std::shared_ptr<CNeuralLayers> CNeuralLayers::rectified_linear(int32_t size)
+std::shared_ptr<NeuralLayers> NeuralLayers::rectified_linear(int32_t size)
 {
-	return with_layer(std::make_shared<CNeuralRectifiedLinearLayer>(size));
+	return with_layer(std::make_shared<NeuralRectifiedLinearLayer>(size));
 }
 
-std::shared_ptr<CNeuralLayers> CNeuralLayers::leaky_rectified_linear(int32_t size)
+std::shared_ptr<NeuralLayers> NeuralLayers::leaky_rectified_linear(int32_t size)
 {
-	return with_layer(std::make_shared<CNeuralLeakyRectifiedLinearLayer>(size));
+	return with_layer(std::make_shared<NeuralLeakyRectifiedLinearLayer>(size));
 }
 
-std::shared_ptr<CNeuralLayers> CNeuralLayers::softmax(int32_t size)
+std::shared_ptr<NeuralLayers> NeuralLayers::softmax(int32_t size)
 {
-	return with_layer(std::make_shared<CNeuralSoftmaxLayer>(size));
+	return with_layer(std::make_shared<NeuralSoftmaxLayer>(size));
 }
 
-std::shared_ptr<CNeuralLayers> CNeuralLayers::with_layer(std::shared_ptr<CNeuralLayer> layer)
+std::shared_ptr<NeuralLayers> NeuralLayers::with_layer(std::shared_ptr<NeuralLayer> layer)
 {
 	m_layers->push_back(layer);
-	return shared_from_this()->as<CNeuralLayers>();
+	return shared_from_this()->as<NeuralLayers>();
 }
 
-std::shared_ptr<CDynamicObjectArray> CNeuralLayers::done()
+std::shared_ptr<DynamicObjectArray> NeuralLayers::done()
 {
 
 	return m_layers;
 }
 
-void CNeuralLayers::clear()
+void NeuralLayers::clear()
 {
 	m_layers->clear_array();
 }
 
-bool CNeuralLayers::empty()
+bool NeuralLayers::empty()
 {
 	return (m_layers->get_array_size() == 0);
 }
 
-const char* CNeuralLayers::get_name() const
+const char* NeuralLayers::get_name() const
 {
 	return "NeuralLayers";
 }

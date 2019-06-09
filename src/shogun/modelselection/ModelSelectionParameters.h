@@ -17,7 +17,7 @@
 namespace shogun
 {
 
-class CParameterCombination;
+class ParameterCombination;
 
 /** type of range */
 enum ERangeType
@@ -49,12 +49,12 @@ enum EMSParamType
 /**
  * @brief Class to select parameters and their ranges for model selection. The
  * structure is organized as a tree with different kinds of nodes, depending on
- * the values of its member variables of name and CSGObject.
+ * the values of its member variables of name and SGObject.
  *
- * -root node: no name and no CSGObject, may have children
+ * -root node: no name and no SGObject, may have children
  *
- * -CSGObject node: has name and a CSGObject, may have children which are the
- * parameters of the CSGObject. CSGObjects are SG_REF'ed/SG_UNREF'ed
+ * -SGObject node: has name and a SGObject, may have children which are the
+ * parameters of the SGObject. SGObjects are SG_REF'ed/SG_UNREF'ed
  *
  * -value node: a node with a (parameter) name and an array of values for that
  * parameter. These ranges may be set using build_values().
@@ -65,33 +65,33 @@ enum EMSParamType
  * get_combinations method. It generates a set of trees (different kind than
  * this one) that contain the instantiated parameter combinations.
  */
-class CModelSelectionParameters: public CSGObject
+class ModelSelectionParameters: public SGObject
 {
 public:
 	/** constructor for a root node */
-	CModelSelectionParameters();
+	ModelSelectionParameters();
 
 	/** constructor for a value node
 	 *
 	 * @param node_name name of the parameter the values will belong to
 	 */
-	CModelSelectionParameters(const char* node_name);
+	ModelSelectionParameters(const char* node_name);
 
-	/** constructor for a CSGObject node
+	/** constructor for a SGObject node
 	 *
-	 * @param sgobject the CSGObject for this node. Is SG_REF'ed
-	 * @name name of the parameter of the CSGObject
+	 * @param sgobject the SGObject for this node. Is SG_REF'ed
+	 * @name name of the parameter of the SGObject
 	 */
-	CModelSelectionParameters(const char* node_name, std::shared_ptr<CSGObject> sgobject);
+	ModelSelectionParameters(const char* node_name, std::shared_ptr<SGObject> sgobject);
 
-	/** destructor. If set, deletes data array and SG_UNREF's the CSGObject */
-	~CModelSelectionParameters();
+	/** destructor. If set, deletes data array and SG_UNREF's the SGObject */
+	~ModelSelectionParameters();
 
 	/** appends a child to this tree. only possible if this is no value node
 	 *
 	 * @param child child to append
 	 */
-	void append_child(std::shared_ptr<CModelSelectionParameters> child);
+	void append_child(std::shared_ptr<ModelSelectionParameters> child);
 
 	/** setter for values of this node.
 	 * If the latter are not possible to be produced by set_range, a vector may
@@ -125,7 +125,7 @@ public:
 	 * to have a more readable print layout
 	 * @return result all trees of parameter combinations are put into here
 	 */
-	std::shared_ptr<CDynamicObjectArray> get_combinations(index_t prefix_num=1);
+	std::shared_ptr<DynamicObjectArray> get_combinations(index_t prefix_num=1);
 
 	/** Instead of generating an array of combinations, get_single_combination
 	 * generates a single  combination of parameters. The choice of
@@ -137,7 +137,7 @@ public:
 	 *
 	 * @return parameter tree of random parameter values.
 	 */
-	std::shared_ptr<CParameterCombination> get_single_combination(bool rand = true);
+	std::shared_ptr<ParameterCombination> get_single_combination(bool rand = true);
 
 	/** float64_t wrapper for build_values() */
 	void build_values(float64_t min, float64_t max, ERangeType type,
@@ -188,12 +188,12 @@ protected:
 	}
 
 private:
-	std::shared_ptr<CSGObject> m_sgobject;
+	std::shared_ptr<SGObject> m_sgobject;
 	const char* m_node_name;
 	void* m_values;
 	index_t m_values_length;
 	index_t* m_vector_length;
-	std::shared_ptr<CDynamicObjectArray> m_child_nodes;
+	std::shared_ptr<DynamicObjectArray> m_child_nodes;
 	EMSParamType m_value_type;
 	void*	m_vector;
 };
@@ -218,7 +218,7 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 		SG_SERROR("unable build values: max=%f < min=%f\n", max, min)
 
 	/* create value vector, no ref-counting */
-	index_t num_values=CMath::round((max-min)/step)+1;
+	index_t num_values=Math::round((max-min)/step)+1;
 	SGVector<T> result(num_values, false);
 
 	/* fill array */
@@ -232,14 +232,14 @@ template <class T> SGVector<T> create_range_array(T min, T max,
 			result.vector[i]=current;
 			break;
 		case R_EXP:
-			result.vector[i]=CMath::pow((float64_t)type_base, current);
+			result.vector[i]=Math::pow((float64_t)type_base, current);
 			break;
 		case R_LOG:
 			if (current<=0)
 				SG_SERROR("log(x) with x=%f\n", current)
 
 			/* custom base b: log_b(i*step)=log_2(i*step)/log_2(b) */
-			result.vector[i]=CMath::log2(current)/CMath::log2(type_base);
+			result.vector[i]=Math::log2(current)/Math::log2(type_base);
 			break;
 		default:
 			SG_SERROR("unknown range type!\n")

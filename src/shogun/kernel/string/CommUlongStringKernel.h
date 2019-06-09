@@ -17,8 +17,8 @@
 
 namespace shogun
 {
-template <class T> class CDynamicArray;
-template <class ST> class CStringFeatures;
+template <class T> class DynamicArray;
+template <class ST> class StringFeatures;
 
 /** @brief The CommUlongString kernel may be used to compute the spectrum kernel
  * from strings that have been mapped into unsigned 64bit integers.
@@ -44,17 +44,17 @@ template <class ST> class CStringFeatures;
  * improvement here when a whole set of sequences is ADDed) using sorted lists.
  *
  */
-class CCommUlongStringKernel: public CStringKernel<uint64_t>
+class CommUlongStringKernel: public StringKernel<uint64_t>
 {
 	public:
-		CCommUlongStringKernel();
+		CommUlongStringKernel();
 
 		/** constructor
 		 *
 		 * @param size cache size
 		 * @param use_sign if sign shall be used
 		 */
-		CCommUlongStringKernel(bool use_sign, int32_t size=10);
+		CommUlongStringKernel(bool use_sign, int32_t size=10);
 
 		/** constructor
 		 *
@@ -63,12 +63,12 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param use_sign if sign shall be used
 		 * @param size cache size
 		 */
-		CCommUlongStringKernel(
-			std::shared_ptr<CStringFeatures<uint64_t>> l, std::shared_ptr<CStringFeatures<uint64_t>> r,
+		CommUlongStringKernel(
+			std::shared_ptr<StringFeatures<uint64_t>> l, std::shared_ptr<StringFeatures<uint64_t>> r,
 			bool use_sign=false,
 			int32_t size=10);
 
-		virtual ~CCommUlongStringKernel();
+		virtual ~CommUlongStringKernel();
 
 		/** initialize kernel
 		 *
@@ -76,7 +76,7 @@ class CCommUlongStringKernel: public CStringKernel<uint64_t>
 		 * @param r features of right-hand side
 		 * @return if initializing was successful
 		 */
-		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** clean up kernel */
 		virtual void cleanup();

@@ -16,7 +16,7 @@
 
 using namespace shogun;
 
-class BinaryLabels : public ::testing::Test
+class BinaryLabelsTest : public ::testing::Test
 {
 public:
 	SGVector<float64_t> probabilities;
@@ -41,9 +41,9 @@ public:
 	}
 };
 
-TEST_F(BinaryLabels, serialization)
+TEST_F(BinaryLabelsTest, serialization)
 {
-	auto labels = std::make_shared<CBinaryLabels>(10);
+	auto labels = std::make_shared<BinaryLabels>(10);
 	SGVector<float64_t> lab = SGVector<float64_t>(labels->get_num_labels());
 	lab.random(1, 10);
 	labels->set_values(lab);
@@ -57,20 +57,20 @@ TEST_F(BinaryLabels, serialization)
 	ASSERT_TRUE(!fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_TRUE(!fs->new_writable_file(filename, &file));
-	auto fos = std::make_shared<io::CFileOutputStream>(file.get());
-	auto serializer = std::make_unique<io::CJsonSerializer>();
+	auto fos = std::make_shared<io::FileOutputStream>(file.get());
+	auto serializer = std::make_unique<io::JsonSerializer>();
 	serializer->attach(fos);
 	serializer->write(labels);
 
 	std::unique_ptr<io::RandomAccessFile> raf;
 	ASSERT_TRUE(!fs->new_random_access_file(filename, &raf));
-	auto fis = std::make_shared<io::CFileInputStream>(raf.get());
-	auto deserializer = std::make_unique<io::CJsonDeserializer>();
+	auto fis = std::make_shared<io::FileInputStream>(raf.get());
+	auto deserializer = std::make_unique<io::JsonDeserializer>();
 	deserializer->attach(fis);
 	auto deser_obj = deserializer->read_object();
 	ASSERT_TRUE(!fs->delete_file(filename));
 
-	auto new_labels = deser_obj->as<CBinaryLabels>();
+	auto new_labels = deser_obj->as<BinaryLabels>();
 	ASSERT_TRUE(new_labels->get_num_labels() == 10);
 
 	float64_t eps = 1E-14;
@@ -81,9 +81,9 @@ TEST_F(BinaryLabels, serialization)
 	}
 }
 
-TEST_F(BinaryLabels, set_values_labels_from_constructor)
+TEST_F(BinaryLabelsTest, set_values_labels_from_constructor)
 {
-	auto labels = std::make_shared<CBinaryLabels>(probabilities, threshold);
+	auto labels = std::make_shared<BinaryLabels>(probabilities, threshold);
 
 	SGVector<float64_t> labels_vector = labels->get_labels();
 	SGVector<float64_t> values_vector = labels->get_values();
@@ -107,9 +107,9 @@ TEST_F(BinaryLabels, set_values_labels_from_constructor)
 
 }
 
-TEST_F(BinaryLabels, binary_labels_from_binary)
+TEST_F(BinaryLabelsTest, binary_labels_from_binary)
 {
-	auto labels = std::make_shared<CBinaryLabels>(probabilities, 0.5);
+	auto labels = std::make_shared<BinaryLabels>(probabilities, 0.5);
 	auto labels2 = binary_labels(labels);
 	EXPECT_EQ(labels, labels2);
 }

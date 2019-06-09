@@ -47,10 +47,10 @@ TEST(KMeans, manual_center_initialization_test)
 	initial_centers(1,0)=5;
 	initial_centers(1,1)=5;
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(rect);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(rect);
 
-	auto distance=std::make_shared<CEuclideanDistance>(features, features);
-	auto clustering=std::make_shared<CKMeans>(2, distance,initial_centers);
+	auto distance=std::make_shared<EuclideanDistance>(features, features);
+	auto clustering=std::make_shared<KMeans>(2, distance,initial_centers);
 
 	auto observer = std::make_shared<CParameterObserverLogger>();
 	clustering->subscribe(observer);
@@ -60,14 +60,14 @@ TEST(KMeans, manual_center_initialization_test)
 		clustering->train(features);
 
 		auto result =
-		    clustering->apply()->as<CMulticlassLabels>();
+		    clustering->apply()->as<MulticlassLabels>();
 
 		EXPECT_EQ(0.000000, result->get_label(0));
 		EXPECT_EQ(0.000000, result->get_label(1));
 		EXPECT_EQ(1.000000, result->get_label(2));
 		EXPECT_EQ(1.000000, result->get_label(3));
 
-		auto learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+		auto learnt_centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
 
 		EXPECT_EQ(0, learnt_centers_matrix(0,0));
@@ -95,15 +95,15 @@ TEST(KMeans, KMeanspp_center_initialization_test)
 	rect(1,2)=0;
 	rect(1,3)=10;
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(rect);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(rect);
 
-	auto distance=std::make_shared<CEuclideanDistance>(features, features);
-	auto clustering=std::make_shared<CKMeans>(4, distance,true);
+	auto distance=std::make_shared<EuclideanDistance>(features, features);
+	auto clustering=std::make_shared<KMeans>(4, distance,true);
 
 	for (int32_t loop=0; loop<10; loop++)
 	{
 		clustering->train(features);
-		auto learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+		auto learnt_centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
 		SGVector<int32_t> count=SGVector<int32_t>(4);
 		count.zero();
@@ -154,16 +154,16 @@ TEST(KMeans, minibatch_training_test)
 	initial_centers(0,0)=0;
 	initial_centers(1,0)=0;
 
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(rect);
-	auto distance = std::make_shared<CEuclideanDistance>(features, features);
-	auto clustering = std::make_shared<CKMeansMiniBatch>(1, distance, initial_centers);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(rect);
+	auto distance = std::make_shared<EuclideanDistance>(features, features);
+	auto clustering = std::make_shared<KMeansMiniBatch>(1, distance, initial_centers);
 
 	for (int32_t loop=0; loop<10; ++loop)
 	{
 		clustering->put<int32_t>("max_iter", 1000);
 		clustering->put<int32_t>("batch_size", 4);
 		clustering->train(features);
-		auto learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+		auto learnt_centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 		SGMatrix<float64_t> learnt_centers_matrix=learnt_centers->get_feature_matrix();
 
 		EXPECT_NEAR(1, learnt_centers_matrix(0,0), 0.0001);
@@ -191,13 +191,13 @@ TEST(KMeans, fixed_centers)
 	initial_centers(0,1)=20;
 	initial_centers(1,1)=4;
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(rect);
-	auto distance=std::make_shared<CEuclideanDistance>(features, features);
-	auto clustering=std::make_shared<CKMeans>(2, distance,initial_centers);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(rect);
+	auto distance=std::make_shared<EuclideanDistance>(features, features);
+	auto clustering=std::make_shared<KMeans>(2, distance,initial_centers);
 	clustering->put<bool>("fixed_centers", true);
 
 	clustering->train(features);
-	auto learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto learnt_centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 
 	ASSERT_NE(learnt_centers, nullptr);
 	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
@@ -219,13 +219,13 @@ TEST(KMeans, random_centers_init)
 	rect(0,2)=20;
 	rect(1,2)=20;
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(rect);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(rect);
 
-	auto distance=std::make_shared<CEuclideanDistance>(features, features);
-	auto clustering=std::make_shared<CKMeans>(3, distance);
+	auto distance=std::make_shared<EuclideanDistance>(features, features);
+	auto clustering=std::make_shared<KMeans>(3, distance);
 
 	clustering->train(features);
-	auto learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto learnt_centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	ASSERT_NE(learnt_centers.get(), nullptr);
 	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
 
@@ -251,13 +251,13 @@ TEST(KMeans, random_centers_assign)
 	rect(0,3)=20;
 	rect(1,3)=10;
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(rect);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(rect);
 
-	auto distance=std::make_shared<CEuclideanDistance>(features, features);
-	auto clustering=std::make_shared<CKMeans>(2, distance);
+	auto distance=std::make_shared<EuclideanDistance>(features, features);
+	auto clustering=std::make_shared<KMeans>(2, distance);
 
 	clustering->train(features);
-	auto learnt_centers=distance->get_lhs()->as<CDenseFeatures<float64_t>>();
+	auto learnt_centers=distance->get_lhs()->as<DenseFeatures<float64_t>>();
 	ASSERT_NE(learnt_centers.get(), nullptr);
 	SGMatrix<float64_t> c=learnt_centers->get_feature_matrix();
 

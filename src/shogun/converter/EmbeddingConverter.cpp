@@ -13,62 +13,62 @@ using namespace shogun;
 
 namespace shogun
 {
-CEmbeddingConverter::CEmbeddingConverter()
-: CConverter()
+EmbeddingConverter::EmbeddingConverter()
+: Converter()
 {
 	m_target_dim = 1;
-	m_distance = std::make_shared<CEuclideanDistance>();
+	m_distance = std::make_shared<EuclideanDistance>();
 	
-	m_kernel = std::make_shared<CLinearKernel>();
+	m_kernel = std::make_shared<LinearKernel>();
 	
 
 	init();
 }
 
-CEmbeddingConverter::~CEmbeddingConverter()
+EmbeddingConverter::~EmbeddingConverter()
 {
 	
 	
 }
 
-void CEmbeddingConverter::set_target_dim(int32_t dim)
+void EmbeddingConverter::set_target_dim(int32_t dim)
 {
 	ASSERT(dim>0)
 	m_target_dim = dim;
 }
 
-int32_t CEmbeddingConverter::get_target_dim() const
+int32_t EmbeddingConverter::get_target_dim() const
 {
 	return m_target_dim;
 }
 
-void CEmbeddingConverter::set_distance(std::shared_ptr<CDistance> distance)
+void EmbeddingConverter::set_distance(std::shared_ptr<Distance> distance)
 {
 	
 	
 	m_distance = distance;
 }
 
-std::shared_ptr<CDistance> CEmbeddingConverter::get_distance() const
+std::shared_ptr<Distance> EmbeddingConverter::get_distance() const
 {
 	
 	return m_distance;
 }
 
-void CEmbeddingConverter::set_kernel(std::shared_ptr<CKernel> kernel)
+void EmbeddingConverter::set_kernel(std::shared_ptr<Kernel> kernel)
 {
 	
 	
 	m_kernel = kernel;
 }
 
-std::shared_ptr<CKernel> CEmbeddingConverter::get_kernel() const
+std::shared_ptr<Kernel> EmbeddingConverter::get_kernel() const
 {
 	
 	return m_kernel;
 }
 
-void CEmbeddingConverter::init()
+void EmbeddingConverter::init()
 {
 	SG_ADD(&m_target_dim, "target_dim",
       "target dimensionality of preprocessor", ParameterProperties::HYPER);

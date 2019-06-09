@@ -46,12 +46,12 @@ namespace shogun
 	/**
 	 * Base ParameterObserver class for CrossValidation.
 	 */
-	class CParameterObserverCV : public ParameterObserver
+	class ParameterObserverCV : public ParameterObserver
 	{
 
 	public:
-		CParameterObserverCV(bool verbose = false);
-		virtual ~CParameterObserverCV();
+		ParameterObserverCV(bool verbose = false);
+		virtual ~ParameterObserverCV();
 		virtual void on_error(std::exception_ptr ptr);
 		virtual void on_complete();
 
@@ -75,7 +75,7 @@ namespace shogun
 		 * Print information of a machine
 		 * @param machine given machine
 		 */
-		void print_machine_information(std::shared_ptr<CMachine> machine) const;
+		void print_machine_information(std::shared_ptr<Machine> machine) const;
 
 	protected:
 		virtual void on_next_impl(const TimedObservedValue& value);

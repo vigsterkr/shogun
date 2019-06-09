@@ -8,30 +8,30 @@
 
 using namespace shogun;
 
-CBaseMulticlassMachine::CBaseMulticlassMachine()
+BaseMulticlassMachine::BaseMulticlassMachine()
 {
-	m_machines = std::make_shared<CDynamicObjectArray>();
+	m_machines = std::make_shared<DynamicObjectArray>();
 	
 
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
 }
 
-CBaseMulticlassMachine::~CBaseMulticlassMachine()
+BaseMulticlassMachine::~BaseMulticlassMachine()
 {
 	
 }
 
-int32_t CBaseMulticlassMachine::get_num_machines() const
+int32_t BaseMulticlassMachine::get_num_machines() const
 {
 	return m_machines->get_num_elements();
 }
 
-EProblemType CBaseMulticlassMachine::get_machine_problem_type() const
+EProblemType BaseMulticlassMachine::get_machine_problem_type() const
 {
 	return PT_MULTICLASS;
 }
 
-bool CBaseMulticlassMachine::is_label_valid(std::shared_ptr<CLabels >lab) const
+bool BaseMulticlassMachine::is_label_valid(std::shared_ptr<Labels >lab) const
 {
 	return lab->get_label_type() == LT_MULTICLASS;
 }

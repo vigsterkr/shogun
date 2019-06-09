@@ -15,7 +15,7 @@ void generate_random_ensemble_matrix(SGMatrix<float64_t>& em,
 	{
 		SGVector<float64_t> hist(num_classes);
 		hist.zero();
-		float64_t max = CMath::ALMOST_NEG_INFTY;
+		float64_t max = Math::ALMOST_NEG_INFTY;
 		for (index_t j = 0; j < em.num_cols; ++j)
 		{
 			int32_t r = sg_rand->random(0, num_classes-1);
@@ -41,7 +41,7 @@ TEST(WeightedMajorityVote, combine_matrix)
 	SGVector<float64_t> expected(num_vectors);
 	SGVector<float64_t> weights(num_classifiers);
 	weights.random(0.5, 2.0);
-	auto mv = std::make_shared<CWeightedMajorityVote>(weights);
+	auto mv = std::make_shared<WeightedMajorityVote>(weights);
 
 	expected.zero();
 
@@ -60,7 +60,7 @@ TEST(WeightedMajorityVote, binary_combine_vector)
 	int32_t num_classifiers = 50;
 	SGVector<float64_t> weights(num_classifiers);
 	weights.random(0.5, 2.0);
-	auto mv = std::make_shared<CWeightedMajorityVote>(weights);
+	auto mv = std::make_shared<WeightedMajorityVote>(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> expected(2);
 
@@ -94,7 +94,7 @@ TEST(WeightedMajorityVote, multiclass_combine_vector)
 	int32_t num_classifiers = 10;
 	SGVector<float64_t> weights(num_classifiers);
 	weights.random(0.5, 2.0);
-	auto mv = std::make_shared<CWeightedMajorityVote>(weights);
+	auto mv = std::make_shared<WeightedMajorityVote>(weights);
 	SGVector<float64_t> v(num_classifiers);
 	SGVector<float64_t> hist(3);
 

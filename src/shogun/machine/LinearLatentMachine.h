@@ -15,14 +15,14 @@
 
 namespace shogun
 {
-	class CFeatures;
-	class CLatentLabels;
-	class CLatentModel;
+	class Features;
+	class LatentLabels;
+	class LatentModel;
 
 	/** @brief abstract implementaion of Linear Machine with latent variable
 	 * This is the base implementation of all linear machines with latent variable.
 	 */
-	class CLinearLatentMachine: public CLinearMachine
+	class LinearLatentMachine: public LinearMachine
 	{
 
 		public:
@@ -31,29 +31,29 @@ namespace shogun
 			MACHINE_PROBLEM_TYPE(PT_LATENT);
 
 			/** default contstructor */
-			CLinearLatentMachine();
+			LinearLatentMachine();
 
 			/** constructor
 			 *
-			 * @param model the user defined CLatentModel
+			 * @param model the user defined LatentModel
 			 * @param C regularisation constant
 			 */
-			CLinearLatentMachine(std::shared_ptr<CLatentModel> model, float64_t C);
+			LinearLatentMachine(std::shared_ptr<LatentModel> model, float64_t C);
 
-			virtual ~CLinearLatentMachine();
+			virtual ~LinearLatentMachine();
 
 			/** apply linear machine to data set before
 			 *
 			 * @return classified labels
 			 */
-			virtual std::shared_ptr<CLatentLabels> apply_latent() = 0;
+			virtual std::shared_ptr<LatentLabels> apply_latent() = 0;
 
 			/** apply linear machine to data
 			 *
 			 * @param data (test)data to be classified
 			 * @return classified labels
 			 */
-			virtual std::shared_ptr<CLatentLabels> apply_latent(std::shared_ptr<CFeatures> data);
+			virtual std::shared_ptr<LatentLabels> apply_latent(std::shared_ptr<Features> data);
 
 			/** Returns the name of the SGSerializable instance.
 			 *
@@ -104,7 +104,7 @@ namespace shogun
 			 *
 			 * @param latent_model user defined latent model
 			 */
-			void set_model(std::shared_ptr<CLatentModel> latent_model);
+			void set_model(std::shared_ptr<LatentModel> latent_model);
 
 			virtual bool train_require_labels() const
 			{
@@ -112,7 +112,7 @@ namespace shogun
 			}
 
 		protected:
-			virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
+			virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 			/** inner loop of the latent machine
 			 *
@@ -124,7 +124,7 @@ namespace shogun
 
 		protected:
 			/** user supplied latent model */
-			std::shared_ptr<CLatentModel> m_model;
+			std::shared_ptr<LatentModel> m_model;
 			/** C */
 			float64_t m_C;
 			/** epsilon */

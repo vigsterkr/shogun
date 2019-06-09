@@ -47,10 +47,10 @@ TEST(KernelDensity,gaussian_kernel_with_euclidean_distance)
 	data(1,2)=0;
 	data(1,3)=2;
 
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 
-	auto k=std::make_shared<CKernelDensity>();
+	auto k=std::make_shared<KernelDensity>();
 	k->train(feats);
 
 	SGMatrix<float64_t> test(2,5);
@@ -65,7 +65,7 @@ TEST(KernelDensity,gaussian_kernel_with_euclidean_distance)
 	test(0,4)=1;
 	test(1,4)=0;
 
-	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
+	auto testfeats=std::make_shared<DenseFeatures<float64_t>>(test);
 	SGVector<float64_t> res=k->get_log_density(testfeats);
 
 	EXPECT_NEAR(res[0],-2.83787706,1e-8);
@@ -91,10 +91,10 @@ TEST(KernelDensity,gaussian_kernel_with_manhattan_distance)
 	data(1,2)=0;
 	data(1,3)=2;
 
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 
-	auto k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_MANHATTAN);
+	auto k=std::make_shared<KernelDensity>(1.0, K_GAUSSIAN, D_MANHATTAN);
 	k->train(feats);
 
 	SGMatrix<float64_t> test(2,5);
@@ -109,7 +109,7 @@ TEST(KernelDensity,gaussian_kernel_with_manhattan_distance)
 	test(0,4)=1;
 	test(1,4)=0;
 
-	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
+	auto testfeats=std::make_shared<DenseFeatures<float64_t>>(test);
 	SGVector<float64_t> res=k->get_log_density(testfeats);
 
 	EXPECT_NEAR(res[0],-3.83787706,1e-8);
@@ -135,10 +135,10 @@ TEST(KernelDensity,dual_tree)
 	data(1,2)=0;
 	data(1,3)=2;
 
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 
-	auto k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL);
+	auto k=std::make_shared<KernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL);
 	k->train(feats);
 
 	SGMatrix<float64_t> test(2,5);
@@ -153,7 +153,7 @@ TEST(KernelDensity,dual_tree)
 	test(0,4)=1;
 	test(1,4)=0;
 
-	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
+	auto testfeats=std::make_shared<DenseFeatures<float64_t>>(test);
 	SGVector<float64_t> res=k->get_log_density(testfeats);
 
 	EXPECT_NEAR(res[0],-2.83787706,1e-8);
@@ -173,19 +173,19 @@ TEST(KernelDensity,dual_tree_single_tree_equivalence)
 
 	SGMatrix<float64_t> data(5,100);
 	sg_rand->fill_array_oo(data.matrix,500);
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGMatrix<float64_t> test(5,20);
 	sg_rand->fill_array_oo(test.matrix,100);
-	auto testfeats=std::make_shared<CDenseFeatures<float64_t>>(test);
+	auto testfeats=std::make_shared<DenseFeatures<float64_t>>(test);
 
 
-	auto k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL,5);
+	auto k=std::make_shared<KernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_DUAL,5);
 	k->train(feats);
 	SGVector<float64_t> res_dual=k->get_log_density(testfeats,2);
 
 
-	k=std::make_shared<CKernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_SINGLE,5);
+	k=std::make_shared<KernelDensity>(1.0, K_GAUSSIAN, D_EUCLIDEAN, EM_BALLTREE_SINGLE,5);
 	k->train(feats);
 	SGVector<float64_t> res_single=k->get_log_density(testfeats);
 

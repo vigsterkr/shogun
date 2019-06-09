@@ -47,9 +47,9 @@ public:
 	    const int32_t num_dim)
 	{
 		ASSERT(num_labels > 1)
-		SGMatrix<float64_t> data = CDataGenerator::generate_gaussians(
+		SGMatrix<float64_t> data = DataGenerator::generate_gaussians(
 		    num_samples, num_labels, num_dim);
-		CDenseFeatures<float64_t> features(data);
+		DenseFeatures<float64_t> features(data);
 
 		set_size = data.num_cols / 2;
 		SGVector<index_t> train_idx(set_size), test_idx(set_size);
@@ -70,8 +70,8 @@ public:
 				labels[i / 2] = (i < data.num_cols / 2) ? 1.0 : -1.0;
 			}
 
-			labels_train = std::make_shared<CBinaryLabels>(labels);
-			labels_test = std::make_shared<CBinaryLabels>(labels);
+			labels_train = std::make_shared<BinaryLabels>(labels);
+			labels_test = std::make_shared<BinaryLabels>(labels);
 		}
 		if (num_labels > 2)
 		{
@@ -85,14 +85,14 @@ public:
 				}
 			}
 
-			labels_train = std::make_shared<CMulticlassLabels>(labels);
-			labels_test = std::make_shared<CMulticlassLabels>(labels);
+			labels_train = std::make_shared<MulticlassLabels>(labels);
+			labels_test = std::make_shared<MulticlassLabels>(labels);
 		}
 
 		features_train =
-		    features.copy_subset(train_idx)->as<CDenseFeatures<float64_t>>();
+		    features.copy_subset(train_idx)->as<DenseFeatures<float64_t>>();
 		features_test =
-		    features.copy_subset(test_idx)->as<CDenseFeatures<float64_t>>();
+		    features.copy_subset(test_idx)->as<DenseFeatures<float64_t>>();
 
 	}
 
@@ -132,16 +132,16 @@ public:
 
 protected:
 	// data for training
-	std::shared_ptr<CDenseFeatures<float64_t>> features_train;
+	std::shared_ptr<DenseFeatures<float64_t>> features_train;
 
 	// data for testing
-	std::shared_ptr<CDenseFeatures<float64_t>> features_test;
+	std::shared_ptr<DenseFeatures<float64_t>> features_test;
 
 	// traning label
-	std::shared_ptr<CLabels> labels_train;
+	std::shared_ptr<Labels> labels_train;
 
 	// testing label
-	std::shared_ptr<CLabels> labels_test;
+	std::shared_ptr<Labels> labels_test;
 
 	// the size of generated data set
 	int32_t set_size;

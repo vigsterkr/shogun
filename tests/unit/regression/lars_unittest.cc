@@ -97,11 +97,11 @@ TEST(LeastAngleRegression, lasso_n_greater_than_d)
 	SGVector<float64_t> lab(5);
 	generate_data_n_greater_d(data, lab);
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
-	auto lars=std::make_shared<CLeastAngleRegression>();
+	auto lars=std::make_shared<LeastAngleRegression>();
 	lars->set_labels(labels);
 	lars->train(features);
 
@@ -133,11 +133,11 @@ TEST(LeastAngleRegression, lasso_n_less_than_d)
 	SGVector<float64_t> lab(3);
 	generate_data_n_less_d(data,lab);
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
-	auto lars=std::make_shared<CLeastAngleRegression>();
+	auto lars=std::make_shared<LeastAngleRegression>();
 	lars->set_labels(labels);
 	lars->train(features);
 
@@ -168,11 +168,11 @@ TEST(LeastAngleRegression, lars_n_greater_than_d)
 	SGVector<float64_t> lab(5);
 	generate_data_n_greater_d(data, lab);
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
-	auto lars=std::make_shared<CLeastAngleRegression>(false);
+	auto lars=std::make_shared<LeastAngleRegression>(false);
 	lars->set_labels(labels);
 	lars->train(features);
 
@@ -204,11 +204,11 @@ TEST(LeastAngleRegression, lars_n_less_than_d)
 	SGVector<float64_t> lab(3);
 	generate_data_n_less_d(data,lab);
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
-	auto lars=std::make_shared<CLeastAngleRegression>(false);
+	auto lars=std::make_shared<LeastAngleRegression>(false);
 	lars->set_labels(labels);
 	lars->train(features);
 
@@ -246,10 +246,10 @@ void lars_n_less_than_d_feature_test_templated()
 		for(index_t r = 0; r < data_64.num_rows; ++r)
 			data(r, c) = (ST) data_64(r, c);
 
-	auto features = std::make_shared<CDenseFeatures<ST>>(data);
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto features = std::make_shared<DenseFeatures<ST>>(data);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
-	auto lars=std::make_shared<CLeastAngleRegression>(false);
+	auto lars=std::make_shared<LeastAngleRegression>(false);
 
 
 	lars->set_labels(labels);
@@ -350,13 +350,13 @@ TEST(LeastAngleRegression, lars_template_test_floatmax)
 #ifndef USE_VIENNACL_GLOBAL
 TEST(LeastAngleRegression, cholesky_insert)
 {
-	class lars_helper: public CLeastAngleRegression
+	class lars_helper: public LeastAngleRegression
 	{
 		public:
 			SGMatrix<float64_t> cholesky_insert_helper(const SGMatrix<float64_t>& X,
 					const SGMatrix<float64_t>& X_active, SGMatrix<float64_t>& R, int32_t i, int32_t n)
 			{
-				return CLeastAngleRegression::cholesky_insert<float64_t>(X, X_active, R, i, n);
+				return LeastAngleRegression::cholesky_insert<float64_t>(X, X_active, R, i, n);
 			}
 	};
 
@@ -373,7 +373,7 @@ TEST(LeastAngleRegression, cholesky_insert)
 	{
 		for (index_t j=0; j<num_feats-1; j++)
 		{
-			mat(i,j)=CMath::random(0.0,1.0);
+			mat(i,j)=Math::random(0.0,1.0);
 			matnew(i,j)=mat(i,j);
 		}
 	}
@@ -408,7 +408,7 @@ TEST(LeastAngleRegression, ols_equivalence)
 	for (index_t i=0; i<n_feat; i++)
 	{
 		for (index_t j=0; j<n_vec; j++)
-			data(i,j)=CMath::random(0.0,1.0);
+			data(i,j)=Math::random(0.0,1.0);
 	}
 
 	SGVector<float64_t> lab=SGVector<float64_t>(n_vec);
@@ -418,19 +418,19 @@ TEST(LeastAngleRegression, ols_equivalence)
 	for (index_t i=0; i<lab.size(); i++)
 		lab[i]-=mean;
 
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto proc1 = std::make_shared<CPruneVarSubMean>();
-	auto proc2 = std::make_shared<CNormOne>();
+	auto proc1 = std::make_shared<PruneVarSubMean>();
+	auto proc2 = std::make_shared<NormOne>();
 	proc1->fit(features);
 	features =
-	    proc1->transform(features)->as<CDenseFeatures<float64_t>>();
+	    proc1->transform(features)->as<DenseFeatures<float64_t>>();
 	proc2->fit(features);
 	features =
-	    proc2->transform(features)->as<CDenseFeatures<float64_t>>();
+	    proc2->transform(features)->as<DenseFeatures<float64_t>>();
 
-	auto labels = std::make_shared<CRegressionLabels>(lab);
-	auto lars = std::make_shared<CLeastAngleRegression>(false);
+	auto labels = std::make_shared<RegressionLabels>(lab);
+	auto lars = std::make_shared<LeastAngleRegression>(false);
 	lars->set_labels(labels);
 	lars->train(features);
 	// Full LAR model
@@ -460,11 +460,11 @@ TEST(LeastAngleRegression, early_stop_l1_norm)
 	SGVector<float64_t> lab(5);
 	generate_data_n_greater_d(data, lab);
 
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto features=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
-	auto lars=std::make_shared<CLeastAngleRegression>(false);
+	auto lars=std::make_shared<LeastAngleRegression>(false);
 	lars->set_labels(labels);
 	// set max l1 norm
 	lars->put("max_l1_norm", 1.0);

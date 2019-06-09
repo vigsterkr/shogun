@@ -39,29 +39,29 @@ using namespace shogun;
 TEST(TreeMachine, tree_building_test)
 {
 	auto root=
-			std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 
 
 	auto tree=
-			std::make_shared<CTreeMachine<id3TreeNodeData>>();
+			std::make_shared<TreeMachine<id3TreeNodeData>>();
 	tree->set_root(root);
 
 
 
 	auto child1=
-			std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 
 	auto child2=
-			std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 	child2->machine(2);
 	child2->data.attribute_id=2;
 	child2->data.transit_if_feature_value=2.0;
 	child2->data.class_label=22.0;
 
 	auto child3=
-			std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 
-	auto insert_children = std::make_shared<CDynamicObjectArray>();
+	auto insert_children = std::make_shared<DynamicObjectArray>();
 	insert_children->push_back(child1);
 	insert_children->push_back(child2);
 
@@ -71,7 +71,7 @@ TEST(TreeMachine, tree_building_test)
 
 	auto get_children=get_root->get_children();
 	EXPECT_EQ(get_children->get_num_elements(),3);
-	auto get_child2=get_children->get_element<CTreeMachineNode<id3TreeNodeData>>(1);
+	auto get_child2=get_children->get_element<TreeMachineNode<id3TreeNodeData>>(1);
 
 	get_children=get_child2->get_children();
 
@@ -89,22 +89,22 @@ TEST(TreeMachine, tree_building_test)
 
 TEST(TreeMachine, clone_tree_test)
 {
-	auto root=std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
+	auto root=std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 
 
-	auto tree=std::make_shared<CTreeMachine<id3TreeNodeData>>();
+	auto tree=std::make_shared<TreeMachine<id3TreeNodeData>>();
 	tree->set_root(root);
 
 
-	auto child1= std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
-	auto child2= std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
-	auto child3=std::make_shared<CTreeMachineNode<id3TreeNodeData>>();
+	auto child1= std::make_shared<TreeMachineNode<id3TreeNodeData>>();
+	auto child2= std::make_shared<TreeMachineNode<id3TreeNodeData>>();
+	auto child3=std::make_shared<TreeMachineNode<id3TreeNodeData>>();
 	child2->machine(2);
 	child2->data.attribute_id=2;
 	child2->data.transit_if_feature_value=2.0;
 	child2->data.class_label=22.0;
 
-	auto insert_children=std::make_shared<CDynamicObjectArray>();
+	auto insert_children=std::make_shared<DynamicObjectArray>();
 	insert_children->push_back(child1);
 	insert_children->push_back(child2);
 	insert_children->push_back(child3);
@@ -116,7 +116,7 @@ TEST(TreeMachine, clone_tree_test)
 	get_root=tree_clone->get_root();
 	auto get_children=get_root->get_children();
 	EXPECT_EQ(get_children->get_num_elements(),3);
-	auto get_child2=get_children->get_element<CTreeMachineNode<id3TreeNodeData>>(1);
+	auto get_child2=get_children->get_element<TreeMachineNode<id3TreeNodeData>>(1);
 
 	get_children=get_child2->get_children();
 

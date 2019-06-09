@@ -114,7 +114,7 @@ public:
 
 			return *this;
 		}
-		std::shared_ptr<CSGObject> operator*()
+		std::shared_ptr<SGObject> operator*()
 		{
 			return m_obj;
 		}
@@ -143,7 +143,7 @@ public:
 
 		std::set<std::string>::iterator m_it;
 		std::set<std::string>::iterator m_end;
-		std::shared_ptr<CSGObject> m_obj;
+		std::shared_ptr<SGObject> m_obj;
 	};
 
 	Iterator begin() const

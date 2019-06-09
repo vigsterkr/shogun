@@ -19,18 +19,18 @@
 #include <string>
 
 namespace shogun {
-	class CSGObject;
+	class SGObject;
 
 	/** new shogun instance
 	 * @param sgserializable_name
 	 * @param generic
 	 */
-	std::shared_ptr<CSGObject> create(const char* sgserializable_name, EPrimitiveType generic);
+	std::shared_ptr<SGObject> create(const char* sgserializable_name, EPrimitiveType generic);
 
 	/** deletes object
 	 * @param object pointer to object to be deleted
 	 */
-	void delete_object(CSGObject* object);
+	void delete_object(SGObject* object);
 
 	/** Creates new shogun instance, typed.
 	 *

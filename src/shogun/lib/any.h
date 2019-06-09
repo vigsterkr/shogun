@@ -77,7 +77,7 @@ namespace shogun {
 		return any_detail::demangled_type_helper(name);
 	}
 
-	class CSGObject;
+	class SGObject;
 	template <class T>
 	class SGVector;
 	template <class T>
@@ -210,7 +210,7 @@ namespace shogun {
 		virtual void on(float64_t*) = 0;
 		virtual void on(floatmax_t*) = 0;
 		virtual void on(complex128_t*) = 0;
-		virtual void on(std::shared_ptr<CSGObject>*) = 0;
+		virtual void on(std::shared_ptr<SGObject>*) = 0;
 		virtual void on(std::string*) = 0;
 		virtual void enter_matrix(index_t* rows, index_t* cols) = 0;
 		virtual void enter_vector(index_t* size) = 0;
@@ -385,10 +385,10 @@ namespace shogun {
 			exit_map(std::addressof(size));
 		}
 
-		template<class T, std::enable_if_t<std::is_base_of<CSGObject, T>::value, T>* = nullptr>
+		template<class T, std::enable_if_t<std::is_base_of<SGObject, T>::value, T>* = nullptr>
 		void on(std::shared_ptr<T>* v)
 		{
-			on((std::shared_ptr<CSGObject>*)v);
+			on((std::shared_ptr<SGObject>*)v);
 		}
 
 		void on(Empty*)
@@ -670,7 +670,7 @@ namespace shogun {
 			return 0;
 		}
 
-		void free_object(CSGObject* obj);
+		void free_object(SGObject* obj);
 
 		template <class T, class S>
 		inline auto free_array(T** ptr, S size) -> decltype(ptr[0]->unref())
@@ -1060,8 +1060,8 @@ namespace shogun {
 
 	/** @brief Allows to store objects of arbitrary types
 	 * by using a BaseAnyPolicy and provides a type agnostic API.
-	 * See its usage in CSGObject::Self, CSGObject::set(), CSGObject::get()
-	 * and CSGObject::has().
+	 * See its usage in SGObject::Self, SGObject::set(), SGObject::get()
+	 * and SGObject::has().
 	 * .
 	 */
 	class Any

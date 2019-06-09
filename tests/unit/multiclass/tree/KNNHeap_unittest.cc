@@ -35,7 +35,7 @@ using namespace shogun;
 
 TEST(KNNHeap, heap_formation)
 {
-	auto heap=std::make_shared<CKNNHeap>(5);
+	auto heap=std::make_shared<KNNHeap>(5);
 	heap->push(1,30);
 	heap->push(2,20);
 	heap->push(3,10);

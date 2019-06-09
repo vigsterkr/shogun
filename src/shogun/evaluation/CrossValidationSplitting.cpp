@@ -10,20 +10,20 @@
 
 using namespace shogun;
 
-CCrossValidationSplitting::CCrossValidationSplitting() :
-	CSplittingStrategy()
+CrossValidationSplitting::CrossValidationSplitting() :
+	SplittingStrategy()
 {
 	m_rng = sg_rand;
 }
 
-CCrossValidationSplitting::CCrossValidationSplitting(
-		std::shared_ptr<CLabels> labels, index_t num_subsets) :
-	CSplittingStrategy(labels, num_subsets)
+CrossValidationSplitting::CrossValidationSplitting(
+		std::shared_ptr<Labels> labels, index_t num_subsets) :
+	SplittingStrategy(labels, num_subsets)
 {
 	m_rng = sg_rand;
 }
 
-void CCrossValidationSplitting::build_subsets()
+void CrossValidationSplitting::build_subsets()
 {
 	/* ensure that subsets are empty and set flag to filled */
 	reset_subsets();
@@ -32,7 +32,7 @@ void CCrossValidationSplitting::build_subsets()
 	/* permute indices */
 	SGVector<index_t> indices(m_labels->get_num_labels());
 	indices.range_fill();
-	CMath::permute(indices, m_rng);
+	Math::permute(indices, m_rng);
 
 	index_t num_subsets=m_subset_indices->get_num_elements();
 
@@ -41,7 +41,7 @@ void CCrossValidationSplitting::build_subsets()
 	for (index_t i=0; i<indices.vlen; ++i)
 	{
 		/* fill current subset */
-		auto current=m_subset_indices->get_element<CDynamicArray<index_t>>(current_subset);
+		auto current=m_subset_indices->get_element<DynamicArray<index_t>>(current_subset);
 
 		/* add element of current index */
 		current->append_element(indices.vector[i]);

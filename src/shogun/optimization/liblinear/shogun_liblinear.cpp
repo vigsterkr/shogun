@@ -390,7 +390,7 @@ void l2r_l2_svr_fun::grad(double *w, double *g)
 #define GETI(i) (prob->y[i])
 // To support weights for instances, use GETI(i) (i)
 
-Solver_MCSVM_CS::Solver_MCSVM_CS(const liblinear_problem *p, int n_class,
+Solver_MSVM_CS::Solver_MSVM_CS(const liblinear_problem *p, int n_class,
                                  double *weighted_C, double *w0_reg,
                                  double epsilon, int max_it, double max_time,
                                  mcsvm_state* given_state)
@@ -407,7 +407,7 @@ Solver_MCSVM_CS::Solver_MCSVM_CS(const liblinear_problem *p, int n_class,
 	this->state = given_state;
 }
 
-Solver_MCSVM_CS::~Solver_MCSVM_CS()
+Solver_MSVM_CS::~Solver_MSVM_CS()
 {
 }
 
@@ -420,7 +420,7 @@ int compare_double(const void *a, const void *b)
 	return 0;
 }
 
-void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new)
+void Solver_MSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new)
 {
 	int r;
 	double *D=SGVector<float64_t>::clone_vector(state->B, active_i);
@@ -437,14 +437,14 @@ void Solver_MCSVM_CS::solve_sub_problem(double A_i, int yi, double C_yi, int act
 	for(r=0;r<active_i;r++)
 	{
 		if(r == yi)
-			alpha_new[r] = CMath::min(C_yi, (beta-state->B[r])/A_i);
+			alpha_new[r] = Math::min(C_yi, (beta-state->B[r])/A_i);
 		else
-			alpha_new[r] = CMath::min((double)0, (beta - state->B[r])/A_i);
+			alpha_new[r] = Math::min((double)0, (beta - state->B[r])/A_i);
 	}
 	SG_FREE(D);
 }
 
-bool Solver_MCSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double minG)
+bool Solver_MSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double minG)
 {
 	double bound = 0;
 	if(m == yi)
@@ -454,7 +454,7 @@ bool Solver_MCSVM_CS::be_shrunk(int i, int m, int yi, double alpha_i, double min
 	return false;
 }
 
-void Solver_MCSVM_CS::solve()
+void Solver_MSVM_CS::solve()
 {
 	int i, m, s, k;
 	int iter = 0;
@@ -494,9 +494,9 @@ void Solver_MCSVM_CS::solve()
 	int dim = prob->x->get_dim_feature_space();
 
 	int active_size = l;
-	double eps_shrink = CMath::max(10.0*eps, 1.0); // stopping tolerance for shrinking
+	double eps_shrink = Math::max(10.0*eps, 1.0); // stopping tolerance for shrinking
 	bool start_from_all = true;
-	CTime start_time;
+	Time start_time;
 	// initial
 	if (!state->inited)
 	{
@@ -517,14 +517,14 @@ void Solver_MCSVM_CS::solve()
 	}
 
 	// TODO: replace with the new signal
-	// while(iter < max_iter && !CSignal::cancel_computations())
+	// while(iter < max_iter && !Signal::cancel_computations())
 	while (iter < max_iter)
 	{
-		double stopping = -CMath::INFTY;
+		double stopping = -Math::INFTY;
 		for(i=0;i<active_size;i++)
 		{
-			int j = CMath::random(i, active_size-1);
-			CMath::swap(index[i], index[j]);
+			int j = Math::random(i, active_size-1);
+			Math::swap(index[i], index[j]);
 		}
 		for(s=0;s<active_size;s++)
 		{
@@ -571,8 +571,8 @@ void Solver_MCSVM_CS::solve()
 				}
 				// ***
 
-				double minG = CMath::INFTY;
-				double maxG = -CMath::INFTY;
+				double minG = Math::INFTY;
+				double maxG = -Math::INFTY;
 				for(m=0;m<active_size_i[i];m++)
 				{
 					if(alpha_i[alpha_index_i[m]] < 0 && G[m] < minG)
@@ -594,8 +594,8 @@ void Solver_MCSVM_CS::solve()
 							if(!be_shrunk(i, active_size_i[i], y_index[i],
 											alpha_i[alpha_index_i[active_size_i[i]]], minG))
 							{
-								CMath::swap(alpha_index_i[m], alpha_index_i[active_size_i[i]]);
-								CMath::swap(G[m], G[active_size_i[i]]);
+								Math::swap(alpha_index_i[m], alpha_index_i[active_size_i[i]]);
+								Math::swap(G[m], G[active_size_i[i]]);
 								if(y_index[i] == active_size_i[i])
 									y_index[i] = m;
 								else if(y_index[i] == m)
@@ -610,7 +610,7 @@ void Solver_MCSVM_CS::solve()
 				if(active_size_i[i] <= 1)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -618,7 +618,7 @@ void Solver_MCSVM_CS::solve()
 				if(maxG-minG <= 1e-12)
 					continue;
 				else
-					stopping = CMath::CMath::max(maxG - minG, stopping);
+					stopping = Math::Math::max(maxG - minG, stopping);
 
 				for(m=0;m<active_size_i[i];m++)
 					B[m] = G[m] - Ai*alpha_i[alpha_index_i[m]] ;
@@ -678,7 +678,7 @@ void Solver_MCSVM_CS::solve()
 				for(i=0;i<l;i++)
 					active_size_i[i] = nr_class;
 				//SG_SINFO("*")
-				eps_shrink = CMath::max(eps_shrink/2, eps);
+				eps_shrink = Math::max(eps_shrink/2, eps);
 				start_from_all = true;
 			}
 		}

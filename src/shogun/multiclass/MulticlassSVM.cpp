@@ -11,36 +11,36 @@
 
 using namespace shogun;
 
-CMulticlassSVM::CMulticlassSVM()
-	:CMulticlassSVM(std::make_shared<CMulticlassOneVsRestStrategy>())
+MulticlassSVM::MulticlassSVM()
+	:MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>())
 {
 }
 
-CMulticlassSVM::CMulticlassSVM(std::shared_ptr<CMulticlassStrategy >strategy)
-	:CKernelMulticlassMachine(strategy, NULL, std::make_shared<CSVM>(0), NULL)
+MulticlassSVM::MulticlassSVM(std::shared_ptr<MulticlassStrategy >strategy)
+	:KernelMulticlassMachine(strategy, NULL, std::make_shared<SVM>(0), NULL)
 {
 	init();
 }
 
-CMulticlassSVM::CMulticlassSVM(
-	std::shared_ptr<CMulticlassStrategy >strategy, float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
-	: CKernelMulticlassMachine(strategy, k, std::make_shared<CSVM>(C, k, lab), lab)
+MulticlassSVM::MulticlassSVM(
+	std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+	: KernelMulticlassMachine(strategy, k, std::make_shared<SVM>(C, k, lab), lab)
 {
 	init();
 	m_C=C;
 }
 
-CMulticlassSVM::~CMulticlassSVM()
+MulticlassSVM::~MulticlassSVM()
 {
 }
 
-void CMulticlassSVM::init()
+void MulticlassSVM::init()
 {
 	SG_ADD(&m_C, "C", "C regularization constant",ParameterProperties::HYPER);
 	m_C=0;
 }
 
-bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
+bool MulticlassSVM::create_multiclass_svm(int32_t num_classes)
 {
 	if (num_classes>0)
 	{
@@ -55,7 +55,7 @@ bool CMulticlassSVM::create_multiclass_svm(int32_t num_classes)
 	return false;
 }
 
-bool CMulticlassSVM::set_svm(int32_t num, std::shared_ptr<CSVM> svm)
+bool MulticlassSVM::set_svm(int32_t num, std::shared_ptr<SVM> svm)
 {
 	if (m_machines->get_num_elements()>0 && m_machines->get_num_elements()>num && num>=0 && svm)
 	{
@@ -65,11 +65,11 @@ bool CMulticlassSVM::set_svm(int32_t num, std::shared_ptr<CSVM> svm)
 	return false;
 }
 
-bool CMulticlassSVM::init_machines_for_apply(std::shared_ptr<CFeatures> data)
+bool MulticlassSVM::init_machines_for_apply(std::shared_ptr<Features> data)
 {
 	if (is_data_locked())
 	{
-		SG_ERROR("CKernelMachine::apply(CFeatures*) cannot be called when "
+		SG_ERROR("KernelMachine::apply(Features*) cannot be called when "
 				"data_lock was called before. Call data_unlock to allow.");
 	}
 
@@ -93,7 +93,7 @@ bool CMulticlassSVM::init_machines_for_apply(std::shared_ptr<CFeatures> data)
 
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 	{
-		auto the_svm = m_machines->get_element<CSVM>(i);
+		auto the_svm = m_machines->get_element<SVM>(i);
 		ASSERT(the_svm)
 		the_svm->set_kernel(m_kernel);
 
@@ -102,7 +102,7 @@ bool CMulticlassSVM::init_machines_for_apply(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-bool CMulticlassSVM::load(FILE* modelfl)
+bool MulticlassSVM::load(FILE* modelfl)
 {
 	bool result=true;
 	char char_buffer[1024];
@@ -186,7 +186,7 @@ bool CMulticlassSVM::load(FILE* modelfl)
 			line_number++;
 
 		SG_INFO("loading %ld support vectors for svm %d\n",int_buffer, svm_idx)
-		auto svm=std::make_shared<CSVM>(int_buffer);
+		auto svm=std::make_shared<SVM>(int_buffer);
 
 		double_buffer=0;
 
@@ -250,7 +250,7 @@ bool CMulticlassSVM::load(FILE* modelfl)
 	return result;
 }
 
-bool CMulticlassSVM::save(FILE* modelfl)
+bool MulticlassSVM::save(FILE* modelfl)
 {
 	SG_SET_LOCALE_C;
 

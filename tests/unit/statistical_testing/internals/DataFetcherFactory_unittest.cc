@@ -50,13 +50,13 @@ TEST(DataFetcherFactory, get_instance)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	data_p(0, 0)=0;
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	auto fetcher = DataFetcherFactory::get_instance(feats_p);
 	ASSERT_TRUE(strcmp(fetcher->get_name(), "DataFetcher")==0);
 
-	auto streaming_p=std::make_shared<CStreamingDenseFeatures<float64_t>>(feats_p);
+	auto streaming_p=std::make_shared<StreamingDenseFeatures<float64_t>>(feats_p);
 
 
 	auto streaming_fetcher = DataFetcherFactory::get_instance(streaming_p);

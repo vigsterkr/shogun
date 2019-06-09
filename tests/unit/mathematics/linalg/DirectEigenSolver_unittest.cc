@@ -23,10 +23,10 @@ TEST(DirectEigenSolver, compute)
 	m(1,0)=1.0;
 	m(1,1)=3.0;
 
-	auto A=std::make_shared<CDenseMatrixOperator<float64_t>>(m);
+	auto A=std::make_shared<DenseMatrixOperator<float64_t>>(m);
 
 
-	CDirectEigenSolver eig_solver(A);
+	DirectEigenSolver eig_solver(A);
 	eig_solver.compute();
 
 	float64_t min_eigval=eig_solver.get_min_eigenvalue();

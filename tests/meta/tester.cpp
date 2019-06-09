@@ -11,7 +11,7 @@
 using namespace shogun;
 using namespace std;
 
-static std::shared_ptr<CSGObject> load_object(const string& fname)
+static std::shared_ptr<SGObject> load_object(const string& fname)
 {
 	auto fs = io::FileSystemRegistry::instance();
 	auto ec = fs->file_exists(fname);
@@ -21,8 +21,8 @@ static std::shared_ptr<CSGObject> load_object(const string& fname)
 	ec = fs->new_random_access_file(fname, &f);
 	if (ec)
 		throw io::to_system_error(ec);
-	auto fis = std::make_shared<io::CFileInputStream>(f.get());
-	auto deserializer = std::make_unique<io::CJsonDeserializer>();
+	auto fis = std::make_shared<io::FileInputStream>(f.get());
+	auto deserializer = std::make_unique<io::JsonDeserializer>();
 	deserializer->attach(fis);
 	return deserializer->read_object();
 }

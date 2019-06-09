@@ -16,11 +16,11 @@ namespace shogun
 /** @brief domain adaptation multiclass LibLinear wrapper
  * Source domain is assumed to b
  */
-class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
+class DomainAdaptationMulticlassLibLinear : public MulticlassLibLinear
 {
 	public:
 		/** default constructor  */
-		CDomainAdaptationMulticlassLibLinear();
+		DomainAdaptationMulticlassLibLinear();
 
 		/** standard constructor
 		 * @param target_C C regularization constant value for target domain
@@ -28,15 +28,15 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 		 * @param target_labels target domain labels
 		 * @param source_machine source domain machine to regularize against
 		 */
-		CDomainAdaptationMulticlassLibLinear(float64_t target_C,
-				std::shared_ptr<CDotFeatures> target_features, std::shared_ptr<CLabels> target_labels,
-				std::shared_ptr<CLinearMulticlassMachine> source_machine);
+		DomainAdaptationMulticlassLibLinear(float64_t target_C,
+				std::shared_ptr<DotFeatures> target_features, std::shared_ptr<Labels> target_labels,
+				std::shared_ptr<LinearMulticlassMachine> source_machine);
 
 		/** destructor */
-		virtual ~CDomainAdaptationMulticlassLibLinear();
+		virtual ~DomainAdaptationMulticlassLibLinear();
 
 		/** get submachine outputs */
-		virtual std::shared_ptr<CBinaryLabels> get_submachine_outputs(int32_t);
+		virtual std::shared_ptr<BinaryLabels> get_submachine_outputs(int32_t);
 
 		/** get name */
 		virtual const char* get_name() const
@@ -65,11 +65,11 @@ class CDomainAdaptationMulticlassLibLinear : public CMulticlassLibLinear
 		/** getter for source machine
 		 * @return source machine
 		 */
-		std::shared_ptr<CLinearMulticlassMachine> get_source_machine() const;
+		std::shared_ptr<LinearMulticlassMachine> get_source_machine() const;
 		/** setter for source machine
 		 * @param source_machine source machine
 		 */
-		void set_source_machine(std::shared_ptr<CLinearMulticlassMachine> source_machine);
+		void set_source_machine(std::shared_ptr<LinearMulticlassMachine> source_machine);
 
 protected:
 
@@ -93,7 +93,7 @@ protected:
 		float64_t m_source_bias;
 
 		/** source domain machine */
-		std::shared_ptr<CLinearMulticlassMachine> m_source_machine;
+		std::shared_ptr<LinearMulticlassMachine> m_source_machine;
 };
 }
 #endif /* HAVE_LAPACK */

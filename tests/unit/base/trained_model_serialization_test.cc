@@ -82,7 +82,7 @@ protected:
 	}
 
 	bool serialize_machine(
-	    std::shared_ptr<CMachine> cmachine, std::string& filename, bool store_model_features)
+	    std::shared_ptr<Machine> cmachine, std::string& filename, bool store_model_features)
 	{
 		std::string class_name = cmachine->get_name();
 		filename = "shogun-unittest-trained-model-serialization-" + class_name +
@@ -94,8 +94,8 @@ protected:
 		std::unique_ptr<io::WritableFile> file;
 		if (fs->new_writable_file(filename, &file))
 			return false;
-		auto fos = std::make_shared<io::CFileOutputStream>(file.get());
-		auto serializer = std::make_unique<io::CBitserySerializer>();
+		auto fos = std::make_shared<io::FileOutputStream>(file.get());
+		auto serializer = std::make_unique<io::BitserySerializer>();
 		serializer->attach(fos);
 		serializer->write(cmachine);
 
@@ -131,8 +131,8 @@ protected:
 		std::unique_ptr<io::RandomAccessFile> raf;
 		if (fs->new_random_access_file(filename, &raf))
 			return false;
-		auto fis = std::make_shared<io::CFileInputStream>(raf.get());
-		auto deserializer = std::make_unique<io::CBitseryDeserializer>();
+		auto fis = std::make_shared<io::FileInputStream>(raf.get());
+		auto deserializer = std::make_unique<io::BitseryDeserializer>();
 		deserializer->attach(fis);
 		auto deser_obj = deserializer->read_object();
 		bool delete_success = !fs->delete_file(filename);
@@ -143,8 +143,8 @@ protected:
 		return delete_success;
 	}
 
-	std::shared_ptr<CDenseFeatures<float64_t>> train_feats, test_feats;
-	std::shared_ptr<CLabels> train_labels;
+	std::shared_ptr<DenseFeatures<float64_t>> train_feats, test_feats;
+	std::shared_ptr<Labels> train_labels;
 	std::shared_ptr<T> machine;
 	std::shared_ptr<T> deserialized_machine;
 	io::FileSystemRegistry* fs;
@@ -174,7 +174,7 @@ TYPED_TEST_CASE(TrainedKernelMachineSerialization, KernelMachineTypes);
 
 TYPED_TEST(TrainedKernelMachineSerialization, Test)
 {
-	auto kernel = std::make_shared<CGaussianKernel>(2.0);
+	auto kernel = std::make_shared<GaussianKernel>(2.0);
 	this->machine->set_kernel(kernel);
 	for (auto store_model_features : {false, true})
 	{

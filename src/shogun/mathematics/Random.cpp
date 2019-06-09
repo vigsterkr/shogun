@@ -114,7 +114,7 @@ void CRandom::init()
 	// Sanity check. Test that the top edge of the topmost rectangle is at y=1.0.
 	// Note. We expect there to be a tiny drift away from 1.0 due to the inexactness of floating
 	// point arithmetic.
-	ASSERT(CMath::abs(1.0 - m_y[m_blockCount-1]) < 1e-10);
+	ASSERT(Math::abs(1.0 - m_y[m_blockCount-1]) < 1e-10);
 
 	/** init SFMT and dSFMT */
 	m_sfmt_32 = SG_MALLOC(sfmt_t, 1);

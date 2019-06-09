@@ -13,52 +13,52 @@
 
 using namespace shogun;
 
-CDiffusionMaps::CDiffusionMaps() :
-		CEmbeddingConverter()
+DiffusionMaps::DiffusionMaps() :
+		EmbeddingConverter()
 {
 	m_t = 10;
 	m_width = 1.0;
-	set_distance(std::make_shared<CEuclideanDistance>());
+	set_distance(std::make_shared<EuclideanDistance>());
 
 	init();
 }
 
-void CDiffusionMaps::init()
+void DiffusionMaps::init()
 {
 	SG_ADD(&m_t, "t", "number of steps", ParameterProperties::HYPER);
 	SG_ADD(&m_width, "width", "gaussian kernel width", ParameterProperties::HYPER);
 }
 
-CDiffusionMaps::~CDiffusionMaps()
+DiffusionMaps::~DiffusionMaps()
 {
 }
 
-void CDiffusionMaps::set_t(int32_t t)
+void DiffusionMaps::set_t(int32_t t)
 {
 	m_t = t;
 }
 
-int32_t CDiffusionMaps::get_t() const
+int32_t DiffusionMaps::get_t() const
 {
 	return m_t;
 }
 
-void CDiffusionMaps::set_width(float64_t width)
+void DiffusionMaps::set_width(float64_t width)
 {
 	m_width = width;
 }
 
-float64_t CDiffusionMaps::get_width() const
+float64_t DiffusionMaps::get_width() const
 {
 	return m_width;
 }
 
-const char* CDiffusionMaps::get_name() const
+const char* DiffusionMaps::get_name() const
 {
 	return "DiffusionMaps";
 };
 
-std::shared_ptr<CFeatures> CDiffusionMaps::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features> DiffusionMaps::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	ASSERT(features)
 	// shorthand for simplefeatures
@@ -69,10 +69,10 @@ std::shared_ptr<CFeatures> CDiffusionMaps::transform(std::shared_ptr<CFeatures> 
 	auto embedding = embed_distance(m_distance);
 	m_distance->cleanup();
 
-	return std::static_pointer_cast<CFeatures>(embedding);
+	return std::static_pointer_cast<Features>(embedding);
 }
 
-std::shared_ptr<CDenseFeatures<float64_t>> CDiffusionMaps::embed_distance(std::shared_ptr<CDistance> distance)
+std::shared_ptr<DenseFeatures<float64_t>> DiffusionMaps::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_timesteps = m_t;

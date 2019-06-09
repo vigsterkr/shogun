@@ -105,7 +105,7 @@ TEST(NeuralNetworkFileReader, read)
 	"	}"
 	"}";
 
-	CNeuralNetworkFileReader reader;
+	NeuralNetworkFileReader reader;
 	auto net = reader.read_string(net_string);
 
 	EXPECT_EQ(NNOM_GRADIENT_DESCENT, net->get_optimization_method());
@@ -124,19 +124,19 @@ TEST(NeuralNetworkFileReader, read)
 
 	auto layers = net->get_layers();
 
-	auto input1 = layers->get_element<CNeuralLayer>(0);
+	auto input1 = layers->get_element<NeuralLayer>(0);
 	EXPECT_EQ(0, strcmp(input1->get_name(), "NeuralInputLayer"));
 	EXPECT_EQ(6, input1->get_num_neurons());
-	EXPECT_EQ(0, input1->as<CNeuralInputLayer>()->get_start_index());
+	EXPECT_EQ(0, input1->as<NeuralInputLayer>()->get_start_index());
 
 
-	auto input2 = layers->get_element<CNeuralLayer>(1);
+	auto input2 = layers->get_element<NeuralLayer>(1);
 	EXPECT_EQ(0, strcmp(input1->get_name(), "NeuralInputLayer"));
 	EXPECT_EQ(10, input2->get_num_neurons());
-	EXPECT_EQ(6, input2->as<CNeuralInputLayer>()->get_start_index());
+	EXPECT_EQ(6, input2->as<NeuralInputLayer>()->get_start_index());
 
 
-	auto logistic1 = layers->get_element<CNeuralLayer>(2);
+	auto logistic1 = layers->get_element<NeuralLayer>(2);
 	EXPECT_EQ(0, strcmp(logistic1->get_name(), "NeuralLogisticLayer"));
 	EXPECT_EQ(32, logistic1->get_num_neurons());
 	EXPECT_EQ(2, logistic1->get_input_indices().vlen);
@@ -144,14 +144,14 @@ TEST(NeuralNetworkFileReader, read)
 	EXPECT_EQ(1, logistic1->get_input_indices()[1]);
 
 
-	auto linear1 = layers->get_element<CNeuralLayer>(3);
+	auto linear1 = layers->get_element<NeuralLayer>(3);
 	EXPECT_EQ(0, strcmp(linear1->get_name(), "NeuralLinearLayer"));
 	EXPECT_EQ(8, linear1->get_num_neurons());
 	EXPECT_EQ(1, linear1->get_input_indices().vlen);
 	EXPECT_EQ(2, linear1->get_input_indices()[0]);
 
 
-	auto rectified1 = layers->get_element<CNeuralLayer>(4);
+	auto rectified1 = layers->get_element<NeuralLayer>(4);
 	EXPECT_EQ(0, strcmp(rectified1->get_name(), "NeuralRectifiedLinearLayer"));
 	EXPECT_EQ(8, rectified1->get_num_neurons());
 	EXPECT_EQ(2, rectified1->get_input_indices().vlen);
@@ -159,7 +159,7 @@ TEST(NeuralNetworkFileReader, read)
 	EXPECT_EQ(2, rectified1->get_input_indices()[1]);
 
 
-	auto softmax = layers->get_element<CNeuralLayer>(5);
+	auto softmax = layers->get_element<NeuralLayer>(5);
 	EXPECT_EQ(0, strcmp(softmax->get_name(), "NeuralSoftmaxLayer"));
 	EXPECT_EQ(4, softmax->get_num_neurons());
 	EXPECT_EQ(2, softmax->get_input_indices().vlen);

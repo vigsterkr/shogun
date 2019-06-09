@@ -38,25 +38,25 @@
 
 using namespace shogun;
 
-CID3ClassifierTree::CID3ClassifierTree()
-: CTreeMachine<id3TreeNodeData>()
+ID3ClassifierTree::ID3ClassifierTree()
+: TreeMachine<id3TreeNodeData>()
 {
 }
 
-CID3ClassifierTree::~CID3ClassifierTree()
+ID3ClassifierTree::~ID3ClassifierTree()
 {
 }
 
-std::shared_ptr<CMulticlassLabels> CID3ClassifierTree::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> ID3ClassifierTree::apply_multiclass(std::shared_ptr<Features> data)
 {
 	REQUIRE(data, "Data required for classification in apply_multiclass\n")
 
 	auto current = get_root()->as<node_t>();
-	return apply_multiclass_from_current_node(data->as<CDenseFeatures<float64_t>>(), current);
+	return apply_multiclass_from_current_node(data->as<DenseFeatures<float64_t>>(), current);
 }
 
-bool CID3ClassifierTree::prune_tree(std::shared_ptr<CDenseFeatures<float64_t>> validation_data,
-			std::shared_ptr<CMulticlassLabels> validation_labels, float64_t epsilon)
+bool ID3ClassifierTree::prune_tree(std::shared_ptr<DenseFeatures<float64_t>> validation_data,
+			std::shared_ptr<MulticlassLabels> validation_labels, float64_t epsilon)
 {
 	auto current = get_root();
 	prune_tree_machine(validation_data, validation_labels, current, epsilon);
@@ -65,12 +65,12 @@ bool CID3ClassifierTree::prune_tree(std::shared_ptr<CDenseFeatures<float64_t>> v
 	return true;
 }
 
-bool CID3ClassifierTree::train_machine(std::shared_ptr<CFeatures> data)
+bool ID3ClassifierTree::train_machine(std::shared_ptr<Features> data)
 {
 	REQUIRE(data,"Data required for training\n")
 	REQUIRE(data->get_feature_class()==C_DENSE, "Dense data required for training\n")
 
-	int32_t num_features = data->as<CDenseFeatures<float64_t>>()->get_num_features();
+	int32_t num_features = data->as<DenseFeatures<float64_t>>()->get_num_features();
 	SGVector<int32_t> feature_ids = SGVector<int32_t>(num_features);
 	feature_ids.range_fill();
 
@@ -79,16 +79,16 @@ bool CID3ClassifierTree::train_machine(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-std::shared_ptr<CTreeMachineNode<id3TreeNodeData>> CID3ClassifierTree::id3train(std::shared_ptr<CFeatures> data,
-	std::shared_ptr<CMulticlassLabels> class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
+std::shared_ptr<TreeMachineNode<id3TreeNodeData>> ID3ClassifierTree::id3train(std::shared_ptr<Features> data,
+	std::shared_ptr<MulticlassLabels> class_labels, SGVector<int32_t> feature_id_vector, int32_t level)
 {
 	auto node = std::make_shared<node_t>();
-	auto feats = data->as<CDenseFeatures<float64_t>>();
+	auto feats = data->as<DenseFeatures<float64_t>>();
 	int32_t num_vecs = feats->get_num_vectors();
 
 	// set class_label for the node as the mode of occurring multiclass labels
 	SGVector<float64_t> labels = class_labels->get_labels_copy();
-	CMath::qsort(labels);
+	Math::qsort(labels);
 
 	int32_t most_label = labels[0];
 	int32_t most_num = 1;
@@ -141,7 +141,7 @@ std::shared_ptr<CTreeMachineNode<id3TreeNodeData>> CID3ClassifierTree::id3train(
 	for (int32_t i=0; i<num_vecs; i++)
 		best_feature_values[i] = (feats->get_feature_vector(i))[best_feature_index];
 
-	auto best_feature_labels = std::make_shared<CMulticlassLabels>(best_feature_values);
+	auto best_feature_labels = std::make_shared<MulticlassLabels>(best_feature_values);
 	SGVector<float64_t> best_labels_unique = best_feature_labels->get_unique_labels();
 
 	for (int32_t i=0; i<best_labels_unique.vlen; i++)
@@ -187,8 +187,8 @@ std::shared_ptr<CTreeMachineNode<id3TreeNodeData>> CID3ClassifierTree::id3train(
 				new_feature_id_vector[++cnt] = feature_id_vector[j];
 		}
 
-		auto new_class_labels = std::make_shared<CMulticlassLabels>(new_labels_vector);
-		auto new_data = std::make_shared<CDenseFeatures<float64_t>>(mat);
+		auto new_class_labels = std::make_shared<MulticlassLabels>(new_labels_vector);
+		auto new_data = std::make_shared<DenseFeatures<float64_t>>(mat);
 
 		auto child = id3train(new_data, new_class_labels, new_feature_id_vector, level+1);
 		child->data.transit_if_feature_value = active_feature_value;
@@ -204,15 +204,15 @@ std::shared_ptr<CTreeMachineNode<id3TreeNodeData>> CID3ClassifierTree::id3train(
 	return node;
 }
 
-float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std::shared_ptr<CFeatures> data,
-								std::shared_ptr<CMulticlassLabels> class_labels)
+float64_t ID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std::shared_ptr<Features> data,
+								std::shared_ptr<MulticlassLabels> class_labels)
 {
 	REQUIRE(data,"Data required for information gain calculation\n")
 	REQUIRE(data->get_feature_class()==C_DENSE,
 		"Dense data required for information gain calculation\n")
 
 	float64_t gain = 0;
-	auto feats = data->as<CDenseFeatures<float64_t>>();
+	auto feats = data->as<DenseFeatures<float64_t>>();
 	int32_t num_vecs = feats->get_num_vectors();
 
 	// get attribute values for attribute
@@ -221,7 +221,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std:
 	for (int32_t i=0; i<num_vecs; i++)
 		attribute_values[i] = (feats->get_feature_vector(i))[attr_no];
 
-	auto attribute_labels = std::make_shared<CMulticlassLabels>(attribute_values);
+	auto attribute_labels = std::make_shared<MulticlassLabels>(attribute_values);
 	SGVector<float64_t> attr_val_unique = attribute_labels->get_unique_labels();
 
 	for (int32_t i=0; i<attr_val_unique.vlen; i++)
@@ -244,7 +244,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std:
 				sub_class[count++] = class_labels->get_label(j);
 		}
 
-		auto sub_labels = std::make_shared<CMulticlassLabels>(sub_class);
+		auto sub_labels = std::make_shared<MulticlassLabels>(sub_class);
 		float64_t sub_entropy = entropy(sub_labels);
 		gain += sub_entropy*(attr_count-0.f)/(num_vecs-0.f);
 
@@ -259,7 +259,7 @@ float64_t CID3ClassifierTree::informational_gain_attribute(int32_t attr_no, std:
 	return gain;
 }
 
-float64_t CID3ClassifierTree::entropy(std::shared_ptr<CMulticlassLabels> labels)
+float64_t ID3ClassifierTree::entropy(std::shared_ptr<MulticlassLabels> labels)
 {
 	SGVector<float64_t> log_ratios = SGVector<float64_t>
 			(labels->get_unique_labels().size());
@@ -280,11 +280,11 @@ float64_t CID3ClassifierTree::entropy(std::shared_ptr<CMulticlassLabels> labels)
 			log_ratios[i] = std::log(log_ratios[i]);
 	}
 
-	return CStatistics::entropy(log_ratios.vector, log_ratios.vlen);
+	return Statistics::entropy(log_ratios.vector, log_ratios.vlen);
 }
 
-void CID3ClassifierTree::prune_tree_machine(std::shared_ptr<CDenseFeatures<float64_t>> feats,
-		std::shared_ptr<CMulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon)
+void ID3ClassifierTree::prune_tree_machine(std::shared_ptr<DenseFeatures<float64_t>> feats,
+		std::shared_ptr<MulticlassLabels> gnd_truth, std::shared_ptr<node_t> current, float64_t epsilon)
 {
 	SGMatrix<float64_t> feature_matrix = feats->get_feature_matrix();
 	auto children = current->get_children();
@@ -330,21 +330,21 @@ void CID3ClassifierTree::prune_tree_machine(std::shared_ptr<CDenseFeatures<float
 	for (int32_t i=0; i<feature_matrix.num_cols; i++)
 		pruned_labels[i] = current->data.class_label;
 
-	auto predicted_pruned = std::make_shared<CMulticlassLabels>(pruned_labels);
+	auto predicted_pruned = std::make_shared<MulticlassLabels>(pruned_labels);
 
 
-	auto accuracy = std::make_shared<CMulticlassAccuracy>();
+	auto accuracy = std::make_shared<MulticlassAccuracy>();
 	float64_t unpruned_accuracy = accuracy->evaluate(predicted_unpruned, gnd_truth);
 	float64_t pruned_accuracy = accuracy->evaluate(predicted_pruned, gnd_truth);
 
 	if (unpruned_accuracy<pruned_accuracy+epsilon)
 	{
-		auto null_children = std::make_shared<CDynamicObjectArray>();
+		auto null_children = std::make_shared<DynamicObjectArray>();
 		current->set_children(null_children);
 	}
 }
 
-std::shared_ptr<CMulticlassLabels> CID3ClassifierTree::apply_multiclass_from_current_node(std::shared_ptr<CDenseFeatures<float64_t>> feats,
+std::shared_ptr<MulticlassLabels> ID3ClassifierTree::apply_multiclass_from_current_node(std::shared_ptr<DenseFeatures<float64_t>> feats,
 											std::shared_ptr<node_t> current)
 {
 	REQUIRE(feats, "Features should not be NULL")
@@ -392,5 +392,5 @@ std::shared_ptr<CMulticlassLabels> CID3ClassifierTree::apply_multiclass_from_cur
 		labels[i] = node->data.class_label;
 	}
 
-	return std::make_shared<CMulticlassLabels>(labels);
+	return std::make_shared<MulticlassLabels>(labels);
 }

@@ -31,10 +31,10 @@ TEST(RandomFourierDotFeatures, dot_test)
 			data(j,i) = i+j;
 	}
 
-	auto d_feats = std::make_shared<CDenseFeatures<int32_t>>(data);
+	auto d_feats = std::make_shared<DenseFeatures<int32_t>>(data);
 	SGVector<float64_t> params(1);
 	params[0] = 8;
-	auto r_feats = std::make_shared<CRandomFourierDotFeatures>(
+	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
@@ -93,10 +93,10 @@ TEST(RandomFourierDotFeatures, dense_dot_test)
 			data(j,i) = i+j;
 	}
 
-	auto d_feats = std::make_shared<CDenseFeatures<int32_t>>(data);
+	auto d_feats = std::make_shared<DenseFeatures<int32_t>>(data);
 	SGVector<float64_t> params(1);
 	params[0] = 8;
-	auto r_feats = std::make_shared<CRandomFourierDotFeatures>(
+	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);
@@ -144,10 +144,10 @@ TEST(RandomFourierDotFeatures, add_to_dense_test)
 			data(j,i) = i+j;
 	}
 
-	auto d_feats = std::make_shared<CDenseFeatures<int32_t>>(data);
+	auto d_feats = std::make_shared<DenseFeatures<int32_t>>(data);
 	SGVector<float64_t> params(1);
 	params[0] = 8;
-	auto r_feats = std::make_shared<CRandomFourierDotFeatures>(
+	auto r_feats = std::make_shared<RandomFourierDotFeatures>(
 			d_feats, D, GAUSSIAN, params, w);
 
 	SGMatrix<float64_t> cross_dot_matrix(vecs, vecs);

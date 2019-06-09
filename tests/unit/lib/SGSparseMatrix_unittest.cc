@@ -151,11 +151,11 @@ TEST(SGSparseMatrix, io_libsvm)
 		}
 	}
 
-	auto fout=std::make_shared<CLibSVMFile>("SGSparseMatrix_io_libsvm_output.txt",'w');
+	auto fout=std::make_shared<LibSVMFile>("SGSparseMatrix_io_libsvm_output.txt",'w');
 	m.save_with_labels(fout, labels);
 	fout.reset();
 
-	auto fin=std::make_shared<CLibSVMFile>("SGSparseMatrix_io_libsvm_output.txt",'r');
+	auto fin=std::make_shared<LibSVMFile>("SGSparseMatrix_io_libsvm_output.txt",'r');
 	SGSparseMatrix<float64_t> m_from_file;
 	SGVector<float64_t> labels_from_file=m_from_file.load_with_labels(fin, false);
 

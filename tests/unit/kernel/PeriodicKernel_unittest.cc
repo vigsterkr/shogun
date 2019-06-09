@@ -27,10 +27,10 @@ TEST(PeriodicKernelTest,test_kernel_matrix)
 	}
 
 	// Load them into DenseFeatures
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(matrix);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// Construct kernel and compute kernel matrix
-	auto kernel = std::make_shared<CPeriodicKernel>(features, features, 1.0, 5.0);
+	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 	SGMatrix<float64_t> computed_kernel_matrix = kernel->get_kernel_matrix();
 
 	// Define expected kernel matrix
@@ -60,10 +60,10 @@ TEST(PeriodicKernelTest,test_derivative_width)
 	}
 
 	// Load them into DenseFeatures
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(matrix);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// Construct kernel
-	auto kernel = std::make_shared<CPeriodicKernel>(features, features, 1.0, 5.0);
+	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 
 	// Compute derivative matrix
 	Parameter *parameters = kernel->m_parameters;
@@ -97,10 +97,10 @@ TEST(PeriodicKernelTest,test_derivative_period)
 	}
 
 	// Load them into DenseFeatures
-	auto features= std::make_shared<CDenseFeatures<float64_t>>(matrix);
+	auto features= std::make_shared<DenseFeatures<float64_t>>(matrix);
 
 	// Construct kernel
-	auto kernel = std::make_shared<CPeriodicKernel>(features, features, 1.0, 5.0);
+	auto kernel = std::make_shared<PeriodicKernel>(features, features, 1.0, 5.0);
 
 	// Compute derivative matrix
 	Parameter *parameters = kernel->m_parameters;

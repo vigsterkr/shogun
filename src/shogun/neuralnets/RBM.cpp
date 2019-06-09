@@ -41,33 +41,33 @@
 
 using namespace shogun;
 
-CRBM::CRBM() : CSGObject()
+RBM::RBM() : SGObject()
 {
 	init();
 }
 
-CRBM::CRBM(int32_t num_hidden)
+RBM::RBM(int32_t num_hidden)
 {
 	init();
 	m_num_hidden = num_hidden;
 }
 
-CRBM::CRBM(int32_t num_hidden, int32_t num_visible,
-	ERBMVisibleUnitType visible_unit_type) : CSGObject()
+RBM::RBM(int32_t num_hidden, int32_t num_visible,
+	ERBMVisibleUnitType visible_unit_type) : SGObject()
 {
 	init();
 	m_num_hidden = num_hidden;
 	add_visible_group(num_visible, visible_unit_type);
 }
 
-CRBM::~CRBM()
+RBM::~RBM()
 {
 
 
 
 }
 
-void CRBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
+void RBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
 {
 	m_num_visible_groups++;
 	m_num_visible += num_units;
@@ -84,16 +84,16 @@ void CRBM::add_visible_group(int32_t num_units, ERBMVisibleUnitType unit_type)
 			m_visible_state_offsets->element(n-1)+m_visible_group_sizes->element(n-1));
 }
 
-void CRBM::initialize_neural_network(float64_t sigma)
+void RBM::initialize_neural_network(float64_t sigma)
 {
 	m_num_params = m_num_visible + m_num_hidden + m_num_visible*m_num_hidden;
 	m_params = SGVector<float64_t>(m_num_params);
 
 	for (int32_t i=0; i<m_num_params; i++)
-		m_params[i] = CMath::normal_random(0.0,sigma);
+		m_params[i] = Math::normal_random(0.0,sigma);
 }
 
-void CRBM::set_batch_size(int32_t batch_size)
+void RBM::set_batch_size(int32_t batch_size)
 {
 	if (m_batch_size == batch_size) return;
 
@@ -105,7 +105,7 @@ void CRBM::set_batch_size(int32_t batch_size)
 	reset_chain();
 }
 
-void CRBM::train(std::shared_ptr<CDenseFeatures<float64_t>> features)
+void RBM::train(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	REQUIRE(features != NULL, "Invalid (NULL) feature pointer\n");
 	REQUIRE(features->get_num_features()==m_num_visible,
@@ -177,7 +177,7 @@ void CRBM::train(std::shared_ptr<CDenseFeatures<float64_t>> features)
 	}
 }
 
-void CRBM::sample(int32_t num_gibbs_steps,
+void RBM::sample(int32_t num_gibbs_steps,
 	int32_t batch_size)
 {
 	set_batch_size(batch_size);
@@ -192,7 +192,7 @@ void CRBM::sample(int32_t num_gibbs_steps,
 	}
 }
 
-std::shared_ptr<CDenseFeatures< float64_t >> CRBM::sample_group(int32_t V,
+std::shared_ptr<DenseFeatures< float64_t >> RBM::sample_group(int32_t V,
 	int32_t num_gibbs_steps, int32_t batch_size)
 {
 	REQUIRE(V<m_num_visible_groups,
@@ -207,11 +207,11 @@ std::shared_ptr<CDenseFeatures< float64_t >> CRBM::sample_group(int32_t V,
 		for (int32_t j=0; j<m_batch_size; j++)
 			result(i,j) = visible_state(i+offset,j);
 
-	return std::make_shared<CDenseFeatures<float64_t>>(result);
+	return std::make_shared<DenseFeatures<float64_t>>(result);
 }
 
-void CRBM::sample_with_evidence(
-	int32_t E, std::shared_ptr<CDenseFeatures< float64_t >> evidence, int32_t num_gibbs_steps)
+void RBM::sample_with_evidence(
+	int32_t E, std::shared_ptr<DenseFeatures< float64_t >> evidence, int32_t num_gibbs_steps)
 {
 	REQUIRE(E<m_num_visible_groups,
 		"Visible group index (%i) out of bounds (%i)\n", E, m_num_visible);
@@ -244,8 +244,8 @@ void CRBM::sample_with_evidence(
 	}
 }
 
-std::shared_ptr<CDenseFeatures< float64_t >> CRBM::sample_group_with_evidence(int32_t V,
-	int32_t E, std::shared_ptr<CDenseFeatures< float64_t >> evidence, int32_t num_gibbs_steps)
+std::shared_ptr<DenseFeatures< float64_t >> RBM::sample_group_with_evidence(int32_t V,
+	int32_t E, std::shared_ptr<DenseFeatures< float64_t >> evidence, int32_t num_gibbs_steps)
 {
 	REQUIRE(V<m_num_visible_groups,
 		"Visible group index (%i) out of bounds (%i)\n", V, m_num_visible);
@@ -261,17 +261,17 @@ std::shared_ptr<CDenseFeatures< float64_t >> CRBM::sample_group_with_evidence(in
 		for (int32_t j=0; j<m_batch_size; j++)
 			result(i,j) = visible_state(i+offset,j);
 
-	return std::make_shared<CDenseFeatures<float64_t>>(result);
+	return std::make_shared<DenseFeatures<float64_t>>(result);
 }
 
-void CRBM::reset_chain()
+void RBM::reset_chain()
 {
 	for (int32_t i=0; i<m_num_visible; i++)
 		for (int32_t j=0; j<m_batch_size; j++)
-			visible_state(i,j) = CMath::random(0.0,1.0) > 0.5;
+			visible_state(i,j) = Math::random(0.0,1.0) > 0.5;
 }
 
-float64_t CRBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t > buffer)
+float64_t RBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t > buffer)
 {
 	set_batch_size(visible.num_cols);
 
@@ -310,14 +310,14 @@ float64_t CRBM::free_energy(SGMatrix< float64_t > visible, SGMatrix< float64_t >
 
 			for (int32_t i=0; i<m_visible_group_sizes->element(k); i++)
 				for (int32_t j=0; j<m_batch_size; j++)
-					F += 0.5*CMath::pow(visible(i+offset,j),2)/m_batch_size;
+					F += 0.5*Math::pow(visible(i+offset,j),2)/m_batch_size;
 		}
 	}
 
 	return F;
 }
 
-void CRBM::free_energy_gradients(SGMatrix< float64_t > visible,
+void RBM::free_energy_gradients(SGMatrix< float64_t > visible,
 	SGVector< float64_t > gradients,
 	bool positive_phase,
 	SGMatrix< float64_t > hidden_mean_given_visible)
@@ -354,7 +354,7 @@ void CRBM::free_energy_gradients(SGMatrix< float64_t > visible,
 	}
 }
 
-void CRBM::contrastive_divergence(SGMatrix< float64_t > visible_batch,
+void RBM::contrastive_divergence(SGMatrix< float64_t > visible_batch,
 	SGVector< float64_t > gradients)
 {
 	set_batch_size(visible_batch.num_cols);
@@ -397,7 +397,7 @@ void CRBM::contrastive_divergence(SGMatrix< float64_t > visible_batch,
 
 }
 
-float64_t CRBM::reconstruction_error(SGMatrix< float64_t > visible,
+float64_t RBM::reconstruction_error(SGMatrix< float64_t > visible,
 	SGMatrix< float64_t > buffer)
 {
 	set_batch_size(visible.num_cols);
@@ -413,13 +413,13 @@ float64_t CRBM::reconstruction_error(SGMatrix< float64_t > visible,
 
 	int32_t len = m_num_visible*m_batch_size;
 	for (int32_t i=0; i<len; i++)
-			error += CMath::pow(buffer[i]-visible[i],2);
+			error += Math::pow(buffer[i]-visible[i],2);
 
 	return error/m_batch_size;
 }
 
 
-float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
+float64_t RBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	SGMatrix< float64_t > buffer)
 {
 	for (int32_t k=0; k<m_num_visible_groups; k++)
@@ -433,7 +433,7 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 
 	SGVector<int32_t> indices(m_batch_size);
 	for (int32_t i=0; i<m_batch_size; i++)
-		indices[i] = CMath::random(0,m_num_visible-1);
+		indices[i] = Math::random(0,m_num_visible-1);
 
 
 	float64_t f1 = free_energy(visible, buffer);
@@ -449,7 +449,7 @@ float64_t CRBM::pseudo_likelihood(SGMatrix< float64_t > visible,
 	return m_num_visible * std::log(1.0 / (1 + std::exp(f1 - f2)));
 }
 
-void CRBM::mean_hidden(SGMatrix< float64_t > visible, SGMatrix< float64_t > result)
+void RBM::mean_hidden(SGMatrix< float64_t > visible, SGMatrix< float64_t > result)
 {
 	typedef Eigen::Map<Eigen::MatrixXd> EMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EVector;
@@ -467,7 +467,7 @@ void CRBM::mean_hidden(SGMatrix< float64_t > visible, SGMatrix< float64_t > resu
 		result[i] = 1.0 / (1.0 + std::exp(-1.0 * result[i]));
 }
 
-void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > result)
+void RBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > result)
 {
 	typedef Eigen::Map<Eigen::MatrixXd> EMatrix;
 	typedef Eigen::Map<Eigen::VectorXd> EVector;
@@ -519,14 +519,14 @@ void CRBM::mean_visible(SGMatrix< float64_t > hidden, SGMatrix< float64_t > resu
 	}
 }
 
-void CRBM::sample_hidden(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
+void RBM::sample_hidden(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
 {
 	int32_t length = result.num_rows*result.num_cols;
 	for (int32_t i=0; i<length; i++)
-		result[i] = CMath::random(0.0,1.0) < mean[i];
+		result[i] = Math::random(0.0,1.0) < mean[i];
 }
 
-void CRBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
+void RBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
 {
 	for (int32_t k=0; k<m_num_visible_groups; k++)
 	{
@@ -534,7 +534,7 @@ void CRBM::sample_visible(SGMatrix< float64_t > mean, SGMatrix< float64_t > resu
 	}
 }
 
-void CRBM::sample_visible(int32_t index,
+void RBM::sample_visible(int32_t index,
 	SGMatrix< float64_t > mean, SGMatrix< float64_t > result)
 {
 	int32_t offset = m_visible_state_offsets->element(index);
@@ -543,7 +543,7 @@ void CRBM::sample_visible(int32_t index,
 	{
 		for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			for (int32_t j=0; j<m_batch_size; j++)
-				result(i+offset,j) = CMath::random(0.0,1.0) < mean(i+offset,j);
+				result(i+offset,j) = Math::random(0.0,1.0) < mean(i+offset,j);
 	}
 
 	if (m_visible_group_types->element(index)==RBMVUT_SOFTMAX)
@@ -554,7 +554,7 @@ void CRBM::sample_visible(int32_t index,
 
 		for (int32_t j=0; j<m_batch_size; j++)
 		{
-			int32_t r = CMath::random(0.0,1.0);
+			int32_t r = Math::random(0.0,1.0);
 			float64_t sum = 0;
 			for (int32_t i=0; i<m_visible_group_sizes->element(index); i++)
 			{
@@ -570,7 +570,7 @@ void CRBM::sample_visible(int32_t index,
 }
 
 
-SGMatrix< float64_t > CRBM::get_weights(SGVector< float64_t > p)
+SGMatrix< float64_t > RBM::get_weights(SGVector< float64_t > p)
 {
 	if (p.vlen==0)
 		return SGMatrix<float64_t>(m_params.vector+m_num_visible,
@@ -580,7 +580,7 @@ SGMatrix< float64_t > CRBM::get_weights(SGVector< float64_t > p)
 			m_num_hidden, m_num_visible, false);
 }
 
-SGVector< float64_t > CRBM::get_hidden_bias(SGVector< float64_t > p)
+SGVector< float64_t > RBM::get_hidden_bias(SGVector< float64_t > p)
 {
 	if (p.vlen==0)
 		return SGVector<float64_t>(m_params.vector+m_num_visible+m_num_visible*m_num_hidden,
@@ -590,7 +590,7 @@ SGVector< float64_t > CRBM::get_hidden_bias(SGVector< float64_t > p)
 			m_num_hidden, false);
 }
 
-SGVector< float64_t > CRBM::get_visible_bias(SGVector< float64_t > p)
+SGVector< float64_t > RBM::get_visible_bias(SGVector< float64_t > p)
 {
 	if (p.vlen==0)
 		return SGVector<float64_t>(m_params.vector, m_num_visible, false);
@@ -598,7 +598,7 @@ SGVector< float64_t > CRBM::get_visible_bias(SGVector< float64_t > p)
 		return SGVector<float64_t>(p.vector, m_num_visible, false);
 }
 
-void CRBM::init()
+void RBM::init()
 {
 	cd_num_steps = 1;
 	cd_persistent = true;
@@ -617,11 +617,11 @@ void CRBM::init()
 	m_num_hidden = 0;
 	m_num_visible = 0;
 	m_num_visible_groups = 0;
-	m_visible_group_sizes = std::make_shared<CDynamicArray<int32_t>>();
+	m_visible_group_sizes = std::make_shared<DynamicArray<int32_t>>();
 
-	m_visible_group_types = std::make_shared<CDynamicArray<int32_t>>();
+	m_visible_group_types = std::make_shared<DynamicArray<int32_t>>();
 
-	m_visible_state_offsets = std::make_shared<CDynamicArray<int32_t>>();
+	m_visible_state_offsets = std::make_shared<DynamicArray<int32_t>>();
 
 	m_num_params = 0;
 	m_batch_size = 0;
@@ -654,13 +654,13 @@ void CRBM::init()
 	    &m_num_visible_groups, "num_visible_groups",
 	    "Number of Visible Unit Groups");
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*)&m_visible_group_sizes, "visible_group_sizes",
+	    (std::shared_ptr<SGObject>*)&m_visible_group_sizes, "visible_group_sizes",
 	    "Sizes of Visible Unit Groups");
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*)&m_visible_group_types, "visible_group_types",
+	    (std::shared_ptr<SGObject>*)&m_visible_group_types, "visible_group_types",
 	    "Types of Visible Unit Groups");
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*)&m_visible_state_offsets, "visible_group_index_offsets",
+	    (std::shared_ptr<SGObject>*)&m_visible_state_offsets, "visible_group_index_offsets",
 	    "State Index offsets of Visible Unit Groups");
 
 	SG_ADD(&m_num_params, "num_params", "Number of Parameters");

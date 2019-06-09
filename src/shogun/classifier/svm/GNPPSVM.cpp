@@ -12,21 +12,21 @@
 using namespace shogun;
 #define INDEX(ROW,COL,DIM) (((COL)*(DIM))+(ROW))
 
-CGNPPSVM::CGNPPSVM()
-: CSVM()
+GNPPSVM::GNPPSVM()
+: SVM()
 {
 }
 
-CGNPPSVM::CGNPPSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
-: CSVM(C, k, lab)
+GNPPSVM::GNPPSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: SVM(C, k, lab)
 {
 }
 
-CGNPPSVM::~CGNPPSVM()
+GNPPSVM::~GNPPSVM()
 {
 }
 
-bool CGNPPSVM::train_machine(std::shared_ptr<CFeatures> data)
+bool GNPPSVM::train_machine(std::shared_ptr<Features> data)
 {
 	ASSERT(kernel)
 	ASSERT(m_labels && m_labels->get_num_labels())
@@ -79,7 +79,7 @@ bool CGNPPSVM::train_machine(std::shared_ptr<CFeatures> data)
 	int32_t verb=0;
 	float64_t aHa11, aHa22;
 
-	CGNPPLib npp(vector_y,kernel,num_data, reg_const);
+	GNPPLib npp(vector_y,kernel,num_data, reg_const);
 
 	npp.gnpp_imdm(diagK, vector_c, vector_y, num_data,
 			tmax, tolabs, tolrel, thlb, alpha, &t, &aHa11, &aHa22,
@@ -107,7 +107,7 @@ bool CGNPPSVM::train_machine(std::shared_ptr<CFeatures> data)
 	float64_t b = 0.5*(aHa22 - aHa11)/nconst;;
 
 	create_new_model(num_sv);
-	CSVM::set_objective(nconst);
+	SVM::set_objective(nconst);
 
 	set_bias(b);
 	int32_t j = 0;

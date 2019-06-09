@@ -21,11 +21,11 @@ TEST(Distance, custom_mahalanobis)
 	// Second feature vector
 	feat_mat[2] = 2.0, feat_mat[3] = 2.0;
 	// Create features object
-	auto feats = std::make_shared<CDenseFeatures<float64_t>>(feat_mat);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(feat_mat);
 
 	// Create a simple Mahalanobis matrix, equal to the identity
 	SGMatrix<float64_t> eye_mat = SGMatrix<float64_t>::create_identity_matrix(2, 1.0);
-	auto distance = std::make_shared<CCustomMahalanobisDistance>(feats, feats, eye_mat);
+	auto distance = std::make_shared<CustomMahalanobisDistance>(feats, feats, eye_mat);
 
 	// The distance is equal to zero between equal points
 	EXPECT_EQ(distance->distance(0,0), 0.0);

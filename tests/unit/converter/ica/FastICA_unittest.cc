@@ -43,10 +43,10 @@ TEST(CFastICA, blind_source_separation)
 	SGMatrix<float64_t> X(2,FS+1);
 	Eigen::Map<EMatrix> EX(X.matrix,2,FS+1);
 	EX = A * S;
-	auto mixed_signals = std::make_shared<CDenseFeatures<float64_t>>(X);
+	auto mixed_signals = std::make_shared<DenseFeatures<float64_t>>(X);
 
 	// Separate
-	auto ica = std::make_shared<CFastICA>();
+	auto ica = std::make_shared<FastICA>();
 	ica->fit(mixed_signals);
 	auto signals = ica->transform(mixed_signals);
 
@@ -63,7 +63,7 @@ TEST(CFastICA, blind_source_separation)
 
 TEST(CFastICA, with_empty_feature)
 {
-	auto empty_feat = std::make_shared<CDenseFeatures<float64_t>>();
-	auto ica = std::make_shared<CFastICA>();
+	auto empty_feat = std::make_shared<DenseFeatures<float64_t>>();
+	auto ica = std::make_shared<FastICA>();
 	EXPECT_THROW(ica->transform(empty_feat), ShogunException);
 }

@@ -16,19 +16,19 @@
 
 namespace shogun
 {
-	class CFeatures;
-	class CLabels;
+	class Features;
+	class Labels;
 
 	/** @brief Mix-in class that implements an iterative model
 	 * whose training can be prematurely stopped, and in particular be
 	 * resumed, anytime.
 	 */
 	template <class T>
-	class CIterativeMachine : public T
+	class IterativeMachine : public T
 	{
 	public:
 		/** Default constructor */
-		CIterativeMachine() : T()
+		IterativeMachine() : T()
 		{
 			m_current_iteration = 0;
 			m_complete = false;
@@ -45,7 +45,7 @@ namespace shogun
 			SG_ADD(
 			    &m_continue_features, "continue_features", "Continue Features");
 		}
-		virtual ~CIterativeMachine()
+		virtual ~IterativeMachine()
 		{
 
 		}
@@ -92,7 +92,7 @@ namespace shogun
 		}
 
 	protected:
-		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL)
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL)
 		{
 			if (data)
 			{
@@ -113,7 +113,7 @@ namespace shogun
 
 		/** To be overloaded in subclasses to initialize the model for training
 		  */
-		virtual void init_model(std::shared_ptr<CFeatures> data = NULL) = 0;
+		virtual void init_model(std::shared_ptr<Features> data = NULL) = 0;
 
 		/** Can be overloaded in subclasses to show more information
 		  * and/or clean up states
@@ -123,7 +123,7 @@ namespace shogun
 		}
 
 		/** Stores features to continue training */
-		std::shared_ptr<CFeatures> m_continue_features;
+		std::shared_ptr<Features> m_continue_features;
 		/** Maximum Iterations */
 		int32_t m_max_iterations;
 		/** Current iteration of training loop */

@@ -12,8 +12,8 @@
 
 using namespace shogun;
 
-CLaplacianEigenmaps::CLaplacianEigenmaps() :
-		CEmbeddingConverter()
+LaplacianEigenmaps::LaplacianEigenmaps() :
+		EmbeddingConverter()
 {
 	m_k = 3;
 	m_tau = 1.0;
@@ -21,43 +21,43 @@ CLaplacianEigenmaps::CLaplacianEigenmaps() :
 	init();
 }
 
-void CLaplacianEigenmaps::init()
+void LaplacianEigenmaps::init()
 {
 	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
 	SG_ADD(&m_tau, "tau", "heat distribution coefficient", ParameterProperties::HYPER);
 }
 
-CLaplacianEigenmaps::~CLaplacianEigenmaps()
+LaplacianEigenmaps::~LaplacianEigenmaps()
 {
 }
 
-void CLaplacianEigenmaps::set_k(int32_t k)
+void LaplacianEigenmaps::set_k(int32_t k)
 {
 	ASSERT(k>0)
 	m_k = k;
 }
 
-int32_t CLaplacianEigenmaps::get_k() const
+int32_t LaplacianEigenmaps::get_k() const
 {
 	return m_k;
 }
 
-void CLaplacianEigenmaps::set_tau(float64_t tau)
+void LaplacianEigenmaps::set_tau(float64_t tau)
 {
 	m_tau = tau;
 }
 
-float64_t CLaplacianEigenmaps::get_tau() const
+float64_t LaplacianEigenmaps::get_tau() const
 {
 	return m_tau;
 }
 
-const char* CLaplacianEigenmaps::get_name() const
+const char* LaplacianEigenmaps::get_name() const
 {
 	return "LaplacianEigenmaps";
 };
 
-std::shared_ptr<CFeatures> CLaplacianEigenmaps::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features> LaplacianEigenmaps::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	// shorthand for simplefeatures
 
@@ -76,7 +76,7 @@ std::shared_ptr<CFeatures> CLaplacianEigenmaps::transform(std::shared_ptr<CFeatu
 	return embedding;
 }
 
-std::shared_ptr<CDenseFeatures<float64_t>> CLaplacianEigenmaps::embed_distance(std::shared_ptr<CDistance> distance)
+std::shared_ptr<DenseFeatures<float64_t>> LaplacianEigenmaps::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;

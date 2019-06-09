@@ -20,18 +20,18 @@ namespace shogun
 /** @brief Container class that returns results from GradientEvaluation. It
  * contains the function value as well as its gradient.
  */
-class CGradientResult : public CEvaluationResult
+class GradientResult : public EvaluationResult
 {
 public:
 	/** default constructor */
-	CGradientResult() : CEvaluationResult()
+	GradientResult() : EvaluationResult()
 	{
 		m_total_variables=0;
 		m_gradient=NULL;
 		m_parameter_dictionary=NULL;
 	}
 
-	virtual ~CGradientResult()
+	virtual ~GradientResult()
 	{
 
 
@@ -163,7 +163,7 @@ public:
 	 * @param parameter_dictionary parameter dictionary
 	 */
 	virtual void set_paramter_dictionary(
-			std::shared_ptr<CMap<TParameter*, CSGObject*>> parameter_dictionary)
+			std::shared_ptr<CMap<TParameter*, SGObject*>> parameter_dictionary)
 	{
 
 
@@ -174,7 +174,7 @@ public:
 	 *
 	 * @return parameter dictionary
 	 */
-	virtual std::shared_ptr<CMap<TParameter*, CSGObject*>> get_paramter_dictionary()
+	virtual std::shared_ptr<CMap<TParameter*, SGObject*>> get_paramter_dictionary()
 	{
 
 		return m_parameter_dictionary;
@@ -188,7 +188,7 @@ private:
 	std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> m_gradient;
 
 	/** which objects do the gradient parameters belong to? */
-	std::shared_ptr<CMap<TParameter*, CSGObject*>>  m_parameter_dictionary;
+	std::shared_ptr<CMap<TParameter*, SGObject*>>  m_parameter_dictionary;
 
 	/** total number of variables represented by the gradient */
 	uint32_t m_total_variables;

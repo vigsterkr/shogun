@@ -13,25 +13,25 @@
 
 using namespace shogun;
 
-CNeighborhoodPreservingEmbedding::CNeighborhoodPreservingEmbedding() :
-		CLocallyLinearEmbedding()
+NeighborhoodPreservingEmbedding::NeighborhoodPreservingEmbedding() :
+		LocallyLinearEmbedding()
 {
 }
 
-CNeighborhoodPreservingEmbedding::~CNeighborhoodPreservingEmbedding()
+NeighborhoodPreservingEmbedding::~NeighborhoodPreservingEmbedding()
 {
 }
 
-const char* CNeighborhoodPreservingEmbedding::get_name() const
+const char* NeighborhoodPreservingEmbedding::get_name() const
 {
 	return "NeighborhoodPreservingEmbedding";
 }
 
-std::shared_ptr<CFeatures>
-CNeighborhoodPreservingEmbedding::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+NeighborhoodPreservingEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	auto dot_feats = std::static_pointer_cast<CDotFeatures>(features);
-	auto kernel = std::make_shared<CLinearKernel>(dot_feats, dot_feats);
+	auto dot_feats = std::static_pointer_cast<DotFeatures>(features);
+	auto kernel = std::make_shared<LinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;

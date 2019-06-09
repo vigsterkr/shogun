@@ -20,27 +20,27 @@
 using namespace shogun;
 using namespace Eigen;
 
-CJade::CJade() : CICAConverter()
+Jade::Jade() : ICAConverter()
 {
 	init();
 }
 
-void CJade::init()
+void Jade::init()
 {
 	m_cumulant_matrix = SGMatrix<float64_t>();
 	SG_ADD(&m_cumulant_matrix, "cumulant_matrix", "m_cumulant_matrix");
 }
 
-CJade::~CJade()
+Jade::~Jade()
 {
 }
 
-SGMatrix<float64_t> CJade::get_cumulant_matrix() const
+SGMatrix<float64_t> Jade::get_cumulant_matrix() const
 {
 	return m_cumulant_matrix;
 }
 
-void CJade::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
+void Jade::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	ASSERT(features);
 
@@ -135,7 +135,7 @@ void CJade::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
 	}
 
 	// Diagonalize
-	SGMatrix<float64_t> Q = CJADiagOrth::diagonalize(M, m_mixing_matrix, tol, max_iter);
+	SGMatrix<float64_t> Q = JADiagOrth::diagonalize(M, m_mixing_matrix, tol, max_iter);
 	Map<MatrixXd> EQ(Q.matrix,m,m);
 	EQ = -1 * EQ.inverse();
 

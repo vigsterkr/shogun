@@ -12,22 +12,22 @@
 
 using namespace shogun;
 
-CLocalityPreservingProjections::CLocalityPreservingProjections() :
-		CLaplacianEigenmaps()
+LocalityPreservingProjections::LocalityPreservingProjections() :
+		LaplacianEigenmaps()
 {
 }
 
-CLocalityPreservingProjections::~CLocalityPreservingProjections()
+LocalityPreservingProjections::~LocalityPreservingProjections()
 {
 }
 
-const char* CLocalityPreservingProjections::get_name() const
+const char* LocalityPreservingProjections::get_name() const
 {
 	return "LocalityPreservingProjections";
 };
 
-std::shared_ptr<CFeatures>
-CLocalityPreservingProjections::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+LocalityPreservingProjections::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	m_distance->init(features,features);
@@ -36,7 +36,7 @@ CLocalityPreservingProjections::transform(std::shared_ptr<CFeatures> features, b
 	parameters.method = SHOGUN_LOCALITY_PRESERVING_PROJECTIONS;
 	parameters.target_dimension = m_target_dim;
 	parameters.distance = m_distance.get();
-	parameters.features = (CDotFeatures*)features.get();
+	parameters.features = (DotFeatures*)features.get();
 	return tapkee_embed(parameters);
 }
 

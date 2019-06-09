@@ -13,32 +13,32 @@
 
 using namespace shogun;
 
-CCombinedFeatures::CCombinedFeatures()
-: CFeatures(0)
+CombinedFeatures::CombinedFeatures()
+: Features(0)
 {
 	init();
 	num_vec=0;
 }
 
-CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures& orig)
-: CFeatures(0)
+CombinedFeatures::CombinedFeatures(const CombinedFeatures& orig)
+: Features(0)
 {
 	init();
 	//TODO copy features
 	num_vec=orig.num_vec;
 }
 
-std::shared_ptr<CFeatures> CCombinedFeatures::duplicate() const
+std::shared_ptr<Features> CombinedFeatures::duplicate() const
 {
-	return std::make_shared<CCombinedFeatures>(*this);
+	return std::make_shared<CombinedFeatures>(*this);
 }
 
-CCombinedFeatures::~CCombinedFeatures()
+CombinedFeatures::~CombinedFeatures()
 {
 
 }
 
-std::shared_ptr<CFeatures> CCombinedFeatures::get_feature_obj(int32_t idx) const
+std::shared_ptr<Features> CombinedFeatures::get_feature_obj(int32_t idx) const
 {
 	REQUIRE(
 	    idx < get_num_feature_obj() && idx>=0, "Feature index (%d) must be within [%d, %d]",
@@ -46,7 +46,7 @@ std::shared_ptr<CFeatures> CCombinedFeatures::get_feature_obj(int32_t idx) const
 	return feature_array[idx];
 }
 
-void CCombinedFeatures::list_feature_objs() const
+void CombinedFeatures::list_feature_objs() const
 {
 	SG_INFO("BEGIN COMBINED FEATURES LIST - ")
 	this->list_feature_obj();
@@ -57,7 +57,7 @@ void CCombinedFeatures::list_feature_objs() const
 	SG_INFO("END COMBINED FEATURES LIST - ")
 }
 
-bool CCombinedFeatures::check_feature_obj_compatibility(std::shared_ptr<CCombinedFeatures> comb_feat)
+bool CombinedFeatures::check_feature_obj_compatibility(std::shared_ptr<CombinedFeatures> comb_feat)
 {
 	bool result=false;
 
@@ -104,17 +104,17 @@ bool CCombinedFeatures::check_feature_obj_compatibility(std::shared_ptr<CCombine
 	return result;
 }
 
-std::shared_ptr<CFeatures> CCombinedFeatures::get_first_feature_obj() const
+std::shared_ptr<Features> CombinedFeatures::get_first_feature_obj() const
 {
 	return get_feature_obj(0);
 }
 
-std::shared_ptr<CFeatures> CCombinedFeatures::get_last_feature_obj() const
+std::shared_ptr<Features> CombinedFeatures::get_last_feature_obj() const
 {
 	return get_feature_obj(get_num_feature_obj()-1);
 }
 
-bool CCombinedFeatures::insert_feature_obj(std::shared_ptr<CFeatures> obj, int32_t idx)
+bool CombinedFeatures::insert_feature_obj(std::shared_ptr<Features> obj, int32_t idx)
 {
 	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
@@ -130,7 +130,7 @@ bool CCombinedFeatures::insert_feature_obj(std::shared_ptr<CFeatures> obj, int32
 	return true;
 }
 
-bool CCombinedFeatures::append_feature_obj(std::shared_ptr<CFeatures> obj)
+bool CombinedFeatures::append_feature_obj(std::shared_ptr<Features> obj)
 {
 	ASSERT(obj)
 	int32_t n=obj->get_num_vectors();
@@ -148,24 +148,24 @@ bool CCombinedFeatures::append_feature_obj(std::shared_ptr<CFeatures> obj)
 	return num_feature_obj+1 == feature_array.size();
 }
 
-bool CCombinedFeatures::delete_feature_obj(int32_t idx)
+bool CombinedFeatures::delete_feature_obj(int32_t idx)
 {
 	feature_array.erase(feature_array.cbegin()+idx);
 	return true;
 }
 
-int32_t CCombinedFeatures::get_num_feature_obj() const
+int32_t CombinedFeatures::get_num_feature_obj() const
 {
 	return feature_array.size();
 }
 
-void CCombinedFeatures::init()
+void CombinedFeatures::init()
 {
 	SG_ADD(&num_vec, "num_vec", "Number of vectors.");
 	SG_ADD(&feature_array, "feature_array", "Feature array.");
 }
 
-std::shared_ptr<CFeatures> CCombinedFeatures::create_merged_copy(std::shared_ptr<CFeatures> other) const
+std::shared_ptr<Features> CombinedFeatures::create_merged_copy(std::shared_ptr<Features> other) const
 {
 	/* TODO, if all features are the same, only one copy should be created
 	 * in memory */
@@ -180,7 +180,7 @@ std::shared_ptr<CFeatures> CCombinedFeatures::create_merged_copy(std::shared_ptr
 				get_name());
 	}
 
-	auto casted = std::dynamic_pointer_cast<CCombinedFeatures>(other);
+	auto casted = std::dynamic_pointer_cast<CombinedFeatures>(other);
 
 	if (!casted)
 	{
@@ -194,7 +194,7 @@ std::shared_ptr<CFeatures> CCombinedFeatures::create_merged_copy(std::shared_ptr
 				"have the same number of sub-feature-objects\n", get_name());
 	}
 
-	auto result=std::make_shared<CCombinedFeatures>();
+	auto result=std::make_shared<CombinedFeatures>();
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		auto current_this=get_feature_obj(f_idx);
@@ -210,10 +210,10 @@ std::shared_ptr<CFeatures> CCombinedFeatures::create_merged_copy(std::shared_ptr
 	return result;
 }
 
-void CCombinedFeatures::add_subset(SGVector<index_t> subset)
+void CombinedFeatures::add_subset(SGVector<index_t> subset)
 {
 	SG_DEBUG("entering %s::add_subset()\n", get_name())
-	std::unordered_set<std::shared_ptr<CFeatures>> processed;
+	std::unordered_set<std::shared_ptr<Features>> processed;
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
@@ -238,10 +238,10 @@ void CCombinedFeatures::add_subset(SGVector<index_t> subset)
 	SG_DEBUG("leaving %s::add_subset()\n", get_name())
 }
 
-void CCombinedFeatures::remove_subset()
+void CombinedFeatures::remove_subset()
 {
 	SG_DEBUG("entering %s::remove_subset()\n", get_name())
-	std::unordered_set<std::shared_ptr<CFeatures>> processed;
+	std::unordered_set<std::shared_ptr<Features>> processed;
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
@@ -265,10 +265,10 @@ void CCombinedFeatures::remove_subset()
 	SG_DEBUG("leaving %s::remove_subset()\n", get_name())
 }
 
-void CCombinedFeatures::remove_all_subsets()
+void CombinedFeatures::remove_all_subsets()
 {
 	SG_DEBUG("entering %s::remove_all_subsets()\n", get_name())
-	std::unordered_set<std::shared_ptr<CFeatures>> processed;
+	std::unordered_set<std::shared_ptr<Features>> processed;
 
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
@@ -292,18 +292,18 @@ void CCombinedFeatures::remove_all_subsets()
 	SG_DEBUG("leaving %s::remove_all_subsets()\n", get_name())
 }
 
-std::shared_ptr<CFeatures> CCombinedFeatures::copy_subset(SGVector<index_t> indices) const
+std::shared_ptr<Features> CombinedFeatures::copy_subset(SGVector<index_t> indices) const
 {
 	/* this is returned with the results of copy_subset of sub-features */
-	auto result=std::make_shared<CCombinedFeatures>();
+	auto result=std::make_shared<CombinedFeatures>();
 
 	/* map to only copy same feature objects once */
-	std::unordered_map<std::shared_ptr<CFeatures>, std::shared_ptr<CFeatures>> processed;
+	std::unordered_map<std::shared_ptr<Features>, std::shared_ptr<Features>> processed;
 	for (index_t f_idx=0; f_idx<get_num_feature_obj(); f_idx++)
 	{
 		auto current=get_feature_obj(f_idx);
 
-		std::shared_ptr<CFeatures> new_element=NULL;
+		std::shared_ptr<Features> new_element=NULL;
 
 		/* only copy if not done yet, otherwise, use old copy */
 		if (processed.find(current) == processed.end())

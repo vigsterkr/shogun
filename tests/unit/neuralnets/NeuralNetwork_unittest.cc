@@ -50,22 +50,22 @@
 using namespace shogun;
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralLinearLayer-based network.
+ * by numerical approximation. Uses a NeuralLinearLayer-based network.
  */
 TEST(NeuralNetwork, backpropagation_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
-	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(3));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(6));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(5));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(4));
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(5));
+	layers->append_element(std::make_shared<NeuralInputLayer>(7));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(3));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(6));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(5));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(4));
+	auto network = std::make_shared<NeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -88,16 +88,16 @@ TEST(NeuralNetwork, neural_layers_builder)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	auto layers = std::make_shared<CNeuralLayers>();
+	auto layers = std::make_shared<NeuralLayers>();
 	layers->input(5)
 	      ->input(7)
 	      ->linear(3)
 	      ->linear(6)
 	      ->linear(5)
 	      ->linear(4);
-	auto network = std::make_shared<CNeuralNetwork>(layers->done());
+	auto network = std::make_shared<NeuralNetwork>(layers->done());
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -117,22 +117,22 @@ TEST(NeuralNetwork, neural_layers_builder)
 
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralLogisticLayer-based network.
+ * by numerical approximation. Uses a NeuralLogisticLayer-based network.
  */
 TEST(NeuralNetwork, backpropagation_logistic)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
-	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(3));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(6));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(5));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(4));
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(5));
+	layers->append_element(std::make_shared<NeuralInputLayer>(7));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(3));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(6));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(5));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(4));
+	auto network = std::make_shared<NeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -149,22 +149,22 @@ TEST(NeuralNetwork, backpropagation_logistic)
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralSoftmaxLayer-based network.
+ * by numerical approximation. Uses a NeuralSoftmaxLayer-based network.
  */
 TEST(NeuralNetwork, backpropagation_softmax)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
-	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(3));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(6));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(5));
-	layers->append_element(std::make_shared<CNeuralSoftmaxLayer>(4));
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(5));
+	layers->append_element(std::make_shared<NeuralInputLayer>(7));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(3));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(6));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(5));
+	layers->append_element(std::make_shared<NeuralSoftmaxLayer>(4));
+	auto network = std::make_shared<NeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -181,22 +181,22 @@ TEST(NeuralNetwork, backpropagation_softmax)
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralRectifiedLinearLayer-based network.
+ * by numerical approximation. Uses a NeuralRectifiedLinearLayer-based network.
  */
 TEST(NeuralNetwork, backpropagation_rectified_linear)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(5));
-	layers->append_element(std::make_shared<CNeuralInputLayer>(7));
-	layers->append_element(std::make_shared<CNeuralRectifiedLinearLayer>(3));
-	layers->append_element(std::make_shared<CNeuralRectifiedLinearLayer>(6));
-	layers->append_element(std::make_shared<CNeuralRectifiedLinearLayer>(5));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(4));
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(5));
+	layers->append_element(std::make_shared<NeuralInputLayer>(7));
+	layers->append_element(std::make_shared<NeuralRectifiedLinearLayer>(3));
+	layers->append_element(std::make_shared<NeuralRectifiedLinearLayer>(6));
+	layers->append_element(std::make_shared<NeuralRectifiedLinearLayer>(5));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(4));
+	auto network = std::make_shared<NeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -213,25 +213,25 @@ TEST(NeuralNetwork, backpropagation_rectified_linear)
 }
 
 /** Tests gradients computed using backpropagation against gradients computed
- * by numerical approximation. Uses a CNeuralConvolutionalLayer-based network.
+ * by numerical approximation. Uses a NeuralConvolutionalLayer-based network.
  */
 TEST(NeuralNetwork, backpropagation_convolutional)
 {
 	float64_t tolerance = 1e-9;
 
-	CMath::init_random(10);
+	Math::init_random(10);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(6,4));
-	layers->append_element(std::make_shared<CNeuralInputLayer>(6,4));
-	layers->append_element(std::make_shared<CNeuralConvolutionalLayer>(
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(6,4));
+	layers->append_element(std::make_shared<NeuralInputLayer>(6,4));
+	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1));
-	layers->append_element(std::make_shared<CNeuralConvolutionalLayer>(
+	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1));
-	layers->append_element(std::make_shared<CNeuralConvolutionalLayer>(
+	layers->append_element(std::make_shared<NeuralConvolutionalLayer>(
 		CMAF_LOGISTIC, 1, 1, 1, 1, 1, 1, 1, RE_NORMAL));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(4));
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	layers->append_element(std::make_shared<NeuralLinearLayer>(4));
+	auto network = std::make_shared<NeuralNetwork>(layers);
 
 	network->connect(0,2);
 	network->connect(1,2);
@@ -250,7 +250,7 @@ TEST(NeuralNetwork, backpropagation_convolutional)
 /** tests a neural network on the binary XOR problem */
 TEST(NeuralNetwork, binary_classification)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -271,16 +271,16 @@ TEST(NeuralNetwork, binary_classification)
 	targets_vector[3] = -1.0;
 
 	auto features =
-		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
+		std::make_shared<DenseFeatures<float64_t>>(inputs_matrix);
 
-	auto labels = std::make_shared<CBinaryLabels>(targets_vector);
+	auto labels = std::make_shared<BinaryLabels>(targets_vector);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(2));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(1));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(2));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(1));
 
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -307,7 +307,7 @@ TEST(NeuralNetwork, binary_classification)
  */
 TEST(NeuralNetwork, multiclass_classification)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -328,16 +328,16 @@ TEST(NeuralNetwork, multiclass_classification)
 	targets_vector[3] = 0.0;
 
 	auto features =
-		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
+		std::make_shared<DenseFeatures<float64_t>>(inputs_matrix);
 
-	auto labels = std::make_shared<CMulticlassLabels>(targets_vector);
+	auto labels = std::make_shared<MulticlassLabels>(targets_vector);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(2));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(2));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
 
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 
@@ -364,7 +364,7 @@ TEST(NeuralNetwork, multiclass_classification)
 /** tests a neural network on a very simple regression problem */
 TEST(NeuralNetwork, regression)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	int32_t N = 20;
 	SGMatrix<float64_t> inputs_matrix(1,N);
@@ -377,16 +377,16 @@ TEST(NeuralNetwork, regression)
 	}
 
 	auto features =
-		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
+		std::make_shared<DenseFeatures<float64_t>>(inputs_matrix);
 
-	auto labels = std::make_shared<CRegressionLabels>(targets_vector);
+	auto labels = std::make_shared<RegressionLabels>(targets_vector);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(1));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(20));
-	layers->append_element(std::make_shared<CNeuralLinearLayer>(1));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(1));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(20));
+	layers->append_element(std::make_shared<NeuralLinearLayer>(1));
 
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(1e-6);
 
@@ -408,7 +408,7 @@ TEST(NeuralNetwork, regression)
  */
 TEST(NeuralNetwork, gradient_descent)
 {
-	CMath::init_random(100);
+	Math::init_random(100);
 
 	SGMatrix<float64_t> inputs_matrix(2,4);
 	SGVector<float64_t> targets_vector(4);
@@ -429,16 +429,16 @@ TEST(NeuralNetwork, gradient_descent)
 	targets_vector[3] = -1.0;
 
 	auto features =
-		std::make_shared<CDenseFeatures<float64_t>>(inputs_matrix);
+		std::make_shared<DenseFeatures<float64_t>>(inputs_matrix);
 
-	auto labels = std::make_shared<CBinaryLabels>(targets_vector);
+	auto labels = std::make_shared<BinaryLabels>(targets_vector);
 
-	auto layers = std::make_shared<CDynamicObjectArray>();
-	layers->append_element(std::make_shared<CNeuralInputLayer>(2));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(2));
-	layers->append_element(std::make_shared<CNeuralLogisticLayer>(1));
+	auto layers = std::make_shared<DynamicObjectArray>();
+	layers->append_element(std::make_shared<NeuralInputLayer>(2));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(2));
+	layers->append_element(std::make_shared<NeuralLogisticLayer>(1));
 
-	auto network = std::make_shared<CNeuralNetwork>(layers);
+	auto network = std::make_shared<NeuralNetwork>(layers);
 	network->quick_connect();
 	network->initialize_neural_network(0.1);
 

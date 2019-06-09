@@ -10,7 +10,7 @@
 
 using namespace shogun;
 
-float64_t CContingencyTableEvaluation::evaluate(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
+float64_t ContingencyTableEvaluation::evaluate(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	REQUIRE(
 	    predicted->get_num_labels() == ground_truth->get_num_labels(),
@@ -52,7 +52,7 @@ float64_t CContingencyTableEvaluation::evaluate(std::shared_ptr<CLabels> predict
 	return 42;
 }
 
-EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() const
+EEvaluationDirection ContingencyTableEvaluation::get_evaluation_direction() const
 {
 	switch (m_type)
 	{
@@ -83,7 +83,7 @@ EEvaluationDirection CContingencyTableEvaluation::get_evaluation_direction() con
 	return ED_MINIMIZE;
 }
 
-void CContingencyTableEvaluation::compute_scores(std::shared_ptr<CBinaryLabels> predicted, std::shared_ptr<CBinaryLabels> ground_truth)
+void ContingencyTableEvaluation::compute_scores(std::shared_ptr<BinaryLabels> predicted, std::shared_ptr<BinaryLabels> ground_truth)
 {
 	m_TP = 0.0;
 	m_FP = 0.0;

@@ -14,65 +14,65 @@
 
 using namespace shogun;
 
-CSNPStringKernel::CSNPStringKernel()
-: CStringKernel<char>(0),
+SNPStringKernel::SNPStringKernel()
+: StringKernel<char>(0),
   m_degree(0), m_win_len(0), m_inhomogene(false)
 {
 	init();
-	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	register_params();
 }
 
-CSNPStringKernel::CSNPStringKernel(int32_t size,
+SNPStringKernel::SNPStringKernel(int32_t size,
 		int32_t degree, int32_t win_len, bool inhomogene)
-: CStringKernel<char>(size),
+: StringKernel<char>(size),
 	m_degree(degree), m_win_len(2*win_len), m_inhomogene(inhomogene)
 {
 	init();
-	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	register_params();
 }
 
-CSNPStringKernel::CSNPStringKernel(
-	std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r,
+SNPStringKernel::SNPStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 	int32_t degree, int32_t win_len, bool inhomogene)
-: CStringKernel<char>(10), m_degree(degree), m_win_len(2*win_len),
+: StringKernel<char>(10), m_degree(degree), m_win_len(2*win_len),
 	m_inhomogene(inhomogene)
 {
 	init();
-	set_normalizer(std::make_shared<CSqrtDiagKernelNormalizer>());
+	set_normalizer(std::make_shared<SqrtDiagKernelNormalizer>());
 	if (l==r)
 		obtain_base_strings();
 	init(l, r);
 	register_params();
 }
 
-CSNPStringKernel::~CSNPStringKernel()
+SNPStringKernel::~SNPStringKernel()
 {
 	cleanup();
 }
 
-bool CSNPStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool SNPStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CSNPStringKernel::cleanup()
+void SNPStringKernel::cleanup()
 {
-	CKernel::cleanup();
+	Kernel::cleanup();
 	SG_FREE(m_str_min);
 	SG_FREE(m_str_maj);
 }
 
-void CSNPStringKernel::obtain_base_strings()
+void SNPStringKernel::obtain_base_strings()
 {
 	//should only be called on training data
 	ASSERT(lhs==rhs)
 
 	m_str_len=0;
 
-	auto sf = std::static_pointer_cast<CStringFeatures<char>>(lhs);
+	auto sf = std::static_pointer_cast<StringFeatures<char>>(lhs);
 	for (int32_t i=0; i<num_lhs; i++)
 	{
 		int32_t len;
@@ -114,17 +114,17 @@ void CSNPStringKernel::obtain_base_strings()
             m_str_maj[j]='0';
 
 		if (m_str_min[j]>m_str_maj[j])
-			CMath::swap(m_str_min[j], m_str_maj[j]);
+			Math::swap(m_str_min[j], m_str_maj[j]);
 	}
 }
 
-float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t SNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec = std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = std::static_pointer_cast<CStringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = std::static_pointer_cast<StringFeatures<char>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 
 	ASSERT(alen==blen)
 	if (alen!=m_str_len)
@@ -167,16 +167,16 @@ float64_t CSNPStringKernel::compute(int32_t idx_a, int32_t idx_b)
 			}
 
 		}
-		total+=CMath::pow(float64_t(sumaa+sumbb+sumab+inhomogene),
+		total+=Math::pow(float64_t(sumaa+sumbb+sumab+inhomogene),
 				(int32_t) m_degree);
 	}
 
-	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
-	std::static_pointer_cast<CStringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<StringFeatures<char>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return total;
 }
 
-void CSNPStringKernel::register_params()
+void SNPStringKernel::register_params()
 {
 	SG_ADD(&m_degree, "m_degree", "the order of the kernel", ParameterProperties::HYPER);
 	SG_ADD(&m_win_len, "m_win_len", "the window length", ParameterProperties::HYPER);
@@ -190,7 +190,7 @@ void CSNPStringKernel::register_params()
 	watch_param("m_str_maj", &m_str_maj, &m_str_len);
 }
 
-void CSNPStringKernel::init()
+void SNPStringKernel::init()
 {
 	m_str_min=NULL;
 	m_str_maj=NULL;

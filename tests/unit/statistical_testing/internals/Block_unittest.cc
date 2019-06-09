@@ -48,7 +48,7 @@ TEST(Block, create_blocks)
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	std::iota(data_p.matrix, data_p.matrix+dim*num_vec, 0);
 
-	using feat_type=CDenseFeatures<float64_t>;
+	using feat_type=DenseFeatures<float64_t>;
 	auto feats_p=std::make_shared<feat_type>(data_p);
 
 	// check whether correct number of blocks has been formed
@@ -59,7 +59,7 @@ TEST(Block, create_blocks)
 	for (auto it=blocks.begin(); it!=blocks.end(); ++it)
 	{
 		Block& block=*it;
-		std::shared_ptr<CFeatures> block_feats=block;
+		std::shared_ptr<Features> block_feats=block;
 		ASSERT_TRUE(block_feats->get_num_vectors()==blocksize);
 	}
 
@@ -70,7 +70,7 @@ TEST(Block, create_blocks)
 	{
 		feats_p->add_subset(inds);
 		SGMatrix<float64_t> subset=feats_p->get_feature_matrix();
-		std::shared_ptr<CFeatures> block_feats=blocks[i];
+		std::shared_ptr<Features> block_feats=blocks[i];
 		SGMatrix<float64_t> block_matrix=block_feats->as<feat_type>()->get_feature_matrix();
 		ASSERT_TRUE(subset.equals(block_matrix));
 		feats_p->remove_subset();

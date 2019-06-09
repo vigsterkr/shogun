@@ -19,15 +19,15 @@ TEST(MulticlassLibLinearTest,train_and_apply)
 	// create some linearly seperable data
 	SGMatrix<float64_t> matrix(num_class, num_vec);
 	SGMatrix<float64_t> matrix_test(num_class, num_vec);
-	auto labels=std::make_shared<CMulticlassLabels>(num_vec);
-	auto labels_test=std::make_shared<CMulticlassLabels>(num_vec);
+	auto labels=std::make_shared<MulticlassLabels>(num_vec);
+	auto labels_test=std::make_shared<MulticlassLabels>(num_vec);
 	for (index_t i=0; i<num_vec; ++i)
 	{
 		index_t label=i%num_class;
 		for (index_t j=0; j<num_feat; ++j)
 		{
-			matrix(j, i)=CMath::randn_double();
-			matrix_test(j, i)=CMath::randn_double();
+			matrix(j, i)=Math::randn_double();
+			matrix_test(j, i)=Math::randn_double();
 			labels->set_label(i, label);
 			labels_test->set_label(i, label);
 		}
@@ -40,20 +40,20 @@ TEST(MulticlassLibLinearTest,train_and_apply)
 	//labels->get_int_labels().display_vector("labels");
 
 	// shogun will now own the matrix created
-	auto features=std::make_shared<CDenseFeatures<float64_t>>(matrix);
-	auto features_test=std::make_shared<CDenseFeatures<float64_t>>(
+	auto features=std::make_shared<DenseFeatures<float64_t>>(matrix);
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(
 			matrix_test);
 
 
 	float64_t C=1.0;
 
-	auto mocas=std::make_shared<CMulticlassLibLinear>(C, features,
+	auto mocas=std::make_shared<MulticlassLibLinear>(C, features,
 			labels);
 	mocas->parallel->set_num_threads(1);
 	mocas->set_epsilon(1e-5);
 	mocas->train();
 
-	auto pred=mocas->apply(features_test)->as<CMulticlassLabels>();
+	auto pred=mocas->apply(features_test)->as<MulticlassLabels>();
 	for (int i=0; i<features_test->get_num_vectors(); ++i)
 		EXPECT_EQ(labels_test->get_label(i), pred->get_label(i));
 

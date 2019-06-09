@@ -16,39 +16,39 @@ typedef std::unordered_map<int32_t, int32_t> factor_counts_type;
 
 using namespace shogun;
 
-CFactorGraphModel::CFactorGraphModel()
-	: CStructuredModel()
+FactorGraphModel::FactorGraphModel()
+	: StructuredModel()
 {
 	init();
 }
 
-CFactorGraphModel::CFactorGraphModel(std::shared_ptr<CFeatures> features, std::shared_ptr<CStructuredLabels> labels,
-	EMAPInferType inf_type, bool verbose) : CStructuredModel(features, labels)
+FactorGraphModel::FactorGraphModel(std::shared_ptr<Features> features, std::shared_ptr<StructuredLabels> labels,
+	EMAPInferType inf_type, bool verbose) : StructuredModel(features, labels)
 {
 	init();
 	m_inf_type = inf_type;
 	m_verbose = verbose;
 }
 
-CFactorGraphModel::~CFactorGraphModel()
+FactorGraphModel::~FactorGraphModel()
 {
 
 }
 
-void CFactorGraphModel::init()
+void FactorGraphModel::init()
 {
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_factor_types, "factor_types", "Array of factor types");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_factor_types, "factor_types", "Array of factor types");
 	SG_ADD(&m_w_cache, "w_cache", "Cache of global parameters");
 	SG_ADD(&m_w_map, "w_map", "Parameter mapping");
 
 	m_inf_type = TREE_MAX_PROD;
-	m_factor_types = std::make_shared<CDynamicObjectArray>();
+	m_factor_types = std::make_shared<DynamicObjectArray>();
 	m_verbose = false;
 
 
 }
 
-void CFactorGraphModel::add_factor_type(std::shared_ptr<CFactorType> ftype)
+void FactorGraphModel::add_factor_type(std::shared_ptr<FactorType> ftype)
 {
 	REQUIRE(ftype->get_w_dim() > 0, "%s::add_factor_type(): number of parameters can't be 0!\n",
 		get_name());
@@ -57,7 +57,7 @@ void CFactorGraphModel::add_factor_type(std::shared_ptr<CFactorType> ftype)
 	int32_t id = ftype->get_type_id();
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		auto ft= m_factor_types->get_element<CFactorType>(fi);
+		auto ft= m_factor_types->get_element<FactorType>(fi);
 		if (id == ft->get_type_id())
 		{
 
@@ -95,13 +95,13 @@ void CFactorGraphModel::add_factor_type(std::shared_ptr<CFactorType> ftype)
 	}
 }
 
-void CFactorGraphModel::del_factor_type(const int32_t ftype_id)
+void FactorGraphModel::del_factor_type(const int32_t ftype_id)
 {
 	int w_dim = 0;
 	// delete from m_factor_types
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		auto ftype = m_factor_types->get_element<CFactorType>(fi);
+		auto ftype = m_factor_types->get_element<FactorType>(fi);
 		if (ftype_id == ftype->get_type_id())
 		{
 			w_dim = ftype->get_w_dim();
@@ -130,17 +130,17 @@ void CFactorGraphModel::del_factor_type(const int32_t ftype_id)
 	ASSERT(ind == m_w_map.size());
 }
 
-std::shared_ptr<CDynamicObjectArray> CFactorGraphModel::get_factor_types() const
+std::shared_ptr<DynamicObjectArray> FactorGraphModel::get_factor_types() const
 {
 
 	return m_factor_types;
 }
 
-std::shared_ptr<CFactorType> CFactorGraphModel::get_factor_type(const int32_t ftype_id) const
+std::shared_ptr<FactorType> FactorGraphModel::get_factor_type(const int32_t ftype_id) const
 {
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		auto ftype = m_factor_types->get_element<CFactorType>(fi);
+		auto ftype = m_factor_types->get_element<FactorType>(fi);
 		if (ftype_id == ftype->get_type_id())
 			return ftype;
 
@@ -150,22 +150,22 @@ std::shared_ptr<CFactorType> CFactorGraphModel::get_factor_type(const int32_t ft
 	return NULL;
 }
 
-SGVector<int32_t> CFactorGraphModel::get_global_params_mapping() const
+SGVector<int32_t> FactorGraphModel::get_global_params_mapping() const
 {
 	return m_w_map.clone();
 }
 
-SGVector<int32_t> CFactorGraphModel::get_params_mapping(const int32_t ftype_id)
+SGVector<int32_t> FactorGraphModel::get_params_mapping(const int32_t ftype_id)
 {
 	return m_w_map.find(ftype_id);
 }
 
-int32_t CFactorGraphModel::get_dim() const
+int32_t FactorGraphModel::get_dim() const
 {
 	return m_w_map.size();
 }
 
-SGVector<float64_t> CFactorGraphModel::fparams_to_w()
+SGVector<float64_t> FactorGraphModel::fparams_to_w()
 {
 	REQUIRE(m_factor_types != NULL, "%s::fparams_to_w(): no factor types!\n", get_name());
 
@@ -175,7 +175,7 @@ SGVector<float64_t> CFactorGraphModel::fparams_to_w()
 	int32_t offset = 0;
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		auto ftype = m_factor_types->get_element<CFactorType>(fi);
+		auto ftype = m_factor_types->get_element<FactorType>(fi);
 		int32_t w_dim = ftype->get_w_dim();
 		offset += w_dim;
 		SGVector<float64_t> fw = ftype->get_w();
@@ -194,7 +194,7 @@ SGVector<float64_t> CFactorGraphModel::fparams_to_w()
 	return m_w_cache;
 }
 
-void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
+void FactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 {
 	// if nothing changed
 	if (m_w_cache.equals(w))
@@ -209,7 +209,7 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 	int32_t offset = 0;
 	for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 	{
-		auto ftype = m_factor_types->get_element<CFactorType>(fi);
+		auto ftype = m_factor_types->get_element<FactorType>(fi);
 		int32_t w_dim = ftype->get_w_dim();
 		offset += w_dim;
 		SGVector<float64_t> fw(w_dim);
@@ -225,14 +225,14 @@ void CFactorGraphModel::w_to_fparams(SGVector<float64_t> w)
 	ASSERT(offset == m_w_cache.size());
 }
 
-SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<CStructuredData> y)
+SGVector< float64_t > FactorGraphModel::get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y)
 {
 	// factor graph instance
-	auto mf = m_features->as<CFactorGraphFeatures>();
+	auto mf = m_features->as<FactorGraphFeatures>();
 	auto fg = mf->get_sample(feat_idx);
 
 	// ground truth states
-	auto fg_states = y->as<CFactorGraphObservation>();
+	auto fg_states = y->as<FactorGraphObservation>();
 	SGVector<int32_t> states = fg_states->get_data();
 
 	// initialize psi
@@ -243,7 +243,7 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 	auto facs = fg->get_factors();
 	for (int32_t fi = 0; fi < facs->get_num_elements(); ++fi)
 	{
-		auto fac = facs->get_element<CFactor>(fi);
+		auto fac = facs->get_element<Factor>(fi);
 		auto ftype = fac->get_factor_type();
 		int32_t id = ftype->get_type_id();
 		SGVector<int32_t> w_map = get_params_mapping(id);
@@ -276,10 +276,10 @@ SGVector< float64_t > CFactorGraphModel::get_joint_feature_vector(int32_t feat_i
 //            := argmin_y { -L(y_i, y) + E(x_i, y; w) } - E(x_i, y_i; w)
 // we do energy minimization in inference, so get back to max oracle value is:
 // [ L(y_i, y_star) - E(x_i, y_star; w) ] + E(x_i, y_i; w)
-std::shared_ptr<CResultSet> CFactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, bool const training)
+std::shared_ptr<ResultSet> FactorGraphModel::argmax(SGVector<float64_t> w, int32_t feat_idx, bool const training)
 {
 	// factor graph instance
-	auto mf = m_features->as<CFactorGraphFeatures>();
+	auto mf = m_features->as<FactorGraphFeatures>();
 	auto fg = mf->get_sample(feat_idx);
 
 	// prepare factor graph
@@ -302,13 +302,13 @@ std::shared_ptr<CResultSet> CFactorGraphModel::argmax(SGVector<float64_t> w, int
 		fg->evaluate_energies();
 	}
 
-	// prepare CResultSet
-	auto ret = std::make_shared<CResultSet>();
+	// prepare ResultSet
+	auto ret = std::make_shared<ResultSet>();
 
 	ret->psi_computed = true;
 
 	// y_truth
-	auto y_truth = m_labels->get_label(feat_idx)->as<CFactorGraphObservation>();
+	auto y_truth = m_labels->get_label(feat_idx)->as<FactorGraphObservation>();
 
 	SGVector<int32_t> states_gt = y_truth->get_data();
 
@@ -329,7 +329,7 @@ std::shared_ptr<CResultSet> CFactorGraphModel::argmax(SGVector<float64_t> w, int
 		}
 	}
 
-	CMAPInference infer_met(fg, m_inf_type);
+	MAPInference infer_met(fg, m_inf_type);
 	infer_met.inference();
 
 	// y_star
@@ -368,10 +368,10 @@ std::shared_ptr<CResultSet> CFactorGraphModel::argmax(SGVector<float64_t> w, int
 	return ret;
 }
 
-float64_t CFactorGraphModel::delta_loss(std::shared_ptr<CStructuredData> y1, std::shared_ptr<CStructuredData> y2)
+float64_t FactorGraphModel::delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2)
 {
-	auto y_truth = y1->as<CFactorGraphObservation>();
-	auto y_pred = y2->as<CFactorGraphObservation>();
+	auto y_truth = y1->as<FactorGraphObservation>();
+	auto y_pred = y2->as<FactorGraphObservation>();
 	SGVector<int32_t> s_truth = y_truth->get_data();
 	SGVector<int32_t> s_pred = y_pred->get_data();
 
@@ -387,11 +387,11 @@ float64_t CFactorGraphModel::delta_loss(std::shared_ptr<CStructuredData> y1, std
 	return loss;
 }
 
-void CFactorGraphModel::init_training()
+void FactorGraphModel::init_training()
 {
 }
 
-void CFactorGraphModel::init_primal_opt(
+void FactorGraphModel::init_primal_opt(
 		float64_t regularization,
 		SGMatrix< float64_t > & A,
 		SGVector< float64_t > a,
@@ -411,12 +411,12 @@ void CFactorGraphModel::init_primal_opt(
 		case GRAPH_CUT:
 			lb.resize_vector(dim_w);
 			ub.resize_vector(dim_w);
-			SGVector< float64_t >::fill_vector(lb.vector, lb.vlen, -CMath::INFTY);
-			SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, CMath::INFTY);
+			SGVector< float64_t >::fill_vector(lb.vector, lb.vlen, -Math::INFTY);
+			SGVector< float64_t >::fill_vector(ub.vector, ub.vlen, Math::INFTY);
 
 			for (int32_t fi = 0; fi < m_factor_types->get_num_elements(); ++fi)
 			{
-				auto ftype = m_factor_types->get_element<CFactorType>(fi);
+				auto ftype = m_factor_types->get_element<FactorType>(fi);
 				int32_t w_dim = ftype->get_w_dim();
 				SGVector<int32_t> card = ftype->get_cardinalities();
 
@@ -454,7 +454,7 @@ void CFactorGraphModel::init_primal_opt(
 		case LOOPY_MAX_PROD:
 		case LP_RELAXATION:
 		case TRWS_MAX_PROD:
-		case GEMPLP:
+		case GEMP_LP:
 			break;
 	}
 }

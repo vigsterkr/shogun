@@ -15,22 +15,22 @@
 
 namespace shogun
 {
-class CCircularBuffer;
-class CTokenizer;
+class CircularBuffer;
+class Tokenizer;
 
 /** @brief Class for buffered reading from a ascii file */
-class CLineReader : public CSGObject
+class LineReader : public SGObject
 {
 public:
 	/** default constructor */
-	CLineReader();
+	LineReader();
 
 	/** create object associated with the stream to read
 	 *
 	 * @param stream readable stream
 	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
-	CLineReader(FILE* stream, std::shared_ptr<CTokenizer> tokenizer);
+	LineReader(FILE* stream, std::shared_ptr<Tokenizer> tokenizer);
 
 	/** create object associated with the stream to read
 	 * and specify maximum length of a string that can be read
@@ -39,10 +39,10 @@ public:
 	 * @param stream readable stream
 	 * @param tokenizer enabling to parse different ascii file formats (.csv, ...)
 	 */
-	CLineReader(int32_t max_string_length, FILE* stream, std::shared_ptr<CTokenizer> tokenizer);
+	LineReader(int32_t max_string_length, FILE* stream, std::shared_ptr<Tokenizer> tokenizer);
 
 	/** deconstructor */
-	virtual ~CLineReader();
+	virtual ~LineReader();
 
 	/** check for next line in the stream
 	 *
@@ -63,7 +63,7 @@ public:
 	 *
 	 * @param tokenizer tokenizer
 	 */
-	void set_tokenizer(std::shared_ptr<CTokenizer> tokenizer);
+	void set_tokenizer(std::shared_ptr<Tokenizer> tokenizer);
 
 	/** @return object name */
 	virtual const char* get_name() const { return "LineReader"; }
@@ -80,10 +80,10 @@ private:
 
 private:
 	/** internal buffer for searching */
-	std::shared_ptr<CCircularBuffer> m_buffer;
+	std::shared_ptr<CircularBuffer> m_buffer;
 
 	/** */
-	std::shared_ptr<CTokenizer> m_tokenizer;
+	std::shared_ptr<Tokenizer> m_tokenizer;
 
 	/** readable stream */
 	FILE* m_stream;

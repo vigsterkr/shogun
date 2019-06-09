@@ -25,12 +25,12 @@ TEST(ProtobufFileTest, vector_int32)
 	for (int32_t i=0; i<len; i++)
 		data[i]=(int32_t) rand->random(0, len);
 
-	auto fout=std::make_shared<CProtobufFile>("ProtobufFileTest_vector_int32_output.txt",'w');
+	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_int32_output.txt",'w');
 	fout->set_vector(data.vector, len);
 
 
 	SGVector<int32_t> data_from_file(true);
-	auto fin=std::make_shared<CProtobufFile>("ProtobufFileTest_vector_int32_output.txt",'r');
+	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_int32_output.txt",'r');
 	fin->get_vector(data_from_file.vector, data_from_file.vlen);
 	EXPECT_EQ(data_from_file.vlen, len);
 
@@ -52,12 +52,12 @@ TEST(ProtobufFileTest, vector_float64)
 	for (int32_t i=0; i<len; i++)
 		data[i]=(float64_t) rand->random(0, 1);
 
-	auto fout=std::make_shared<CProtobufFile>("ProtobufFileTest_vector_float64_output.txt",'w');
+	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_float64_output.txt",'w');
 	fout->set_vector(data.vector, len);
 
 
 	SGVector<float64_t> data_from_file(true);
-	auto fin=std::make_shared<CProtobufFile>("ProtobufFileTest_vector_float64_output.txt",'r');
+	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_vector_float64_output.txt",'r');
 	fin->get_vector(data_from_file.vector, data_from_file.vlen);
 	EXPECT_EQ(data_from_file.vlen, len);
 
@@ -84,12 +84,12 @@ TEST(ProtobufFileTest, matrix_int32)
 	}
 
 
-	auto fout=std::make_shared<CProtobufFile>("ProtobufFileTest_matrix_int32_output.txt",'w');
+	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_int32_output.txt",'w');
 	fout->set_matrix(data.matrix, num_cols, num_rows);
 
 
 	SGMatrix<int32_t> data_from_file(true);
-	auto fin=std::make_shared<CProtobufFile>("ProtobufFileTest_matrix_int32_output.txt",'r');
+	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_int32_output.txt",'r');
 	fin->get_matrix(data_from_file.matrix, data_from_file.num_cols, data_from_file.num_rows);
 	EXPECT_EQ(data_from_file.num_rows, num_rows);
 	EXPECT_EQ(data_from_file.num_cols, num_cols);
@@ -118,12 +118,12 @@ TEST(ProtobufFileTest, matrix_float64)
 			data(i, j)=(float64_t) rand->random(0, 1);
 	}
 
-	auto fout=std::make_shared<CProtobufFile>("ProtobufFileTest_matrix_float64_output.txt",'w');
+	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_float64_output.txt",'w');
 	fout->set_matrix(data.matrix, num_cols, num_rows);
 
 
 	SGMatrix<float64_t> data_from_file(true);
-	auto fin=std::make_shared<CProtobufFile>("ProtobufFileTest_matrix_float64_output.txt",'r');
+	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_matrix_float64_output.txt",'r');
 	fin->get_matrix(data_from_file.matrix, data_from_file.num_cols, data_from_file.num_rows);
 	EXPECT_EQ(data_from_file.num_rows, num_rows);
 	EXPECT_EQ(data_from_file.num_cols, num_cols);
@@ -167,11 +167,11 @@ TEST(ProtobufFileTest, sparse_matrix_int32)
 	int32_t num_feat_from_file=0;
 	SGSparseVector<int32_t>* data_from_file;
 
-	auto fout=std::make_shared<CProtobufFile>("ProtobufFileTest_sparse_matrix_int32_output.txt", 'w');
+	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_int32_output.txt", 'w');
 	fout->set_sparse_matrix(data, num_feat, num_vec);
 
 
-	auto fin=std::make_shared<CProtobufFile>("ProtobufFileTest_sparse_matrix_int32_output.txt", 'r');
+	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_int32_output.txt", 'r');
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file);
 
 	EXPECT_EQ(num_vec_from_file, num_vec);
@@ -224,11 +224,11 @@ TEST(ProtobufFileTest, sparse_matrix_float64)
 	int32_t num_feat_from_file=0;
 	SGSparseVector<float64_t>* data_from_file;
 
-	auto fout=std::make_shared<CProtobufFile>("ProtobufFileTest_sparse_matrix_float64_output.txt", 'w');
+	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_float64_output.txt", 'w');
 	fout->set_sparse_matrix(data, num_feat, num_vec);
 
 
-	auto fin=std::make_shared<CProtobufFile>("ProtobufFileTest_sparse_matrix_float64_output.txt", 'r');
+	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_sparse_matrix_float64_output.txt", 'r');
 	fin->get_sparse_matrix(data_from_file, num_feat_from_file, num_vec_from_file);
 
 	EXPECT_EQ(num_vec_from_file, num_vec);
@@ -268,14 +268,14 @@ TEST(ProtobufFileTest, DISABLED_string_list_char)
 			strings[i].string[j]=(char) rand->random(0, 255);
 	}
 
-	auto fout=std::make_shared<CProtobufFile>("ProtobufFileTest_string_list_char_output.txt",'w');
+	auto fout=std::make_shared<ProtobufFile>("ProtobufFileTest_string_list_char_output.txt",'w');
 	fout->set_string_list(strings, num_str);
 
 
 	SGString<char>* data_from_file=NULL;
 	int32_t num_str_from_file=0;
 	int32_t max_string_len_from_file=0;
-	auto fin=std::make_shared<CProtobufFile>("ProtobufFileTest_string_list_char_output.txt",'r');
+	auto fin=std::make_shared<ProtobufFile>("ProtobufFileTest_string_list_char_output.txt",'r');
 	fin->get_string_list(data_from_file, num_str_from_file, max_string_len_from_file);
 	EXPECT_EQ(num_str_from_file, num_str);
 

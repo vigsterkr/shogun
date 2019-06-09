@@ -38,20 +38,20 @@
 using namespace shogun;
 using namespace Eigen;
 
-CKRRNystrom::CKRRNystrom() : CKernelRidgeRegression()
+KRRNystrom::KRRNystrom() : KernelRidgeRegression()
 {
 	init();
 }
 
-CKRRNystrom::CKRRNystrom(float64_t tau, int32_t m, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
-: CKernelRidgeRegression(tau, k, lab)
+KRRNystrom::KRRNystrom(float64_t tau, int32_t m, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: KernelRidgeRegression(tau, k, lab)
 {
 	init();
 
 	m_num_rkhs_basis=m;
 }
 
-void CKRRNystrom::init()
+void KRRNystrom::init()
 {
 	m_num_rkhs_basis=0;
 	SG_ADD(
@@ -59,21 +59,21 @@ void CKRRNystrom::init()
 	    ParameterProperties::HYPER);
 }
 
-SGVector<int32_t> CKRRNystrom::subsample_indices()
+SGVector<int32_t> KRRNystrom::subsample_indices()
 {
 	int32_t n=kernel->get_num_vec_lhs();
 	SGVector<int32_t> temp(n);
 	temp.range_fill();
-	CMath::permute(temp);
+	Math::permute(temp);
 	SGVector<int32_t> col(m_num_rkhs_basis);
 	for (index_t i=0; i<m_num_rkhs_basis; ++i)
 		col[i]=temp[i];
-	CMath::qsort(col.vector, m_num_rkhs_basis);
+	Math::qsort(col.vector, m_num_rkhs_basis);
 
 	return col;
 }
 
-bool CKRRNystrom::train_machine(std::shared_ptr<CFeatures> data)
+bool KRRNystrom::train_machine(std::shared_ptr<Features> data)
 {
 	REQUIRE(data, "No features provided.\n");
 
@@ -81,10 +81,10 @@ bool CKRRNystrom::train_machine(std::shared_ptr<CFeatures> data)
 
 	REQUIRE(m_num_rkhs_basis <= n, "Number of sampled rows (%d) must be "
 			"less than number of data points (%d).\n", m_num_rkhs_basis, n);
-	return CKernelRidgeRegression::train_machine(data);
+	return KernelRidgeRegression::train_machine(data);
 }
 
-bool CKRRNystrom::solve_krr_system()
+bool KRRNystrom::solve_krr_system()
 {
 	int32_t n=kernel->get_num_vec_lhs();
 

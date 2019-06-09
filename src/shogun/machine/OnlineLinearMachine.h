@@ -18,9 +18,9 @@
 
 namespace shogun
 {
-class CBinaryLabels;
-class CFeatures;
-class CRegressionLabels;
+class BinaryLabels;
+class Features;
+class RegressionLabels;
 
 /** @brief Class OnlineLinearMachine is a generic interface for linear
  * machines like classifiers which work through online algorithms.
@@ -48,12 +48,12 @@ class CRegressionLabels;
  *	\f]
  *
  * */
-class COnlineLinearMachine : public CMachine
+class OnlineLinearMachine : public Machine
 {
 	public:
 		/** default constructor */
-		COnlineLinearMachine();
-		virtual ~COnlineLinearMachine();
+		OnlineLinearMachine();
+		virtual ~OnlineLinearMachine();
 
 		/**
 		 * Get w as a _new_ float64_t array
@@ -124,7 +124,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(std::shared_ptr<CStreamingDotFeatures> feat)
+		virtual void set_features(std::shared_ptr<StreamingDotFeatures> feat)
 		{
 			
 			
@@ -137,7 +137,7 @@ class COnlineLinearMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<CRegressionLabels> apply_regression(std::shared_ptr<CFeatures> data=NULL);
+		virtual std::shared_ptr<RegressionLabels> apply_regression(std::shared_ptr<Features> data=NULL);
 
 		/** apply linear machine to data
 		 * for binary classification problems
@@ -145,13 +145,13 @@ class COnlineLinearMachine : public CMachine
 		 * @param data (test)data to be classified
 		 * @return classified labels
 		 */
-		virtual std::shared_ptr<CBinaryLabels> apply_binary(std::shared_ptr<CFeatures> data=NULL);
+		virtual std::shared_ptr<BinaryLabels> apply_binary(std::shared_ptr<Features> data=NULL);
 
 		/// get output for example "vec_idx"
 		virtual float64_t apply_one(int32_t vec_idx)
 		{
 			SG_NOTIMPLEMENTED
-			return CMath::INFTY;
+			return Math::INFTY;
 		}
 
 		/**
@@ -175,7 +175,7 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return features
 		 */
-		virtual std::shared_ptr<CStreamingDotFeatures> get_features() {  return features; }
+		virtual std::shared_ptr<StreamingDotFeatures> get_features() {  return features; }
 
 		/** Returns the name of the SGSerializable instance.  It MUST BE
 		 *  the CLASS NAME without the prefixed `C'.
@@ -203,7 +203,7 @@ class COnlineLinearMachine : public CMachine
 		 *		  labels or the caller might want to provide some other labels.
 		 * @param label label of this example
 		 */
-		virtual void train_example(std::shared_ptr<CStreamingDotFeatures >feature, float64_t label) { SG_NOTIMPLEMENTED }
+		virtual void train_example(std::shared_ptr<StreamingDotFeatures >feature, float64_t label) { SG_NOTIMPLEMENTED }
 
 		/** whether train require labels */
 		virtual bool train_require_labels() const
@@ -220,14 +220,14 @@ class COnlineLinearMachine : public CMachine
 		 *
 		 * @return Whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<CFeatures> data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** get real outputs
 		 *
 		 * @param data features to compute outputs
 		 * @return outputs
 		 */
-		SGVector<float64_t> apply_get_outputs(std::shared_ptr<CFeatures> data);
+		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
 
 	protected:
 		/** w */
@@ -235,7 +235,7 @@ class COnlineLinearMachine : public CMachine
 		/** bias */
 		float32_t bias;
 		/** features */
-		std::shared_ptr<CStreamingDotFeatures> features;
+		std::shared_ptr<StreamingDotFeatures> features;
 };
 }
 #endif

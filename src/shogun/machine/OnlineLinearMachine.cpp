@@ -16,40 +16,40 @@
 
 using namespace shogun;
 
-COnlineLinearMachine::COnlineLinearMachine()
-: CMachine(), bias(0), features(NULL)
+OnlineLinearMachine::OnlineLinearMachine()
+: Machine(), bias(0), features(NULL)
 {
 	SG_ADD(&m_w, "m_w", "Parameter vector w.", ParameterProperties::MODEL);
 	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
-	SG_ADD((std::shared_ptr<CSGObject>*) &features, "features",
+	SG_ADD((std::shared_ptr<SGObject>*) &features, "features",
 	    "Feature object.");
 }
 
-COnlineLinearMachine::~COnlineLinearMachine()
+OnlineLinearMachine::~OnlineLinearMachine()
 {
 
 }
 
-std::shared_ptr<CBinaryLabels> COnlineLinearMachine::apply_binary(std::shared_ptr<CFeatures> data)
-{
-	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return std::make_shared<CBinaryLabels>(outputs);
-}
-
-std::shared_ptr<CRegressionLabels> COnlineLinearMachine::apply_regression(std::shared_ptr<CFeatures> data)
+std::shared_ptr<BinaryLabels> OnlineLinearMachine::apply_binary(std::shared_ptr<Features> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return std::make_shared<CRegressionLabels>(outputs);
+	return std::make_shared<BinaryLabels>(outputs);
 }
 
-SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(std::shared_ptr<CFeatures> data)
+std::shared_ptr<RegressionLabels> OnlineLinearMachine::apply_regression(std::shared_ptr<Features> data)
+{
+	SGVector<float64_t> outputs = apply_get_outputs(data);
+	return std::make_shared<RegressionLabels>(outputs);
+}
+
+SGVector<float64_t> OnlineLinearMachine::apply_get_outputs(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
 			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
 
-		set_features(data->as<CStreamingDotFeatures>());
+		set_features(data->as<StreamingDotFeatures>());
 	}
 
 	ASSERT(features)
@@ -72,24 +72,24 @@ SGVector<float64_t> COnlineLinearMachine::apply_get_outputs(std::shared_ptr<CFea
 	return labels_array;
 }
 
-float32_t COnlineLinearMachine::apply_one(float32_t* vec, int32_t len)
+float32_t OnlineLinearMachine::apply_one(float32_t* vec, int32_t len)
 {
 		SGVector<float32_t> wrap(vec, len, false);
 		return linalg::dot(wrap, m_w)+bias;
 }
 
-float32_t COnlineLinearMachine::apply_to_current_example()
+float32_t OnlineLinearMachine::apply_to_current_example()
 {
 		return features->dense_dot(m_w.vector, m_w.vlen)+bias;
 }
 
-bool COnlineLinearMachine::train_machine(std::shared_ptr<CFeatures >data)
+bool OnlineLinearMachine::train_machine(std::shared_ptr<Features >data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_STREAMING_DOT))
 			SG_ERROR("Specified features are not of type CStreamingDotFeatures\n")
-		set_features(data->as<CStreamingDotFeatures>());
+		set_features(data->as<StreamingDotFeatures>());
 	}
 	start_train();
 	features->start_parser();

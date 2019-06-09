@@ -31,23 +31,23 @@ namespace shogun
     state can be forced to clear using
     reset_train_state() method.
  */
-class CMulticlassLibLinear : public CLinearMulticlassMachine
+class MulticlassLibLinear : public LinearMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
 
 		/** default constructor  */
-		CMulticlassLibLinear();
+		MulticlassLibLinear();
 
 		/** standard constructor
 		 * @param C C regularization constant value
 		 * @param features features
 		 * @param labs labels
 		 */
-		CMulticlassLibLinear(float64_t C, std::shared_ptr<CDotFeatures> features, std::shared_ptr<CLabels> labs);
+		MulticlassLibLinear(float64_t C, std::shared_ptr<DotFeatures> features, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~CMulticlassLibLinear();
+		virtual ~MulticlassLibLinear();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -142,7 +142,7 @@ class CMulticlassLibLinear : public CLinearMulticlassMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 		/** obtain regularizer (w0) matrix */
 		virtual SGMatrix<float64_t> obtain_regularizer_matrix() const;

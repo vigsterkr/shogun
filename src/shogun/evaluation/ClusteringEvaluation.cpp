@@ -16,7 +16,7 @@
 using namespace shogun;
 using namespace std;
 
-int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+int32_t ClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	int32_t match_count=0;
 	for (int32_t i=l1.vlen-1; i >= 0; --i)
@@ -28,12 +28,12 @@ int32_t CClusteringEvaluation::find_match_count(SGVector<int32_t> l1, int32_t m1
 	return match_count;
 }
 
-int32_t CClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
+int32_t ClusteringEvaluation::find_mismatch_count(SGVector<int32_t> l1, int32_t m1, SGVector<int32_t> l2, int32_t m2)
 {
 	return l1.vlen - find_match_count(l1, m1, l2, m2);
 }
 
-void CClusteringEvaluation::best_map(std::shared_ptr<CLabels> predicted, std::shared_ptr<CLabels> ground_truth)
+void ClusteringEvaluation::best_map(std::shared_ptr<Labels> predicted, std::shared_ptr<Labels> ground_truth)
 {
 	ASSERT(predicted->get_num_labels() == ground_truth->get_num_labels())
 	ASSERT(predicted->get_label_type() == LT_MULTICLASS)

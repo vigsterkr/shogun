@@ -18,23 +18,23 @@
 namespace shogun
 {
 
-class CSVM;
+class SVM;
 
 /** @brief class MultiClassSVM */
-class CMulticlassSVM : public CKernelMulticlassMachine
+class MulticlassSVM : public KernelMulticlassMachine
 {
 	public:
 		/** problem type */
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS);
 
 		/** default constructor  */
-		CMulticlassSVM();
+		MulticlassSVM();
 
 		/** constructor
 		 *
 		 * @param strategy multiclass strategy
 		 */
-		CMulticlassSVM(std::shared_ptr<CMulticlassStrategy >strategy);
+		MulticlassSVM(std::shared_ptr<MulticlassStrategy >strategy);
 
 		/** constructor
 		 *
@@ -43,9 +43,9 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CMulticlassSVM(
-			std::shared_ptr<CMulticlassStrategy >strategy, float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab);
-		virtual ~CMulticlassSVM();
+		MulticlassSVM(
+			std::shared_ptr<MulticlassStrategy >strategy, float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+		virtual ~MulticlassSVM();
 
 		/** create multiclass SVM. Appends the appropriate number of svm pointer
 		 * (depending on multiclass strategy) to m_machines. All pointers are
@@ -62,16 +62,16 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		 * @param svm SVM to set
 		 * @return if setting was successful
 		 */
-		bool set_svm(int32_t num, std::shared_ptr<CSVM> svm);
+		bool set_svm(int32_t num, std::shared_ptr<SVM> svm);
 
 		/** get SVM
 		 *
 		 * @param num which SVM to get
 		 * @return SVM at number num
 		 */
-		std::shared_ptr<CSVM> get_svm(int32_t num) const
+		std::shared_ptr<SVM> get_svm(int32_t num) const
 		{
-			return std::dynamic_pointer_cast<CSVM>(m_machines->get_element_safe(num));
+			return std::dynamic_pointer_cast<SVM>(m_machines->get_element_safe(num));
 		}
 
 		/** load a Multiclass SVM from file
@@ -211,9 +211,9 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 	protected:
 
 		/** casts m_machine to SVM */
-		std::shared_ptr<CSVM >svm_proto()
+		std::shared_ptr<SVM >svm_proto()
 		{
-			return std::dynamic_pointer_cast<CSVM>(m_machine);
+			return std::dynamic_pointer_cast<SVM>(m_machine);
 		}
 		/** returns support vectors */
 		SGVector<int32_t> svm_svs()
@@ -222,12 +222,12 @@ class CMulticlassSVM : public CKernelMulticlassMachine
 		}
 
 		/** initializes machines (OvO, OvR) for apply */
-		virtual bool init_machines_for_apply(std::shared_ptr<CFeatures> data);
+		virtual bool init_machines_for_apply(std::shared_ptr<Features> data);
 
 		/** is machine an SVM instance */
-		virtual bool is_acceptable_machine(std::shared_ptr<CMachine >machine)
+		virtual bool is_acceptable_machine(std::shared_ptr<Machine >machine)
 		{
-			auto svm = std::dynamic_pointer_cast<CSVM>(machine);
+			auto svm = std::dynamic_pointer_cast<SVM>(machine);
 			if (svm == NULL)
 				return false;
 			return true;

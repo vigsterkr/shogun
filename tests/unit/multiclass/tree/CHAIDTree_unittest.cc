@@ -129,7 +129,7 @@ SGMatrix<float64_t> return_data()
 
 TEST(CHAIDTree, test_tree_structure)
 {
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(return_data());
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(return_data());
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(14);
@@ -154,13 +154,13 @@ TEST(CHAIDTree, test_tree_structure)
 	ft[2]=0;
 	ft[3]=0;
 
-	auto labels=std::make_shared<CMulticlassLabels>(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	auto c=std::make_shared<CCHAIDTree>(0);
+	auto c=std::make_shared<CHAIDTree>(0);
 	c->set_labels(labels);
 	c->set_feature_types(ft);
-	c->set_alpha_merge(CMath::MIN_REAL_NUMBER);
-	c->set_alpha_split(CMath::MAX_REAL_NUMBER);
+	c->set_alpha_merge(Math::MIN_REAL_NUMBER);
+	c->set_alpha_split(Math::MAX_REAL_NUMBER);
 	c->train(feats);
 
 	auto node=c->get_root();
@@ -169,7 +169,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	auto children=node->get_children();
 
-	node=children->get_element(0)->as<CTreeMachineNode<CHAIDTreeNodeData>>();
+	node=children->get_element(0)->as<TreeMachineNode<CHAIDTreeNodeData>>();
 
 	EXPECT_EQ(0,node->data.attribute_id);
 	EXPECT_EQ(0.0,node->data.node_label);
@@ -180,7 +180,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	children=node->get_children();
 
-	node=children->get_element<CTreeMachineNode<CHAIDTreeNodeData>>(0);
+	node=children->get_element<TreeMachineNode<CHAIDTreeNodeData>>(0);
 
 	EXPECT_EQ(3.0,node->data.total_weight);
 	EXPECT_EQ(0.0,node->data.node_label);
@@ -201,7 +201,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	children=node->get_children();
 
-	node=children->get_element<CTreeMachineNode<CHAIDTreeNodeData>>(1);
+	node=children->get_element<TreeMachineNode<CHAIDTreeNodeData>>(1);
 
 	EXPECT_EQ(3,node->data.attribute_id);
 	EXPECT_EQ(1.0,node->data.node_label);
@@ -211,7 +211,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 	children=node->get_children();
 
-	node=children->get_element<CTreeMachineNode<CHAIDTreeNodeData>>(0);
+	node=children->get_element<TreeMachineNode<CHAIDTreeNodeData>>(0);
 
 	EXPECT_EQ(4.0,node->data.total_weight);
 	EXPECT_EQ(1.0,node->data.node_label);
@@ -223,7 +223,7 @@ TEST(CHAIDTree, test_tree_structure)
 
 TEST(CHAIDTree, test_classify_multiclass)
 {
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(return_data());
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(return_data());
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(14);
@@ -248,13 +248,13 @@ TEST(CHAIDTree, test_classify_multiclass)
 	ft[2]=0;
 	ft[3]=0;
 
-	auto labels=std::make_shared<CMulticlassLabels>(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	auto c=std::make_shared<CCHAIDTree>(0);
+	auto c=std::make_shared<CHAIDTree>(0);
 	c->set_labels(labels);
 	c->set_feature_types(ft);
-	c->set_alpha_merge(CMath::MIN_REAL_NUMBER);
-	c->set_alpha_split(CMath::MAX_REAL_NUMBER);
+	c->set_alpha_merge(Math::MIN_REAL_NUMBER);
+	c->set_alpha_split(Math::MAX_REAL_NUMBER);
 	c->train(feats);
 
 	SGMatrix<float64_t> test(4,5);
@@ -282,7 +282,7 @@ TEST(CHAIDTree, test_classify_multiclass)
 	test(3,3)=weak;
 	test(3,4)=strong;
 
-	auto test_feats=std::make_shared<CDenseFeatures<float64_t>>(test);
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
 	auto result=c->apply_multiclass(test_feats);
 	SGVector<float64_t> res_vector=result->get_labels();
 

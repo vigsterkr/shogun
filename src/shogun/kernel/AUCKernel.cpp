@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-void CAUCKernel::init()
+void AUCKernel::init()
 {
 	SG_ADD(
 	    &subkernel, "subkernel", "The subkernel.", ParameterProperties::HYPER);
@@ -21,23 +21,23 @@ void CAUCKernel::init()
 	watch_method("setup_auc_maximization", &CAUCKernel::setup_auc_maximization);
 }
 
-CAUCKernel::CAUCKernel() : CDotKernel(0), subkernel(nullptr), labels(nullptr)
+AUCKernel::AUCKernel() : DotKernel(0), subkernel(nullptr), labels(nullptr)
 {
 	init();
 }
 
-CAUCKernel::CAUCKernel(int32_t size, std::shared_ptr<CKernel> s, std::shared_ptr<CLabels> l)
-    : CDotKernel(size), subkernel(s), labels(l)
+AUCKernel::AUCKernel(int32_t size, std::shared_ptr<Kernel> s, std::shared_ptr<Labels> l)
+    : DotKernel(size), subkernel(s), labels(l)
 {
 	init();
 }
 
-CAUCKernel::~CAUCKernel()
+AUCKernel::~AUCKernel()
 {
 	cleanup();
 }
 
-bool CAUCKernel::setup_auc_maximization()
+bool AUCKernel::setup_auc_maximization()
 {
 	SG_INFO("setting up AUC maximization\n")
 	ASSERT(labels)
@@ -100,12 +100,12 @@ bool CAUCKernel::setup_auc_maximization()
 	}
 
 	// create label object and attach it to svm
-	auto lab_auc = std::make_shared<CBinaryLabels>(num_auc);
+	auto lab_auc = std::make_shared<BinaryLabels>(num_auc);
 	lab_auc->set_int_labels(SGVector<int32_t>(labels_auc, num_auc, false));
 
 
 	// create feature object
-	auto f = std::make_shared<CDenseFeatures<uint16_t>>(features_auc);
+	auto f = std::make_shared<DenseFeatures<uint16_t>>(features_auc);
 
 	// create AUC kernel and attach the features
 	init(f, f);
@@ -115,20 +115,20 @@ bool CAUCKernel::setup_auc_maximization()
 	return true;
 }
 
-bool CAUCKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool AUCKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	init_normalizer();
 	return true;
 }
 
-float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t AUCKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	uint16_t* avec=lhs->as<CDenseFeatures<uint16_t>>()->get_feature_vector(idx_a, alen, afree);
-	uint16_t* bvec=rhs->as<CDenseFeatures<uint16_t>>()->get_feature_vector(idx_b, blen, bfree);
+	uint16_t* avec=lhs->as<DenseFeatures<uint16_t>>()->get_feature_vector(idx_a, alen, afree);
+	uint16_t* bvec=rhs->as<DenseFeatures<uint16_t>>()->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen == 2)
 	ASSERT(blen == 2)
@@ -145,8 +145,8 @@ float64_t CAUCKernel::compute(int32_t idx_a, int32_t idx_b)
 	k22 = subkernel->kernel(idx_a2, idx_b2);
 
 	float64_t result = k11 + k22 - k21 - k12;
-	lhs->as<CDenseFeatures<uint16_t>>()->free_feature_vector(avec, idx_a, afree);
-	rhs->as<CDenseFeatures<uint16_t>>()->free_feature_vector(bvec, idx_b, bfree);
+	lhs->as<DenseFeatures<uint16_t>>()->free_feature_vector(avec, idx_a, afree);
+	rhs->as<DenseFeatures<uint16_t>>()->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

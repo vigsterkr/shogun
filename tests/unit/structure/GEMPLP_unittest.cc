@@ -7,9 +7,7 @@ using namespace shogun;
 // Test find intersection index
 TEST(GEMPLP, find_intersections_index)
 {
-	auto mplp = std::make_shared<CGEMPLP>();
-
-
+	auto mplp = std::make_shared<GEMPLP>();
 	SGVector<int32_t> clique_A(3);
 	SGVector<int32_t> clique_B(3);
 
@@ -36,16 +34,12 @@ TEST(GEMPLP, find_intersections_index)
 	EXPECT_EQ(mplp->m_all_intersections[1].size(), 2);
 	EXPECT_EQ(mplp->m_all_intersections[1][0], 1);
 	EXPECT_EQ(mplp->m_all_intersections[1][1], 2);
-
-
 }
 
 // Test find maximum value in sub-array
 TEST(GEMPLP, max_in_subdimension)
 {
-	auto mplp = std::make_shared<CGEMPLP>();
-
-
+	auto mplp = std::make_shared<GEMPLP>();
 	// dimensions of the target array 2x2
 	SGVector<int32_t> dims_tar(2);
 	dims_tar[0] = 2;
@@ -77,18 +71,16 @@ TEST(GEMPLP, max_in_subdimension)
 	mplp->max_in_subdimension(arr_tar, subset_inds, arr_max);
 	EXPECT_EQ(arr_max[0],2);
 	EXPECT_EQ(arr_max[1],3);
-
-
 }
 
 // Test initialization
 TEST(GEMPLP, initialization)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	auto fg = fg_test_data->simple_chain_graph();
-	auto mplp = std::make_shared<CGEMPLP>(fg);
+	auto mplp = std::make_shared<GEMPLP>(fg);
 
 
 	EXPECT_EQ(mplp->m_all_intersections[0][0],0);
@@ -101,14 +93,14 @@ TEST(GEMPLP, initialization)
 // Test convert message
 TEST(GEMPLP, convert_energy_to_potential)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	auto fg = fg_test_data->simple_chain_graph();
-	auto mplp = std::make_shared<CGEMPLP>(fg);
+	auto mplp = std::make_shared<GEMPLP>(fg);
 
 
-	auto factor = mplp->m_factors->get_element<CFactor>(0);
+	auto factor = mplp->m_factors->get_element<Factor>(0);
 
 	SGNDArray<float64_t> message = mplp->convert_energy_to_potential(factor);
 
@@ -124,12 +116,12 @@ TEST(GEMPLP, convert_energy_to_potential)
 // Test inference on simple chain graph
 TEST(GEMPLP, simple_chain)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	auto fg_simple = fg_test_data->simple_chain_graph();
 
-	CMAPInference infer_met(fg_simple, GEMPLP);
+	MAPInference infer_met(fg_simple, GEMP_LP);
 	infer_met.inference();
 
 	auto fg_observ = infer_met.get_structured_outputs();
@@ -144,7 +136,7 @@ TEST(GEMPLP, simple_chain)
 // Test inference on random chain graph
 TEST(GEMPLP, random_chain)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	SGVector<int32_t> assignment_expected; // expected assignment
@@ -152,7 +144,7 @@ TEST(GEMPLP, random_chain)
 
 	auto fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
 
-	CMAPInference infer_met(fg_random, GEMPLP);
+	MAPInference infer_met(fg_random, GEMP_LP);
 	infer_met.inference();
 
 	auto fg_observ = infer_met.get_structured_outputs();
@@ -170,10 +162,10 @@ TEST(GEMPLP, random_chain)
 // Test with SOSVM
 TEST(GEMPLP, sosvm)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
-	EXPECT_EQ(fg_test_data->test_sosvm(GEMPLP), 0);
+	EXPECT_EQ(fg_test_data->test_sosvm(GEMP_LP), 0);
 
 
 }

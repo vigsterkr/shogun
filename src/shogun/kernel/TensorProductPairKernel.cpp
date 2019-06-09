@@ -11,47 +11,47 @@
 
 using namespace shogun;
 
-CTensorProductPairKernel::CTensorProductPairKernel()
-: CDotKernel(0), subkernel(NULL)
+TensorProductPairKernel::TensorProductPairKernel()
+: DotKernel(0), subkernel(NULL)
 {
 	register_params();
 }
 
-CTensorProductPairKernel::CTensorProductPairKernel(int32_t size, std::shared_ptr<CKernel> s)
-: CDotKernel(size), subkernel(s)
+TensorProductPairKernel::TensorProductPairKernel(int32_t size, std::shared_ptr<Kernel> s)
+: DotKernel(size), subkernel(s)
 {
 
 	register_params();
 }
 
-CTensorProductPairKernel::CTensorProductPairKernel(std::shared_ptr<CDenseFeatures<int32_t>> l, std::shared_ptr<CDenseFeatures<int32_t>> r, std::shared_ptr<CKernel> s)
-: CDotKernel(10), subkernel(s)
+TensorProductPairKernel::TensorProductPairKernel(std::shared_ptr<DenseFeatures<int32_t>> l, std::shared_ptr<DenseFeatures<int32_t>> r, std::shared_ptr<Kernel> s)
+: DotKernel(10), subkernel(s)
 {
 
 	init(l, r);
 	register_params();
 }
 
-CTensorProductPairKernel::~CTensorProductPairKernel()
+TensorProductPairKernel::~TensorProductPairKernel()
 {
 
 	cleanup();
 }
 
-bool CTensorProductPairKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool TensorProductPairKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	init_normalizer();
 	return true;
 }
 
-float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t TensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	int32_t* avec=(std::static_pointer_cast<CDenseFeatures<int32_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
-	int32_t* bvec=(std::static_pointer_cast<CDenseFeatures<int32_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
+	int32_t* avec=(std::static_pointer_cast<DenseFeatures<int32_t>>(lhs))->get_feature_vector(idx_a, alen, afree);
+	int32_t* bvec=(std::static_pointer_cast<DenseFeatures<int32_t>>(rhs))->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==2)
 	ASSERT(blen==2)
@@ -66,13 +66,13 @@ float64_t CTensorProductPairKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t result = k->kernel(a,c)*k->kernel(b,d) + k->kernel(a,d)*k->kernel(b,c);
 
-	(std::static_pointer_cast<CDenseFeatures<int32_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
-	(std::static_pointer_cast<CDenseFeatures<int32_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
+	(std::static_pointer_cast<DenseFeatures<int32_t>>(lhs))->free_feature_vector(avec, idx_a, afree);
+	(std::static_pointer_cast<DenseFeatures<int32_t>>(rhs))->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
 
-void CTensorProductPairKernel::register_params()
+void TensorProductPairKernel::register_params()
 {
-	SG_ADD((std::shared_ptr<CSGObject>*)&subkernel, "subkernel", "the subkernel", ParameterProperties::HYPER);
+	SG_ADD((std::shared_ptr<SGObject>*)&subkernel, "subkernel", "the subkernel", ParameterProperties::HYPER);
 }

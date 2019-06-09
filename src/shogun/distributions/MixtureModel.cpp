@@ -36,12 +36,12 @@
 
 using namespace shogun;
 
-CMixtureModel::CMixtureModel()
+MixtureModel::MixtureModel()
 {
 	init();
 }
 
-CMixtureModel::CMixtureModel(std::shared_ptr<CDynamicObjectArray> components, SGVector<float64_t> weights)
+MixtureModel::MixtureModel(std::shared_ptr<DynamicObjectArray> components, SGVector<float64_t> weights)
 {
 	init();
 	m_components=components;
@@ -49,12 +49,12 @@ CMixtureModel::CMixtureModel(std::shared_ptr<CDynamicObjectArray> components, SG
 	m_weights=weights;
 }
 
-CMixtureModel::~CMixtureModel()
+MixtureModel::~MixtureModel()
 {
 
 }
 
-bool CMixtureModel::train(std::shared_ptr<CFeatures> data)
+bool MixtureModel::train(std::shared_ptr<Features> data)
 {
 	REQUIRE(m_components->get_num_elements()>0,"mixture componenents not specified\n")
 	REQUIRE(m_components->get_num_elements()==m_weights.vlen,"number of weights (%d) does  not"
@@ -64,7 +64,7 @@ bool CMixtureModel::train(std::shared_ptr<CFeatures> data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-				SG_ERROR("Specified features are not of type CDotFeatures\n")
+				SG_ERROR("Specified features are not of type DotFeatures\n")
 		set_features(data);
 	}
 	else if (!features)
@@ -75,18 +75,18 @@ bool CMixtureModel::train(std::shared_ptr<CFeatures> data)
 	// set training points in all components of the mixture
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
-		auto comp=m_components->get_element<CDistribution>(i);
+		auto comp=m_components->get_element<Distribution>(i);
 		comp->set_features(features);
 
 
 	}
 
-	auto dotdata=std::dynamic_pointer_cast<CDotFeatures>(features);
-	REQUIRE(dotdata,"dynamic cast from CFeatures to CDotFeatures returned NULL")
+	auto dotdata=std::dynamic_pointer_cast<DotFeatures>(features);
+	REQUIRE(dotdata,"dynamic cast from Features to DotFeatures returned NULL")
 	int32_t num_vectors=dotdata->get_num_vectors();
 
 	// set data for EM
-	auto em=std::make_shared<CEMMixtureModel>();
+	auto em=std::make_shared<EMMixtureModel>();
 	em->data.alpha=SGMatrix<float64_t>(num_vectors,m_components->get_num_elements());
 	em->data.components=m_components;
 	em->data.weights=m_weights;
@@ -100,7 +100,7 @@ bool CMixtureModel::train(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
+float64_t MixtureModel::get_log_model_parameter(int32_t num_param)
 {
 	REQUIRE(num_param==1,"number of parameters in mixture model is 1"
 	" (i.e. number of components). num_components should be 1. %d supplied\n",num_param)
@@ -108,13 +108,13 @@ float64_t CMixtureModel::get_log_model_parameter(int32_t num_param)
 	return std::log(static_cast<float64_t>(get_num_components()));
 }
 
-float64_t CMixtureModel::get_log_derivative(int32_t num_param, int32_t num_example)
+float64_t MixtureModel::get_log_derivative(int32_t num_param, int32_t num_example)
 {
 	SG_NOTIMPLEMENTED
 	return 0;
 }
 
-float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
+float64_t MixtureModel::get_log_likelihood_example(int32_t num_example)
 {
 	REQUIRE(features,"features not set\n")
 	REQUIRE(features->get_feature_class() == C_DENSE,"Dense features required\n")
@@ -123,7 +123,7 @@ float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 	SGVector<float64_t> log_likelihood_component(m_components->get_num_elements());
 	for (int32_t i=0;i<m_components->get_num_elements();i++)
 	{
-		auto ith_comp=m_components->get_element<CDistribution>(i);
+		auto ith_comp=m_components->get_element<Distribution>(i);
 		log_likelihood_component[i] =
 		    ith_comp->get_log_likelihood_example(num_example) +
 		    std::log(m_weights[i]);
@@ -131,84 +131,84 @@ float64_t CMixtureModel::get_log_likelihood_example(int32_t num_example)
 
 	}
 
-	return CMath::log_sum_exp(log_likelihood_component);
+	return Math::log_sum_exp(log_likelihood_component);
 }
 
-SGVector<float64_t> CMixtureModel::get_weights() const
+SGVector<float64_t> MixtureModel::get_weights() const
 {
 	return m_weights;
 }
 
-void CMixtureModel::set_weights(SGVector<float64_t> weights)
+void MixtureModel::set_weights(SGVector<float64_t> weights)
 {
 	m_weights=weights;
 }
 
-std::shared_ptr<CDynamicObjectArray> CMixtureModel::get_components() const
+std::shared_ptr<DynamicObjectArray> MixtureModel::get_components() const
 {
 
 	return m_components;
 }
 
-void CMixtureModel::set_components(std::shared_ptr<CDynamicObjectArray> components)
+void MixtureModel::set_components(std::shared_ptr<DynamicObjectArray> components)
 {
 	m_components=components;
 }
 
-index_t CMixtureModel::get_num_components() const
+index_t MixtureModel::get_num_components() const
 {
 	return m_components->get_num_elements();
 }
 
-std::shared_ptr<CDistribution> CMixtureModel::get_component(index_t index) const
+std::shared_ptr<Distribution> MixtureModel::get_component(index_t index) const
 {
 	REQUIRE(index<get_num_components(),"index supplied (%d) is greater than total mixture components (%d)\n"
 																				,index,get_num_components())
-	return m_components->get_element<CDistribution>(index);
+	return m_components->get_element<Distribution>(index);
 }
 
-void CMixtureModel::set_max_iters(int32_t max_iters)
+void MixtureModel::set_max_iters(int32_t max_iters)
 {
 	m_max_iters=max_iters;
 }
 
-int32_t CMixtureModel::get_max_iters() const
+int32_t MixtureModel::get_max_iters() const
 {
 	return m_max_iters;
 }
 
-void CMixtureModel::set_convergence_tolerance(float64_t conv_tol)
+void MixtureModel::set_convergence_tolerance(float64_t conv_tol)
 {
 	m_conv_tol=conv_tol;
 }
 
-float64_t CMixtureModel::get_convergence_tolerance() const
+float64_t MixtureModel::get_convergence_tolerance() const
 {
 	return m_conv_tol;
 }
 
-SGVector<float64_t> CMixtureModel::sample()
+SGVector<float64_t> MixtureModel::sample()
 {
 	// TBD
 	SG_NOTIMPLEMENTED;
 	return SGVector<float64_t>();
 }
 
-SGVector<float64_t> CMixtureModel::cluster(SGVector<float64_t> point)
+SGVector<float64_t> MixtureModel::cluster(SGVector<float64_t> point)
 {
 	// TBD
 	SG_NOTIMPLEMENTED;
 	return point;
 }
 
-void CMixtureModel::init()
+void MixtureModel::init()
 {
 	m_components=NULL;
 	m_weights=SGVector<float64_t>();
 	m_conv_tol=1e-8;
 	m_max_iters=1000;
 
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_components,"m_components","components of mixture");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_components,"m_components","components of mixture");
 	SG_ADD(&m_weights,"m_weights","weights of components");
 	SG_ADD(&m_conv_tol,"m_conv_tol","convergence tolerance");
 	SG_ADD(&m_max_iters,"m_max_iters","max number of iterations");

@@ -36,7 +36,7 @@
 #include <shogun/lib/Map.h>
 #include <shogun/optimization/NLOPTMinimizer.h>
 CPiecewiseQuadraticObject2::CPiecewiseQuadraticObject2()
-	:CSGObject()
+	:SGObject()
 {
 	init();
 }
@@ -176,14 +176,14 @@ float64_t NLOPTTestCostFunction::get_cost()
 SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
 	for(index_t i=0; i<num_variables; i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
+		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
 		if(node && node->data==m_obj)
 			bound=m_obj->get_lower_bound(node->key);
 	}
@@ -194,14 +194,14 @@ SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
 	for(index_t i=0; i<num_variables; i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
+		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
 		if(node && node->data==m_obj)
 			bound=m_obj->get_upper_bound(node->key);
 	}
@@ -212,14 +212,14 @@ SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> variable;
 
 	for(index_t i=0; i<num_variables; i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
+		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
 		if(node && node->data==m_obj)
 			variable=m_obj->get_variable(node->key);
 	
@@ -231,7 +231,7 @@ SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, CSGObject*>();
+	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();
@@ -239,7 +239,7 @@ SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 
 	for(index_t i=0; i<num_gradients; i++)
 	{
-		CMapNode<TParameter*, CSGObject*>* node=parameters->get_node_ptr(i);
+		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
 		if(node && node->data==m_obj)
 			gradient=m_obj->get_gradient(node->key);
 	}

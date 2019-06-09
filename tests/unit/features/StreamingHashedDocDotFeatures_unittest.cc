@@ -37,14 +37,14 @@ TEST(StreamingHashedDocFeaturesTest, example_reading)
 	list.strings[1] = string_2;
 	list.strings[2] = string_3;
 
-	auto tokenizer = std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	auto converter = std::make_shared<CHashedDocConverter>(tokenizer, 5, true);
-	auto doc_collection = std::make_shared<CStringFeatures<char>>(list, RAWBYTE);
-	auto feats = std::make_shared<CStreamingHashedDocDotFeatures>(doc_collection,
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, 5, true);
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto feats = std::make_shared<StreamingHashedDocDotFeatures>(doc_collection,
 			tokenizer, 5);
 
 	index_t i = 0;
@@ -96,20 +96,20 @@ TEST(StreamingHashedDocFeaturesTest, dot_tests)
 	list.strings[1] = string_2;
 	list.strings[2] = string_3;
 
-	auto tokenizer = std::make_shared<CDelimiterTokenizer>();
+	auto tokenizer = std::make_shared<DelimiterTokenizer>();
 	tokenizer->delimiters[' '] = 1;
 	tokenizer->delimiters['\''] = 1;
 	tokenizer->delimiters[','] = 1;
 
-	auto converter = std::make_shared<CHashedDocConverter>(tokenizer, 5, true);
-	auto doc_collection = std::make_shared<CStringFeatures<char>>(list, RAWBYTE);
-	auto feats = std::make_shared<CStreamingHashedDocDotFeatures>(doc_collection,
+	auto converter = std::make_shared<HashedDocConverter>(tokenizer, 5, true);
+	auto doc_collection = std::make_shared<StringFeatures<char>>(list, RAWBYTE);
+	auto feats = std::make_shared<StreamingHashedDocDotFeatures>(doc_collection,
 			tokenizer, 5);
 	feats->start_parser();
 
 	SGVector<float32_t> dense_vec(32);
 	for (index_t j=0; j<32; j++)
-		dense_vec[j] = CMath::random(0.0, 1.0);
+		dense_vec[j] = Math::random(0.0, 1.0);
 
 	index_t i = 0;
 	while (feats->get_next_example())

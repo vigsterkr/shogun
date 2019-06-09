@@ -18,10 +18,10 @@ TEST(TDistributedStochasticNeighborEmbeddingTest,basic)
 	const index_t n_dimensions = 3;
 	const index_t n_target_dimensions = 2;
 	auto high_dimensional_features =
-		std::make_shared<CDenseFeatures<float64_t>>(CDataGenerator::generate_gaussians(n_samples, 1, n_dimensions));
+		std::make_shared<DenseFeatures<float64_t>>(DataGenerator::generate_gaussians(n_samples, 1, n_dimensions));
 
 	auto embedder =
-		std::make_shared<CTDistributedStochasticNeighborEmbedding>();
+		std::make_shared<TDistributedStochasticNeighborEmbedding>();
 
 	embedder->set_target_dim(n_target_dimensions);
 	EXPECT_EQ(n_target_dimensions, embedder->get_target_dim());
@@ -33,7 +33,7 @@ TEST(TDistributedStochasticNeighborEmbeddingTest,basic)
 
 	auto low_dimensional_features =
 	    embedder->transform(high_dimensional_features)
-	        ->as<CDenseFeatures<float64_t>>();
+	        ->as<DenseFeatures<float64_t>>();
 
 	EXPECT_EQ(n_target_dimensions,low_dimensional_features->get_dim_feature_space());
 	EXPECT_EQ(high_dimensional_features->get_num_vectors(),low_dimensional_features->get_num_vectors());

@@ -12,39 +12,39 @@
 
 using namespace shogun;
 
-CIsomap::CIsomap() : CMultidimensionalScaling()
+Isomap::Isomap() : MultidimensionalScaling()
 {
 	m_k = 3;
 
 	init();
 }
 
-void CIsomap::init()
+void Isomap::init()
 {
 	SG_ADD(&m_k, "k", "number of neighbors", ParameterProperties::HYPER);
 }
 
-CIsomap::~CIsomap()
+Isomap::~Isomap()
 {
 }
 
-void CIsomap::set_k(int32_t k)
+void Isomap::set_k(int32_t k)
 {
 	ASSERT(k>0)
 	m_k = k;
 }
 
-int32_t CIsomap::get_k() const
+int32_t Isomap::get_k() const
 {
 	return m_k;
 }
 
-const char* CIsomap::get_name() const
+const char* Isomap::get_name() const
 {
 	return "Isomap";
 }
 
-std::shared_ptr<CDenseFeatures<float64_t>> CIsomap::embed_distance(std::shared_ptr<CDistance> distance)
+std::shared_ptr<DenseFeatures<float64_t>> Isomap::embed_distance(std::shared_ptr<Distance> distance)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	if (m_landmark)

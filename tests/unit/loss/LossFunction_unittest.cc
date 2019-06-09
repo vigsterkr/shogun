@@ -60,7 +60,7 @@ TEST(LossFunction, squared_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	auto lossf=std::make_shared<CSquaredLoss>();
+	auto lossf=std::make_shared<SquaredLoss>();
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);
@@ -101,7 +101,7 @@ TEST(LossFunction, exponential_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	auto lossf=std::make_shared<CExponentialLoss>();
+	auto lossf=std::make_shared<ExponentialLoss>();
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);
@@ -142,7 +142,7 @@ TEST(LossFunction, abs_deviation_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	auto lossf=std::make_shared<CAbsoluteDeviationLoss>();
+	auto lossf=std::make_shared<AbsoluteDeviationLoss>();
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);
@@ -183,7 +183,7 @@ TEST(LossFunction, huber_loss_test)
 	SGVector<float64_t> actual(5);
 	set_values(predicted,actual);
 
-	auto lossf=std::make_shared<CHuberLoss>(4);
+	auto lossf=std::make_shared<HuberLoss>(4);
 
 	SGVector<float64_t> loss(5);
 	SGVector<float64_t> firstd(5);

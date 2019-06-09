@@ -46,10 +46,10 @@ TEST(Preprocessor, dense)
 	const index_t size=4;
 	SGMatrix<float64_t> data(dim, size);
 	for (index_t i=0; i<dim*size; ++i)
-		data.matrix[i]=CMath::randn_double();
+		data.matrix[i]=Math::randn_double();
 
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(data);
-	auto preproc = std::make_shared<CNormOne>();
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
+	auto preproc = std::make_shared<NormOne>();
 	preproc->fit(features);
 
 	auto preprocessed = preproc->transform(features);
@@ -67,19 +67,19 @@ TEST(Preprocessor, string)
 
 	for (index_t i=0; i<num_strings; ++i)
 	{
-		index_t len=CMath::random(min_string_length, max_string_length);
+		index_t len=Math::random(min_string_length, max_string_length);
 		SGString<uint16_t> current(len);
 
 		/* fill with random uppercase letters (ASCII) */
 		for (index_t j=0; j<len; ++j)
-			current.string[j]=(uint16_t)CMath::random('A', 'Z');
+			current.string[j]=(uint16_t)Math::random('A', 'Z');
 
 		strings.strings[i]=current;
 	}
 
 	/* create num_features 2-dimensional vectors */
-	auto features = std::make_shared<CStringFeatures<uint16_t>>(strings, ALPHANUM);
-	auto preproc = std::make_shared<CSortWordString>();
+	auto features = std::make_shared<StringFeatures<uint16_t>>(strings, ALPHANUM);
+	auto preproc = std::make_shared<SortWordString>();
 	preproc->fit(features);
 
 	auto preprocessed = preproc->transform(features);

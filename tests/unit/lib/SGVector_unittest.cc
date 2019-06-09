@@ -60,7 +60,7 @@ TEST(SGVectorTest, ctor_from_matrix)
 
 	SGMatrix<float64_t> mat(n_rows, n_cols);
 	for (index_t i = 0; i < mat.size(); ++i)
-		mat[i] = CMath::randn_double();
+		mat[i] = Math::randn_double();
 
 	auto vec = SGVector<float64_t>(mat);
 
@@ -94,7 +94,7 @@ TEST(SGVectorTest,setget)
 
 TEST(SGVectorTest,add)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	SGVector<float64_t> a(10);
 	SGVector<float64_t> b(10);
 	a.random(0.0, 1024.0);
@@ -114,7 +114,7 @@ TEST(SGVectorTest,add)
 
 TEST(SGVectorTest,norm)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	SGVector<float64_t> a(10);
 	a.random(-50.0, 1024.0);
 
@@ -126,7 +126,7 @@ TEST(SGVectorTest,norm)
 
 	float64_t l1_norm = 0.0;
 	for (int32_t i = 0; i < a.vlen; ++i)
-		l1_norm += CMath::abs(a[i]);
+		l1_norm += Math::abs(a[i]);
 	EXPECT_EQ(l1_norm, SGVector<float64_t>::onenorm(a.vector, a.vlen));
 
 	SGVector<float64_t> b(10);
@@ -138,7 +138,7 @@ TEST(SGVectorTest,norm)
 
 TEST(SGVectorTest,misc)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 	SGVector<float64_t> a(10);
 	a.random(-1024.0, 1024.0);
 
@@ -147,7 +147,7 @@ TEST(SGVectorTest,misc)
 	for (int32_t i = 0; i < a.vlen; ++i)
 	{
 		sum += a[i];
-		sum_abs += CMath::abs(a[i]);
+		sum_abs += Math::abs(a[i]);
 	}
 
 	EXPECT_EQ(sum, SGVector<float64_t>::sum(a.vector,a.vlen));

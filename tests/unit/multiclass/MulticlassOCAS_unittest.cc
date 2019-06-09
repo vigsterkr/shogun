@@ -13,7 +13,7 @@ extern MultiLabelTestEnvironment* multilabel_test_env;
 #ifdef HAVE_LAPACK
 TEST(MulticlassOCASTest,train)
 {
-  CMath::init_random(5);
+  Math::init_random(5);
   float64_t C = 1.0;
   std::shared_ptr<GaussianCheckerboard> mockData =
 	  multilabel_test_env->getMulticlassFixture();
@@ -21,15 +21,15 @@ TEST(MulticlassOCASTest,train)
   auto train_feats = mockData->get_features_train();
   auto test_feats = mockData->get_features_test();
   auto ground_truth =
-	  std::static_pointer_cast<CMulticlassLabels>(mockData->get_labels_test());
-  auto mocas = std::make_shared<CMulticlassOCAS>(C, train_feats, ground_truth);
+	  std::static_pointer_cast<MulticlassLabels>(mockData->get_labels_test());
+  auto mocas = std::make_shared<MulticlassOCAS>(C, train_feats, ground_truth);
   mocas->parallel->set_num_threads(1);
   mocas->set_epsilon(1e-5);
   mocas->train();
 
-  auto pred = mocas->apply(test_feats)->as<CMulticlassLabels>();
+  auto pred = mocas->apply(test_feats)->as<MulticlassLabels>();
 
-  CMulticlassAccuracy evaluate;
+  MulticlassAccuracy evaluate;
   float64_t result = evaluate.evaluate(pred, ground_truth);
   EXPECT_GT(result, 0.99);
 

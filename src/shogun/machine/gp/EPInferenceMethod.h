@@ -49,11 +49,11 @@ namespace shogun
  * Approximate Bayesian Inference. PhD thesis, Massachusetts Institute of
  * Technology
  */
-class CEPInferenceMethod : public CInference
+class EPInferenceMethod : public Inference
 {
 public:
 	/** default constructor */
-	CEPInferenceMethod();
+	EPInferenceMethod();
 
 	/** constructor
 	 *
@@ -63,10 +63,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CEPInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features, std::shared_ptr<CMeanFunction> mean,
-			std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
+	EPInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features, std::shared_ptr<MeanFunction> mean,
+			std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CEPInferenceMethod();
+	virtual ~EPInferenceMethod();
 
 	/** return what type of inference we are
 	 *
@@ -83,9 +83,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CEPInferenceMethod object
+	 * @return casted EPInferenceMethod object
 	 */
-	static std::shared_ptr<CEPInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
+	static std::shared_ptr<EPInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** returns the negative logarithm of the marginal likelihood function:
 	 *

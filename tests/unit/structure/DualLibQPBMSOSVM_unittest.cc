@@ -86,7 +86,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 
 	// Create train features
 	SGSparseMatrix<float64_t> feats = create_test_features(N, feat_dim, num_feat);
-	CSparseFeatures< float64_t >* features = std::make_shared<CSparseFeatures>< float64_t >(feats);
+	SparseFeatures< float64_t >* features = std::make_shared<SparseFeatures>< float64_t >(feats);
 
 	// Create SO model, SO-SVM
 	CMulticlassModel* model = new CMulticlassModel(features, labels);
@@ -112,7 +112,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 	ASSERT_LE(res.nzA, 8u);
 	ASSERT_LE(res.exitflag, 0);
 
-	CStructuredLabels* out = sosvm->apply()->as<CStructuredLabels>();
+	StructuredLabels* out = sosvm->apply()->as<StructuredLabels>();
 	SG_REF(out);
 
 	// Compute error
@@ -121,7 +121,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 
 	for (int32_t i=0; i<num_feat; ++i)
 	{
-		CRealNumber* rn = out->get_label(i)->as<CRealNumber>();
+		RealNumber* rn = out->get_label(i)->as<RealNumber>();
 		error+=(rn->value==labs.get_element(i)) ? 0.0 : 1.0;
 		
 	}

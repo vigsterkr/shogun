@@ -53,25 +53,25 @@
 using namespace shogun;
 using namespace internal;
 
-using FeatureVector = std::vector<std::shared_ptr<CFeatures>>;
+using FeatureVector = std::vector<std::shared_ptr<Features>>;
 
-struct CStreamingMMD::Self
+struct StreamingMMD::Self
 {
-	Self(CStreamingMMD& cmmd);
+	Self(StreamingMMD& cmmd);
 
 	void create_statistic_job();
 	void create_variance_job();
 	void create_computation_jobs();
 
 	void merge_samples(NextSamples&, FeatureVector&) const;
-	void compute_kernel(ComputationManager&, FeatureVector&, std::shared_ptr<CKernel>) const;
+	void compute_kernel(ComputationManager&, FeatureVector&, std::shared_ptr<Kernel>) const;
 	void compute_jobs(ComputationManager&) const;
 
 	std::pair<float64_t, float64_t> compute_statistic_variance();
 	std::pair<SGVector<float64_t>, SGMatrix<float64_t>> compute_statistic_and_Q(const KernelManager&);
 	SGVector<float64_t> sample_null();
 
-	CStreamingMMD& owner;
+	StreamingMMD& owner;
 
 	bool use_gpu;
 	index_t num_null_samples;
@@ -85,7 +85,7 @@ struct CStreamingMMD::Self
 	std::function<float32_t(const SGMatrix<float32_t>&)> variance_job;
 };
 
-CStreamingMMD::Self::Self(CStreamingMMD& cmmd) : owner(cmmd),
+StreamingMMD::Self::Self(StreamingMMD& cmmd) : owner(cmmd),
 	use_gpu(false), num_null_samples(250),
 	statistic_type(ST_UNBIASED_FULL),
 	variance_estimation_method(VEM_DIRECT),
@@ -94,13 +94,13 @@ CStreamingMMD::Self::Self(CStreamingMMD& cmmd) : owner(cmmd),
 {
 }
 
-void CStreamingMMD::Self::create_computation_jobs()
+void StreamingMMD::Self::create_computation_jobs()
 {
 	create_statistic_job();
 	create_variance_job();
 }
 
-void CStreamingMMD::Self::create_statistic_job()
+void StreamingMMD::Self::create_statistic_job()
 {
 	const DataManager& data_mgr=owner.get_data_mgr();
 
@@ -119,7 +119,7 @@ void CStreamingMMD::Self::create_statistic_job()
 	permutation_job=mmd::WithinBlockPermutation(Bx, By, statistic_type);
 }
 
-void CStreamingMMD::Self::create_variance_job()
+void StreamingMMD::Self::create_variance_job()
 {
 	switch (variance_estimation_method)
 	{
@@ -133,21 +133,21 @@ void CStreamingMMD::Self::create_variance_job()
 	};
 }
 
-void CStreamingMMD::Self::merge_samples(NextSamples& next_burst, FeatureVector& blocks) const
+void StreamingMMD::Self::merge_samples(NextSamples& next_burst, FeatureVector& blocks) const
 {
 	blocks.resize(next_burst.num_blocks());
 #pragma omp parallel for
 	for (int64_t i=0; i<(int64_t)blocks.size(); ++i)
 	{
-		std::shared_ptr<CFeatures> block_p=next_burst[0][i];
-		std::shared_ptr<CFeatures> block_q=next_burst[1][i];
+		std::shared_ptr<Features> block_p=next_burst[0][i];
+		std::shared_ptr<Features> block_q=next_burst[1][i];
 		auto block_p_and_q=block_p->create_merged_copy(block_q);
 		blocks[i]=block_p_and_q;
 	}
 	next_burst.clear();
 }
 
-void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& blocks, std::shared_ptr<CKernel> kernel) const
+void StreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& blocks, std::shared_ptr<Kernel> kernel) const
 {
 	REQUIRE(kernel->get_kernel_type()!=K_CUSTOM, "Underlying kernel cannot be custom!\n");
 	cm.num_data(blocks.size());
@@ -156,7 +156,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& 
 	{
 		try
 		{
-			auto kernel_clone=kernel->clone()->as<CKernel>();
+			auto kernel_clone=kernel->clone()->as<Kernel>();
 			kernel_clone->init(blocks[i], blocks[i]);
 			cm.data(i)=kernel_clone->get_kernel_matrix<float32_t>();
 			kernel_clone->remove_lhs_and_rhs();
@@ -168,7 +168,7 @@ void CStreamingMMD::Self::compute_kernel(ComputationManager& cm, FeatureVector& 
 	}
 }
 
-void CStreamingMMD::Self::compute_jobs(ComputationManager& cm) const
+void StreamingMMD::Self::compute_jobs(ComputationManager& cm) const
 {
 	if (use_gpu)
 		cm.use_gpu().compute_data_parallel_jobs();
@@ -176,7 +176,7 @@ void CStreamingMMD::Self::compute_jobs(ComputationManager& cm) const
 		cm.use_cpu().compute_data_parallel_jobs();
 }
 
-std::pair<float64_t, float64_t> CStreamingMMD::Self::compute_statistic_variance()
+std::pair<float64_t, float64_t> StreamingMMD::Self::compute_statistic_variance()
 {
 	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
 	auto kernel=kernel_mgr.kernel_at(0);
@@ -250,7 +250,7 @@ std::pair<float64_t, float64_t> CStreamingMMD::Self::compute_statistic_variance(
 	return std::make_pair(statistic, variance);
 }
 
-std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::compute_statistic_and_Q(const KernelManager& kernel_selection_mgr)
+std::pair<SGVector<float64_t>, SGMatrix<float64_t> > StreamingMMD::Self::compute_statistic_and_Q(const KernelManager& kernel_selection_mgr)
 {
 //	const size_t num_kernels=0;
 //	SGVector<float64_t> statistic(num_kernels);
@@ -326,7 +326,7 @@ std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::Self::comput
 	return std::make_pair(statistic, Q);
 }
 
-SGVector<float64_t> CStreamingMMD::Self::sample_null()
+SGVector<float64_t> StreamingMMD::Self::sample_null()
 {
 	const KernelManager& kernel_mgr=owner.get_kernel_mgr();
 	auto kernel=kernel_mgr.kernel_at(0);
@@ -381,7 +381,7 @@ SGVector<float64_t> CStreamingMMD::Self::sample_null()
 	return statistic;
 }
 
-CStreamingMMD::CStreamingMMD() : CMMD()
+StreamingMMD::StreamingMMD() : MMD()
 {
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	Eigen::initParallel();
@@ -389,99 +389,99 @@ CStreamingMMD::CStreamingMMD() : CMMD()
 	self=std::unique_ptr<Self>(new Self(*this));
 }
 
-CStreamingMMD::~CStreamingMMD()
+StreamingMMD::~StreamingMMD()
 {
 }
 
-float64_t CStreamingMMD::compute_statistic()
+float64_t StreamingMMD::compute_statistic()
 {
 	return self->compute_statistic_variance().first;
 }
 
-float64_t CStreamingMMD::compute_variance()
+float64_t StreamingMMD::compute_variance()
 {
 	return self->compute_statistic_variance().second;
 }
 
-SGVector<float64_t> CStreamingMMD::compute_multiple()
+SGVector<float64_t> StreamingMMD::compute_multiple()
 {
 	return self->compute_statistic_and_Q(get_kernel_selection_strategy()->get_kernel_mgr()).first;
 }
 
-std::pair<float64_t, float64_t> CStreamingMMD::compute_statistic_variance()
+std::pair<float64_t, float64_t> StreamingMMD::compute_statistic_variance()
 {
 	return self->compute_statistic_variance();
 }
 
-std::pair<SGVector<float64_t>, SGMatrix<float64_t> > CStreamingMMD::compute_statistic_and_Q(const KernelManager& kernel_selection_mgr)
+std::pair<SGVector<float64_t>, SGMatrix<float64_t> > StreamingMMD::compute_statistic_and_Q(const KernelManager& kernel_selection_mgr)
 {
 	return self->compute_statistic_and_Q(kernel_selection_mgr);
 }
 
-SGVector<float64_t> CStreamingMMD::sample_null()
+SGVector<float64_t> StreamingMMD::sample_null()
 {
 	return self->sample_null();
 }
 
-void CStreamingMMD::set_num_null_samples(index_t null_samples)
+void StreamingMMD::set_num_null_samples(index_t null_samples)
 {
 	self->num_null_samples=null_samples;
 }
 
-const index_t CStreamingMMD::get_num_null_samples() const
+const index_t StreamingMMD::get_num_null_samples() const
 {
 	return self->num_null_samples;
 }
 
-void CStreamingMMD::use_gpu(bool gpu)
+void StreamingMMD::use_gpu(bool gpu)
 {
 	self->use_gpu=gpu;
 }
 
-bool CStreamingMMD::use_gpu() const
+bool StreamingMMD::use_gpu() const
 {
 	return self->use_gpu;
 }
 
-void CStreamingMMD::cleanup()
+void StreamingMMD::cleanup()
 {
 	for (auto i=0; i<get_kernel_mgr().num_kernels(); ++i)
 		get_kernel_mgr().restore_kernel_at(i);
 }
 
-void CStreamingMMD::set_statistic_type(EStatisticType stype)
+void StreamingMMD::set_statistic_type(EStatisticType stype)
 {
 	self->statistic_type=stype;
 }
 
-const EStatisticType CStreamingMMD::get_statistic_type() const
+const EStatisticType StreamingMMD::get_statistic_type() const
 {
 	return self->statistic_type;
 }
 
-void CStreamingMMD::set_variance_estimation_method(EVarianceEstimationMethod vmethod)
+void StreamingMMD::set_variance_estimation_method(EVarianceEstimationMethod vmethod)
 {
 	// TODO overload this
-/*	if (std::is_same<Derived, CQuadraticTimeMMD>::value && vmethod == VEM_PERMUTATION)
+/*	if (std::is_same<Derived, QuadraticTimeMMD>::value && vmethod == VEM_PERMUTATION)
 	{
 		std::cerr << "cannot use permutation method for quadratic time MMD" << std::endl;
 	}*/
 	self->variance_estimation_method=vmethod;
 }
 
-const EVarianceEstimationMethod CStreamingMMD::get_variance_estimation_method() const
+const EVarianceEstimationMethod StreamingMMD::get_variance_estimation_method() const
 {
 	return self->variance_estimation_method;
 }
 
-void CStreamingMMD::set_null_approximation_method(ENullApproximationMethod nmethod)
+void StreamingMMD::set_null_approximation_method(ENullApproximationMethod nmethod)
 {
 	// TODO overload this
-/*	if (std::is_same<Derived, CQuadraticTimeMMD>::value && nmethod == NAM_MMD1_GAUSSIAN)
+/*	if (std::is_same<Derived, QuadraticTimeMMD>::value && nmethod == NAM_MMD1_GAUSSIAN)
 	{
 		std::cerr << "cannot use gaussian method for quadratic time MMD" << std::endl;
 	}
-	else if ((std::is_same<Derived, CBTestMMD>::value || std::is_same<Derived, CLinearTimeMMD>::value) &&
+	else if ((std::is_same<Derived, BTestMMD>::value || std::is_same<Derived, LinearTimeMMD>::value) &&
 			(nmethod == NAM_MMD2_SPECTRUM || nmethod == NAM_MMD2_GAMMA))
 	{
 		std::cerr << "cannot use spectrum/gamma method for B-test/linear time MMD" << std::endl;
@@ -489,12 +489,12 @@ void CStreamingMMD::set_null_approximation_method(ENullApproximationMethod nmeth
 	self->null_approximation_method=nmethod;
 }
 
-const ENullApproximationMethod CStreamingMMD::get_null_approximation_method() const
+const ENullApproximationMethod StreamingMMD::get_null_approximation_method() const
 {
 	return self->null_approximation_method;
 }
 
-const char* CStreamingMMD::get_name() const
+const char* StreamingMMD::get_name() const
 {
 	return "StreamingMMD";
 }

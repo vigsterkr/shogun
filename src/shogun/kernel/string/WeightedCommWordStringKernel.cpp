@@ -11,24 +11,24 @@
 
 using namespace shogun;
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel()
-  : CCommWordStringKernel(0, false)
+WeightedCommWordStringKernel::WeightedCommWordStringKernel()
+  : CommWordStringKernel(0, false)
 {
 	init();
 }
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
+WeightedCommWordStringKernel::WeightedCommWordStringKernel(
 	int32_t size, bool us)
-: CCommWordStringKernel(size, us)
+: CommWordStringKernel(size, us)
 {
 	ASSERT(us==false)
 	init();
 }
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
-	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, bool us,
+WeightedCommWordStringKernel::WeightedCommWordStringKernel(
+	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, bool us,
 	int32_t size)
-: CCommWordStringKernel(size, us)
+: CommWordStringKernel(size, us)
 {
 	ASSERT(us==false)
 	init();
@@ -36,32 +36,32 @@ CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
 	init(l,r);
 }
 
-CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel()
+WeightedCommWordStringKernel::~WeightedCommWordStringKernel()
 {
 	SG_FREE(weights);
 }
 
-bool CWeightedCommWordStringKernel::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool WeightedCommWordStringKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	auto sf_l = std::static_pointer_cast<CStringFeatures<uint16_t>>(l);
-	auto sf_r = std::static_pointer_cast<CStringFeatures<uint16_t>>(r);
+	auto sf_l = std::static_pointer_cast<StringFeatures<uint16_t>>(l);
+	auto sf_r = std::static_pointer_cast<StringFeatures<uint16_t>>(r);
 	ASSERT(sf_l->get_order() ==	sf_r->get_order());
 	degree=sf_l->get_order();
 	set_wd_weights();
 
-	CCommWordStringKernel::init(l,r);
+	CommWordStringKernel::init(l,r);
 	return init_normalizer();
 }
 
-void CWeightedCommWordStringKernel::cleanup()
+void WeightedCommWordStringKernel::cleanup()
 {
 	SG_FREE(weights);
 	weights=NULL;
 
-	CCommWordStringKernel::cleanup();
+	CommWordStringKernel::cleanup();
 }
 
-bool CWeightedCommWordStringKernel::set_wd_weights()
+bool WeightedCommWordStringKernel::set_wd_weights()
 {
 	SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, degree);
@@ -79,7 +79,7 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 	return weights!=NULL;
 }
 
-bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
+bool WeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 {
 	ASSERT(w.vlen==degree)
 
@@ -90,14 +90,14 @@ bool CWeightedCommWordStringKernel::set_weights(SGVector<float64_t> w)
 	return true;
 }
 
-float64_t CWeightedCommWordStringKernel::compute_helper(
+float64_t WeightedCommWordStringKernel::compute_helper(
 	int32_t idx_a, int32_t idx_b, bool do_sort)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	auto l = std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs);
-	auto r = std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
+	auto l = std::static_pointer_cast<StringFeatures<uint16_t>>(lhs);
+	auto r = std::static_pointer_cast<StringFeatures<uint16_t>>(rhs);
 
 	uint16_t* av=l->get_feature_vector(idx_a, alen, free_avec);
 	uint16_t* bv=r->get_feature_vector(idx_b, blen, free_bvec);
@@ -111,7 +111,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 		{
 			avec=SG_MALLOC(uint16_t, alen);
 			sg_memcpy(avec, av, sizeof(uint16_t)*alen);
-			CMath::radix_sort(avec, alen);
+			Math::radix_sort(avec, alen);
 		}
 		else
 			avec=NULL;
@@ -120,7 +120,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 		{
 			bvec=SG_MALLOC(uint16_t, blen);
 			sg_memcpy(bvec, bv, sizeof(uint16_t)*blen);
-			CMath::radix_sort(bvec, blen);
+			Math::radix_sort(bvec, blen);
 		}
 		else
 			bvec=NULL;
@@ -132,7 +132,7 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 	for (int32_t d=0; d<degree; d++)
 	{
 		mask = mask | (1 << (degree-d-1));
-		uint16_t masked=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_masked_symbols(0xffff, mask);
+		uint16_t masked=std::static_pointer_cast<StringFeatures<uint16_t>>(lhs)->get_masked_symbols(0xffff, mask);
 
 		int32_t left_idx=0;
 		int32_t right_idx=0;
@@ -175,12 +175,12 @@ float64_t CWeightedCommWordStringKernel::compute_helper(
 	return result;
 }
 
-void CWeightedCommWordStringKernel::add_to_normal(
+void WeightedCommWordStringKernel::add_to_normal(
 	int32_t vec_idx, float64_t weight)
 {
 	int32_t len=-1;
 	bool free_vec;
-	auto s=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs);
+	auto s=std::static_pointer_cast<StringFeatures<uint16_t>>(lhs);
 	uint16_t* vec=s->get_feature_vector(vec_idx, len, free_vec);
 
 	if (len>0)
@@ -205,12 +205,12 @@ void CWeightedCommWordStringKernel::add_to_normal(
 	s->free_feature_vector(vec, vec_idx, free_vec);
 }
 
-void CWeightedCommWordStringKernel::merge_normal()
+void WeightedCommWordStringKernel::merge_normal()
 {
 	ASSERT(get_is_initialized())
 	ASSERT(use_sign==false)
 
-	auto s=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
+	auto s=std::static_pointer_cast<StringFeatures<uint16_t>>(rhs);
 	uint32_t num_symbols=(uint32_t) s->get_num_symbols();
 	int32_t dic_size=1<<(sizeof(uint16_t)*8);
 	float64_t* dic=SG_MALLOC(float64_t, dic_size);
@@ -237,7 +237,7 @@ void CWeightedCommWordStringKernel::merge_normal()
 	SG_FREE(dic);
 }
 
-float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
+float64_t WeightedCommWordStringKernel::compute_optimized(int32_t i)
 {
 	if (!get_is_initialized())
 		SG_ERROR("CCommWordStringKernel optimization not initialized\n")
@@ -247,7 +247,7 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 	float64_t result=0;
 	bool free_vec;
 	int32_t len=-1;
-	auto s=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs);
+	auto s=std::static_pointer_cast<StringFeatures<uint16_t>>(rhs);
 	uint16_t* vec=s->get_feature_vector(i, len, free_vec);
 
 	if (vec && len>0)
@@ -272,19 +272,19 @@ float64_t CWeightedCommWordStringKernel::compute_optimized(int32_t i)
 	return result;
 }
 
-float64_t* CWeightedCommWordStringKernel::compute_scoring(
+float64_t* WeightedCommWordStringKernel::compute_scoring(
 	int32_t max_degree, int32_t& num_feat, int32_t& num_sym, float64_t* target,
 	int32_t num_suppvec, int32_t* IDX, float64_t* alphas, bool do_init)
 {
 	if (do_init)
-		CCommWordStringKernel::init_optimization(num_suppvec, IDX, alphas);
+		CommWordStringKernel::init_optimization(num_suppvec, IDX, alphas);
 
 	int32_t dic_size=1<<(sizeof(uint16_t)*9);
 	float64_t* dic=SG_MALLOC(float64_t, dic_size);
 	sg_memcpy(dic, dictionary_weights, sizeof(float64_t)*dic_size);
 
 	merge_normal();
-	float64_t* result=CCommWordStringKernel::compute_scoring(max_degree, num_feat,
+	float64_t* result=CommWordStringKernel::compute_scoring(max_degree, num_feat,
 			num_sym, target, num_suppvec, IDX, alphas, false);
 
 	init_dictionary(1<<(sizeof(uint16_t)*9));
@@ -294,7 +294,7 @@ float64_t* CWeightedCommWordStringKernel::compute_scoring(
 	return result;
 }
 
-void CWeightedCommWordStringKernel::init()
+void WeightedCommWordStringKernel::init()
 {
 	degree=0;
 	weights=NULL;

@@ -28,21 +28,21 @@ template <class ST> struct SGSparseVectorEntry;
  * - Strings are written out as one string per line
  *
  */
-	class CStreamingFile: public CSGObject
+	class StreamingFile: public SGObject
 	{
 	public:
 		/** default constructor	 */
-		CStreamingFile();
+		StreamingFile();
 
 		/** constructor
 		 *
 		 * @param fname filename to open
 		 * @param rw mode, 'r' or 'w'
 		 */
-		CStreamingFile(const char* fname, char rw='r');
+		StreamingFile(const char* fname, char rw='r');
 
 		/** default destructor */
-		virtual ~CStreamingFile();
+		virtual ~StreamingFile();
 
 #ifndef SWIG // SWIG should skip this
 		/**
@@ -271,7 +271,7 @@ template <class ST> struct SGSparseVectorEntry;
 	protected:
 
 		/// Buffer to hold stuff in memory
-		std::shared_ptr<CIOBuffer> buf;
+		std::shared_ptr<IOBuffer> buf;
 		/// Task
 		char task;
 		/// Name of the handled file

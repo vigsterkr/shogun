@@ -43,18 +43,18 @@ TEST(EPInferenceMethod,get_cholesky_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitLikelihood>();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -122,18 +122,18 @@ TEST(EPInferenceMethod,get_negative_marginal_likelihood_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitLikelihood>();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -173,18 +173,18 @@ TEST(EPInferenceMethod,get_alpha_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitLikelihood>();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -227,25 +227,25 @@ TEST(EPInferenceMethod,get_marginal_likelihood_derivatives_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=2.0;
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 2*CMath::sq(ell));
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*Math::sq(ell));
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitLikelihood>();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel, features_train, mean,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel, features_train, mean,
 			labels_train, likelihood);
 	inf->set_scale(1.5);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
@@ -297,18 +297,18 @@ TEST(EPInferenceMethod, get_posterior_mean_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitLikelihood>();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 
@@ -352,18 +352,18 @@ TEST(EPInferenceMethod, get_posterior_covariance_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CBinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2*2^2 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 8.0);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 8.0);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitLikelihood>();
+	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with EP inference and kernel scale=1.5
-	auto inf=std::make_shared<CEPInferenceMethod>(kernel,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	inf->set_scale(1.5);
 

@@ -15,22 +15,22 @@
 
 namespace shogun
 {
-	template <class T> class CSparseFeatures;
+	template <class T> class SparseFeatures;
 /** @brief class SparseEucldeanDistance */
-class CSparseEuclideanDistance: public CSparseDistance<float64_t>
+class SparseEuclideanDistance: public SparseDistance<float64_t>
 {
 	public:
 		/** default constructor */
-		CSparseEuclideanDistance();
+		SparseEuclideanDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CSparseEuclideanDistance(
-			std::shared_ptr<CSparseFeatures<float64_t>> l, std::shared_ptr<CSparseFeatures<float64_t>> r);
-		virtual ~CSparseEuclideanDistance();
+		SparseEuclideanDistance(
+			std::shared_ptr<SparseFeatures<float64_t>> l, std::shared_ptr<SparseFeatures<float64_t>> r);
+		virtual ~SparseEuclideanDistance();
 
 		/** init distance
 		 *
@@ -38,7 +38,7 @@ class CSparseEuclideanDistance: public CSparseDistance<float64_t>
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

@@ -63,13 +63,13 @@ TEST(WithinBlockPermutation, biased_full)
 	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
 
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
 
 
 
-	auto kernel=std::make_shared<CGaussianKernel>();
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
@@ -93,7 +93,7 @@ TEST(WithinBlockPermutation, biased_full)
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 	sg_rand->set_seed(12345);
-	CMath::permute(perminds);
+	Math::permute(perminds);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 	auto result_2=compute(permuted_km);
@@ -103,7 +103,7 @@ TEST(WithinBlockPermutation, biased_full)
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
 	sg_rand->set_seed(12345);
-	CMath::permute(inds);
+	Math::permute(inds);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
 	mat=kernel->get_kernel_matrix<float32_t>();
@@ -130,13 +130,13 @@ TEST(WithinBlockPermutation, unbiased_full)
 	std::iota(data_q.matrix, data_q.matrix+dim*m, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*m, [&m](float64_t& val) { val/=2*m; });
 
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
 
 
 
-	auto kernel=std::make_shared<CGaussianKernel>();
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
@@ -160,7 +160,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 	sg_rand->set_seed(12345);
-	CMath::permute(perminds);
+	Math::permute(perminds);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 	auto result_2=compute(permuted_km);
@@ -170,7 +170,7 @@ TEST(WithinBlockPermutation, unbiased_full)
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
 	sg_rand->set_seed(12345);
-	CMath::permute(inds);
+	Math::permute(inds);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
 	mat=kernel->get_kernel_matrix<float32_t>();
@@ -196,13 +196,13 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	std::iota(data_q.matrix, data_q.matrix+dim*n, n+1);
 	std::for_each(data_q.matrix, data_q.matrix+dim*n, [&n](float64_t& val) { val/=2*n; });
 
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
-	auto feats_q=std::make_shared<CDenseFeatures<float64_t>>(data_q);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
+	auto feats_q=std::make_shared<DenseFeatures<float64_t>>(data_q);
 	auto feats=feats_p->create_merged_copy(feats_q);
 
 
 
-	auto kernel=std::make_shared<CGaussianKernel>();
+	auto kernel=std::make_shared<GaussianKernel>();
 	kernel->set_width(2.0);
 
 	kernel->init(feats, feats);
@@ -226,7 +226,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	perm.setIdentity();
 	SGVector<int> perminds(perm.indices().data(), perm.indices().size(), false);
 	sg_rand->set_seed(12345);
-	CMath::permute(perminds);
+	Math::permute(perminds);
 	MatrixXf permuted = perm.transpose()*map*perm;
 	SGMatrix<float32_t> permuted_km(permuted.data(), permuted.rows(), permuted.cols(), false);
 	auto result_2=compute(permuted_km);
@@ -236,7 +236,7 @@ TEST(WithinBlockPermutation, unbiased_incomplete)
 	SGVector<index_t> inds(mat.num_rows);
 	std::iota(inds.vector, inds.vector+inds.vlen, 0);
 	sg_rand->set_seed(12345);
-	CMath::permute(inds);
+	Math::permute(inds);
 	feats->add_subset(inds);
 	kernel->init(feats, feats);
 	mat=kernel->get_kernel_matrix<float32_t>();

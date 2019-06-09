@@ -5,12 +5,12 @@
 
 using namespace shogun;
 
-CPlifMatrix::CPlifMatrix() : m_PEN(0), m_num_plifs(0), m_num_limits(0),
+PlifMatrix::PlifMatrix() : m_PEN(0), m_num_plifs(0), m_num_limits(0),
 	m_num_states(0), m_feat_dim3(0), m_plif_matrix(0), m_state_signals(0)
 {
 }
 
-CPlifMatrix::~CPlifMatrix()
+PlifMatrix::~PlifMatrix()
 {
 	m_PEN.clear();
 
@@ -19,7 +19,7 @@ CPlifMatrix::~CPlifMatrix()
 	m_state_signals.clear();
 }
 
-void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
+void PlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 {
 	m_PEN.clear();
 
@@ -27,10 +27,10 @@ void CPlifMatrix::create_plifs(int32_t num_plifs, int32_t num_limits)
 	m_num_limits=num_limits;
 	m_PEN.resize(num_plifs);
 	for (int32_t i=0; i<num_plifs; i++)
-		m_PEN[i]=std::make_shared<CPlif>(num_limits) ;
+		m_PEN[i]=std::make_shared<Plif>(num_limits) ;
 }
 
-void CPlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
+void PlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
 {
 	if (plif_ids.vlen!=m_num_plifs)
 		SG_ERROR("plif_ids size mismatch (num_ids=%d vs.num_plifs=%d)\n", plif_ids.vlen, m_num_plifs)
@@ -45,7 +45,7 @@ void CPlifMatrix::set_plif_ids(SGVector<int32_t> plif_ids)
 	}
 }
 
-void CPlifMatrix::set_plif_min_values(SGVector<float64_t> min_values)
+void PlifMatrix::set_plif_min_values(SGVector<float64_t> min_values)
 {
 	if (min_values.vlen!=m_num_plifs)
 		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", min_values.vlen, m_num_plifs)
@@ -57,7 +57,7 @@ void CPlifMatrix::set_plif_min_values(SGVector<float64_t> min_values)
 	}
 }
 
-void CPlifMatrix::set_plif_max_values(SGVector<float64_t> max_values)
+void PlifMatrix::set_plif_max_values(SGVector<float64_t> max_values)
 {
 	if (max_values.vlen!=m_num_plifs)
 		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", max_values.vlen, m_num_plifs)
@@ -69,7 +69,7 @@ void CPlifMatrix::set_plif_max_values(SGVector<float64_t> max_values)
 	}
 }
 
-void CPlifMatrix::set_plif_use_cache(SGVector<bool> use_cache)
+void PlifMatrix::set_plif_use_cache(SGVector<bool> use_cache)
 {
 	if (use_cache.vlen!=m_num_plifs)
 		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", use_cache.vlen, m_num_plifs)
@@ -81,7 +81,7 @@ void CPlifMatrix::set_plif_use_cache(SGVector<bool> use_cache)
 	}
 }
 
-void CPlifMatrix::set_plif_use_svm(SGVector<int32_t> use_svm)
+void PlifMatrix::set_plif_use_svm(SGVector<int32_t> use_svm)
 {
 	if (use_svm.vlen!=m_num_plifs)
 		SG_ERROR("plif_values size mismatch (num_values=%d vs.num_plifs=%d)\n", use_svm.vlen, m_num_plifs)
@@ -93,7 +93,7 @@ void CPlifMatrix::set_plif_use_svm(SGVector<int32_t> use_svm)
 	}
 }
 
-void CPlifMatrix::set_plif_limits(SGMatrix<float64_t> limits)
+void PlifMatrix::set_plif_limits(SGMatrix<float64_t> limits)
 {
 	if (limits.num_rows!=m_num_plifs ||  limits.num_cols!=m_num_limits)
 	{
@@ -112,7 +112,7 @@ void CPlifMatrix::set_plif_limits(SGMatrix<float64_t> limits)
 	}
 }
 
-void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
+void PlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
 {
 	if (penalties.num_rows!=m_num_plifs ||  penalties.num_cols!=m_num_limits)
 	{
@@ -132,7 +132,7 @@ void CPlifMatrix::set_plif_penalties(SGMatrix<float64_t> penalties)
 	}
 }
 
-void CPlifMatrix::set_plif_names(SGString<char>* names, int32_t num_values, int32_t maxlen)
+void PlifMatrix::set_plif_names(SGString<char>* names, int32_t num_values, int32_t maxlen)
 {
 	if (num_values!=m_num_plifs)
 		SG_ERROR("names size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs)
@@ -140,13 +140,13 @@ void CPlifMatrix::set_plif_names(SGString<char>* names, int32_t num_values, int3
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 		int32_t id=get_plif_id(i);
-		char* name = CStringFeatures<char>::get_zero_terminated_string_copy(names[i]);
+		char* name = StringFeatures<char>::get_zero_terminated_string_copy(names[i]);
 		m_PEN[id]->set_plif_name(name);
 		SG_FREE(name);
 	}
 }
 
-void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_t num_values, int32_t maxlen)
+void PlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_t num_values, int32_t maxlen)
 {
 	if (num_values!=m_num_plifs)
 		SG_ERROR("transform_type size mismatch (num_values=%d vs.num_plifs=%d)\n", num_values, m_num_plifs)
@@ -154,7 +154,7 @@ void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_
 	for (int32_t i=0; i<m_num_plifs; i++)
 	{
 		int32_t id=get_plif_id(i);
-		char* transform_str=CStringFeatures<char>::get_zero_terminated_string_copy(transform_type[i]);
+		char* transform_str=StringFeatures<char>::get_zero_terminated_string_copy(transform_type[i]);
 
 		if (!m_PEN[id]->set_transform_type(transform_str))
 		{
@@ -168,7 +168,7 @@ void CPlifMatrix::set_plif_transform_type(SGString<char>* transform_type, int32_
 }
 
 
-bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
+bool PlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 {
 	auto PEN = get_PEN();
 	int32_t num_states = penalties_array.dims[0];
@@ -179,14 +179,14 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 	m_num_states = num_states;
 	m_plif_matrix.resize(num_states*num_states);
 
-	CDynamicArray<float64_t> penalties(penalties_array.array, num_states, num_states, penalties_array.dims[2], true, true) ;
+	DynamicArray<float64_t> penalties(penalties_array.array, num_states, num_states, penalties_array.dims[2], true, true) ;
 
 	for (int32_t i=0; i<num_states; i++)
 	{
 		for (int32_t j=0; j<num_states; j++)
 		{
-			std::shared_ptr<CPlifArray> plif_array = NULL;
-			std::shared_ptr<CPlif> plif = NULL ;
+			std::shared_ptr<PlifArray> plif_array = NULL;
+			std::shared_ptr<Plif> plif = NULL ;
 			for (int32_t k=0; k<penalties_array.dims[2]; k++)
 			{
 				if (penalties.element(i,j,k)==0)
@@ -194,7 +194,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 
 				if (!plif_array)
 				{
-					plif_array = std::make_shared<CPlifArray>() ;
+					plif_array = std::make_shared<PlifArray>() ;
 					plif_array->clear() ;
 				}
 
@@ -204,7 +204,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 				{
 					SG_ERROR("id out of range\n")
 
-					CPlif::delete_penalty_struct(PEN, num_plifs) ;
+					Plif::delete_penalty_struct(PEN, num_plifs) ;
 					return false ;
 				}
 				plif = PEN[id] ;
@@ -230,7 +230,7 @@ bool CPlifMatrix::compute_plif_matrix(SGNDArray<float64_t> penalties_array)
 	return true;
 }
 
-bool  CPlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
+bool  PlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
 {
 	int32_t Nplif = get_num_plifs();
 	auto PEN = get_PEN();
@@ -245,7 +245,7 @@ bool  CPlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
 		if ((id<0 || id>=Nplif) && (id!=-1))
 		{
 			SG_ERROR("id out of range\n")
-			CPlif::delete_penalty_struct(PEN, Nplif) ;
+			Plif::delete_penalty_struct(PEN, Nplif) ;
 			return false ;
 		}
 		if (id==-1)
@@ -257,7 +257,7 @@ bool  CPlifMatrix::compute_signal_plifs(SGMatrix<int32_t> state_signals)
 	return true;
 }
 
-void CPlifMatrix::set_plif_state_signal_matrix(
+void PlifMatrix::set_plif_state_signal_matrix(
 	int32_t *plif_id_matrix, int32_t m, int32_t max_num_signals)
 {
 	if (m!=m_num_plifs)

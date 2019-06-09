@@ -125,7 +125,7 @@ TEST(RandomCARTree, classify_nominal)
 	data(2,13)=high;
 	data(3,13)=strong;
 
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(14);
@@ -150,9 +150,9 @@ TEST(RandomCARTree, classify_nominal)
 	ft[2]=true;
 	ft[3]=true;
 
-	auto labels=std::make_shared<CMulticlassLabels>(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	auto c=std::make_shared<CRandomCARTree>();
+	auto c=std::make_shared<RandomCARTree>();
 	c->set_labels(labels);
 	c->set_feature_types(ft);
 	c->set_feature_subset_size(4);
@@ -183,8 +183,8 @@ TEST(RandomCARTree, classify_nominal)
 	test(3,3)=weak;
 	test(3,4)=strong;
 
-	auto test_feats=std::make_shared<CDenseFeatures<float64_t>>(test);
-	auto result=c->apply(test_feats)->as<CMulticlassLabels>();
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=c->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);

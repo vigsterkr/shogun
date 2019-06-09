@@ -38,8 +38,8 @@
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
+class Kernel;
+class MMD;
 template <typename T> class SGVector;
 
 namespace internal
@@ -48,11 +48,11 @@ namespace internal
 class MaxCrossValidation : public KernelSelection
 {
 public:
-	MaxCrossValidation(KernelManager&, std::shared_ptr<CMMD>, const index_t&, const index_t&, const float64_t&);
+	MaxCrossValidation(KernelManager&, std::shared_ptr<MMD>, const index_t&, const index_t&, const float64_t&);
 	MaxCrossValidation(const MaxCrossValidation& other)=delete;
 	~MaxCrossValidation();
 	MaxCrossValidation& operator=(const MaxCrossValidation& other)=delete;
-	virtual std::shared_ptr<CKernel> select_kernel() override;
+	virtual std::shared_ptr<Kernel> select_kernel() override;
 	virtual SGVector<float64_t> get_measure_vector() override;
 	virtual SGMatrix<float64_t> get_measure_matrix() override;
 protected:

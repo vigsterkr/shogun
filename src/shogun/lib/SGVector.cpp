@@ -435,7 +435,7 @@ bool SGVector<T>::equals(const SGVector<T>& other) const
                                                                                \
 		for (index_t i = 0; i < vlen; ++i)                                     \
 		{                                                                      \
-			if (!CMath::fequals(                                               \
+			if (!Math::fequals(                                               \
 			        vector[i], other.vector[i],                                \
 			        std::numeric_limits<real_t>::epsilon()))                   \
 				return false;                                                  \
@@ -530,7 +530,7 @@ template <class T>
 	void SGVector<T>::random_vector(T* vec, int32_t len, T min_value, T max_value)
 	{
 		for (int32_t i=0; i<len; i++)
-			vec[i]=CMath::random(min_value, max_value);
+			vec[i]=Math::random(min_value, max_value);
 	}
 
 template <>
@@ -680,7 +680,7 @@ float64_t SGVector<T>::onenorm(T* x, int32_t len)
 {
 	float64_t result=0;
 	for (int32_t i=0;i<len; ++i)
-		result+=CMath::abs(x[i]);
+		result+=Math::abs(x[i]);
 
 	return result;
 }
@@ -691,7 +691,7 @@ T SGVector<T>::qsq(T* x, int32_t len, float64_t q)
 {
 	float64_t result=0;
 	for (int32_t i=0; i<len; i++)
-		result+=CMath::pow(fabs(x[i]), q);
+		result+=Math::pow(fabs(x[i]), q);
 
 	return result;
 }
@@ -708,7 +708,7 @@ template <class T>
 T SGVector<T>::qnorm(T* x, int32_t len, float64_t q)
 {
 	REQUIRE(q!=0, "Q should be non-zero for calculating qnorm\n");
-	return CMath::pow((float64_t) qsq(x, len, q), 1.0/q);
+	return Math::pow((float64_t) qsq(x, len, q), 1.0/q);
 }
 
 template <>
@@ -724,7 +724,7 @@ T SGVector<T>::sum_abs(T* vec, int32_t len)
 {
 	T result=0;
 	for (int32_t i=0; i<len; i++)
-		result+=CMath::abs(vec[i]);
+		result+=Math::abs(vec[i]);
 
 	return result;
 }
@@ -820,7 +820,7 @@ void SGVector<T>::scale(T alpha)
 	scale_vector(alpha, vector, vlen);
 }
 
-template<class T> void SGVector<T>::load(std::shared_ptr<CFile> loader)
+template<class T> void SGVector<T>::load(std::shared_ptr<File> loader)
 {
 	REQUIRE(loader, "No file provided.\n");
 	unref();
@@ -836,12 +836,12 @@ template<class T> void SGVector<T>::load(std::shared_ptr<CFile> loader)
 }
 
 template<>
-void SGVector<complex128_t>::load(std::shared_ptr<CFile> loader)
+void SGVector<complex128_t>::load(std::shared_ptr<File> loader)
 {
 	SG_SERROR("SGVector::load():: Not supported for complex128_t\n");
 }
 
-template<class T> void SGVector<T>::save(std::shared_ptr<CFile> saver)
+template<class T> void SGVector<T>::save(std::shared_ptr<File> saver)
 {
 	REQUIRE(saver, "Requires a valid 'c FILE pointer'\n");
 
@@ -852,7 +852,7 @@ template<class T> void SGVector<T>::save(std::shared_ptr<CFile> saver)
 }
 
 template<>
-void SGVector<complex128_t>::save(std::shared_ptr<CFile> saver)
+void SGVector<complex128_t>::save(std::shared_ptr<File> saver)
 {
 	SG_SERROR("SGVector::save():: Not supported for complex128_t\n");
 }
@@ -862,7 +862,7 @@ template <class T> SGVector<float64_t> SGVector<T>::get_real()
 	assert_on_cpu();
 	SGVector<float64_t> real(vlen);
 	for (int32_t i=0; i<vlen; i++)
-		real[i]=CMath::real(vector[i]);
+		real[i]=Math::real(vector[i]);
 	return real;
 }
 
@@ -871,7 +871,7 @@ template <class T> SGVector<float64_t> SGVector<T>::get_imag()
 	assert_on_cpu();
 	SGVector<float64_t> imag(vlen);
 	for (int32_t i=0; i<vlen; i++)
-		imag[i]=CMath::imag(vector[i]);
+		imag[i]=Math::imag(vector[i]);
 	return imag;
 }
 

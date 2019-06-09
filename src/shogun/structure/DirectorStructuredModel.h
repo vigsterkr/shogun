@@ -16,24 +16,24 @@
 namespace shogun
 {
 
-class CStructuredModel;
+class StructuredModel;
 
 #define IGNORE_IN_CLASSLIST
 /**
- * @brief Class CDirectorStructuredModel that represents the application specific model
+ * @brief Class DirectorStructuredModel that represents the application specific model
  * with structured output implemented in target interface language. It is a base class
  * that needs to be extended with real implementations before using.
  *
- * @see CStructuredModel
+ * @see StructuredModel
  */
-IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
+IGNORE_IN_CLASSLIST class DirectorStructuredModel : public StructuredModel
 {
 	public:
 		/** default constructor */
-		CDirectorStructuredModel();
+		DirectorStructuredModel();
 
 		/** destructor */
-		virtual ~CDirectorStructuredModel();
+		virtual ~DirectorStructuredModel();
 
 		/**
 		 * return the dimensionality of the joint feature space, i.e.
@@ -53,7 +53,7 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 *
 		 * @return the joint feature vector
 		 */
-		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<CStructuredData> y);
+		virtual SGVector< float64_t > get_joint_feature_vector(int32_t feat_idx, std::shared_ptr<StructuredData> y);
 
 		/**
 		 * obtains the argmax of \f$ \Delta(y_{pred}, y_{truth}) +
@@ -68,7 +68,7 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 *
 		 * @return structure with the predicted output
 		 */
-		virtual std::shared_ptr<CResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
+		virtual std::shared_ptr<ResultSet> argmax(SGVector< float64_t > w, int32_t feat_idx, bool const training = true);
 
 		/** computes \f$ \Delta(y_{1}, y_{2}) \f$
 		 *
@@ -77,7 +77,7 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		 *
 		 * @return loss value
 		 */
-		virtual float64_t delta_loss(std::shared_ptr<CStructuredData> y1, std::shared_ptr<CStructuredData> y2);
+		virtual float64_t delta_loss(std::shared_ptr<StructuredData> y1, std::shared_ptr<StructuredData> y2);
 
 		/**
 		 * method to be called from a SO machine before training
@@ -111,7 +111,7 @@ IGNORE_IN_CLASSLIST class CDirectorStructuredModel : public CStructuredModel
 		/** initializes the part of the model that needs to be used during training. */
 		virtual void init_training();
 
-}; /* class CDirectorStructuredModel */
+}; /* class DirectorStructuredModel */
 } /* namespace shogun */
 #endif /* USE_SWIG_DIRECTORS */
 #endif /* DIRECTOR_STRUCTURED_MODEL_H_ */

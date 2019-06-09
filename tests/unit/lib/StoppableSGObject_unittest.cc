@@ -17,7 +17,7 @@ using namespace std;
  * Mock model to show the use of the callback.
  */
 #if 0
-class MockModel : public CMachine
+class MockModel : public Machine
 {
 public:
 	MockModel() : m_check(0), m_last_iteration(0)
@@ -53,7 +53,7 @@ protected:
 	}
 
 	/* Custom train machine */
-	virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL)
+	virtual bool train_machine(std::shared_ptr<Features> data = NULL)
 	{
 		for (int num_iterations_train = 0; num_iterations_train < 10;
 		     num_iterations_train++)

@@ -37,7 +37,7 @@
 namespace shogun
 {
 
-class CStreamingFeatures;
+class StreamingFeatures;
 
 namespace internal
 {
@@ -48,7 +48,7 @@ class StreamingDataFetcher : public DataFetcher
 {
 	friend class DataManager;
 public:
-	StreamingDataFetcher(std::shared_ptr<CStreamingFeatures> samples);
+	StreamingDataFetcher(std::shared_ptr<StreamingFeatures> samples);
 	virtual ~StreamingDataFetcher();
 	void set_num_samples(index_t num_samples);
 
@@ -59,7 +59,7 @@ public:
 	virtual void init_active_subset();
 
 	virtual void start();
-	virtual std::shared_ptr<CFeatures> next();
+	virtual std::shared_ptr<Features> next();
 	virtual void reset();
 	virtual void end();
 
@@ -69,7 +69,7 @@ public:
 		return "StreamingDataFetcher";
 	}
 private:
-	std::shared_ptr<CStreamingFeatures> m_samples;
+	std::shared_ptr<StreamingFeatures> m_samples;
 	bool parser_running;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

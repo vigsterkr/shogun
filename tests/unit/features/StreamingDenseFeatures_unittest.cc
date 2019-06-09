@@ -28,16 +28,16 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_file)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i] = sg_rand->std_normal_distrib();
 
-	auto orig_feats=std::make_shared<CDenseFeatures<float64_t>>(data);
-	auto saved_features = std::make_shared<CCSVFile>(fname, 'w');
+	auto orig_feats=std::make_shared<DenseFeatures<float64_t>>(data);
+	auto saved_features = std::make_shared<CSVFile>(fname, 'w');
 	orig_feats->save(saved_features);
 	saved_features->close();
 
 
-	auto input = std::make_shared<CStreamingAsciiFile>(fname);
+	auto input = std::make_shared<StreamingAsciiFile>(fname);
 	input->set_delimiter(',');
 	auto feats
-		= std::make_shared<CStreamingDenseFeatures<float64_t>>(input, false, 5);
+		= std::make_shared<StreamingDenseFeatures<float64_t>>(input, false, 5);
 
 	index_t i = 0;
 	feats->start_parser();
@@ -71,8 +71,8 @@ TEST(StreamingDenseFeaturesTest, example_reading_from_features)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i] = sg_rand->std_normal_distrib();
 
-	auto orig_feats=std::make_shared<CDenseFeatures<float64_t>>(data);
-	auto feats = std::make_shared<CStreamingDenseFeatures<float64_t>>(orig_feats);
+	auto orig_feats=std::make_shared<DenseFeatures<float64_t>>(data);
+	auto feats = std::make_shared<StreamingDenseFeatures<float64_t>>(orig_feats);
 
 	index_t i = 0;
 	feats->start_parser();
@@ -103,19 +103,19 @@ TEST(StreamingDenseFeaturesTest, reset_stream)
 	for (index_t i=0; i<dim*n; ++i)
 		data.matrix[i]=sg_rand->std_normal_distrib();
 
-	auto orig_feats=std::make_shared<CDenseFeatures<float64_t>>(data);
-	auto feats=std::make_shared<CStreamingDenseFeatures<float64_t>>(orig_feats);
+	auto orig_feats=std::make_shared<DenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<StreamingDenseFeatures<float64_t>>(orig_feats);
 
 	feats->start_parser();
 
-	auto streamed=feats->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
+	auto streamed=feats->get_streamed_features(n)->as<DenseFeatures<float64_t>>();
 	ASSERT_TRUE(streamed!=nullptr);
 	ASSERT_TRUE(orig_feats->equals(streamed));
 
 
 	feats->reset_stream();
 
-	streamed=feats->get_streamed_features(n)->as<CDenseFeatures<float64_t>>();
+	streamed=feats->get_streamed_features(n)->as<DenseFeatures<float64_t>>();
 	ASSERT_TRUE(streamed!=nullptr);
 	ASSERT_TRUE(orig_feats->equals(streamed));
 

@@ -49,11 +49,11 @@ namespace shogun
  * method.
  *
  */
-class CVarDTCInferenceMethod: public CSingleSparseInference
+class VarDTCInferenceMethod: public SingleSparseInference
 {
 public:
 	/** default constructor */
-	CVarDTCInferenceMethod();
+	VarDTCInferenceMethod();
 
 	/** constructor
 	 *
@@ -64,11 +64,11 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CVarDTCInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
-			std::shared_ptr<CFeatures> inducing_features);
+	VarDTCInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
+			std::shared_ptr<Features> inducing_features);
 
-	virtual ~CVarDTCInferenceMethod();
+	virtual ~VarDTCInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -87,7 +87,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CVarDTCInferenceMethod object
 	 */
-	static std::shared_ptr<CVarDTCInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
+	static std::shared_ptr<VarDTCInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** get negative log marginal likelihood
 	 *

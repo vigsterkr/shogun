@@ -40,23 +40,23 @@
 using namespace shogun;
 using namespace Eigen;
 
-CSparseInference::CSparseInference() : CInference()
+SparseInference::SparseInference() : Inference()
 {
 	init();
 }
 
-void CSparseInference::check_features()
+void SparseInference::check_features()
 {
 	REQUIRE(m_features, "Input features not set\n")
 }
 
-void CSparseInference::convert_features()
+void SparseInference::convert_features()
 {
-	auto feat_type=m_features->as<CDotFeatures>();
+	auto feat_type=m_features->as<DotFeatures>();
 
 	SGMatrix<float64_t>lat_m(m_inducing_features.matrix,
 		m_inducing_features.num_rows,m_inducing_features.num_cols,false);
-	auto lat_type=std::make_shared<CDenseFeatures<float64_t>>(lat_m);
+	auto lat_type=std::make_shared<DenseFeatures<float64_t>>(lat_m);
 
 	REQUIRE(feat_type, "Input features (%s) must be DotFeatures"
 		" or one of its subclasses\n", m_features->get_name())
@@ -81,21 +81,21 @@ void CSparseInference::convert_features()
 		SG_WARNING("Input features may be deleted\n");
 		SGMatrix<float64_t> feat_m=feat_type->get_computed_dot_feature_matrix();
 
-		m_features=std::make_shared<CDenseFeatures<float64_t>>(feat_m);
+		m_features=std::make_shared<DenseFeatures<float64_t>>(feat_m);
 
 	}
 
 }
 
-CSparseInference::CSparseInference(std::shared_ptr<CKernel> kern, std::shared_ptr<CFeatures> feat,
-		std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod, std::shared_ptr<CFeatures> lat)
-		: CInference(kern, feat, m, lab, mod)
+SparseInference::SparseInference(std::shared_ptr<Kernel> kern, std::shared_ptr<Features> feat,
+		std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod, std::shared_ptr<Features> lat)
+		: Inference(kern, feat, m, lab, mod)
 {
 	init();
 	set_inducing_features(lat);
 }
 
-void CSparseInference::init()
+void SparseInference::init()
 {
 	SG_ADD(&m_inducing_features, "inducing_features", "inducing features",
 			ParameterProperties::HYPER | ParameterProperties::GRADIENT);
@@ -109,30 +109,30 @@ void CSparseInference::init()
 	m_inducing_features=SGMatrix<float64_t>();
 }
 
-void CSparseInference::set_inducing_noise(float64_t noise)
+void SparseInference::set_inducing_noise(float64_t noise)
 {
 	REQUIRE(noise>0, "Noise (%f) for inducing points must be postive",noise);
 	m_log_ind_noise = std::log(noise);
 }
 
-float64_t CSparseInference::get_inducing_noise()
+float64_t SparseInference::get_inducing_noise()
 {
 	return std::exp(m_log_ind_noise);
 }
 
-CSparseInference::~CSparseInference()
+SparseInference::~SparseInference()
 {
 }
 
-void CSparseInference::check_members() const
+void SparseInference::check_members() const
 {
-	CInference::check_members();
+	Inference::check_members();
 
 	REQUIRE(m_inducing_features.num_rows, "Inducing features should not be empty\n")
 	REQUIRE(m_inducing_features.num_cols, "Inducing features should not be empty\n")
 }
 
-SGVector<float64_t> CSparseInference::get_alpha()
+SGVector<float64_t> SparseInference::get_alpha()
 {
 	if (parameter_hash_changed())
 		update();
@@ -141,7 +141,7 @@ SGVector<float64_t> CSparseInference::get_alpha()
 	return result;
 }
 
-SGMatrix<float64_t> CSparseInference::get_cholesky()
+SGMatrix<float64_t> SparseInference::get_cholesky()
 {
 	if (parameter_hash_changed())
 		update();
@@ -150,7 +150,7 @@ SGMatrix<float64_t> CSparseInference::get_cholesky()
 	return result;
 }
 
-void CSparseInference::update_train_kernel()
+void SparseInference::update_train_kernel()
 {
 	//time complexity can be O(m*n) if the TO DO is done
 	check_features();

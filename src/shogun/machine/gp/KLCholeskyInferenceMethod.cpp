@@ -51,19 +51,19 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod() : CKLLowerTriangularInference()
+KLCholeskyInferenceMethod::KLCholeskyInferenceMethod() : KLLowerTriangularInference()
 {
 	init();
 }
 
-CKLCholeskyInferenceMethod::CKLCholeskyInferenceMethod(std::shared_ptr<CKernel> kern,
-		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
-		: CKLLowerTriangularInference(kern, feat, m, lab, mod)
+KLCholeskyInferenceMethod::KLCholeskyInferenceMethod(std::shared_ptr<Kernel> kern,
+		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
+		: KLLowerTriangularInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CKLCholeskyInferenceMethod::init()
+void KLCholeskyInferenceMethod::init()
 {
 	SG_ADD(&m_C, "C",
 		"The Cholesky represention of the variational co-variance matrix");
@@ -71,20 +71,20 @@ void CKLCholeskyInferenceMethod::init()
 		" The K^{-1}C matrix");
 }
 
-std::shared_ptr<CKLCholeskyInferenceMethod> CKLCholeskyInferenceMethod::obtain_from_generic(
-		std::shared_ptr<CInference> inference)
+std::shared_ptr<KLCholeskyInferenceMethod> KLCholeskyInferenceMethod::obtain_from_generic(
+		std::shared_ptr<Inference> inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_CHOLESKY)
-		SG_SERROR("Provided inference is not of type CKLCholeskyInferenceMethod!\n")
+		SG_SERROR("Provided inference is not of type KLCholeskyInferenceMethod!\n")
 
 
-	return inference->as<CKLCholeskyInferenceMethod>();
+	return inference->as<KLCholeskyInferenceMethod>();
 }
 
-SGVector<float64_t> CKLCholeskyInferenceMethod::get_alpha()
+SGVector<float64_t> KLCholeskyInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
 	 * but also a vector corresponding to the lower triangular of C
@@ -107,11 +107,11 @@ SGVector<float64_t> CKLCholeskyInferenceMethod::get_alpha()
 	return result;
 }
 
-CKLCholeskyInferenceMethod::~CKLCholeskyInferenceMethod()
+KLCholeskyInferenceMethod::~KLCholeskyInferenceMethod()
 {
 }
 
-bool CKLCholeskyInferenceMethod::precompute()
+bool KLCholeskyInferenceMethod::precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -138,7 +138,7 @@ bool CKLCholeskyInferenceMethod::precompute()
 	return status;
 }
 
-void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
+void KLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
@@ -197,7 +197,7 @@ void CKLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 	}
 }
 
-float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helper()
+float64_t KLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helper()
 {
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
@@ -220,7 +220,7 @@ float64_t CKLCholeskyInferenceMethod::get_negative_log_marginal_likelihood_helpe
 	return result;
 }
 
-void CKLCholeskyInferenceMethod::update_alpha()
+void KLCholeskyInferenceMethod::update_alpha()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 
@@ -275,7 +275,7 @@ void CKLCholeskyInferenceMethod::update_alpha()
 	nlml_new=optimization();
 }
 
-void CKLCholeskyInferenceMethod::update_C()
+void KLCholeskyInferenceMethod::update_C()
 {
 	ASSERT(m_C.num_rows == m_C.num_cols);
 	index_t len=m_C.num_rows;
@@ -292,7 +292,7 @@ void CKLCholeskyInferenceMethod::update_C()
 	}
 }
 
-void CKLCholeskyInferenceMethod::get_lower_triangular_vector(SGMatrix<float64_t> square_matrix,
+void KLCholeskyInferenceMethod::get_lower_triangular_vector(SGMatrix<float64_t> square_matrix,
 	SGVector<float64_t> target)
 {
 	ASSERT(square_matrix.num_rows == square_matrix.num_cols);
@@ -310,7 +310,7 @@ void CKLCholeskyInferenceMethod::get_lower_triangular_vector(SGMatrix<float64_t>
 	}
 }
 
-void CKLCholeskyInferenceMethod::update_Sigma()
+void KLCholeskyInferenceMethod::update_Sigma()
 {
 	m_Sigma=SGMatrix<float64_t>(m_mu.vlen, m_mu.vlen);
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
@@ -318,7 +318,7 @@ void CKLCholeskyInferenceMethod::update_Sigma()
 	eigen_Sigma=eigen_C*(eigen_C.transpose());
 }
 
-void CKLCholeskyInferenceMethod::update_InvK_Sigma()
+void KLCholeskyInferenceMethod::update_InvK_Sigma()
 {
 	m_InvK_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);

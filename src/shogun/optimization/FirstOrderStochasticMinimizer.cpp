@@ -100,9 +100,9 @@ void FirstOrderStochasticMinimizer::init()
 	m_cur_passes=0;
 	m_iter_counter=0;
 
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_learning_rate, "FirstOrderMinimizer__m_learning_rate",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_learning_rate, "FirstOrderMinimizer__m_learning_rate",
 		"learning_rate in FirstOrderStochasticMinimizer");
-	SG_ADD((std::shared_ptr<CSGObject>*)&m_gradient_updater, "FirstOrderMinimizer__m_gradient_updater",
+	SG_ADD((std::shared_ptr<SGObject>*)&m_gradient_updater, "FirstOrderMinimizer__m_gradient_updater",
 		"gradient_updater in FirstOrderStochasticMinimizer");
 	SG_ADD(&m_num_passes, "FirstOrderMinimizer__m_num_passes",
 		"num_passes in FirstOrderStochasticMinimizer");

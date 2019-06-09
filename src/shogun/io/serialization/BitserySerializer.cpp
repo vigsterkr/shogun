@@ -55,7 +55,7 @@ public:
 		writer.value8b(lsb);
 	}
 
-	void on_object(Writer& writer, std::shared_ptr<CSGObject>* v)
+	void on_object(Writer& writer, std::shared_ptr<SGObject>* v)
 	{
 		if (*v)
 		{
@@ -92,13 +92,13 @@ struct OutputStreamAdapter
 		return written_bytes;
 	}
 
-	std::shared_ptr<COutputStream> m_stream;
+	std::shared_ptr<OutputStream> m_stream;
 	size_t written_bytes = 0;
 };
 
 // cannot use context because of circular dependency :(
 template<typename Writer>
-void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, std::shared_ptr<CSGObject> o) noexcept(false)
+void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, std::shared_ptr<SGObject> o) noexcept(false)
 {
 	pre_serialize(o);
 	writer.value8b(sizeof(o.get()));
@@ -125,15 +125,15 @@ void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, std::sh
 using OutputAdapter = AdapterWriter<OutputStreamAdapter, bitsery::DefaultConfig>;
 using BitserySerializer = BasicSerializer<OutputAdapter>;
 
-CBitserySerializer::CBitserySerializer() : CSerializer()
+BitserySerializer::BitserySerializer() : Serializer()
 {
 }
 
-CBitserySerializer::~CBitserySerializer()
+BitserySerializer::~BitserySerializer()
 {
 }
 
-void CBitserySerializer::write(std::shared_ptr<CSGObject> object) noexcept(false)
+void BitserySerializer::write(std::shared_ptr<SGObject> object) noexcept(false)
 {
 	OutputStreamAdapter adapter { stream() };
  	BitserySerializer serializer {std::move(adapter)};

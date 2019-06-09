@@ -12,21 +12,21 @@
 
 using namespace shogun;
 
-CMulticlassLibSVM::CMulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsOneStrategy>()), solver_type(st)
+MulticlassLibSVM::MulticlassLibSVM(LIBSVM_SOLVER_TYPE st)
+: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>()), solver_type(st)
 {
 }
 
-CMulticlassLibSVM::CMulticlassLibSVM(float64_t C, std::shared_ptr<CKernel> k, std::shared_ptr<CLabels> lab)
-: CMulticlassSVM(std::make_shared<CMulticlassOneVsOneStrategy>(), C, k, lab), solver_type(LIBSVM_C_SVC)
+MulticlassLibSVM::MulticlassLibSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: MulticlassSVM(std::make_shared<MulticlassOneVsOneStrategy>(), C, k, lab), solver_type(LIBSVM_C_SVC)
 {
 }
 
-CMulticlassLibSVM::~CMulticlassLibSVM()
+MulticlassLibSVM::~MulticlassLibSVM()
 {
 }
 
-void CMulticlassLibSVM::register_params()
+void MulticlassLibSVM::register_params()
 {
 	SG_ADD_OPTIONS(
 	    (machine_int_t*)&solver_type, "libsvm_solver_type",
@@ -34,7 +34,7 @@ void CMulticlassLibSVM::register_params()
 	    SG_OPTIONS(LIBSVM_C_SVC, LIBSVM_NU_SVC));
 }
 
-bool CMulticlassLibSVM::train_machine(std::shared_ptr<CFeatures> data)
+bool MulticlassLibSVM::train_machine(std::shared_ptr<Features> data)
 {
 	svm_problem problem;
 	svm_parameter param;
@@ -138,7 +138,7 @@ bool CMulticlassLibSVM::train_machine(std::shared_ptr<CFeatures> data)
 				ASSERT(num_sv>0)
 				ASSERT(model->sv_coef[i] && model->sv_coef[j-1])
 
-				auto svm=std::make_shared<CSVM>(num_sv);
+				auto svm=std::make_shared<SVM>(num_sv);
 
 				svm->set_bias(sgn*bias);
 

@@ -20,12 +20,12 @@ namespace shogun
 /** @brief The MultitaskKernel allows learning a piece-wise linear function (PLIF) via MKL
  *
  */
-class CMultitaskKernelPlifNormalizer: public CMultitaskKernelMklNormalizer
+class MultitaskKernelPlifNormalizer: public MultitaskKernelMklNormalizer
 {
 
 public:
 	/** default constructor  */
-	CMultitaskKernelPlifNormalizer() : CMultitaskKernelMklNormalizer()
+	MultitaskKernelPlifNormalizer() : MultitaskKernelMklNormalizer()
 	{
 		num_tasks = 0;
 		num_tasksqr = 0;
@@ -34,8 +34,8 @@ public:
 
 	/** constructor
 	 */
-	CMultitaskKernelPlifNormalizer(std::vector<float64_t> support_, std::vector<int32_t> task_vector)
-		: CMultitaskKernelMklNormalizer()
+	MultitaskKernelPlifNormalizer(std::vector<float64_t> support_, std::vector<int32_t> task_vector)
+		: MultitaskKernelMklNormalizer()
 	{
 
 		num_betas = static_cast<int>(support_.size());
@@ -111,7 +111,7 @@ public:
 
 
 	/** default destructor */
-	virtual ~CMultitaskKernelPlifNormalizer()
+	virtual ~MultitaskKernelPlifNormalizer()
 	{
 	}
 
@@ -316,9 +316,9 @@ public:
 	/** casts kernel normalizer to multitask kernel plif normalizer
 	 * @param n kernel normalizer to cast
 	 */
-	std::shared_ptr<CMultitaskKernelPlifNormalizer> KernelNormalizerToMultitaskKernelPlifNormalizer(std::shared_ptr<CKernelNormalizer> n)
+	std::shared_ptr<MultitaskKernelPlifNormalizer> KernelNormalizerToMultitaskKernelPlifNormalizer(std::shared_ptr<KernelNormalizer> n)
 	{
-		   return std::dynamic_pointer_cast<CMultitaskKernelPlifNormalizer>(n);
+		   return std::dynamic_pointer_cast<MultitaskKernelPlifNormalizer>(n);
 	}
 
 protected:

@@ -5,38 +5,30 @@ namespace shogun
 
 /** default constructor  */
 template <class ST>
-CDecompressString<ST>::CDecompressString() : CStringPreprocessor<ST>()
+DecompressString<ST>::DecompressString() : StringPreprocessor<ST>()
 {
-	CSGObject::set_generic<ST>();
+	SGObject::set_generic<ST>();
 }
 
 template <class ST>
-CDecompressString<ST>::CDecompressString(E_COMPRESSION_TYPE ct) : CStringPreprocessor<ST>()
+DecompressString<ST>::DecompressString(E_COMPRESSION_TYPE ct) : StringPreprocessor<ST>()
 {
-	compressor=std::make_shared<CCompressor>(ct);
-	CSGObject::set_generic<ST>();
+	compressor=std::make_shared<Compressor>(ct);
+	SGObject::set_generic<ST>();
 }
 
 template <class ST>
-CDecompressString<ST>::~CDecompressString()
-{
-}
-
-template <class ST>
-void CDecompressString<ST>::cleanup()
+DecompressString<ST>::~DecompressString()
 {
 }
 
 template <class ST>
-bool CDecompressString<ST>::load(FILE* f)
+void DecompressString<ST>::cleanup()
 {
-	SG_SET_LOCALE_C;
-	SG_RESET_LOCALE;
-	return false;
 }
 
 template <class ST>
-bool CDecompressString<ST>::save(FILE* f)
+bool DecompressString<ST>::load(FILE* f)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
@@ -44,7 +36,15 @@ bool CDecompressString<ST>::save(FILE* f)
 }
 
 template <class ST>
-void CDecompressString<ST>::apply_to_string_list(SGStringList<ST> string_list)
+bool DecompressString<ST>::save(FILE* f)
+{
+	SG_SET_LOCALE_C;
+	SG_RESET_LOCALE;
+	return false;
+}
+
+template <class ST>
+void DecompressString<ST>::apply_to_string_list(SGStringList<ST> string_list)
 {
 	for (auto i : range(string_list.num_strings))
 	{
@@ -56,7 +56,7 @@ void CDecompressString<ST>::apply_to_string_list(SGStringList<ST> string_list)
 }
 
 template <class ST>
-ST* CDecompressString<ST>::apply_to_string(ST* f, int32_t &len)
+ST* DecompressString<ST>::apply_to_string(ST* f, int32_t &len)
 {
 	uint64_t compressed_size=((int32_t*) f)[0];
 	uint64_t uncompressed_size=((int32_t*) f)[1];
@@ -75,22 +75,22 @@ ST* CDecompressString<ST>::apply_to_string(ST* f, int32_t &len)
 }
 
 template <class ST>
-EPreprocessorType CDecompressString<ST>::get_type() const
+EPreprocessorType DecompressString<ST>::get_type() const
 {
 	return P_DECOMPRESSSTRING;
 }
 
-template class CDecompressString<bool>;
-template class CDecompressString<char>;
-template class CDecompressString<int8_t>;
-template class CDecompressString<uint8_t>;
-template class CDecompressString<int16_t>;
-template class CDecompressString<uint16_t>;
-template class CDecompressString<int32_t>;
-template class CDecompressString<uint32_t>;
-template class CDecompressString<int64_t>;
-template class CDecompressString<uint64_t>;
-template class CDecompressString<float32_t>;
-template class CDecompressString<float64_t>;
-template class CDecompressString<floatmax_t>;
+template class DecompressString<bool>;
+template class DecompressString<char>;
+template class DecompressString<int8_t>;
+template class DecompressString<uint8_t>;
+template class DecompressString<int16_t>;
+template class DecompressString<uint16_t>;
+template class DecompressString<int32_t>;
+template class DecompressString<uint32_t>;
+template class DecompressString<int64_t>;
+template class DecompressString<uint64_t>;
+template class DecompressString<float32_t>;
+template class DecompressString<float64_t>;
+template class DecompressString<floatmax_t>;
 }

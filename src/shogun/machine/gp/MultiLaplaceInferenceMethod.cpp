@@ -68,8 +68,8 @@ public:
 	SGVector<float64_t>* dlp;
 	SGVector<float64_t>* f;
 	SGVector<float64_t>* m;
-	std::shared_ptr<CLikelihoodModel> lik;
-	std::shared_ptr<CLabels> lab;
+	std::shared_ptr<LikelihoodModel> lik;
+	std::shared_ptr<Labels> lab;
 
 	virtual double operator() (double x)
 	{
@@ -102,19 +102,19 @@ public:
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-CMultiLaplaceInferenceMethod::CMultiLaplaceInferenceMethod() : CLaplaceInference()
+MultiLaplaceInferenceMethod::MultiLaplaceInferenceMethod() : LaplaceInference()
 {
 	init();
 }
 
-CMultiLaplaceInferenceMethod::CMultiLaplaceInferenceMethod(std::shared_ptr<CKernel> kern,
-		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
-		: CLaplaceInference(kern, feat, m, lab, mod)
+MultiLaplaceInferenceMethod::MultiLaplaceInferenceMethod(std::shared_ptr<Kernel> kern,
+		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
+		: LaplaceInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CMultiLaplaceInferenceMethod::init()
+void MultiLaplaceInferenceMethod::init()
 {
 	m_iter=20;
 	m_tolerance=1e-6;
@@ -131,21 +131,21 @@ void CMultiLaplaceInferenceMethod::init()
 	SG_ADD(&m_opt_max, "opt_max", "max iterations for Brent's minimization method");
 }
 
-CMultiLaplaceInferenceMethod::~CMultiLaplaceInferenceMethod()
+MultiLaplaceInferenceMethod::~MultiLaplaceInferenceMethod()
 {
 }
 
-void CMultiLaplaceInferenceMethod::check_members() const
+void MultiLaplaceInferenceMethod::check_members() const
 {
-	CInference::check_members();
+	Inference::check_members();
 
 	REQUIRE(m_labels->get_label_type()==LT_MULTICLASS,
-		"Labels must be type of CMulticlassLabels\n");
+		"Labels must be type of MulticlassLabels\n");
 	REQUIRE(m_model->supports_multiclass(),
 		"likelihood model should support multi-classification\n");
 }
 
-SGVector<float64_t> CMultiLaplaceInferenceMethod::get_diagonal_vector()
+SGVector<float64_t> MultiLaplaceInferenceMethod::get_diagonal_vector()
 {
 	if (parameter_hash_changed())
 		update();
@@ -155,7 +155,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_W);
 }
 
-float64_t CMultiLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
+float64_t MultiLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())
 		update();
@@ -163,7 +163,7 @@ float64_t CMultiLaplaceInferenceMethod::get_negative_log_marginal_likelihood()
 	return m_nlz;
 }
 
-SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
+SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_model(
 		const TParameter* param)
 {
 	//SoftMax likelihood does not have this kind of derivative
@@ -171,21 +171,21 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_
 	return SGVector<float64_t> ();
 }
 
-std::shared_ptr<CMultiLaplaceInferenceMethod> CMultiLaplaceInferenceMethod::obtain_from_generic(
-		std::shared_ptr<CInference> inference)
+std::shared_ptr<MultiLaplaceInferenceMethod> MultiLaplaceInferenceMethod::obtain_from_generic(
+		std::shared_ptr<Inference> inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
-		SG_SERROR("Provided inference is not of type CMultiLaplaceInferenceMethod!\n")
+		SG_SERROR("Provided inference is not of type MultiLaplaceInferenceMethod!\n")
 
 
-	return inference->as<CMultiLaplaceInferenceMethod>();
+	return inference->as<MultiLaplaceInferenceMethod>();
 }
 
 
-void CMultiLaplaceInferenceMethod::update_approx_cov()
+void MultiLaplaceInferenceMethod::update_approx_cov()
 {
 	//Sigma=K-K*(E-E*R(M*M')^{-1}*R'*E)*K
 	const index_t C=multiclass_labels(m_labels)->get_num_classes();
@@ -211,11 +211,11 @@ void CMultiLaplaceInferenceMethod::update_approx_cov()
 	eigen_Sigma+=eigen_V.transpose()*eigen_V;
 }
 
-void CMultiLaplaceInferenceMethod::update_chol()
+void MultiLaplaceInferenceMethod::update_chol()
 {
 }
 
-void CMultiLaplaceInferenceMethod::get_dpi_helper()
+void MultiLaplaceInferenceMethod::get_dpi_helper()
 {
 	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
@@ -236,9 +236,9 @@ void CMultiLaplaceInferenceMethod::get_dpi_helper()
 	//eigen_dpi_matrix=eigen_dpi_matrix.array().colwise()/tmp_for_dpi.array();
 }
 
-void CMultiLaplaceInferenceMethod::update_alpha()
+void MultiLaplaceInferenceMethod::update_alpha()
 {
-	float64_t Psi_Old = CMath::INFTY;
+	float64_t Psi_Old = Math::INFTY;
 	float64_t Psi_New;
 	float64_t Psi_Def;
 	const index_t C=multiclass_labels(m_labels)->get_num_classes();
@@ -394,7 +394,7 @@ void CMultiLaplaceInferenceMethod::update_alpha()
 	}
 }
 
-void CMultiLaplaceInferenceMethod::update_deriv()
+void MultiLaplaceInferenceMethod::update_deriv()
 {
 	const index_t C=multiclass_labels(m_labels)->get_num_classes();
 	const index_t n=m_labels->get_num_labels();
@@ -405,7 +405,7 @@ void CMultiLaplaceInferenceMethod::update_deriv()
 	eigen_U=eigen_M.triangularView<Upper>().adjoint().solve(eigen_E);
 }
 
-float64_t CMultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t> dK)
+float64_t MultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t> dK)
 {
 	Map<MatrixXd> eigen_dK(dK.matrix, dK.num_rows, dK.num_cols);
 	//currently only explicit term is computed
@@ -426,7 +426,7 @@ float64_t CMultiLaplaceInferenceMethod::get_derivative_helper(SGMatrix<float64_t
 	return result/2.0;
 }
 
-SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_method(
+SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_inference_method(
 		const TParameter* param)
 {
 	REQUIRE(!strcmp(param->m_name, "log_scale"), "Can't compute derivative of "
@@ -445,7 +445,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_inference_m
 	return result;
 }
 
-SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
+SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat, dlp and alpha
@@ -472,7 +472,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_kernel(
 	return result;
 }
 
-SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
+SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 		const TParameter* param)
 {
 	// create eigen representation of K, Z, dfhat and alpha
@@ -506,7 +506,7 @@ SGVector<float64_t> CMultiLaplaceInferenceMethod::get_derivative_wrt_mean(
 	return result;
 }
 
-SGVector<float64_t> CMultiLaplaceInferenceMethod::get_posterior_mean()
+SGVector<float64_t> MultiLaplaceInferenceMethod::get_posterior_mean()
 {
 	compute_gradient();
 

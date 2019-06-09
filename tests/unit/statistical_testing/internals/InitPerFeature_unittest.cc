@@ -48,7 +48,7 @@ TEST(InitPerFeature, assignment_and_cast_operators)
 
 	SGMatrix<float64_t> data_p(dim, num_vec);
 	data_p(0, 0)=0;
-	auto feats_p=std::make_shared<CDenseFeatures<float64_t>>(data_p);
+	auto feats_p=std::make_shared<DenseFeatures<float64_t>>(data_p);
 
 	DataManager data_mgr(num_distributions);
 	data_mgr.samples_at(0)=feats_p;
@@ -60,10 +60,10 @@ TEST(InitPerFeature, assignment_and_cast_operators)
 //	ASSERT_TRUE(feats_p==stored_feats);
 
 	auto stored_feats2=const_data_mgr.samples_at(0);
-	typecheck=std::is_same<std::shared_ptr<CFeatures>, decltype(stored_feats2)>::value;
+	typecheck=std::is_same<std::shared_ptr<Features>, decltype(stored_feats2)>::value;
 	ASSERT_TRUE(typecheck);
 	ASSERT_TRUE(feats_p==stored_feats2);
 
-	std::shared_ptr<CFeatures> samples=stored_feats;
+	std::shared_ptr<Features> samples=stored_feats;
 	ASSERT_TRUE(feats_p==samples);
 }

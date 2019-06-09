@@ -43,26 +43,26 @@ namespace shogun
 
 /** @brief class TreeMachine, a base class for tree based multiclass classifiers.
  * This class is derived from CBaseMulticlassMachine and stores the root node
- * (of class type CTreeMachineNode) to the tree structure
+ * (of class type TreeMachineNode) to the tree structure
  */
-template <class T> class CTreeMachine : public CBaseMulticlassMachine
+template <class T> class TreeMachine : public BaseMulticlassMachine
 {
 public:
 	/** node_t type- Tree node with many possible children */
-	typedef CTreeMachineNode<T> node_t;
+	typedef TreeMachineNode<T> node_t;
 
 	/** bnode_t type- Tree node with max 2 possible children */
-	typedef CBinaryTreeMachineNode<T> bnode_t;
+	typedef BinaryTreeMachineNode<T> bnode_t;
 
 	/** constructor */
-	CTreeMachine() : CBaseMulticlassMachine()
+	TreeMachine() : BaseMulticlassMachine()
 	{
 		m_root=NULL;
-		SG_ADD((std::shared_ptr<CSGObject>*)&m_root,"m_root", "tree structure");
+		SG_ADD((std::shared_ptr<SGObject>*)&m_root,"m_root", "tree structure");
 	}
 
 	/** destructor */
-	virtual ~CTreeMachine()
+	virtual ~TreeMachine()
 	{
 	}
 
@@ -74,7 +74,7 @@ public:
 	/** set root
 	 * @param root the root node of the tree
 	 */
-	void set_root(std::shared_ptr<CTreeMachineNode<T>> root)
+	void set_root(std::shared_ptr<TreeMachineNode<T>> root)
 	{
 		m_root=root;
 	}
@@ -82,7 +82,7 @@ public:
 	/** get root
 	 * @return root the root node of the tree
 	 */
-	std::shared_ptr<CTreeMachineNode<T>> get_root()
+	std::shared_ptr<TreeMachineNode<T>> get_root()
 	{
 		return m_root;
 	}
@@ -90,9 +90,9 @@ public:
 	/** clone tree
 	 * @return clone of entire tree
 	 */
-	std::shared_ptr<CTreeMachine> clone_tree()
+	std::shared_ptr<TreeMachine> clone_tree()
 	{
-		auto cloned_tree=std::make_shared<CTreeMachine>();
+		auto cloned_tree=std::make_shared<TreeMachine>();
 		std::shared_ptr<node_t> clone_root;
 		if (!strcmp(m_root->get_name(),"TreeMachineNode"))
 		{
@@ -119,7 +119,7 @@ public:
 					child=el->template as<bnode_t>();
 			}
 
-			auto child_tree=std::make_shared<CTreeMachine>();
+			auto child_tree=std::make_shared<TreeMachine>();
 			child_tree->set_root(child);
 			auto clone_child_tree=child_tree->clone_tree();
 
@@ -139,7 +139,7 @@ protected:
 
 protected:
 	/** tree root */
-	std::shared_ptr<CTreeMachineNode<T>> m_root;
+	std::shared_ptr<TreeMachineNode<T>> m_root;
 };
 
 } /* namespace shogun */

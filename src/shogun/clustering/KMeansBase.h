@@ -17,16 +17,16 @@
 
 namespace shogun
 {
-class CDistanceMachine;
+class DistanceMachine;
 
 /**
   Base Class for different KMeans clustering implementations.
   */
-class CKMeansBase : public CDistanceMachine
+class KMeansBase : public DistanceMachine
 {
 	public:
 		/** default constructor */
-		CKMeansBase();
+		KMeansBase();
 
 		/** constructor
 		 *
@@ -34,16 +34,16 @@ class CKMeansBase : public CDistanceMachine
 		 * @param d distance
 		 * @param kmeanspp Set to true for using KMeans++ (default false)
 		 */
-		CKMeansBase(int32_t k, std::shared_ptr<CDistance> d, bool kmeanspp=false);
+		KMeansBase(int32_t k, std::shared_ptr<Distance> d, bool kmeanspp=false);
 
 		/** constructor for supplying initial centers
 		 * @param k_i parameter k
 		 * @param d_i distance
 		 * @param centers_i initial centers for KMeans algorithm
 		*/
-		CKMeansBase(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i);
+		KMeansBase(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i);
 		
-		virtual ~CKMeansBase();
+		virtual ~KMeansBase();
 
 
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
@@ -90,7 +90,7 @@ class CKMeansBase : public CDistanceMachine
 
 	protected:
 		/** Initialize training for KMeans algorithms */
-		void initialize_training(std::shared_ptr<CFeatures> data=NULL);
+		void initialize_training(std::shared_ptr<Features> data=NULL);
 
 		/** Ensures cluster centers are in lhs of underlying distance */
 		virtual void store_model_features();

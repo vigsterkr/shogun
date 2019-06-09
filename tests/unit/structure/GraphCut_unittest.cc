@@ -12,7 +12,7 @@ TEST(GraphCut, graph_cut_st_graph)
 	int32_t num_nodes = 5;
 	int32_t num_edges = 6;
 
-	auto g = std::make_shared<CGraphCut>(num_nodes, num_edges);
+	auto g = std::make_shared<GraphCut>(num_nodes, num_edges);
 
 
 	g->add_tweights(0, 4, 0);
@@ -51,7 +51,7 @@ TEST(GraphCut, graph_cut_st_graph)
 // Test graph-cuts inference for a simple two nodes chain structure graph
 TEST(GraphCut, graph_cut_chain)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	auto fg = fg_test_data->simple_chain_graph();
@@ -61,7 +61,7 @@ TEST(GraphCut, graph_cut_chain)
 	EXPECT_TRUE(fg->is_tree_graph());
 	EXPECT_EQ(fg->get_num_edges(), 4);
 
-	CMAPInference infer_met(fg, GRAPH_CUT);
+	MAPInference infer_met(fg, GRAPH_CUT);
 	infer_met.inference();
 
 	auto fg_observ = infer_met.get_structured_outputs();
@@ -78,11 +78,11 @@ TEST(GraphCut, graph_cut_random)
 	SGVector<int32_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 	auto fg_random = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
 
-	CMAPInference infer_met(fg_random, GRAPH_CUT);
+	MAPInference infer_met(fg_random, GRAPH_CUT);
 	infer_met.inference();
 
 	auto fg_observ = infer_met.get_structured_outputs();
@@ -101,7 +101,7 @@ TEST(GraphCut, graph_cut_random)
 // using randomly generated synthetic data
 TEST(GraphCut, graph_cut_sosvm)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	EXPECT_NEAR(fg_test_data->test_sosvm(GRAPH_CUT), 0, 0.1);

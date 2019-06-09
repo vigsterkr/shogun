@@ -18,14 +18,14 @@
 
 using namespace shogun;
 
-CMachineEvaluation::CMachineEvaluation()
+MachineEvaluation::MachineEvaluation()
 {
 	init();
 }
 
-CMachineEvaluation::CMachineEvaluation(std::shared_ptr<CMachine> machine, std::shared_ptr<CFeatures> features,
-		std::shared_ptr<CLabels> labels, std::shared_ptr<CSplittingStrategy> splitting_strategy,
-		std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock)
+MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shared_ptr<Features> features,
+		std::shared_ptr<Labels> labels, std::shared_ptr<SplittingStrategy> splitting_strategy,
+		std::shared_ptr<Evaluation> evaluation_criterion, bool autolock)
 {
 	init();
 
@@ -43,9 +43,9 @@ CMachineEvaluation::CMachineEvaluation(std::shared_ptr<CMachine> machine, std::s
 
 }
 
-CMachineEvaluation::CMachineEvaluation(std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labels,
-		std::shared_ptr<CSplittingStrategy> splitting_strategy,
-		std::shared_ptr<CEvaluation> evaluation_criterion, bool autolock)
+MachineEvaluation::MachineEvaluation(std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labels,
+		std::shared_ptr<SplittingStrategy> splitting_strategy,
+		std::shared_ptr<Evaluation> evaluation_criterion, bool autolock)
 {
 	init();
 
@@ -61,7 +61,7 @@ CMachineEvaluation::CMachineEvaluation(std::shared_ptr<CMachine> machine, std::s
 
 }
 
-CMachineEvaluation::~CMachineEvaluation()
+MachineEvaluation::~MachineEvaluation()
 {
 
 
@@ -70,7 +70,7 @@ CMachineEvaluation::~CMachineEvaluation()
 
 }
 
-void CMachineEvaluation::init()
+void MachineEvaluation::init()
 {
 	m_machine = NULL;
 	m_features = NULL;
@@ -96,7 +96,7 @@ void CMachineEvaluation::init()
 
 }
 
-std::shared_ptr<CEvaluationResult> CMachineEvaluation::evaluate()
+std::shared_ptr<EvaluationResult> MachineEvaluation::evaluate()
 {
 	SG_DEBUG("entering %s::evaluate()\n", get_name())
 
@@ -124,13 +124,13 @@ std::shared_ptr<CEvaluationResult> CMachineEvaluation::evaluate()
 	return result;
 };
 
-std::shared_ptr<CMachine> CMachineEvaluation::get_machine() const
+std::shared_ptr<Machine> MachineEvaluation::get_machine() const
 {
 
 	return m_machine;
 }
 
-EEvaluationDirection CMachineEvaluation::get_evaluation_direction()
+EEvaluationDirection MachineEvaluation::get_evaluation_direction()
 {
 	return m_evaluation_criterion->get_evaluation_direction();
 }

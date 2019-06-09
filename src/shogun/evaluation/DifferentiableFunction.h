@@ -19,13 +19,13 @@ namespace shogun
 /** @brief An abstract class that describes a differentiable function used for
  * GradientEvaluation.
  */
-class CDifferentiableFunction : public CSGObject
+class DifferentiableFunction : public SGObject
 {
 public:
 	/** default constructor */
-	CDifferentiableFunction();
+	DifferentiableFunction();
 
-	virtual ~CDifferentiableFunction();
+	virtual ~DifferentiableFunction();
 
 	/** get the gradient
 	 *
@@ -35,7 +35,7 @@ public:
 	 * of derivative with respect to that parameter.
 	 */
 	virtual std::shared_ptr<CMap<TParameter*, SGVector<float64_t> >> get_gradient(
-			std::shared_ptr<CMap<TParameter*, CSGObject*>> parameters)=0;
+			std::shared_ptr<CMap<TParameter*, SGObject*>> parameters)=0;
 
 	/** get the function value
 	 *

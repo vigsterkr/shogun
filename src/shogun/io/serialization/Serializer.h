@@ -12,22 +12,22 @@ namespace shogun
 {
 	namespace io
 	{
-		class CSerializer : public CSGObject
+		class Serializer : public SGObject
 		{
 		public:
-			CSerializer();
-			virtual ~CSerializer();
-			virtual void attach(std::shared_ptr<COutputStream> stream);
-			virtual void write(std::shared_ptr<CSGObject> object) noexcept(false) = 0;
-			std::shared_ptr<COutputStream> stream() const;
+			Serializer();
+			virtual ~Serializer();
+			virtual void attach(std::shared_ptr<OutputStream> stream);
+			virtual void write(std::shared_ptr<SGObject> object) noexcept(false) = 0;
+			std::shared_ptr<OutputStream> stream() const;
 
 		private:
-			std::shared_ptr<COutputStream> m_stream;
+			std::shared_ptr<OutputStream> m_stream;
 		};
 
-		void serialize(const std::string& _path, std::shared_ptr<CSGObject> _obj, std::shared_ptr<CSerializer> _serializer);
-		void pre_serialize(std::shared_ptr<CSGObject> obj) noexcept(false);
-		void post_serialize(std::shared_ptr<CSGObject> obj) noexcept(false);
+		void serialize(const std::string& _path, std::shared_ptr<SGObject> _obj, std::shared_ptr<Serializer> _serializer);
+		void pre_serialize(std::shared_ptr<SGObject> obj) noexcept(false);
+		void post_serialize(std::shared_ptr<SGObject> obj) noexcept(false);
 	}
 }
 

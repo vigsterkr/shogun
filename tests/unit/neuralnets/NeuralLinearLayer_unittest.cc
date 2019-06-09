@@ -51,15 +51,15 @@ TEST_F(NeuralLinearLayerTest, compute_activations)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
-	std::shared_ptr<CNeuralInputLayer> input1;
+	std::shared_ptr<NeuralInputLayer> input1;
 	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	SGMatrix<float64_t> x2;
-	std::shared_ptr<CNeuralInputLayer> input2;
+	std::shared_ptr<NeuralInputLayer> input2;
 	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
 
 	// initialize the layer
-	auto layer = std::make_shared<CNeuralLinearLayer>(9);
+	auto layer = std::make_shared<NeuralLinearLayer>(9);
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
 	input_indices[1] = 1;
@@ -96,15 +96,15 @@ TEST_F(NeuralLinearLayerTest, compute_error)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
-	std::shared_ptr<CNeuralInputLayer> input1;
+	std::shared_ptr<NeuralInputLayer> input1;
 	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	SGMatrix<float64_t> x2;
-	std::shared_ptr<CNeuralInputLayer> input2;
+	std::shared_ptr<NeuralInputLayer> input2;
 	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
 
 	// initialize the layer
-	auto layer=std::make_shared<CNeuralLinearLayer>(9);
+	auto layer=std::make_shared<NeuralLinearLayer>(9);
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
 	input_indices[1] = 1;
@@ -122,7 +122,7 @@ TEST_F(NeuralLinearLayerTest, compute_error)
 	// manually compute error
 	float64_t error_ref = 0;
 	for (int32_t i=0; i<A.num_rows*A.num_cols; i++)
-		error_ref += 0.5*CMath::pow(y[i]-A[i],2)/y.num_cols;
+		error_ref += 0.5*Math::pow(y[i]-A[i],2)/y.num_cols;
 
 	// compare
 	EXPECT_NEAR(error_ref, error, 1e-11);
@@ -135,11 +135,11 @@ TEST_F(NeuralLinearLayerTest, compute_local_gradients)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x;
-	std::shared_ptr<CNeuralInputLayer> input;
+	std::shared_ptr<NeuralInputLayer> input;
 	std::tie(x, input) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	// initialize the layer
-	auto layer=std::make_shared<CNeuralLinearLayer>(9);
+	auto layer=std::make_shared<NeuralLinearLayer>(9);
 	SGVector<int32_t> input_indices(1);
 	input_indices[0] = 0;
 	auto params =
@@ -185,15 +185,15 @@ TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_output)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
-	std::shared_ptr<CNeuralInputLayer> input1;
+	std::shared_ptr<NeuralInputLayer> input1;
 	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	SGMatrix<float64_t> x2;
-	std::shared_ptr<CNeuralInputLayer> input2;
+	std::shared_ptr<NeuralInputLayer> input2;
 	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
 
 	// initialize the layer
-	auto layer=std::make_shared<CNeuralLinearLayer>(9);
+	auto layer=std::make_shared<NeuralLinearLayer>(9);
 	SGVector<int32_t> input_indices(2);
 	input_indices[0] = 0;
 	input_indices[1] = 1;
@@ -244,15 +244,15 @@ TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_hidden)
 {
 	// initialize some random inputs
 	SGMatrix<float64_t> x1;
-	std::shared_ptr<CNeuralInputLayer> input1;
+	std::shared_ptr<NeuralInputLayer> input1;
 	std::tie(x1, input1) = setup_input_layer<float64_t>(12, 3, -10.0, 10.0);
 
 	SGMatrix<float64_t> x2;
-	std::shared_ptr<CNeuralInputLayer> input2;
+	std::shared_ptr<NeuralInputLayer> input2;
 	std::tie(x2, input2) = setup_input_layer<float64_t>(7, 3, -10.0, 10.0);
 
 	// initialize the hidden layer
-	auto layer_hid = std::make_shared<CNeuralLinearLayer>(5);
+	auto layer_hid = std::make_shared<NeuralLinearLayer>(5);
 	SGVector<int32_t> input_indices_hid(2);
 	input_indices_hid[0] = 0;
 	input_indices_hid[1] = 1;
@@ -260,7 +260,7 @@ TEST_F(NeuralLinearLayerTest, compute_parameter_gradients_hidden)
 	    layer_hid, input_indices_hid, x1.num_cols, 0.01, true);
 
 	// initialize the output layer
-	auto layer_out=std::make_shared<CNeuralLinearLayer>(9);
+	auto layer_out=std::make_shared<NeuralLinearLayer>(9);
 	SGVector<int32_t> input_indices_out(1);
 	input_indices_out[0] = 2;
 	auto params_out = init_linear_layer(

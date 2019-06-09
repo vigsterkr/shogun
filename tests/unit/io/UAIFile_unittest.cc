@@ -8,7 +8,7 @@ using namespace shogun;
 TEST(UAIFileTest, preamble)
 {
 	auto fout =
-	    std::make_shared<CUAIFile>("UAIFileTest_unittest_preamble.uai", 'w');
+	    std::make_shared<UAIFile>("UAIFileTest_unittest_preamble.uai", 'w');
 
 	fout->set_net_type("MARKOV");
 
@@ -53,7 +53,7 @@ TEST(UAIFileTest, preamble)
 	fout.reset();
 
 	auto fin =
-	    std::make_shared<CUAIFile>("UAIFileTest_unittest_preamble.uai", 'r');
+	    std::make_shared<UAIFile>("UAIFileTest_unittest_preamble.uai", 'r');
 
 	SGVector<char> net_type;
 	int32_t num_factors, num_vars;

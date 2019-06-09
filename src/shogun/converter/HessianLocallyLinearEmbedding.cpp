@@ -11,25 +11,25 @@
 
 using namespace shogun;
 
-CHessianLocallyLinearEmbedding::CHessianLocallyLinearEmbedding() :
-		CLocallyLinearEmbedding()
+HessianLocallyLinearEmbedding::HessianLocallyLinearEmbedding() :
+		LocallyLinearEmbedding()
 {
 }
 
-CHessianLocallyLinearEmbedding::~CHessianLocallyLinearEmbedding()
+HessianLocallyLinearEmbedding::~HessianLocallyLinearEmbedding()
 {
 }
 
-const char* CHessianLocallyLinearEmbedding::get_name() const
+const char* HessianLocallyLinearEmbedding::get_name() const
 {
 	return "HessianLocallyLinearEmbedding";
 };
 
-std::shared_ptr<CFeatures>
-CHessianLocallyLinearEmbedding::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+HessianLocallyLinearEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	auto dot_feats = std::static_pointer_cast<CDotFeatures>(features);
-	std::shared_ptr<CKernel> kernel = std::make_shared<CLinearKernel>(dot_feats, dot_feats);
+	auto dot_feats = std::static_pointer_cast<DotFeatures>(features);
+	std::shared_ptr<Kernel> kernel = std::make_shared<LinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;

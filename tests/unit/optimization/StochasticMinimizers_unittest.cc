@@ -171,7 +171,7 @@ int32_t RegressionForTestCostFunction::get_sample_size()
 SGVector<float64_t> RegressionForTestCostFunction::get_average_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, CSGObject*>>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();
@@ -208,7 +208,7 @@ bool RegressionForTestCostFunction::next_sample()
 SGVector<float64_t> RegressionForTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, CSGObject*>>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> variable;
@@ -226,7 +226,7 @@ SGVector<float64_t> RegressionForTestCostFunction::obtain_variable_reference()
 SGVector<float64_t> RegressionForTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap<TParameter*, CSGObject*>>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();

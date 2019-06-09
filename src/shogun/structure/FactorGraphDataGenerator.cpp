@@ -8,10 +8,10 @@
 
 using namespace shogun;
 
-CFactorGraphDataGenerator::CFactorGraphDataGenerator(): CSGObject()
+FactorGraphDataGenerator::FactorGraphDataGenerator(): SGObject()
 {}
 
-std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::simple_chain_graph()
+std::shared_ptr<FactorGraph> FactorGraphDataGenerator::simple_chain_graph()
 {
 	// ftype
 	SGVector<int32_t> card(2);
@@ -23,7 +23,7 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::simple_chain_graph()
 	w[2] = 0.2; // 0,1
 	w[3] = 0.0; // 1,1
 	int32_t tid = 0;
-	auto ft_pairwise = std::make_shared<CTableFactorType>(tid, card, w);
+	auto ft_pairwise = std::make_shared<TableFactorType>(tid, card, w);
 
 
 	SGVector<int32_t> card1(1);
@@ -32,7 +32,7 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::simple_chain_graph()
 	w1[0] = 0.1;
 	w1[1] = 0.7;
 	int32_t tid1 = 1;
-	auto ft_unary_1 = std::make_shared<CTableFactorType>(tid1, card1, w1);
+	auto ft_unary_1 = std::make_shared<TableFactorType>(tid1, card1, w1);
 
 
 	SGVector<int32_t> card2(1);
@@ -41,13 +41,13 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::simple_chain_graph()
 	w2[0] = 0.3;
 	w2[1] = 0.6;
 	int32_t tid2 = 2;
-	auto ft_unary_2 = std::make_shared<CTableFactorType>(tid2, card2, w2);
+	auto ft_unary_2 = std::make_shared<TableFactorType>(tid2, card2, w2);
 
 
 	// fg
 	SGVector<int32_t> vc(2);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	auto fg = std::make_shared<CFactorGraph>(vc);
+	auto fg = std::make_shared<FactorGraph>(vc);
 
 
 	// add factors
@@ -55,17 +55,17 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::simple_chain_graph()
 	SGVector<int32_t> var_index(2);
 	var_index[0] = 0;
 	var_index[1] = 1;
-	auto fac1 = std::make_shared<CFactor>(ft_pairwise, var_index, data);
+	auto fac1 = std::make_shared<Factor>(ft_pairwise, var_index, data);
 	fg->add_factor(fac1);
 
 	SGVector<int32_t> var_index1(1);
 	var_index1[0] = 0;
-	auto fac2 = std::make_shared<CFactor>(ft_unary_1, var_index1, data);
+	auto fac2 = std::make_shared<Factor>(ft_unary_1, var_index1, data);
 	fg->add_factor(fac2);
 
 	SGVector<int32_t> var_index2(1);
 	var_index2[0] = 1;
-	auto fac3 = std::make_shared<CFactor>(ft_unary_2, var_index2, data);
+	auto fac3 = std::make_shared<Factor>(ft_unary_2, var_index2, data);
 	fg->add_factor(fac3);
 
 
@@ -80,12 +80,12 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::simple_chain_graph()
 	return fg;
 }
 
-int32_t CFactorGraphDataGenerator::grid_to_index(int32_t x, int32_t y, int32_t w)
+int32_t FactorGraphDataGenerator::grid_to_index(int32_t x, int32_t y, int32_t w)
 {
 	return x + w * y;
 }
 
-void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, float64_t &C, float64_t &D)
+void FactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, float64_t &C, float64_t &D)
 {
 	if (A + D > C + B)
 	{
@@ -98,9 +98,9 @@ void CFactorGraphDataGenerator::truncate_energy(float64_t &A, float64_t &B, floa
 	}
 }
 
-std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N)
+std::shared_ptr<FactorGraph> FactorGraphDataGenerator::random_chain_graph(SGVector<int> &assignment_expect, float64_t &min_energy_expect, int32_t N)
 {
-	CMath::init_random(17);
+	Math::init_random(17);
 
 	// ftype
 	SGVector<int32_t> card(2);
@@ -108,20 +108,20 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::random_chain_graph(SGVe
 	card[1] = 2;
 	SGVector<float64_t> w;
 	int32_t tid = 0;
-	auto factortype = std::make_shared<CTableFactorType>(tid, card, w);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
 
 
 	SGVector<int32_t> card1(1);
 	card1[0] = 2;
 	SGVector<float64_t> w1;
 	int32_t tid1 = 1;
-	auto factortype1 = std::make_shared<CTableFactorType>(tid1, card1, w1);
+	auto factortype1 = std::make_shared<TableFactorType>(tid1, card1, w1);
 
 
 	// fg
 	SGVector<int32_t> vc(N * N);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	auto fg = std::make_shared<CFactorGraph>(vc);
+	auto fg = std::make_shared<FactorGraph>(vc);
 
 
 	// Add factors
@@ -129,13 +129,13 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::random_chain_graph(SGVe
 		for (int32_t x = 0; x < N; ++x)
 		{
 			SGVector<float64_t> data(2);
-			data[0] = CMath::random(0.0, 1.0);
-			data[1] = CMath::random(0.0, 1.0);
+			data[0] = Math::random(0.0, 1.0);
+			data[1] = Math::random(0.0, 1.0);
 
 			SGVector<int32_t> var_index(1);
 			var_index[0] = y * N + x;
 
-			auto fac1 = std::make_shared<CFactor>(factortype1, var_index, data);
+			auto fac1 = std::make_shared<Factor>(factortype1, var_index, data);
 			fg->add_factor(fac1);
 		}
 
@@ -146,10 +146,10 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::random_chain_graph(SGVe
 			if (x > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = CMath::random(0.0, 1.0);//E(0,0)->A
-				float64_t C = CMath::random(0.0, 1.0);//E(1,0)->C
-				float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
-				float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
+				float64_t A = Math::random(0.0, 1.0);//E(0,0)->A
+				float64_t C = Math::random(0.0, 1.0);//E(1,0)->C
+				float64_t B = Math::random(0.0, 1.0);//E(0,1)->B
+				float64_t D = Math::random(0.0, 1.0);//E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -162,17 +162,17 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::random_chain_graph(SGVe
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x, y, N);
 				var_index[1] = grid_to_index(x - 1, y, N);
-				auto fac1 = std::make_shared<CFactor>(factortype, var_index, data);
+				auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
 				fg->add_factor(fac1);
 			}
 
 			if (x == 0 && y > 0)
 			{
 				SGVector<float64_t> data(4);
-				float64_t A = CMath::random(0.0, 1.0);//E(0,0)->A
-				float64_t C = CMath::random(0.0, 1.0);//E(1,0)->C
-				float64_t B = CMath::random(0.0, 1.0);//E(0,1)->B
-				float64_t D = CMath::random(0.0, 1.0);//E(1,1)->D
+				float64_t A = Math::random(0.0, 1.0);//E(0,0)->A
+				float64_t C = Math::random(0.0, 1.0);//E(1,0)->C
+				float64_t B = Math::random(0.0, 1.0);//E(0,1)->B
+				float64_t D = Math::random(0.0, 1.0);//E(1,1)->D
 
 				// Add truncation to ensure submodularity
 				truncate_energy(A, B, C, D);
@@ -185,7 +185,7 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::random_chain_graph(SGVe
 				SGVector<int32_t> var_index(2);
 				var_index[0] = grid_to_index(x, y - 1, N);
 				var_index[1] = grid_to_index(x, y, N);
-				auto fac1 = std::make_shared<CFactor>(factortype, var_index, data);
+				auto fac1 = std::make_shared<Factor>(factortype, var_index, data);
 				fg->add_factor(fac1);
 			}
 		}
@@ -230,7 +230,7 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::random_chain_graph(SGVe
 	return fg;
 }
 
-std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::multi_state_tree_graph()
+std::shared_ptr<FactorGraph> FactorGraphDataGenerator::multi_state_tree_graph()
 {
 	// ftype
 	SGVector<int32_t> card(2);
@@ -247,7 +247,7 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::multi_state_tree_graph(
 	w[7] = -0.0; // 1,2
 	w[8] = -0.1; // 2,2
 	int32_t tid = 0;
-	auto factortype = std::make_shared<CTableFactorType>(tid, card, w);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
 
 
 	SGVector<int32_t> card1(1);
@@ -257,7 +257,7 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::multi_state_tree_graph(
 	w1[1] = -0.7;
 	w1[2] = -0.6;
 	int32_t tid1 = 1;
-	auto factortype1 = std::make_shared<CTableFactorType>(tid1, card1, w1);
+	auto factortype1 = std::make_shared<TableFactorType>(tid1, card1, w1);
 
 
 	SGVector<int32_t> card2(1);
@@ -267,7 +267,7 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::multi_state_tree_graph(
 	w2[1] = -0.1;
 	w2[2] = -0.2;
 	int32_t tid2 = 2;
-	auto factortype2 = std::make_shared<CTableFactorType>(tid2, card2, w2);
+	auto factortype2 = std::make_shared<TableFactorType>(tid2, card2, w2);
 
 
 	SGVector<int32_t> card3(1);
@@ -277,42 +277,42 @@ std::shared_ptr<CFactorGraph> CFactorGraphDataGenerator::multi_state_tree_graph(
 	w3[1] = -0.4;
 	w3[2] = -0.5;
 	int32_t tid3 = 3;
-	auto factortype3 = std::make_shared<CTableFactorType>(tid3, card3, w3);
+	auto factortype3 = std::make_shared<TableFactorType>(tid3, card3, w3);
 
 
 	// fg
 	SGVector<int32_t> vc(3);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 3);
-	auto fg = std::make_shared<CFactorGraph>(vc);
+	auto fg = std::make_shared<FactorGraph>(vc);
 
 
 	// add factors
 	SGVector<float64_t> data;
 	SGVector<int32_t> var_index1(1);
 	var_index1[0] = 0;
-	auto fac1 = std::make_shared<CFactor>(factortype1, var_index1, data);
+	auto fac1 = std::make_shared<Factor>(factortype1, var_index1, data);
 	fg->add_factor(fac1);
 
 	SGVector<int32_t> var_index2(1);
 	var_index2[0] = 1;
-	auto fac2 = std::make_shared<CFactor>(factortype2, var_index2, data);
+	auto fac2 = std::make_shared<Factor>(factortype2, var_index2, data);
 	fg->add_factor(fac2);
 
 	SGVector<int32_t> var_index3(1);
 	var_index3[0] = 2;
-	auto fac3 = std::make_shared<CFactor>(factortype3, var_index3, data);
+	auto fac3 = std::make_shared<Factor>(factortype3, var_index3, data);
 	fg->add_factor(fac3);
 
 	SGVector<int32_t> var_index4(2);
 	var_index4[0] = 0;
 	var_index4[1] = 1;
-	auto fac4 = std::make_shared<CFactor>(factortype, var_index4, data);
+	auto fac4 = std::make_shared<Factor>(factortype, var_index4, data);
 	fg->add_factor(fac4);
 
 	SGVector<int32_t> var_index5(2);
 	var_index5[0] = 1;
 	var_index5[1] = 2;
-	auto fac5 = std::make_shared<CFactor>(factortype, var_index5, data);
+	auto fac5 = std::make_shared<Factor>(factortype, var_index5, data);
 	fg->add_factor(fac5);
 
 	// energy table
@@ -332,7 +332,7 @@ Test approximate inference algorithms with SOSVM framework
 using randomly generated synthetic data
 ----------------------------------------------------------------------------------*/
 
-void CFactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_feat, int32_t size_data,
+void FactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_feat, int32_t size_data,
                                 SGMatrix<float64_t> &feats, SGMatrix<int32_t> &labels)
 {
 	ASSERT(size_data > len_label);
@@ -351,7 +351,7 @@ void CFactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_fea
 		// generate feature vector
 		SGVector<int32_t> random_indices(len_feat);
 		random_indices.range_fill();
-		CMath::permute(random_indices);
+		Math::permute(random_indices);
 		SGVector<float64_t> v_feat(len_feat);
 		v_feat.zero();
 
@@ -369,7 +369,7 @@ void CFactorGraphDataGenerator::generate_data(int32_t len_label, int32_t len_fea
 	}
 }
 
-SGMatrix< int32_t > CFactorGraphDataGenerator::get_edges_full(const int32_t num_classes)
+SGMatrix< int32_t > FactorGraphDataGenerator::get_edges_full(const int32_t num_classes)
 {
 	// A full-connected graph is defined by a 2-d matrix where
 	// each row stores the indecies of a pair of connected nodes
@@ -391,9 +391,9 @@ SGMatrix< int32_t > CFactorGraphDataGenerator::get_edges_full(const int32_t num_
 	return mat;
 }
 
-void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
-                                     SGMatrix< int32_t > edge_list, const std::vector<std::shared_ptr<CTableFactorType>> &v_factor_type,
-                                     std::shared_ptr<CFactorGraphFeatures> fg_feats, std::shared_ptr<CFactorGraphLabels> fg_labels)
+void FactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SGMatrix<int32_t> labels,
+                                     SGMatrix< int32_t > edge_list, const std::vector<std::shared_ptr<TableFactorType>> &v_factor_type,
+                                     std::shared_ptr<FactorGraphFeatures> fg_feats, std::shared_ptr<FactorGraphLabels> fg_labels)
 {
 	int32_t num_sample        = labels.num_cols;
 	int32_t num_classes       = labels.num_rows;
@@ -406,7 +406,7 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
 		SGVector<int32_t> vc(num_classes);
 		SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
 
-		auto fg = std::make_shared<CFactorGraph>(vc);
+		auto fg = std::make_shared<FactorGraph>(vc);
 
 		float64_t* pfeat = feats.get_column_vector(n);
 		SGVector<float64_t> feat_i(dim);
@@ -417,7 +417,7 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
 		{
 			SGVector<int32_t> var_index_u(1);
 			var_index_u[0] = u;
-			auto fac_u = std::make_shared<CFactor>(v_factor_type[u], var_index_u, feat_i);
+			auto fac_u = std::make_shared<Factor>(v_factor_type[u], var_index_u, feat_i);
 			fg->add_factor(fac_u);
 		}
 
@@ -427,7 +427,7 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
 			SGVector<float64_t> data_t(1);
 			data_t[0] = 1.0;
 			SGVector<int32_t> var_index_t = edge_list.get_row_vector(t);
-			auto fac_t = std::make_shared<CFactor>(v_factor_type[t + num_classes], var_index_t, data_t);
+			auto fac_t = std::make_shared<Factor>(v_factor_type[t + num_classes], var_index_t, data_t);
 			fg->add_factor(fac_t);
 		}
 
@@ -440,7 +440,7 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
 		sg_memcpy(states_gt.vector, plabs, num_classes * sizeof(int32_t));
 		SGVector<float64_t> loss_weights(num_classes);
 		SGVector<float64_t>::fill_vector(loss_weights.vector, loss_weights.vlen, 1.0 / num_classes);
-		auto fg_obs = std::make_shared<CFactorGraphObservation>(states_gt, loss_weights);
+		auto fg_obs = std::make_shared<FactorGraphObservation>(states_gt, loss_weights);
 		fg_labels->add_label(fg_obs);
 	}
 }
@@ -452,8 +452,8 @@ void CFactorGraphDataGenerator::build_factor_graph(SGMatrix<float64_t> feats, SG
  * @param num_edges number of edegs
  * @param v_factor_type factor types
  */
-void CFactorGraphDataGenerator::define_factor_types(int32_t num_classes, int32_t dim, int32_t num_edges,
-                                      std::vector<std::shared_ptr<CTableFactorType>> &v_factor_type)
+void FactorGraphDataGenerator::define_factor_types(int32_t num_classes, int32_t dim, int32_t num_edges,
+                                      std::vector<std::shared_ptr<TableFactorType>> &v_factor_type)
 {
 	int32_t tid;
 	// we have l = num_classes different weights: w_1, w_2, ..., w_l
@@ -465,7 +465,7 @@ void CFactorGraphDataGenerator::define_factor_types(int32_t num_classes, int32_t
 		card_u[0] = 2;
 		SGVector<float64_t> w_u(dim * 2);
 		w_u.zero();
-		auto ft = std::make_shared<CTableFactorType>(tid, card_u, w_u);
+		auto ft = std::make_shared<TableFactorType>(tid, card_u, w_u);
 		v_factor_type.push_back(ft);
 	}
 
@@ -479,12 +479,12 @@ void CFactorGraphDataGenerator::define_factor_types(int32_t num_classes, int32_t
 		card_t[1] = 2;
 		SGVector<float64_t> w_t(2 * 2);
 		w_t.zero();
-		auto ft = std::make_shared<CTableFactorType>(tid, card_t, w_t);
+		auto ft = std::make_shared<TableFactorType>(tid, card_t, w_t);
 		v_factor_type.push_back(ft);
 	}
 }
 
-float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
+float64_t FactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 {
 	SGMatrix<int32_t> labels_train;
 	SGMatrix<float64_t> feats_train;
@@ -502,19 +502,19 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	int32_t num_edges = edge_table.num_rows;
 
 	// 1.2 Define factor type
-	std::vector<std::shared_ptr<CTableFactorType>> v_factor_type;
+	std::vector<std::shared_ptr<TableFactorType>> v_factor_type;
 	define_factor_types(num_classes, dim, num_edges, v_factor_type);
 
 	// 1.3 Prepare features and labels in factor graph
-	auto fg_feats_train = std::make_shared<CFactorGraphFeatures>(num_sample_train);
+	auto fg_feats_train = std::make_shared<FactorGraphFeatures>(num_sample_train);
 
-	auto fg_labels_train = std::make_shared<CFactorGraphLabels>(num_sample_train);
+	auto fg_labels_train = std::make_shared<FactorGraphLabels>(num_sample_train);
 
 
 	build_factor_graph(feats_train, labels_train, edge_table, v_factor_type, fg_feats_train, fg_labels_train);
 
 	// 1.4 Create factor graph model
-	auto model = std::make_shared<CFactorGraphModel>(fg_feats_train, fg_labels_train, infer_type, false);
+	auto model = std::make_shared<FactorGraphModel>(fg_feats_train, fg_labels_train, infer_type, false);
 
 
 	// Initialize model parameters
@@ -525,7 +525,7 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 		model->add_factor_type(v_factor_type[t + num_classes]);
 
 	// 2.1 Create SGD solver
-	auto sgd = std::make_shared<CStochasticSOSVM>(model, fg_labels_train, true);
+	auto sgd = std::make_shared<StochasticSOSVM>(model, fg_labels_train, true);
 	sgd->set_num_iter(150);
 	sgd->set_lambda(0.0001);
 
@@ -534,7 +534,7 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 	sgd->train();
 
 	// 3.1 Evaluation
-	auto labels_sgd = sgd->apply()->as<CStructuredLabels>();
+	auto labels_sgd = sgd->apply()->as<StructuredLabels>();
 
 	float64_t ave_loss_sgd = 0.0;
 	float64_t acc_loss_sgd = 0.0;
@@ -545,8 +545,8 @@ float64_t CFactorGraphDataGenerator::test_sosvm(EMAPInferType infer_type)
 		auto y_truth = fg_labels_train->get_label(i);
 		acc_loss_sgd += model->delta_loss(y_truth, y_pred);
 
-		auto y_t = y_truth->as<CFactorGraphObservation>();
-		auto y_p = y_pred->as<CFactorGraphObservation>();
+		auto y_t = y_truth->as<FactorGraphObservation>();
+		auto y_p = y_pred->as<FactorGraphObservation>();
 
 		SGVector<int32_t> s_t = y_t->get_data();
 		SGVector<int32_t> s_p = y_p->get_data();

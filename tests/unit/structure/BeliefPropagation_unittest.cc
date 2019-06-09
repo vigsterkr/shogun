@@ -35,7 +35,7 @@ float64_t hamming_loss(SGVector<int32_t> y_truth, SGVector<int32_t> y_pred)
 
 TEST(BeliefPropagation, tree_max_product_string)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	auto fg = fg_test_data->simple_chain_graph();
@@ -45,7 +45,7 @@ TEST(BeliefPropagation, tree_max_product_string)
 	EXPECT_TRUE(fg->is_tree_graph());
 	EXPECT_EQ(fg->get_num_edges(), 4);
 
-	CMAPInference infer_met(fg, TREE_MAX_PROD);
+	MAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
 	auto fg_observ = infer_met.get_structured_outputs();
@@ -61,7 +61,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 	SGVector<int32_t> assignment_expected; // expected assignment
 	float64_t min_energy_expected; // expected minimum energy
 
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 	auto fg = fg_test_data->random_chain_graph(assignment_expected, min_energy_expected);
 
@@ -70,7 +70,7 @@ TEST(BeliefPropagation, tree_max_product_random)
 	EXPECT_TRUE(fg->is_tree_graph());
 	EXPECT_EQ(fg->get_num_edges(), 10);
 
-	CMAPInference infer_met(fg, TREE_MAX_PROD);
+	MAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
 	auto fg_observ = infer_met.get_structured_outputs();
@@ -97,12 +97,12 @@ TEST(BeliefPropagation, loss_augmented_energies)
 	w[2] = 0.0; // 0,1
 	w[3] = 0.0; // 1,1
 	int32_t tid = 0;
-	auto factortype = std::make_shared<CTableFactorType>(tid, card, w);
+	auto factortype = std::make_shared<TableFactorType>(tid, card, w);
 
 
 	SGVector<int32_t> vc(3);
 	SGVector<int32_t>::fill_vector(vc.vector, vc.vlen, 2);
-	auto fg = std::make_shared<CFactorGraph>(vc);
+	auto fg = std::make_shared<FactorGraph>(vc);
 
 
 	SGVector<float64_t> data(1);
@@ -110,13 +110,13 @@ TEST(BeliefPropagation, loss_augmented_energies)
 	SGVector<int32_t> var_index1(2);
 	var_index1[0] = 0;
 	var_index1[1] = 1;
-	auto fac1 = std::make_shared<CFactor>(factortype, var_index1, data);
+	auto fac1 = std::make_shared<Factor>(factortype, var_index1, data);
 	fg->add_factor(fac1);
 
 	SGVector<int32_t> var_index2(2);
 	var_index2[0] = 1;
 	var_index2[1] = 2;
-	auto fac2 = std::make_shared<CFactor>(factortype, var_index2, data);
+	auto fac2 = std::make_shared<Factor>(factortype, var_index2, data);
 	fg->add_factor(fac2);
 
 	fg->connect_components();
@@ -148,12 +148,12 @@ TEST(BeliefPropagation, loss_augmented_energies)
 
 TEST(BeliefPropagation, tree_max_product_multi_states)
 {
-	auto fg_test_data = std::make_shared<CFactorGraphDataGenerator>();
+	auto fg_test_data = std::make_shared<FactorGraphDataGenerator>();
 
 
 	auto fg = fg_test_data->multi_state_tree_graph();
 
-	CMAPInference infer_met(fg, TREE_MAX_PROD);
+	MAPInference infer_met(fg, TREE_MAX_PROD);
 	infer_met.inference();
 
 	auto fg_observ = infer_met.get_structured_outputs();

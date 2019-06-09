@@ -18,17 +18,17 @@
 
 using namespace shogun;
 
-typedef std::pair<CDotFeatures*, CDotFeatures*> SplittedFeatures;
-typedef std::pair<SplittedFeatures, CBinaryLabels*> SplittedDataset;
+typedef std::pair<DotFeatures*, DotFeatures*> SplittedFeatures;
+typedef std::pair<SplittedFeatures, BinaryLabels*> SplittedDataset;
 
 #ifdef HAVE_LAPACK
 SplittedDataset generate_data()
 {
 	index_t num_samples = 50;
-	CMath::init_random(5);
+	Math::init_random(5);
 	SGMatrix<float64_t> data =
-		CDataGenerator::generate_gaussians(num_samples, 2, 2);
-	auto features = std::make_shared<CDenseFeatures<float64_t>>(data);
+		DataGenerator::generate_gaussians(num_samples, 2, 2);
+	auto features = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<index_t> train_idx(num_samples), test_idx(num_samples);
 	SGVector<float64_t> labels(num_samples);
@@ -42,10 +42,10 @@ SplittedDataset generate_data()
 		labels[i/2] = (i < num_samples) ? 1.0 : -1.0;
 	}
 
-	auto train_feats = features->copy_subset(train_idx)->as<CDenseFeatures<float64_t>>();
-	auto test_feats =  features->copy_subset(test_idx)->as<CDenseFeatures<float64_t>>();
+	auto train_feats = features->copy_subset(train_idx)->as<DenseFeatures<float64_t>>();
+	auto test_feats =  features->copy_subset(test_idx)->as<DenseFeatures<float64_t>>();
 
-	auto ground_truth = std::make_shared<CBinaryLabels>(labels);
+	auto ground_truth = std::make_shared<BinaryLabels>(labels);
 
 
 	return SplittedDataset(SplittedFeatures(train_feats, test_feats), ground_truth);

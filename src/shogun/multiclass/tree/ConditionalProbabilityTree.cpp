@@ -15,7 +15,7 @@
 using namespace shogun;
 using namespace std;
 
-std::shared_ptr<CMulticlassLabels> CConditionalProbabilityTree::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> ConditionalProbabilityTree::apply_multiclass(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -24,7 +24,7 @@ std::shared_ptr<CMulticlassLabels> CConditionalProbabilityTree::apply_multiclass
 		if (data->get_feature_type() != F_SHORTREAL)
 			SG_ERROR("Expected float32_t feature type\n")
 
-		set_features(data->as<CStreamingDenseFeatures<float32_t>>());
+		set_features(data->as<StreamingDenseFeatures<float32_t>>());
 	}
 
 	vector<int32_t> predicts;
@@ -37,13 +37,13 @@ std::shared_ptr<CMulticlassLabels> CConditionalProbabilityTree::apply_multiclass
 	}
 	m_feats->end_parser();
 
-	auto labels = std::make_shared<CMulticlassLabels>(predicts.size());
+	auto labels = std::make_shared<MulticlassLabels>(predicts.size());
 	for (size_t i=0; i < predicts.size(); ++i)
 		labels->set_int_label(i, predicts[i]);
 	return labels;
 }
 
-int32_t CConditionalProbabilityTree::apply_multiclass_example(SGVector<float32_t> ex)
+int32_t ConditionalProbabilityTree::apply_multiclass_example(SGVector<float32_t> ex)
 {
 	compute_conditional_probabilities(ex);
 	SGVector<float64_t> probs(m_leaves.size());
@@ -51,10 +51,10 @@ int32_t CConditionalProbabilityTree::apply_multiclass_example(SGVector<float32_t
 	{
 		probs[it->first] = accumulate_conditional_probability(it->second);
 	}
-	return CMath::arg_max(probs.vector, 1, probs.vlen);
+	return Math::arg_max(probs.vector, 1, probs.vlen);
 }
 
-void CConditionalProbabilityTree::compute_conditional_probabilities(SGVector<float32_t> ex)
+void ConditionalProbabilityTree::compute_conditional_probabilities(SGVector<float32_t> ex)
 {
 	stack<std::shared_ptr<bnode_t>> nodes;
 	nodes.push(m_root->as<bnode_t>());
@@ -74,7 +74,7 @@ void CConditionalProbabilityTree::compute_conditional_probabilities(SGVector<flo
 	}
 }
 
-float64_t CConditionalProbabilityTree::accumulate_conditional_probability(std::shared_ptr<bnode_t> leaf)
+float64_t ConditionalProbabilityTree::accumulate_conditional_probability(std::shared_ptr<bnode_t> leaf)
 {
 	float64_t prob = 1;
 	auto par = leaf->parent()->as<bnode_t>();
@@ -92,7 +92,7 @@ float64_t CConditionalProbabilityTree::accumulate_conditional_probability(std::s
 	return prob;
 }
 
-bool CConditionalProbabilityTree::train_machine(std::shared_ptr<CFeatures> data)
+bool ConditionalProbabilityTree::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -100,7 +100,7 @@ bool CConditionalProbabilityTree::train_machine(std::shared_ptr<CFeatures> data)
 			SG_ERROR("Expected StreamingDenseFeatures\n")
 		if (data->get_feature_type() != F_SHORTREAL)
 			SG_ERROR("Expected float32_t features\n")
-		set_features(data->as<CStreamingDenseFeatures<float32_t>>());
+		set_features(data->as<StreamingDenseFeatures<float32_t>>());
 	}
 	else
 	{
@@ -130,7 +130,7 @@ bool CConditionalProbabilityTree::train_machine(std::shared_ptr<CFeatures> data)
 
 	for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
 	{
-		auto lll = m_machines->get_element<COnlineLibLinear>(i);
+		auto lll = m_machines->get_element<OnlineLibLinear>(i);
 		lll->stop_train();
 
 	}
@@ -138,7 +138,7 @@ bool CConditionalProbabilityTree::train_machine(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-void CConditionalProbabilityTree::train_example(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex, int32_t label)
+void ConditionalProbabilityTree::train_example(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, int32_t label)
 {
 	if (!m_root)
 	{
@@ -179,8 +179,8 @@ void CConditionalProbabilityTree::train_example(std::shared_ptr<CStreamingDenseF
 		auto left_node = std::make_shared<bnode_t>();
 		left_node->data.label = node->data.label;
 		node->data.label = -1;
-		auto node_mch = m_machines->get_element<COnlineLibLinear>(node->machine());
-		auto mch = std::make_shared<COnlineLibLinear>(node_mch);
+		auto node_mch = m_machines->get_element<OnlineLibLinear>(node->machine());
+		auto mch = std::make_shared<OnlineLibLinear>(node_mch);
 
 		mch->start_train();
 		m_machines->push_back(mch);
@@ -196,7 +196,7 @@ void CConditionalProbabilityTree::train_example(std::shared_ptr<CStreamingDenseF
 	}
 }
 
-void CConditionalProbabilityTree::train_path(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex, std::shared_ptr<bnode_t> node)
+void ConditionalProbabilityTree::train_path(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, std::shared_ptr<bnode_t> node)
 {
 	float64_t node_label = 0;
 	train_node(ex, node_label, node);
@@ -215,29 +215,29 @@ void CConditionalProbabilityTree::train_path(std::shared_ptr<CStreamingDenseFeat
 	}
 }
 
-void CConditionalProbabilityTree::train_node(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex, float64_t label, std::shared_ptr<bnode_t> node)
+void ConditionalProbabilityTree::train_node(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, float64_t label, std::shared_ptr<bnode_t> node)
 {
 	REQUIRE(node, "Node must not be NULL\n");
-	auto mch = m_machines->get_element<COnlineLibLinear>(node->machine());
-	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
+	auto mch = m_machines->get_element<OnlineLibLinear>(node->machine());
+	REQUIRE(mch, "Instance of %s could not be casted to OnlineLibLinear\n", node->get_name());
 	mch->train_example(ex, label);
 
 }
 
-float64_t CConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, std::shared_ptr<bnode_t> node)
+float64_t ConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, std::shared_ptr<bnode_t> node)
 {
 	REQUIRE(node, "Node must not be NULL\n");
-	auto mch = m_machines->get_element<COnlineLibLinear>(node->machine());
-	REQUIRE(mch, "Instance of %s could not be casted to COnlineLibLinear\n", node->get_name());
+	auto mch = m_machines->get_element<OnlineLibLinear>(node->machine());
+	REQUIRE(mch, "Instance of %s could not be casted to OnlineLibLinear\n", node->get_name());
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 
 	// use sigmoid function to turn the decision value into valid probability
 	return 1.0 / (1 + std::exp(-pred));
 }
 
-int32_t CConditionalProbabilityTree::create_machine(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex)
+int32_t ConditionalProbabilityTree::create_machine(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex)
 {
-	auto mch = std::make_shared<COnlineLibLinear>();
+	auto mch = std::make_shared<OnlineLibLinear>();
 	mch->start_train();
 	mch->train_example(ex, 0);
 	m_machines->push_back(mch);

@@ -36,18 +36,18 @@
 
 using namespace shogun;
 
-CTimeSeriesSplitting::CTimeSeriesSplitting() : CSplittingStrategy()
+TimeSeriesSplitting::TimeSeriesSplitting() : SplittingStrategy()
 {
 	init();
 }
 
-CTimeSeriesSplitting::CTimeSeriesSplitting(std::shared_ptr<CLabels> labels, index_t num_subsets)
-    : CSplittingStrategy(labels, num_subsets)
+TimeSeriesSplitting::TimeSeriesSplitting(std::shared_ptr<Labels> labels, index_t num_subsets)
+    : SplittingStrategy(labels, num_subsets)
 {
 	init();
 }
 
-void CTimeSeriesSplitting::init()
+void TimeSeriesSplitting::init()
 {
 	m_rng = sg_rand;
 	m_min_subset_size = 1;
@@ -55,7 +55,7 @@ void CTimeSeriesSplitting::init()
 			"The minimum subset size for test set");
 }
 
-void CTimeSeriesSplitting::build_subsets()
+void TimeSeriesSplitting::build_subsets()
 {
 	reset_subsets();
 	m_is_filled = true;
@@ -67,7 +67,7 @@ void CTimeSeriesSplitting::build_subsets()
 
 	for (auto i = 0; i < num_subsets; ++i)
 	{
-		auto current =m_subset_indices->get_element<CDynamicArray<index_t>>(i);
+		auto current =m_subset_indices->get_element<DynamicArray<index_t>>(i);
 
 		if (i == num_subsets - 1)
 			split_index = indices.vlen - m_min_subset_size;
@@ -86,7 +86,7 @@ void CTimeSeriesSplitting::build_subsets()
 	m_subset_indices->shuffle(m_rng);
 }
 
-void CTimeSeriesSplitting::set_min_subset_size(index_t min_size)
+void TimeSeriesSplitting::set_min_subset_size(index_t min_size)
 {
 	index_t num_subsets = m_subset_indices->get_num_elements();
 	index_t num_labels = m_labels->get_num_labels();
@@ -102,7 +102,7 @@ void CTimeSeriesSplitting::set_min_subset_size(index_t min_size)
 	m_min_subset_size = min_size;
 }
 
-index_t CTimeSeriesSplitting::get_min_subset_size()
+index_t TimeSeriesSplitting::get_min_subset_size()
 {
 	return m_min_subset_size;
 }

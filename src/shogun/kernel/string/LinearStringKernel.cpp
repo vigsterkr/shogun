@@ -12,73 +12,73 @@
 
 using namespace shogun;
 
-CLinearStringKernel::CLinearStringKernel()
-: CStringKernel<char>(0)
+LinearStringKernel::LinearStringKernel()
+: StringKernel<char>(0)
 {
 }
 
-CLinearStringKernel::CLinearStringKernel(
-	std::shared_ptr<CStringFeatures<char>> l, std::shared_ptr<CStringFeatures<char>> r)
-: CStringKernel<char>(0)
+LinearStringKernel::LinearStringKernel(
+	std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r)
+: StringKernel<char>(0)
 {
 	init(l, r);
 }
 
-CLinearStringKernel::~CLinearStringKernel()
+LinearStringKernel::~LinearStringKernel()
 {
 	cleanup();
 }
 
-bool CLinearStringKernel::init(std::shared_ptr<CFeatures >l, std::shared_ptr<CFeatures >r)
+bool LinearStringKernel::init(std::shared_ptr<Features >l, std::shared_ptr<Features >r)
 {
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 	return init_normalizer();
 }
 
-void CLinearStringKernel::cleanup()
+void LinearStringKernel::cleanup()
 {
 	delete_optimization();
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-void CLinearStringKernel::clear_normal()
+void LinearStringKernel::clear_normal()
 {
 	memset(m_normal.vector, 0, lhs->get_num_vectors()*sizeof(float64_t));
 }
 
-void CLinearStringKernel::add_to_normal(int32_t idx, float64_t weight)
+void LinearStringKernel::add_to_normal(int32_t idx, float64_t weight)
 {
 	int32_t vlen;
 	bool vfree;
-	char* vec = std::static_pointer_cast<CStringFeatures<char>>(lhs)->get_feature_vector(idx, vlen, vfree);
+	char* vec = std::static_pointer_cast<StringFeatures<char>>(lhs)->get_feature_vector(idx, vlen, vfree);
 
 	for (int32_t i=0; i<vlen; i++)
 		m_normal.vector[i] += weight*normalizer->normalize_lhs(vec[i], idx);
 
-	std::static_pointer_cast<CStringFeatures<char>>(lhs)->free_feature_vector(vec, idx, vfree);
+	std::static_pointer_cast<StringFeatures<char>>(lhs)->free_feature_vector(vec, idx, vfree);
 }
 
-float64_t CLinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t LinearStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
 
-	char* avec = lhs->as<CStringFeatures<char>>()->get_feature_vector(idx_a, alen, free_avec);
-	char* bvec = rhs->as<CStringFeatures<char>>()->get_feature_vector(idx_b, blen, free_bvec);
+	char* avec = lhs->as<StringFeatures<char>>()->get_feature_vector(idx_a, alen, free_avec);
+	char* bvec = rhs->as<StringFeatures<char>>()->get_feature_vector(idx_b, blen, free_bvec);
 	ASSERT(alen==blen)
 	SGVector<char> a_wrap(avec, alen, false);
 	SGVector<char> b_wrap(bvec, blen, false);
 	float64_t result = linalg::dot(a_wrap, b_wrap);
-	lhs->as<CStringFeatures<char>>()->free_feature_vector(avec, idx_a, free_avec);
-	rhs->as<CStringFeatures<char>>()->free_feature_vector(bvec, idx_b, free_bvec);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(avec, idx_a, free_avec);
+	rhs->as<StringFeatures<char>>()->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }
 
-bool CLinearStringKernel::init_optimization(
+bool LinearStringKernel::init_optimization(
 	int32_t num_suppvec, int32_t *sv_idx, float64_t *alphas)
 {
-	auto sf_lhs = lhs->as<CStringFeatures<char>>();
+	auto sf_lhs = lhs->as<StringFeatures<char>>();
 	int32_t num_feat = sf_lhs->get_max_vector_length();
 	ASSERT(num_feat)
 
@@ -104,22 +104,22 @@ bool CLinearStringKernel::init_optimization(
 	return true;
 }
 
-bool CLinearStringKernel::delete_optimization()
+bool LinearStringKernel::delete_optimization()
 {
 	m_normal = SGVector<float64_t>();
 	set_is_initialized(false);
 	return true;
 }
 
-float64_t CLinearStringKernel::compute_optimized(int32_t idx_b)
+float64_t LinearStringKernel::compute_optimized(int32_t idx_b)
 {
 	int32_t blen;
 	bool free_bvec;
-	char* bvec = lhs->as<CStringFeatures<char>>()->get_feature_vector(idx_b, blen, free_bvec);
+	char* bvec = lhs->as<StringFeatures<char>>()->get_feature_vector(idx_b, blen, free_bvec);
 	float64_t dot = 0.0;
 	for (auto i = 0; m_normal.vlen; ++i)
 		dot += m_normal[i]*(float64_t)bvec[i];
 	float64_t result=normalizer->normalize_rhs(dot, idx_b);
-	rhs->as<CStringFeatures<char>>()->free_feature_vector(bvec, idx_b, free_bvec);
+	rhs->as<StringFeatures<char>>()->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }

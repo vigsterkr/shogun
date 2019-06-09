@@ -45,17 +45,17 @@ namespace shogun
 {
 
 /** @brief Build-in minimizer for KLDualInference */
-class CKLDualInferenceMethodMinimizer: public CLBFGSMinimizer
+class KLDualInferenceMethodMinimizer: public LBFGSMinimizer
 {
 public:
-	CKLDualInferenceMethodMinimizer(): CLBFGSMinimizer() { init(); }
+	KLDualInferenceMethodMinimizer(): LBFGSMinimizer() { init(); }
   
 	/** Constructor
 	 * @param fun a cost function
 	 */
-	CKLDualInferenceMethodMinimizer(std::shared_ptr<FirstOrderCostFunction >fun): CLBFGSMinimizer(fun) { init(); }
+	KLDualInferenceMethodMinimizer(std::shared_ptr<FirstOrderCostFunction >fun): LBFGSMinimizer(fun) { init(); }
   
-	virtual ~CKLDualInferenceMethodMinimizer() {}
+	virtual ~KLDualInferenceMethodMinimizer() {}
 
 	/** Do minimization and get the optimal value 
 	 *  
@@ -105,12 +105,12 @@ private:
  *
  * For detailed information, please refer to the paper.
  */
-class CKLDualInferenceMethod: public CKLInference
+class KLDualInferenceMethod: public KLInference
 {
 friend class KLDualInferenceMethodCostFunction;
 public:
 	/** default constructor */
-	CKLDualInferenceMethod();
+	KLDualInferenceMethod();
 
 	/** constructor
 	 *
@@ -120,10 +120,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model Likelihood model to use
 	 */
-	CKLDualInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
+	KLDualInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CKLDualInferenceMethod();
+	virtual ~KLDualInferenceMethod();
 
 	/** returns the name of the inference method
 	 *
@@ -142,7 +142,7 @@ public:
 	 * @param inference inference method
 	 * @return casted CKLDualInferenceMethod object
 	 */
-	static std::shared_ptr<CKLDualInferenceMethod > obtain_from_generic(std::shared_ptr<CInference> inference);
+	static std::shared_ptr<KLDualInferenceMethod > obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** get alpha vector
 	 *
@@ -173,7 +173,7 @@ public:
 	 *
 	 * @param mod model to set
 	 */
-	void set_model(std::shared_ptr<CLikelihoodModel> mod);
+	void set_model(std::shared_ptr<LikelihoodModel> mod);
 
 	/** Set a minimizer
 	 *
@@ -192,14 +192,14 @@ protected:
 	/** this method is used to dynamic-cast the likelihood model, m_model,
 	 * to dual variational likelihood model.
 	 */
-	virtual std::shared_ptr<CDualVariationalGaussianLikelihood> get_dual_variational_likelihood() const;
+	virtual std::shared_ptr<DualVariationalGaussianLikelihood> get_dual_variational_likelihood() const;
 
 	/** check the provided likelihood model supports dual variational inference or not
 	 * @param mod the provided likelihood model
 	 *
 	 * @return whether the provided likelihood model supports dual variational inference or not
 	 */
-	virtual void check_dual_inference(std::shared_ptr<CLikelihoodModel> mod) const;
+	virtual void check_dual_inference(std::shared_ptr<LikelihoodModel> mod) const;
 
 	/** update covariance matrix of the approximation to the posterior */
 	virtual void update_approx_cov();

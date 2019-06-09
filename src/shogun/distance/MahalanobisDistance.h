@@ -47,19 +47,19 @@ namespace shogun
 	 * @see <a href="http://en.wikipedia.org/wiki/Mahalanobis_distance">
 	 * Wikipedia: Mahalanobis Distance</a>
 	 */
-	class CMahalanobisDistance : public CRealDistance
+	class MahalanobisDistance : public RealDistance
 	{
 	public:
 		/** default constructor */
-		CMahalanobisDistance();
+		MahalanobisDistance();
 
 		/** constructor
 		 *
 		 * @param l features of left-hand side
 		 * @param r features of right-hand side
 		 */
-		CMahalanobisDistance(std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r);
-		virtual ~CMahalanobisDistance();
+		MahalanobisDistance(std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r);
+		virtual ~MahalanobisDistance();
 
 		/** init distance
 		 *
@@ -67,7 +67,7 @@ namespace shogun
 		 * @param r features of right-hand side
 		 * @return if init was successful
 		 */
-		virtual bool init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r);
+		virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 		/** cleanup distance */
 		virtual void cleanup();

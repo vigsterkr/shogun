@@ -9,14 +9,14 @@
 
 namespace shogun
 {
-	/** @brief Mock class to test clone and equals for CSGObject.
-	 * Serves as a parameter of type CSGObject for @see CCloneEqualsMock.
+	/** @brief Mock class to test clone and equals for SGObject.
+	 * Serves as a parameter of type SGObject for @see CCloneEqualsMock.
 	 */
 	template <class T>
-	class CCloneEqualsMockParameter : public CSGObject
+	class CloneEqualsMockParameter : public SGObject
 	{
 	public:
-		CCloneEqualsMockParameter()
+		CloneEqualsMockParameter()
 		{
 			SG_SDEBUG("Creating new %s, at %p.\n", get_name(), this)
 			m_was_cloned = false;
@@ -30,15 +30,15 @@ namespace shogun
 			return "CloneEqualsMockParameter";
 		}
 
-		virtual std::shared_ptr<CSGObject> create_empty() const override
+		virtual std::shared_ptr<SGObject> create_empty() const override
 		{
-			return std::make_shared<CCloneEqualsMockParameter>();
+			return std::make_shared<CloneEqualsMockParameter>();
 		}
 
-		virtual std::shared_ptr<CSGObject> clone() const override
+		virtual std::shared_ptr<SGObject> clone() const override
 		{
-			auto clone = CSGObject::clone();
-			auto casted = clone->template as<CCloneEqualsMockParameter>();
+			auto clone = SGObject::clone();
+			auto casted = clone->template as<CloneEqualsMockParameter>();
 			casted->m_was_cloned = true;
 			return clone;
 		}
@@ -47,14 +47,14 @@ namespace shogun
 		T m_some_value;
 	};
 
-	/** @brief Mock class to test clone and equals for CSGObject.
+	/** @brief Mock class to test clone and equals for SGObject.
 	 * Has members that cover (hopefully) all possibilities of parameters.
 	 */
 	template <class T>
-	class CCloneEqualsMock : public CSGObject
+	class CloneEqualsMock : public SGObject
 	{
 	public:
-		CCloneEqualsMock()
+		CloneEqualsMock()
 		{
 			init_single();
 			init_sg_vector_matrix();
@@ -63,7 +63,7 @@ namespace shogun
 			init_raw_matrix();
 		}
 
-		~CCloneEqualsMock()
+		~CloneEqualsMock()
 		{
 			free_single();
 			free_raw_vector();
@@ -79,7 +79,7 @@ namespace shogun
 			m_object = std::make_shared<CCloneEqualsMockParameter<T>>();
 			watch_param("object", &m_object);
 			m_parameters->add(
-			    (CSGObject**)&m_object, "object", "The object (tm)");
+			    (SGObject**)&m_object, "object", "The object (tm)");
 
 			m_string = "Shogun rocks!";
 			watch_param("string", &m_string);
@@ -174,7 +174,7 @@ namespace shogun
 			    "raw_vector_object", &m_raw_vector_object,
 			    &m_raw_vector_object_len);
 			m_parameters->add_vector(
-			    (CSGObject***)&m_raw_vector_object, &m_raw_vector_object_len,
+			    (SGObject***)&m_raw_vector_object, &m_raw_vector_object_len,
 			    "raw_vector_object", "The raw vector object");
 		}
 
@@ -218,13 +218,13 @@ namespace shogun
 			return "CloneEqualsMock";
 		}
 
-		virtual std::shared_ptr<CSGObject> create_empty() const override
+		virtual std::shared_ptr<SGObject> create_empty() const override
 		{
 			return std::make_shared<CCloneEqualsMock>();
 		}
 
 		T m_basic;
-		std::shared_ptr<CCloneEqualsMockParameter<T>> m_object;
+		std::shared_ptr<CloneEqualsMockParameter<T>> m_object;
 
 		SGVector<T> m_sg_vector;
 		SGMatrix<T> m_sg_matrix;
@@ -238,7 +238,7 @@ namespace shogun
 		SGString<T>* m_raw_vector_sg_string;
 		index_t m_raw_vector_sg_string_len;
 
-		CCloneEqualsMockParameter<T>** m_raw_vector_object;
+		CloneEqualsMockParameter<T>** m_raw_vector_object;
 		index_t m_raw_vector_object_len;
 
 		T* m_raw_matrix_basic;
@@ -252,15 +252,15 @@ namespace shogun
 	 * Allows testing of registering new member and avoiding
 	 * non-registered member variables using tags framework.
 	 */
-	class CMockObject : public CSGObject
+	class MockObject : public SGObject
 	{
 	public:
-		CMockObject() : CSGObject()
+		MockObject() : SGObject()
 		{
 			init_params();
 		}
 
-		virtual ~CMockObject()
+		virtual ~MockObject()
 		{
 		}
 
@@ -310,15 +310,15 @@ namespace shogun
 			watch_method("some_method", &CMockObject::some_method);
 		}
 
-		virtual std::shared_ptr<CSGObject> create_empty() const
+		virtual std::shared_ptr<SGObject> create_empty() const
 		{
-			return std::make_shared<CMockObject>();
+			return std::make_shared<MockObject>();
 		};
 
 	private:
 		int32_t m_integer = 0;
 		int32_t m_watched = 0;
 
-		std::shared_ptr<CMockObject> m_object = nullptr;
+		std::shared_ptr<MockObject> m_object = nullptr;
 	};
 }

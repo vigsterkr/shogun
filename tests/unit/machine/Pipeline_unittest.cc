@@ -26,25 +26,25 @@ protected:
 		    .WillByDefault(Return(true));
 	}
 
-	std::shared_ptr<NiceMock<MockCTransformer>> transformer1 =
-	    std::make_shared<NiceMock<MockCTransformer>>();
-	std::shared_ptr<NiceMock<MockCTransformer>> transformer2 =
-	    std::make_shared<NiceMock<MockCTransformer>>();
-	std::shared_ptr<NiceMock<MockCMachine>> machine = std::make_shared<NiceMock<MockCMachine>>();
+	std::shared_ptr<NiceMock<MockTransformer>> transformer1 =
+	    std::make_shared<NiceMock<MockTransformer>>();
+	std::shared_ptr<NiceMock<MockTransformer>> transformer2 =
+	    std::make_shared<NiceMock<MockTransformer>>();
+	std::shared_ptr<NiceMock<MockMachine>> machine = std::make_shared<NiceMock<MockMachine>>();
 };
 
 TEST_F(PipelineTest, no_machine)
 {
 	EXPECT_THROW(
-	    std::make_shared<CPipelineBuilder>()->over(transformer1)->build(),
+	    std::make_shared<PipelineBuilder>()->over(transformer1)->build(),
 	    InvalidStateException);
 }
 
 TEST_F(PipelineTest, fit_predict)
 {
-	auto features = std::make_shared<NiceMock<MockCFeatures>>();
-	auto labels = std::make_shared<NiceMock<MockCLabels>>();
-	auto pipeline = std::make_shared<CPipelineBuilder>()
+	auto features = std::make_shared<NiceMock<MockFeatures>>();
+	auto labels = std::make_shared<NiceMock<MockLabels>>();
+	auto pipeline = std::make_shared<PipelineBuilder>()
 	                    ->over(transformer1)
 	                    ->over(transformer2)
 	                    ->then(machine);
@@ -81,7 +81,7 @@ TEST_F(PipelineTest, get)
 
 	std::string transformer_name = "my_transformer";
 
-	auto pipeline = std::make_shared<CPipelineBuilder>()
+	auto pipeline = std::make_shared<PipelineBuilder>()
 	                    ->over(transformer1)
 	                    ->over(transformer_name, transformer2)
 	                    ->then(machine);
@@ -89,7 +89,7 @@ TEST_F(PipelineTest, get)
 	EXPECT_THROW(
 	    pipeline->get_transformer("not_exists"), std::invalid_argument);
 	EXPECT_EQ(
-	    pipeline->get_transformer("MockCTransformer"), transformer1);
+	    pipeline->get_transformer("MockTransformer"), transformer1);
 	EXPECT_EQ(pipeline->get_transformer(transformer_name), transformer2);
 	EXPECT_EQ(pipeline->get_machine(), machine);
 }

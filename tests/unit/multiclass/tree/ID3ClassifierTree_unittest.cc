@@ -131,7 +131,7 @@ TEST(ID3ClassifierTree, classify_simple)
 	data(2,14)=high;
 	data(3,14)=strong;
 
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
 	// yes 1. no 0.
 	SGVector<float64_t> lab(15);
@@ -151,9 +151,9 @@ TEST(ID3ClassifierTree, classify_simple)
 	lab[13]=0.0;
 	lab[14]=0.0;
 
-	auto labels=std::make_shared<CMulticlassLabels>(lab);
+	auto labels=std::make_shared<MulticlassLabels>(lab);
 
-	auto id3=std::make_shared<CID3ClassifierTree>();
+	auto id3=std::make_shared<ID3ClassifierTree>();
 	id3->set_labels(labels);
 	id3->train(feats);
 
@@ -182,8 +182,8 @@ TEST(ID3ClassifierTree, classify_simple)
 	test(3,3)=weak;
 	test(3,4)=strong;
 
-	auto test_feats=std::make_shared<CDenseFeatures<float64_t>>(test);
-	auto result=id3->apply(test_feats)->as<CMulticlassLabels>();
+	auto test_feats=std::make_shared<DenseFeatures<float64_t>>(test);
+	auto result=id3->apply(test_feats)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);
@@ -275,18 +275,18 @@ TEST(ID3ClassifierTree, tree_prune)
 	validation_labels[14]=1;
 	validation_labels[15]=1;
 
-	auto train_features=std::make_shared<CDenseFeatures<float64_t>>(data);
-	auto train_lab=std::make_shared<CMulticlassLabels>(train_labels);
-	auto validation_lab=std::make_shared<CMulticlassLabels>(validation_labels);
+	auto train_features=std::make_shared<DenseFeatures<float64_t>>(data);
+	auto train_lab=std::make_shared<MulticlassLabels>(train_labels);
+	auto validation_lab=std::make_shared<MulticlassLabels>(validation_labels);
 
 
 
-	auto id3tree=std::make_shared<CID3ClassifierTree>();
+	auto id3tree=std::make_shared<ID3ClassifierTree>();
 	id3tree->set_labels(train_lab);
 	id3tree->train(train_features);
 	id3tree->prune_tree(train_features,validation_lab);
 
-	auto result=id3tree->apply(train_features)->as<CMulticlassLabels>();
+	auto result=id3tree->apply(train_features)->as<MulticlassLabels>();
 	SGVector<float64_t> res_vector=result->get_labels();
 
 	EXPECT_EQ(1.0,res_vector[0]);

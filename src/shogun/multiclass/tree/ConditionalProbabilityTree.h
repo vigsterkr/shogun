@@ -27,17 +27,17 @@ namespace shogun
  *   Alina Beygelzimer, John Langford, Yuri Lifshits, Gregory Sorkin, Alex
  *   Strehl. Conditional Probability Tree Estimation Analysis and Algorithms. UAI 2009.
  */
-class CConditionalProbabilityTree: public CTreeMachine<ConditionalProbabilityTreeNodeData>
+class ConditionalProbabilityTree: public TreeMachine<ConditionalProbabilityTreeNodeData>
 {
 public:
     /** constructor */
-	CConditionalProbabilityTree(int32_t num_passes=1)
+	ConditionalProbabilityTree(int32_t num_passes=1)
 		:m_num_passes(num_passes), m_feats(NULL)
 	{
 	}
 
     /** destructor */
-	virtual ~CConditionalProbabilityTree() {  }
+	virtual ~ConditionalProbabilityTree() {  }
 
     /** get name */
     virtual const char* get_name() const { return "ConditionalProbabilityTree"; }
@@ -57,7 +57,7 @@ public:
 	/** set features
 	 * @param feats features
 	 */
-	void set_features(std::shared_ptr<CStreamingDenseFeatures<float32_t> >feats)
+	void set_features(std::shared_ptr<StreamingDenseFeatures<float32_t> >feats)
 	{
 
 
@@ -65,7 +65,7 @@ public:
 	}
 
 	/** apply machine to data in means of multiclass classification problem */
-	virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
+	virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 	/** apply machine one single example.
 	 * @param ex a vector to be applied
@@ -82,26 +82,26 @@ protected:
 	 *
 	 * @return whether training was successful
 	 */
-	virtual bool train_machine(std::shared_ptr<CFeatures> data);
+	virtual bool train_machine(std::shared_ptr<Features> data);
 
 	/** train on a single example (online learning)
 	 * @param ex the example being trained
 	 * @param label the label of this training example
 	 */
-	void train_example(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex, int32_t label);
+	void train_example(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, int32_t label);
 
 	/** train on a path from a node up to the root
 	 * @param ex the instance of the training example
 	 * @param node the leaf node
 	 */
-	void train_path(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex, std::shared_ptr<bnode_t> node);
+	void train_path(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, std::shared_ptr<bnode_t> node);
 
 	/** train a single node
 	 * @param ex the example being trained
 	 * @param label label
 	 * @param node the node
 	 */
-	void train_node(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex, float64_t label, std::shared_ptr<bnode_t> node);
+	void train_node(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, float64_t label, std::shared_ptr<bnode_t> node);
 
 	/** predict a single node
 	 * @param ex the example being predicted
@@ -112,7 +112,7 @@ protected:
 	/** create a new OnlineLinear machine for a node
 	 * @param ex the Example instance for training the new machine
 	 */
-	int32_t create_machine(std::shared_ptr<CStreamingDenseFeatures<float32_t>> ex);
+	int32_t create_machine(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex);
 
 	/** decide which subtree to go, when training the tree structure.
 	 * @param node the node being decided
@@ -131,7 +131,7 @@ protected:
 
 	int32_t m_num_passes; ///< number of passes for online training
 	std::map<int32_t, std::shared_ptr<bnode_t>> m_leaves; ///< class => leaf mapping
-	std::shared_ptr<CStreamingDenseFeatures<float32_t> >m_feats; ///< online features
+	std::shared_ptr<StreamingDenseFeatures<float32_t> >m_feats; ///< online features
 };
 
 } /* shogun */

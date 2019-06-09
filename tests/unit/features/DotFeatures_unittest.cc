@@ -31,7 +31,7 @@ protected:
 		data_a(0, 4) = -0.60848342;
 		data_a(1, 4) = -1.45115708;
 		data_a(2, 4) = 1.15711328;
-		feats_a = std::make_shared<CDenseFeatures<float64_t>>(data_a);
+		feats_a = std::make_shared<DenseFeatures<float64_t>>(data_a);
 
 
 		SGMatrix<float64_t> data_b(dims, num_b);
@@ -47,7 +47,7 @@ protected:
 		data_b(0, 3) = 0.04932024;
 		data_b(1, 3) = -1.0330936;
 		data_b(2, 3) = -0.87217125;
-		feats_b = std::make_shared<CDenseFeatures<float64_t>>(data_b);
+		feats_b = std::make_shared<DenseFeatures<float64_t>>(data_b);
 
 
 		ref_cov_a = SGMatrix<float64_t>(dims, dims);
@@ -84,15 +84,15 @@ protected:
 	const index_t dims = 3;
 	const float64_t eps = 1e-8;
 
-	std::shared_ptr<CDenseFeatures<float64_t>> feats_a;
-	std::shared_ptr<CDenseFeatures<float64_t>> feats_b;
+	std::shared_ptr<DenseFeatures<float64_t>> feats_a;
+	std::shared_ptr<DenseFeatures<float64_t>> feats_b;
 	SGMatrix<float64_t> ref_cov_a;
 	SGMatrix<float64_t> ref_cov_ab;
 };
 
 TEST_F(DotFeaturesTest, get_cov)
 {
-	auto cov = feats_a->CDotFeatures::get_cov();
+	auto cov = feats_a->DotFeatures::get_cov();
 
 	for (index_t i = 0; i < (index_t)cov.size(); ++i)
 		EXPECT_NEAR(cov[i], ref_cov_a[i], eps);
@@ -100,7 +100,7 @@ TEST_F(DotFeaturesTest, get_cov)
 
 TEST_F(DotFeaturesTest, get_cov_nocopy)
 {
-	auto cov = feats_a->CDotFeatures::get_cov(false);
+	auto cov = feats_a->DotFeatures::get_cov(false);
 
 	for (index_t i = 0; i < (index_t)cov.size(); ++i)
 		EXPECT_NEAR(cov[i], ref_cov_a[i], eps);
@@ -108,7 +108,7 @@ TEST_F(DotFeaturesTest, get_cov_nocopy)
 
 TEST_F(DotFeaturesTest, compute_cov)
 {
-	auto cov = CDotFeatures::compute_cov(feats_a, feats_b);
+	auto cov = DotFeatures::compute_cov(feats_a, feats_b);
 
 	for (index_t i = 0; i < (index_t)cov.size(); ++i)
 		EXPECT_NEAR(cov[i], ref_cov_ab[i], eps);
@@ -116,7 +116,7 @@ TEST_F(DotFeaturesTest, compute_cov)
 
 TEST_F(DotFeaturesTest, compute_cov_nocopy)
 {
-	auto cov = CDotFeatures::compute_cov(feats_a, feats_b, false);
+	auto cov = DotFeatures::compute_cov(feats_a, feats_b, false);
 
 	for (index_t i = 0; i < (index_t)cov.size(); ++i)
 		EXPECT_NEAR(cov[i], ref_cov_ab[i], eps);

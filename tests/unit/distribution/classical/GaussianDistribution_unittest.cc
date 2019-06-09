@@ -45,11 +45,11 @@ TEST(GaussianDistribution,log_pdf_single_1d)
 	SGMatrix<float64_t> cov(1,1);
 	mean[0]=1;
 	cov(0,0)=2;
-	auto gauss=std::make_shared<CGaussianDistribution>(mean,cov);
+	auto gauss=std::make_shared<GaussianDistribution>(mean,cov);
 
 	SGVector<float64_t> x(1);
 	x[0]=0;
-	float64_t result=gauss->as<CProbabilityDistribution>()->log_pdf(x);
+	float64_t result=gauss->as<ProbabilityDistribution>()->log_pdf(x);
 
 	EXPECT_NEAR(result, -1.5155121234846454, 1e-15);
 
@@ -62,7 +62,7 @@ TEST(GaussianDistribution,log_pdf_multiple_1d)
 	SGMatrix<float64_t> cov(1,1);
 	mean[0]=1;
 	cov(0,0)=2;
-	auto gauss=std::make_shared<CGaussianDistribution>(mean,cov);
+	auto gauss=std::make_shared<GaussianDistribution>(mean,cov);
 
 	SGMatrix<float64_t> x(1,2);
 	x(0,0)=0;
@@ -85,12 +85,12 @@ TEST(GaussianDistribution,log_pdf_single_2d)
 	cov(0,1)=1.3;
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
-	auto gauss=std::make_shared<CGaussianDistribution>(mean,cov);
+	auto gauss=std::make_shared<GaussianDistribution>(mean,cov);
 
 	SGVector<float64_t> x(2);
 	x[0]=0;
 	x[1]=0;
-	float64_t result=gauss->as<CProbabilityDistribution>()->log_pdf(x);
+	float64_t result=gauss->as<ProbabilityDistribution>()->log_pdf(x);
 
 	EXPECT_NEAR(result, -3.375079401517433, 1e-15);
 
@@ -107,7 +107,7 @@ TEST(GaussianDistribution,log_pdf_multiple_2d)
 	cov(0,1)=1.3;
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
-	auto gauss=std::make_shared<CGaussianDistribution>(mean,cov);
+	auto gauss=std::make_shared<GaussianDistribution>(mean,cov);
 
 	SGMatrix<float64_t> x(2,2);
 	x(0,0)=1;
@@ -132,7 +132,7 @@ TEST(GaussianDistribution,sample_2d_fixed)
 	cov(0,1)=1.3;
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
-	auto gauss=std::make_shared<CGaussianDistribution>(mean,cov);
+	auto gauss=std::make_shared<GaussianDistribution>(mean,cov);
 
 	/* fake std normal samples */
 	SGMatrix<float64_t> pre_samples(2,2);
@@ -161,7 +161,7 @@ TEST(GaussianDistribution,sample_2d)
 	cov(0,1)=1.3;
 	cov(1,0)=1.3;
 	cov(1,1)=2.4;
-	auto gauss=std::make_shared<CGaussianDistribution>(mean,cov);
+	auto gauss=std::make_shared<GaussianDistribution>(mean,cov);
 
 	index_t num_samples=100000;
 	SGMatrix<float64_t> samples=gauss->sample(num_samples);
@@ -187,28 +187,28 @@ TEST(GaussianDistribution,univariate_log_pdf)
 	sigma2 = 1.0;
 	sample = 1.0;
 	EXPECT_NEAR(
-	    CGaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
+	    GaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
 	    std::log(0.398942280401433), 1e-3);
 
 	mu = 10.0;
 	sigma2 = 100;
 	sample = 1.0;
 	EXPECT_NEAR(
-	    CGaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
+	    GaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
 	    std::log(0.026608524989875), 1e-3);
 
 	mu = 5.0;
 	sigma2 = 25;
 	sample = 1.0;
 	EXPECT_NEAR(
-	    CGaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
+	    GaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
 	    std::log(0.057938310552297), 1e-3);
 
 	mu = 2.0;
 	sigma2 = 16.0;
 	sample = 0;
 	EXPECT_NEAR(
-	    CGaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
+	    GaussianDistribution::univariate_log_pdf(sample, mu, sigma2),
 	    std::log(0.088016331691075), 1e-3);
 }
 

@@ -22,15 +22,15 @@ TEST(DirectSparseLinearSolver, solve)
 {
 	const index_t size=100000;
 	SGSparseMatrix<float64_t> sm(size, size);
-	auto A=std::make_shared<CSparseMatrixOperator<float64_t>>(sm);
+	auto A=std::make_shared<SparseMatrixOperator<float64_t>>(sm);
 	SGVector<float64_t> diag(size);
 	float64_t difficulty=5;
 
 	for (index_t i=0; i<size; ++i)
-		diag[i]=CMath::pow(CMath::abs(sg_rand->std_normal_distrib()), difficulty)+0.0001;
+		diag[i]=Math::pow(Math::abs(sg_rand->std_normal_distrib()), difficulty)+0.0001;
 	A->set_diagonal(diag);
 
-	auto linear_solver=std::make_shared<CDirectSparseLinearSolver>();
+	auto linear_solver=std::make_shared<DirectSparseLinearSolver>();
 	SGVector<float64_t> b(size);
 	b.set_const(0.5);
 

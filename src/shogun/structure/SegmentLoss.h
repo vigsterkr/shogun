@@ -16,17 +16,17 @@
 
 namespace shogun
 {
-	template <class T> class CDynamicArray;
+	template <class T> class DynamicArray;
 /** @brief class IntronList */
-class CSegmentLoss : public CSGObject
+class SegmentLoss : public SGObject
 {
         public:
 
 		/** constructor
 		 */
-		CSegmentLoss();
+		SegmentLoss();
 
-		virtual ~CSegmentLoss();
+		virtual ~SegmentLoss();
 
 		/** get segment loss for a given range
 		 *
@@ -56,7 +56,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_ids segment ids
 		 */
-		void set_segment_ids(std::shared_ptr<CDynamicArray<int32_t>> segment_ids);
+		void set_segment_ids(std::shared_ptr<DynamicArray<int32_t>> segment_ids);
 
 		/** mask parts of the sequence such that there is no
 		 *  loss incured there; this is used if there is uncertainty
@@ -64,7 +64,7 @@ class CSegmentLoss : public CSGObject
 		 *
 		 * @param segment_mask mask
 		 */
-		void set_segment_mask(std::shared_ptr<CDynamicArray<float64_t>> segment_mask);
+		void set_segment_mask(std::shared_ptr<DynamicArray<float64_t>> segment_mask);
 
 		/** set num segment types
 		 *
@@ -89,25 +89,25 @@ class CSegmentLoss : public CSGObject
 	protected:
 
 		/** segment loss matrix*/
-		CDynamicArray<float32_t> m_segment_loss_matrix; // 2d
+		DynamicArray<float32_t> m_segment_loss_matrix; // 2d
 
 		/** segment loss
 		 *  two square matrices:
 		 *  one for segment based loss and
 		 *  one for length contribution*/
-		CDynamicArray<float64_t> m_segment_loss; // 3d
+		DynamicArray<float64_t> m_segment_loss; // 3d
 
 		/** segment IDs */
-		std::shared_ptr<CDynamicArray<int32_t>> m_segment_ids;
+		std::shared_ptr<DynamicArray<int32_t>> m_segment_ids;
 
 		/** segment mask */
-		std::shared_ptr<CDynamicArray<float64_t>> m_segment_mask;
+		std::shared_ptr<DynamicArray<float64_t>> m_segment_mask;
 
 		/** number of different segment types (former: max_a_id)*/
 		int32_t m_num_segment_types;
 };
 
-inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
+inline float32_t SegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
 
 	/*	int32_t from_pos_shift = from_pos ;
@@ -145,7 +145,7 @@ inline float32_t CSegmentLoss::get_segment_loss(int32_t from_pos, int32_t to_pos
 	return diff_contrib;
 }
 
-inline float32_t CSegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id)
+inline float32_t SegmentLoss::get_segment_loss_extend(int32_t from_pos, int32_t to_pos, int32_t segment_id)
 {
 	int32_t from_pos_shift = from_pos ;
 

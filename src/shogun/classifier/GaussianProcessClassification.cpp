@@ -45,23 +45,23 @@
 
 using namespace shogun;
 
-CGaussianProcessClassification::CGaussianProcessClassification()
-	: CGaussianProcessMachine()
+GaussianProcessClassification::GaussianProcessClassification()
+	: GaussianProcessMachine()
 {
 }
 
-CGaussianProcessClassification::CGaussianProcessClassification(
-		std::shared_ptr<CInference> method) : CGaussianProcessMachine(method)
+GaussianProcessClassification::GaussianProcessClassification(
+		std::shared_ptr<Inference> method) : GaussianProcessMachine(method)
 {
 	// set labels
 	m_labels=method->get_labels();
 }
 
-CGaussianProcessClassification::~CGaussianProcessClassification()
+GaussianProcessClassification::~GaussianProcessClassification()
 {
 }
 
-std::shared_ptr<CMulticlassLabels> CGaussianProcessClassification::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> GaussianProcessClassification::apply_multiclass(std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
@@ -89,10 +89,10 @@ std::shared_ptr<CMulticlassLabels> CGaussianProcessClassification::apply_multicl
 	SGVector<index_t> lab(n);
 	for (index_t idx=0; idx<n; idx++)
 	{
-		int32_t cate=CMath::arg_max(mean.vector+idx*C, 1, C);
+		int32_t cate=Math::arg_max(mean.vector+idx*C, 1, C);
 		lab[idx]=cate;
 	}
-	auto result=std::make_shared<CMulticlassLabels>();
+	auto result=std::make_shared<MulticlassLabels>();
 	result->set_int_labels(lab);
 
 
@@ -100,8 +100,8 @@ std::shared_ptr<CMulticlassLabels> CGaussianProcessClassification::apply_multicl
 	return result;
 }
 
-std::shared_ptr<CBinaryLabels> CGaussianProcessClassification::apply_binary(
-		std::shared_ptr<CFeatures> data)
+std::shared_ptr<BinaryLabels> GaussianProcessClassification::apply_binary(
+		std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
@@ -118,7 +118,7 @@ std::shared_ptr<CBinaryLabels> CGaussianProcessClassification::apply_binary(
 		if (m_method->get_inference_type()== INF_FITC_LAPLACE_SINGLE)
 		{
 #ifdef USE_GPL_SHOGUN
-			auto fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
+			auto fitc_method = m_method->as<SingleFITCLaplaceInferenceMethod>();
 			data=fitc_method->get_inducing_features();
 #else
 			SG_GPL_ONLY
@@ -128,7 +128,7 @@ std::shared_ptr<CBinaryLabels> CGaussianProcessClassification::apply_binary(
 			data=m_method->get_features();
 	}
 
-	auto result=std::make_shared<CBinaryLabels>(get_mean_vector(data));
+	auto result=std::make_shared<BinaryLabels>(get_mean_vector(data));
 	if (m_compute_variance)
 		result->put("current_values", get_variance_vector(data));
 
@@ -136,7 +136,7 @@ std::shared_ptr<CBinaryLabels> CGaussianProcessClassification::apply_binary(
 	return result;
 }
 
-bool CGaussianProcessClassification::train_machine(std::shared_ptr<CFeatures> data)
+bool GaussianProcessClassification::train_machine(std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
@@ -152,7 +152,7 @@ bool CGaussianProcessClassification::train_machine(std::shared_ptr<CFeatures> da
 		if (m_method->get_inference_type()==INF_FITC_LAPLACE_SINGLE)
 		{
 #ifdef USE_GPL_SHOGUN
-			auto fitc_method = m_method->as<CSingleFITCLaplaceInferenceMethod>();
+			auto fitc_method = m_method->as<SingleFITCLaplaceInferenceMethod>();
 			fitc_method->set_inducing_features(data);
 #else
 			SG_ERROR("Single FITC Laplace inference only supported under GPL.\n")
@@ -168,8 +168,8 @@ bool CGaussianProcessClassification::train_machine(std::shared_ptr<CFeatures> da
 	return true;
 }
 
-SGVector<float64_t> CGaussianProcessClassification::get_mean_vector(
-		std::shared_ptr<CFeatures> data)
+SGVector<float64_t> GaussianProcessClassification::get_mean_vector(
+		std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification
@@ -190,8 +190,8 @@ SGVector<float64_t> CGaussianProcessClassification::get_mean_vector(
 	return mu;
 }
 
-SGVector<float64_t> CGaussianProcessClassification::get_variance_vector(
-		std::shared_ptr<CFeatures> data)
+SGVector<float64_t> GaussianProcessClassification::get_variance_vector(
+		std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and
 	// likelihood function supports classification
@@ -212,8 +212,8 @@ SGVector<float64_t> CGaussianProcessClassification::get_variance_vector(
 	return s2;
 }
 
-SGVector<float64_t> CGaussianProcessClassification::get_probabilities(
-		std::shared_ptr<CFeatures> data)
+SGVector<float64_t> GaussianProcessClassification::get_probabilities(
+		std::shared_ptr<Features> data)
 {
 	// check whether given combination of inference method and likelihood
 	// function supports classification

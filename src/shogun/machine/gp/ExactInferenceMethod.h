@@ -63,11 +63,11 @@ namespace shogun
  * NOTE: The Gaussian Likelihood Function must be used for this inference
  * method.
  */
-class CExactInferenceMethod: public CInference
+class ExactInferenceMethod: public Inference
 {
 public:
 	/** default constructor */
-	CExactInferenceMethod();
+	ExactInferenceMethod();
 
 	/** constructor
 	 *
@@ -77,10 +77,10 @@ public:
 	 * @param labels labels of the features
 	 * @param model likelihood model to use
 	 */
-	CExactInferenceMethod(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model);
+	ExactInferenceMethod(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model);
 
-	virtual ~CExactInferenceMethod();
+	virtual ~ExactInferenceMethod();
 
 	/** return what type of inference we are
 	 *
@@ -97,9 +97,9 @@ public:
 	/** helper method used to specialize a base class instance
 	 *
 	 * @param inference inference method
-	 * @return casted CExactInferenceMethod object
+	 * @return casted ExactInferenceMethod object
 	 */
-	static std::shared_ptr<CExactInferenceMethod> obtain_from_generic(std::shared_ptr<CInference> inference);
+	static std::shared_ptr<ExactInferenceMethod> obtain_from_generic(std::shared_ptr<Inference> inference);
 
 	/** get negative log marginal likelihood
 	 *

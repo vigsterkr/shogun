@@ -20,14 +20,14 @@ TEST(MultipleProcessors, transform)
 	SGMatrix<float64_t> orig(data, num_features, num_vectors, false);
 	SGMatrix<float64_t> m = orig.clone();
 
-	auto feats = std::make_shared<CDenseFeatures<float64_t>>(m);
-	auto sum1 = std::make_shared<CSumOne>();
-	auto logp1 = std::make_shared<CLogPlusOne>();
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(m);
+	auto sum1 = std::make_shared<SumOne>();
+	auto logp1 = std::make_shared<LogPlusOne>();
 	sum1->fit(feats);
-	feats = sum1->transform(feats)->as<CDenseFeatures<float64_t>>();
+	feats = sum1->transform(feats)->as<DenseFeatures<float64_t>>();
 
 	logp1->fit(feats);
-	feats = logp1->transform(feats)->as<CDenseFeatures<float64_t>>();
+	feats = logp1->transform(feats)->as<DenseFeatures<float64_t>>();
 
 	for (index_t i = 0; i < num_vectors; i++)
 	{

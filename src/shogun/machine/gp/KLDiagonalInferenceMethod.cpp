@@ -51,38 +51,38 @@ using namespace Eigen;
 namespace shogun
 {
 
-CKLDiagonalInferenceMethod::CKLDiagonalInferenceMethod() : CKLLowerTriangularInference()
+KLDiagonalInferenceMethod::KLDiagonalInferenceMethod() : KLLowerTriangularInference()
 {
 	init();
 }
 
-CKLDiagonalInferenceMethod::CKLDiagonalInferenceMethod(std::shared_ptr<CKernel> kern,
-		std::shared_ptr<CFeatures> feat, std::shared_ptr<CMeanFunction> m, std::shared_ptr<CLabels> lab, std::shared_ptr<CLikelihoodModel> mod)
-		: CKLLowerTriangularInference(kern, feat, m, lab, mod)
+KLDiagonalInferenceMethod::KLDiagonalInferenceMethod(std::shared_ptr<Kernel> kern,
+		std::shared_ptr<Features> feat, std::shared_ptr<MeanFunction> m, std::shared_ptr<Labels> lab, std::shared_ptr<LikelihoodModel> mod)
+		: KLLowerTriangularInference(kern, feat, m, lab, mod)
 {
 	init();
 }
 
-void CKLDiagonalInferenceMethod::init()
+void KLDiagonalInferenceMethod::init()
 {
 	SG_ADD(&m_InvK, "invK",
 		"The K^{-1} matrix");
 }
 
-std::shared_ptr<CKLDiagonalInferenceMethod> CKLDiagonalInferenceMethod::obtain_from_generic(
-		std::shared_ptr<CInference> inference)
+std::shared_ptr<KLDiagonalInferenceMethod> KLDiagonalInferenceMethod::obtain_from_generic(
+		std::shared_ptr<Inference> inference)
 {
 	if (inference==NULL)
 		return NULL;
 
 	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
-		SG_SERROR("Provided inference is not of type CKLDiagonalInferenceMethod!\n")
+		SG_SERROR("Provided inference is not of type KLDiagonalInferenceMethod!\n")
 
 
-	return inference->as<CKLDiagonalInferenceMethod>();
+	return inference->as<KLDiagonalInferenceMethod>();
 }
 
-SGVector<float64_t> CKLDiagonalInferenceMethod::get_alpha()
+SGVector<float64_t> KLDiagonalInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
 	 * but also a vector corresponding to the lower triangular of C
@@ -104,11 +104,11 @@ SGVector<float64_t> CKLDiagonalInferenceMethod::get_alpha()
 	return result;
 }
 
-CKLDiagonalInferenceMethod::~CKLDiagonalInferenceMethod()
+KLDiagonalInferenceMethod::~KLDiagonalInferenceMethod()
 {
 }
 
-bool CKLDiagonalInferenceMethod::precompute()
+bool KLDiagonalInferenceMethod::precompute()
 {
 	index_t len=m_mean_vec.vlen;
 	Map<VectorXd> eigen_mean(m_mean_vec.vector, m_mean_vec.vlen);
@@ -129,7 +129,7 @@ bool CKLDiagonalInferenceMethod::precompute()
 	return status;
 }
 
-void CKLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
+void KLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<float64_t> gradient)
 {
 	REQUIRE(gradient.vlen==m_alpha.vlen,
 		"The length of gradients (%d) should the same as the length of parameters (%d)\n",
@@ -165,7 +165,7 @@ void CKLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<fl
 
 }
 
-float64_t CKLDiagonalInferenceMethod::get_negative_log_marginal_likelihood_helper()
+float64_t KLDiagonalInferenceMethod::get_negative_log_marginal_likelihood_helper()
 {
 	Map<VectorXd> eigen_alpha(m_alpha.vector, m_mu.vlen);
 	Map<VectorXd> eigen_mu(m_mu.vector, m_mu.vlen);
@@ -187,7 +187,7 @@ float64_t CKLDiagonalInferenceMethod::get_negative_log_marginal_likelihood_helpe
 	return result;
 }
 
-void CKLDiagonalInferenceMethod::update_alpha()
+void KLDiagonalInferenceMethod::update_alpha()
 {
 	Map<MatrixXd> eigen_K(m_ktrtr.matrix, m_ktrtr.num_rows, m_ktrtr.num_cols);
 	m_InvK=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
@@ -230,7 +230,7 @@ void CKLDiagonalInferenceMethod::update_alpha()
 	nlml_new=optimization();
 }
 
-void CKLDiagonalInferenceMethod::update_Sigma()
+void KLDiagonalInferenceMethod::update_Sigma()
 {
 	m_Sigma=SGMatrix<float64_t>(m_mu.vlen, m_mu.vlen);
 	Map<MatrixXd> eigen_Sigma(m_Sigma.matrix, m_Sigma.num_rows, m_Sigma.num_cols);
@@ -238,7 +238,7 @@ void CKLDiagonalInferenceMethod::update_Sigma()
 	eigen_Sigma=eigen_s2.asDiagonal();
 }
 
-void CKLDiagonalInferenceMethod::update_InvK_Sigma()
+void KLDiagonalInferenceMethod::update_InvK_Sigma()
 {
 	m_InvK_Sigma=SGMatrix<float64_t>(m_ktrtr.num_rows, m_ktrtr.num_cols);
 	Map<MatrixXd> eigen_InvK_Sigma(m_InvK_Sigma.matrix, m_InvK_Sigma.num_rows, m_InvK_Sigma.num_cols);

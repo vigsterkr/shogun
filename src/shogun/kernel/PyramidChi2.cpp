@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-CPyramidChi2::CPyramidChi2()
+PyramidChi2::PyramidChi2()
 : weights(NULL)
 {
 	// this will produce an erro in kernel computation!
@@ -23,17 +23,17 @@ CPyramidChi2::CPyramidChi2()
 	num_randfeats_forwidthcomputation=-1;
 }
 
-CPyramidChi2::CPyramidChi2(
+PyramidChi2::PyramidChi2(
 	int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
-: CDotKernel(size), num_cells(num_cells2),weights(NULL),
+: DotKernel(size), num_cells(num_cells2),weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	 num_randfeats_forwidthcomputation(-1)
 {
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive")
+		SG_ERROR("PyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive")
 	weights=SG_MALLOC(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
@@ -47,14 +47,14 @@ width_computation_type(width_computation_type2), width(width2),
 
 	if (width_computation_type>0 )
 	{
-		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		num_randfeats_forwidthcomputation=(int32_t)Math::round(width);
 		width=-1;
 	}
 
 
 }
 
-void CPyramidChi2::cleanup()
+void PyramidChi2::cleanup()
 {
 	// this will produce an erro in kernel computation!
 	num_cells=0;
@@ -66,27 +66,27 @@ void CPyramidChi2::cleanup()
 	SG_FREE(weights);
 	weights=NULL;
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-bool CPyramidChi2::init(std::shared_ptr<CFeatures> l, std::shared_ptr<CFeatures> r)
+bool PyramidChi2::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CDotKernel::init(l, r);
+	DotKernel::init(l, r);
 	return init_normalizer();
 }
 
-CPyramidChi2::CPyramidChi2(
-	std::shared_ptr<CDenseFeatures<float64_t>> l, std::shared_ptr<CDenseFeatures<float64_t>> r,
+PyramidChi2::PyramidChi2(
+	std::shared_ptr<DenseFeatures<float64_t>> l, std::shared_ptr<DenseFeatures<float64_t>> r,
 		int32_t size, int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
-: CDotKernel(size), num_cells(num_cells2), weights(NULL),
+: DotKernel(size), num_cells(num_cells2), weights(NULL),
 width_computation_type(width_computation_type2), width(width2),
 	  num_randfeats_forwidthcomputation(-1)
 {
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive")
+		SG_ERROR("PyramidChi2 Constructor fatal error: parameter num_cells2 NOT positive")
 	weights=SG_MALLOC(float64_t, num_cells);
 	if(weights_foreach_cell2)
 	{
@@ -100,37 +100,37 @@ width_computation_type(width_computation_type2), width(width2),
 
 	if (width_computation_type>0 )
 	{
-		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		num_randfeats_forwidthcomputation=(int32_t)Math::round(width);
 		width=-1;
 	}
 
 	init(l, r);
 }
 
-CPyramidChi2::~CPyramidChi2()
+PyramidChi2::~PyramidChi2()
 {
 	cleanup();
 }
 
 
 
-float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
+float64_t PyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 {
 
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2::compute(...) fatal error: parameter num_cells NOT positive")
+		SG_ERROR("PyramidChi2::compute(...) fatal error: parameter num_cells NOT positive")
 
 	int32_t alen, blen;
 	bool afree, bfree;
 
-	auto df_lhs = std::static_pointer_cast<CDenseFeatures<float64_t>>(lhs);
-	auto df_rhs = std::static_pointer_cast<CDenseFeatures<float64_t>>(rhs);
+	auto df_lhs = std::static_pointer_cast<DenseFeatures<float64_t>>(lhs);
+	auto df_rhs = std::static_pointer_cast<DenseFeatures<float64_t>>(rhs);
 	float64_t* avec=df_lhs->get_feature_vector(idx_a,
 					alen, afree);
 	float64_t* bvec=df_rhs->get_feature_vector(idx_b,
 					blen, bfree);
 	if(alen!=blen)
-		SG_ERROR("CPyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim")
+		SG_ERROR("PyramidChi2::compute(...) fatal error: lhs feature dim != rhs feature dim")
 
 	int32_t dims=alen/num_cells;
 
@@ -145,7 +145,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 
 			if (num_randfeats_forwidthcomputation >1)
 			{
-				numind=CMath::min(df_lhs->get_num_vectors() , num_randfeats_forwidthcomputation);
+				numind=Math::min(df_lhs->get_num_vectors() , num_randfeats_forwidthcomputation);
 			}
 			else
 			{
@@ -156,7 +156,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 			if (num_randfeats_forwidthcomputation >0)
 			{
 				for(int32_t i=0; i< numind;++i)
-					featindices[i]=CMath::random(0, df_lhs->get_num_vectors()-1);
+					featindices[i]=Math::random(0, df_lhs->get_num_vectors()-1);
 			}
 			else
 			{
@@ -201,7 +201,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 		}
 		else
 		{
-			SG_ERROR("CPyramidChi2::compute(...) fatal error: width<=0")
+			SG_ERROR("PyramidChi2::compute(...) fatal error: width<=0")
 		}
 	}
 
@@ -235,7 +235,7 @@ float64_t CPyramidChi2::compute(int32_t idx_a, int32_t idx_b)
 	return (result);
 }
 
-void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
+void PyramidChi2::setparams_pychi2(int32_t num_cells2,
 		float64_t* weights_foreach_cell2,
 		int32_t width_computation_type2,
 		float64_t width2)
@@ -246,7 +246,7 @@ void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
 	num_randfeats_forwidthcomputation=-1;
 
 	if(num_cells<=0)
-		SG_ERROR("CPyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive")
+		SG_ERROR("PyramidChi2::setparams_pychi2(...) fatal error: parameter num_cells2 NOT positive")
 	if(weights)
 		SG_FREE(weights);
 	weights=SG_MALLOC(float64_t, num_cells);
@@ -262,7 +262,7 @@ void CPyramidChi2::setparams_pychi2(int32_t num_cells2,
 
 	if (width_computation_type>0 )
 	{
-		num_randfeats_forwidthcomputation=(int32_t)CMath::round(width);
+		num_randfeats_forwidthcomputation=(int32_t)Math::round(width);
 		width=-1;
 	}
 }

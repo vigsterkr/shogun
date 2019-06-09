@@ -20,14 +20,14 @@
 
 using namespace shogun;
 
-CKNN::CKNN()
-: CDistanceMachine()
+KNN::KNN()
+: DistanceMachine()
 {
 	init();
 }
 
-CKNN::CKNN(int32_t k, std::shared_ptr<CDistance> d, std::shared_ptr<CLabels> trainlab, KNN_SOLVER knn_solver)
-: CDistanceMachine()
+KNN::KNN(int32_t k, std::shared_ptr<Distance> d, std::shared_ptr<Labels> trainlab, KNN_SOLVER knn_solver)
+: DistanceMachine()
 {
 	init();
 
@@ -42,9 +42,9 @@ CKNN::CKNN(int32_t k, std::shared_ptr<CDistance> d, std::shared_ptr<CLabels> tra
 	m_knn_solver=knn_solver;
 }
 
-void CKNN::init()
+void KNN::init()
 {
-	/* do not store model features by default (CDistanceMachine::apply(...) is
+	/* do not store model features by default (DistanceMachine::apply(...) is
 	 * overwritten */
 	set_store_model_features(false);
 
@@ -69,11 +69,11 @@ void CKNN::init()
 	    SG_OPTIONS(KNN_BRUTE, KNN_KDTREE, KNN_COVER_TREE, KNN_LSH));
 }
 
-CKNN::~CKNN()
+KNN::~KNN()
 {
 }
 
-bool CKNN::train_machine(std::shared_ptr<CFeatures> data)
+bool KNN::train_machine(std::shared_ptr<Features> data)
 {
 	REQUIRE(m_labels, "No training labels provided.\n");
 	REQUIRE(distance, "No training distance provided.\n");
@@ -93,8 +93,8 @@ bool CKNN::train_machine(std::shared_ptr<CFeatures> data)
 	REQUIRE(m_train_labels.vlen > 0, "Provided training labels are empty\n");
 
 	// find minimal and maximal class
-	auto min_class = CMath::min(m_train_labels.vector, m_train_labels.vlen);
-	auto max_class = CMath::max(m_train_labels.vector, m_train_labels.vlen);
+	auto min_class = Math::min(m_train_labels.vector, m_train_labels.vlen);
+	auto max_class = Math::max(m_train_labels.vector, m_train_labels.vlen);
 
 	linalg::add_scalar(m_train_labels, -min_class);
 
@@ -107,7 +107,7 @@ bool CKNN::train_machine(std::shared_ptr<CFeatures> data)
 	return true;
 }
 
-SGMatrix<index_t> CKNN::nearest_neighbors()
+SGMatrix<index_t> KNN::nearest_neighbors()
 {
 	//number of examples to which kNN is applied
 	int32_t n=distance->get_num_vec_rhs();
@@ -138,7 +138,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 			train_idxs[j]=j;
 
 		//sort the distance vector between test example i and all train examples
-		CMath::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
+		Math::qsort_index(dists.vector, train_idxs.vector, m_train_labels.vlen);
 
 #ifdef DEBUG_KNN
 		SG_PRINT("\nQuick sort query %d\n", i)
@@ -157,7 +157,7 @@ SGMatrix<index_t> CKNN::nearest_neighbors()
 	return NN;
 }
 
-std::shared_ptr<CMulticlassLabels> CKNN::apply_multiclass(std::shared_ptr<CFeatures> data)
+std::shared_ptr<MulticlassLabels> KNN::apply_multiclass(std::shared_ptr<Features> data)
 {
 	if (data)
 		init_distance(data);
@@ -186,7 +186,7 @@ std::shared_ptr<CMulticlassLabels> CKNN::apply_multiclass(std::shared_ptr<CFeatu
 	return solver->classify_objects(distance, num_lab, train_lab, classes);
 }
 
-std::shared_ptr<CMulticlassLabels> CKNN::classify_NN()
+std::shared_ptr<MulticlassLabels> KNN::classify_NN()
 {
 	REQUIRE(distance, "Distance not set.\n");
 	REQUIRE(m_num_classes > 0, "Machine not trained.\n");
@@ -194,7 +194,7 @@ std::shared_ptr<CMulticlassLabels> CKNN::classify_NN()
 	int32_t num_lab = distance->get_num_vec_rhs();
 	REQUIRE(num_lab, "No vectors on right hand side\n");
 
-	auto output = std::make_shared<CMulticlassLabels>(num_lab);
+	auto output = std::make_shared<MulticlassLabels>(num_lab);
 	SGVector<float64_t> distances(m_train_labels.vlen);
 
 	SG_INFO("%d test examples\n", num_lab)
@@ -232,7 +232,7 @@ std::shared_ptr<CMulticlassLabels> CKNN::classify_NN()
 	return output;
 }
 
-SGMatrix<int32_t> CKNN::classify_for_multiple_k()
+SGMatrix<int32_t> KNN::classify_for_multiple_k()
 {
 	REQUIRE(distance, "Distance not set.\n");
 	REQUIRE(m_num_classes > 0, "Machine not trained.\n");
@@ -261,7 +261,7 @@ SGMatrix<int32_t> CKNN::classify_for_multiple_k()
 	return SGMatrix<int32_t>(output,num_lab,m_k);
 }
 
-void CKNN::init_distance(std::shared_ptr<CFeatures> data)
+void KNN::init_distance(std::shared_ptr<Features> data)
 {
 	REQUIRE(distance, "Distance not set.\n");
 	auto lhs=distance->get_lhs();
@@ -272,21 +272,21 @@ void CKNN::init_distance(std::shared_ptr<CFeatures> data)
 	distance->init(lhs, data);
 }
 
-bool CKNN::load(FILE* srcfile)
+bool KNN::load(FILE* srcfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-bool CKNN::save(FILE* dstfile)
+bool KNN::save(FILE* dstfile)
 {
 	SG_SET_LOCALE_C;
 	SG_RESET_LOCALE;
 	return false;
 }
 
-void CKNN::store_model_features()
+void KNN::store_model_features()
 {
 	auto d_lhs=distance->get_lhs();
 	auto d_rhs=distance->get_rhs();
@@ -295,20 +295,20 @@ void CKNN::store_model_features()
 	distance->init(d_lhs->duplicate(), d_rhs);
 }
 
-void CKNN::init_solver(KNN_SOLVER knn_solver)
+void KNN::init_solver(KNN_SOLVER knn_solver)
 {
 	switch (knn_solver)
 	{
 	case KNN_BRUTE:
 	{
 		SGMatrix<index_t> NN = nearest_neighbors();
-		solver = std::make_shared<CBruteKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, NN);
+		solver = std::make_shared<BruteKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, NN);
 
 		break;
 	}
 	case KNN_KDTREE:
 	{
-		solver = std::make_shared<CKDTREEKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_leaf_size);
+		solver = std::make_shared<KDTREEKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_leaf_size);
 
 		break;
 	}
@@ -324,7 +324,7 @@ void CKNN::init_solver(KNN_SOLVER knn_solver)
 	}
 	case KNN_LSH:
 	{
-		solver = std::make_shared<CLSHKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
+		solver = std::make_shared<LSHKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels, m_lsh_l, m_lsh_t);
 
 		break;
 	}

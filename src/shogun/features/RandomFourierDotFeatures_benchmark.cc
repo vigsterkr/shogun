@@ -22,10 +22,10 @@ static std::shared_ptr<CRandomFourierDotFeatures> createRandomData(const benchma
 	{
 		for (index_t j=0; j<num_dim; j++)
 		{
-			mat(j,i) = CMath::random(0,1) + 0.5;
+			mat(j,i) = Math::random(0,1) + 0.5;
 		}
 	}
-	auto dense_feats = new CDenseFeatures<float64_t>(mat);
+	auto dense_feats = new DenseFeatures<float64_t>(mat);
 	SGVector<float64_t> params(1);
 	params[0] = num_dim - 20;
 	return std::make_shared<CRandomFourierDotFeatures>(dense_feats, state.range(1), KernelName::GAUSSIAN, params);

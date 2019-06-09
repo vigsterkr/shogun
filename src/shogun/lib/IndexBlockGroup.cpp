@@ -10,34 +10,34 @@
 
 using namespace shogun;
 
-CIndexBlockGroup::CIndexBlockGroup() : CIndexBlockRelation()
+IndexBlockGroup::IndexBlockGroup() : IndexBlockRelation()
 {
-	m_blocks = std::make_shared<CList>(true);
+	m_blocks = std::make_shared<List>(true);
 }
 
-CIndexBlockGroup::~CIndexBlockGroup()
+IndexBlockGroup::~IndexBlockGroup()
 {
 
 }
 
-void CIndexBlockGroup::add_block(std::shared_ptr<CIndexBlock> block)
+void IndexBlockGroup::add_block(std::shared_ptr<IndexBlock> block)
 {
 	m_blocks->push(block);
 }
 
-void CIndexBlockGroup::remove_block(std::shared_ptr<CIndexBlock> block)
+void IndexBlockGroup::remove_block(std::shared_ptr<IndexBlock> block)
 {
 	SG_NOTIMPLEMENTED
 }
 
-SGVector<index_t> CIndexBlockGroup::get_SLEP_ind()
+SGVector<index_t> IndexBlockGroup::get_SLEP_ind()
 {
 	check_blocks_list(m_blocks);
 	int32_t n_sub_blocks = m_blocks->get_num_elements();
 	SG_DEBUG("Number of sub-blocks = %d\n", n_sub_blocks)
 	SGVector<index_t> ind(n_sub_blocks+1);
 
-	auto iterator = std::dynamic_pointer_cast<CIndexBlock>(m_blocks->get_first_element());
+	auto iterator = std::dynamic_pointer_cast<IndexBlock>(m_blocks->get_first_element());
 	ind[0] = 0;
 	int32_t i = 0;
 	do
@@ -45,7 +45,7 @@ SGVector<index_t> CIndexBlockGroup::get_SLEP_ind()
 		ind[i+1] = iterator->get_max_index();
 		i++;
 	}
-	while ((iterator = std::dynamic_pointer_cast<CIndexBlock>(m_blocks->get_next_element())) != NULL);
+	while ((iterator = std::dynamic_pointer_cast<IndexBlock>(m_blocks->get_next_element())) != NULL);
 	//ind.display_vector("ind");
 
 	return ind;

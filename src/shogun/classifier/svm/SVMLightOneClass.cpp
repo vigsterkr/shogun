@@ -32,19 +32,19 @@ extern "C" {
 
 using namespace shogun;
 
-CSVMLightOneClass::CSVMLightOneClass(float64_t C, std::shared_ptr<CKernel> k)
-: CSVMLight()
+SVMLightOneClass::SVMLightOneClass(float64_t C, std::shared_ptr<Kernel> k)
+: SVMLight()
 {
 	set_C(C,C);
 	set_kernel(k);
 }
 
-CSVMLightOneClass::CSVMLightOneClass()
-: CSVMLight()
+SVMLightOneClass::SVMLightOneClass()
+: SVMLight()
 {
 }
 
-bool CSVMLightOneClass::train_machine(std::shared_ptr<CFeatures> data)
+bool SVMLightOneClass::train_machine(std::shared_ptr<Features> data)
 {
 	//certain setup params
 	mkl_converged=false;
@@ -87,9 +87,9 @@ bool CSVMLightOneClass::train_machine(std::shared_ptr<CFeatures> data)
 	SG_INFO("num_vec=%d\n", num_vec)
 
 
-	m_labels=std::make_shared<CBinaryLabels>(num_vec);
+	m_labels=std::make_shared<BinaryLabels>(num_vec);
 
-	std::static_pointer_cast<CBinaryLabels>(m_labels)->set_to_one();
+	std::static_pointer_cast<BinaryLabels>(m_labels)->set_to_one();
 
 	// in case of LINADD enabled kernels cleanup!
 	if (kernel->has_property(KP_LINADD) && get_linadd_enabled())
@@ -115,9 +115,9 @@ bool CSVMLightOneClass::train_machine(std::shared_ptr<CFeatures> data)
 
 	if (kernel->get_kernel_type() == K_COMBINED)
 	{
-		for (index_t k_idx=0; k_idx<(std::static_pointer_cast<CCombinedKernel>(kernel))->get_num_kernels(); k_idx++)
+		for (index_t k_idx=0; k_idx<(std::static_pointer_cast<CombinedKernel>(kernel))->get_num_kernels(); k_idx++)
 		{
-			auto kn =  (std::static_pointer_cast<CCombinedKernel>(kernel))->get_kernel(k_idx);
+			auto kn =  (std::static_pointer_cast<CombinedKernel>(kernel))->get_kernel(k_idx);
 			// allocate kernel cache but clean up beforehand
 			kn->resize_kernel_cache(kn->get_cache_size());
 

@@ -32,29 +32,29 @@ TEST(SparseFeaturesTest,serialization)
 	//data.display_matrix();
 
 	/* create sparse features */
-	auto sparse_features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto sparse_features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	auto fs = io::FileSystemRegistry::instance();
 	std::string filename("sparseFeatures.json");
 	ASSERT_TRUE(fs->file_exists(filename));
 	std::unique_ptr<io::WritableFile> file;
 	ASSERT_FALSE(fs->new_writable_file(filename, &file));
-	auto fos = std::make_shared<io::CFileOutputStream>(file.get());
-	auto serializer = std::make_unique<io::CJsonSerializer>();
+	auto fos = std::make_shared<io::FileOutputStream>(file.get());
+	auto serializer = std::make_unique<io::JsonSerializer>();
 	serializer->attach(fos);
 	serializer->write(sparse_features);
 
 	std::unique_ptr<io::RandomAccessFile> raf;
 	ASSERT_FALSE(fs->new_random_access_file(filename, &raf));
-	auto fis = std::make_shared<io::CFileInputStream>(raf.get());
-	auto deserializer = std::make_unique<io::CJsonDeserializer>();
+	auto fis = std::make_shared<io::FileInputStream>(raf.get());
+	auto deserializer = std::make_unique<io::JsonDeserializer>();
 	deserializer->attach(fis);
 	auto sparse_features_loaded = deserializer->read_object();
 
 	ASSERT_FALSE(fs->delete_file(filename));
 
 	SGMatrix<int32_t> data_loaded =
-		sparse_features_loaded->as<CSparseFeatures<int32_t>>()
+		sparse_features_loaded->as<SparseFeatures<int32_t>>()
 			->get_full_feature_matrix();
 	//data_loaded.display_matrix();
 
@@ -72,7 +72,7 @@ TEST(SparseFeaturesTest,constructor_from_dense)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	EXPECT_EQ(features->get_num_features(), data.num_rows);
 	EXPECT_EQ(features->get_num_vectors(), data.num_cols);
@@ -99,7 +99,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_identity)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -130,7 +130,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_permutation)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=2;
@@ -161,7 +161,7 @@ TEST(SparseFeaturesTest,subset_get_feature_vector_smaller)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=2;
@@ -189,7 +189,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_identity)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -218,7 +218,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_permutation)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=2;
@@ -253,7 +253,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_repetition1)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -288,7 +288,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_matrix_smaller)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=2;
@@ -322,7 +322,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_identity)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -356,7 +356,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_permutation)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(3);
 	subset_idx[0]=0;
@@ -390,7 +390,7 @@ TEST(SparseFeaturesTest,subset_get_full_feature_vector_smaller)
 	data(1, 1)=4;
 	data(1, 2)=5;
 
-	auto features=std::make_shared<CSparseFeatures<int32_t>>(data);
+	auto features=std::make_shared<SparseFeatures<int32_t>>(data);
 
 	SGVector<index_t> subset_idx(2);
 	subset_idx[0]=0;

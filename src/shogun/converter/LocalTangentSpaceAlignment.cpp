@@ -12,25 +12,25 @@
 
 using namespace shogun;
 
-CLocalTangentSpaceAlignment::CLocalTangentSpaceAlignment() :
-		CLocallyLinearEmbedding()
+LocalTangentSpaceAlignment::LocalTangentSpaceAlignment() :
+		LocallyLinearEmbedding()
 {
 }
 
-CLocalTangentSpaceAlignment::~CLocalTangentSpaceAlignment()
+LocalTangentSpaceAlignment::~LocalTangentSpaceAlignment()
 {
 }
 
-const char* CLocalTangentSpaceAlignment::get_name() const
+const char* LocalTangentSpaceAlignment::get_name() const
 {
 	return "LocalTangentSpaceAlignment";
 };
 
-std::shared_ptr<CFeatures>
-CLocalTangentSpaceAlignment::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+LocalTangentSpaceAlignment::transform(std::shared_ptr<Features> features, bool inplace)
 {
-	auto dot_feats = std::static_pointer_cast<CDotFeatures>(features);
-	auto kernel = std::make_shared<CLinearKernel>(dot_feats, dot_feats);
+	auto dot_feats = std::static_pointer_cast<DotFeatures>(features);
+	auto kernel = std::make_shared<LinearKernel>(dot_feats, dot_feats);
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;
 	parameters.eigenshift = m_nullspace_shift;

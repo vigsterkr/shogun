@@ -67,7 +67,7 @@ TEST(MemoryTest, sg_memcpy)
 	const index_t size = 10;
 	auto src = SG_CALLOC(float64_t, size);
 	for (index_t i=0; i<size; ++i)
-		src[i]=CMath::randn_double();
+		src[i]=Math::randn_double();
 
 	auto dest = SG_CALLOC(float64_t, size);
 

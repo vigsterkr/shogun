@@ -14,12 +14,12 @@
 
 using namespace shogun;
 
-CLinearMachine::CLinearMachine(): CMachine()
+LinearMachine::LinearMachine(): Machine()
 {
 	init();
 }
 
-CLinearMachine::CLinearMachine(std::shared_ptr<CLinearMachine> machine) : CMachine()
+LinearMachine::LinearMachine(std::shared_ptr<LinearMachine> machine) : Machine()
 {
 	init();
 	REQUIRE(machine, "No machine provided.\n");
@@ -30,7 +30,7 @@ CLinearMachine::CLinearMachine(std::shared_ptr<CLinearMachine> machine) : CMachi
 	set_bias(machine->get_bias());
 }
 
-void CLinearMachine::init()
+void LinearMachine::init()
 {
 	bias = 0;
 	features = NULL;
@@ -38,40 +38,40 @@ void CLinearMachine::init()
 	SG_ADD(&m_w, "w", "Parameter vector w.", ParameterProperties::MODEL);
 	SG_ADD(&bias, "bias", "Bias b.", ParameterProperties::MODEL);
 	SG_ADD(
-	    (std::shared_ptr<CFeatures>*)&features, "features", "Feature object.");
+	    (std::shared_ptr<Features>*)&features, "features", "Feature object.");
 }
 
 
-CLinearMachine::~CLinearMachine()
+LinearMachine::~LinearMachine()
 {
 
 }
 
-float64_t CLinearMachine::apply_one(int32_t vec_idx)
+float64_t LinearMachine::apply_one(int32_t vec_idx)
 {
 	return features->dense_dot(vec_idx, m_w.vector, m_w.vlen) + bias;
 }
 
-std::shared_ptr<CRegressionLabels> CLinearMachine::apply_regression(std::shared_ptr<CFeatures> data)
+std::shared_ptr<RegressionLabels> LinearMachine::apply_regression(std::shared_ptr<Features> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return std::make_shared<CRegressionLabels>(outputs);
+	return std::make_shared<RegressionLabels>(outputs);
 }
 
-std::shared_ptr<CBinaryLabels> CLinearMachine::apply_binary(std::shared_ptr<CFeatures> data)
+std::shared_ptr<BinaryLabels> LinearMachine::apply_binary(std::shared_ptr<Features> data)
 {
 	SGVector<float64_t> outputs = apply_get_outputs(data);
-	return std::make_shared<CBinaryLabels>(outputs);
+	return std::make_shared<BinaryLabels>(outputs);
 }
 
-SGVector<float64_t> CLinearMachine::apply_get_outputs(std::shared_ptr<CFeatures> data)
+SGVector<float64_t> LinearMachine::apply_get_outputs(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			SG_ERROR("Specified features are not of type DotFeatures\n")
 
-		set_features(std::static_pointer_cast<CDotFeatures>(data));
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 
 	if (!features)
@@ -86,39 +86,39 @@ SGVector<float64_t> CLinearMachine::apply_get_outputs(std::shared_ptr<CFeatures>
 	return SGVector<float64_t>(out,num);
 }
 
-SGVector<float64_t> CLinearMachine::get_w() const
+SGVector<float64_t> LinearMachine::get_w() const
 {
 	return m_w;
 }
 
-void CLinearMachine::set_w(const SGVector<float64_t> w)
+void LinearMachine::set_w(const SGVector<float64_t> w)
 {
 	m_w = w;
 }
 
-void CLinearMachine::set_bias(float64_t b)
+void LinearMachine::set_bias(float64_t b)
 {
 	bias=b;
 }
 
-float64_t CLinearMachine::get_bias() const
+float64_t LinearMachine::get_bias() const
 {
 	return bias;
 }
 
-void CLinearMachine::set_features(std::shared_ptr<CDotFeatures> feat)
+void LinearMachine::set_features(std::shared_ptr<DotFeatures> feat)
 {
 
 
 	features=feat;
 }
 
-std::shared_ptr<CDotFeatures> CLinearMachine::get_features()
+std::shared_ptr<DotFeatures> LinearMachine::get_features()
 {
 
 	return features;
 }
 
-void CLinearMachine::store_model_features()
+void LinearMachine::store_model_features()
 {
 }

@@ -38,10 +38,10 @@ TEST(GaussianLikelihood,get_predictive_log_probabilities)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	SGVector<float64_t> lp=likelihood->get_predictive_log_probabilities(mu, s2, labels);
 
@@ -82,10 +82,10 @@ TEST(GaussianLikelihood,get_predictive_means)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	mu=likelihood->get_predictive_means(mu, s2, labels);
 
@@ -126,10 +126,10 @@ TEST(GaussianLikelihood,get_predictive_variances)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	s2=likelihood->get_predictive_variances(mu, s2, labels);
 
@@ -167,10 +167,10 @@ TEST(GaussianLikelihood,get_log_probability_f)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	SGVector<float64_t> lp=likelihood->get_log_probability_f(labels, func);
 
@@ -208,10 +208,10 @@ TEST(GaussianLikelihood,get_log_probability_derivative_f)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	SGVector<float64_t> dlp=likelihood->get_log_probability_derivative_f(labels, func, 1);
 	SGVector<float64_t> d2lp=likelihood->get_log_probability_derivative_f(labels, func, 2);
@@ -263,10 +263,10 @@ TEST(GaussianLikelihood,get_first_derivative)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
 
@@ -308,10 +308,10 @@ TEST(GaussianLikelihood,get_second_derivative)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
 
@@ -353,10 +353,10 @@ TEST(GaussianLikelihood,get_third_derivative)
 	func[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	TParameter* param=likelihood->m_model_selection_parameters->get_parameter("log_sigma");
 
@@ -401,10 +401,10 @@ TEST(GaussianLikelihood,get_first_moments)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	mu=likelihood->get_first_moments(mu, s2, labels);
 
@@ -445,10 +445,10 @@ TEST(GaussianLikelihood,get_second_moments)
 	mu[4]=0.00388;
 
 	// shogun representation of labels
-	auto labels=std::make_shared<CRegressionLabels>(lab);
+	auto labels=std::make_shared<RegressionLabels>(lab);
 
 	// Gaussian likelihood with sigma = 0.13
-	auto likelihood=std::make_shared<CGaussianLikelihood>(0.13);
+	auto likelihood=std::make_shared<GaussianLikelihood>(0.13);
 
 	s2=likelihood->get_second_moments(mu, s2, labels);
 

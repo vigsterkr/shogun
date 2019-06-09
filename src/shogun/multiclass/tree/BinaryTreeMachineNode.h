@@ -47,18 +47,18 @@ namespace shogun
  * specified using template specifier.
  */
 template <typename T>
-class CBinaryTreeMachineNode
-	: public CTreeMachineNode<T>
+class BinaryTreeMachineNode
+	: public TreeMachineNode<T>
 {
 public:
 	/** constructor */
-	CBinaryTreeMachineNode() : CTreeMachineNode<T>()
+	BinaryTreeMachineNode() : TreeMachineNode<T>()
 	{
 	}
 
 
 	/** destructor */
-	virtual ~CBinaryTreeMachineNode()
+	virtual ~BinaryTreeMachineNode()
 	{
 	}
 
@@ -71,7 +71,7 @@ public:
 	 *
 	 * @param l left subtree
 	 */
-	void left(std::shared_ptr<CBinaryTreeMachineNode> l)
+	void left(std::shared_ptr<BinaryTreeMachineNode> l)
 	{
 		if (this->m_children->get_num_elements()==0)
 		{
@@ -81,17 +81,17 @@ public:
 		{
 			this->m_children->set_element(l,0);
 		}
-		l->parent(this->shared_from_this()->template as<CTreeMachineNode<T>>());
+		l->parent(this->shared_from_this()->template as<TreeMachineNode<T>>());
 	}
 
 	/** get left subtree
 	 *
 	 * @return left subtree of node
 	 */
-	std::shared_ptr<CBinaryTreeMachineNode> left()
+	std::shared_ptr<BinaryTreeMachineNode> left()
 	{
 		if (this->m_children->get_num_elements())
-			return this->m_children->template get_element<CBinaryTreeMachineNode>(0);
+			return this->m_children->template get_element<BinaryTreeMachineNode>(0);
 
 		return NULL;
 	}
@@ -100,7 +100,7 @@ public:
 	 *
 	 * @param r right subtree
 	 */
-	void right(std::shared_ptr<CBinaryTreeMachineNode> r)
+	void right(std::shared_ptr<BinaryTreeMachineNode> r)
 	{
 		if (this->m_children->get_num_elements()==0)
 		{
@@ -115,17 +115,17 @@ public:
 		{
 			this->m_children->set_element(r,1);
 		}
-		r->parent(this->shared_from_this()->template as<CTreeMachineNode<T>>());
+		r->parent(this->shared_from_this()->template as<TreeMachineNode<T>>());
 	}
 
 	/** get right subtree
 	 *
 	 * @return right subtree of node
 	 */
-	std::shared_ptr<CBinaryTreeMachineNode> right()
+	std::shared_ptr<BinaryTreeMachineNode> right()
 	{
 		if (this->m_children->get_num_elements()==2)
-			return this->m_children->template get_element<CBinaryTreeMachineNode>(1);
+			return this->m_children->template get_element<BinaryTreeMachineNode>(1);
 
 		return NULL;
 	}

@@ -57,7 +57,7 @@ struct liblinear_problem
 	/** y */
 	float64_t* y;
 	/** sparse features x */
-	std::shared_ptr<CDotFeatures> x;
+	std::shared_ptr<DotFeatures> x;
 	/** if bias shall be used */
 	bool use_bias;
 };
@@ -292,13 +292,13 @@ struct mcsvm_state
 	}
 };
 
-class Solver_MCSVM_CS
+class Solver_MSVM_CS
 {
 	public:
-		Solver_MCSVM_CS(const liblinear_problem *prob, int nr_class, double *C,
+		Solver_MSVM_CS(const liblinear_problem *prob, int nr_class, double *C,
 		                double *w0, double eps, int max_iter,
 		                double train_time, mcsvm_state* given_state);
-		~Solver_MCSVM_CS();
+		~Solver_MSVM_CS();
 		void solve();
 	private:
 		void solve_sub_problem(double A_i, int yi, double C_yi, int active_i, double *alpha_new);

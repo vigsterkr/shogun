@@ -10,10 +10,10 @@
 using namespace shogun;
 
 template <typename T>
-class CDynamicArrayFixture : public ::testing::Test
+class DynamicArrayFixture : public ::testing::Test
 {
 protected:
-	CDynamicArrayFixture()
+	DynamicArrayFixture()
 	{
 	}
 	virtual void SetUp()
@@ -23,23 +23,23 @@ protected:
 		{
 			m_array[i] = (T)i;
 		}
-		wrapper_array = std::make_shared<CDynamicArray<T>>(m_array, 5);
+		wrapper_array = std::make_shared<DynamicArray<T>>(m_array, 5);
 	}
 	virtual void TearDown()
 	{
 
 	}
-	virtual ~CDynamicArrayFixture()
+	virtual ~DynamicArrayFixture()
 	{
 	}
 
-	std::shared_ptr<CDynamicArray<T>> wrapper_array;
+	std::shared_ptr<DynamicArray<T>> wrapper_array;
 	T* m_array;
 };
 
-SG_TYPED_TEST_CASE(CDynamicArrayFixture, sg_all_primitive_types, complex128_t);
+SG_TYPED_TEST_CASE(DynamicArrayFixture, sg_all_primitive_types, complex128_t);
 
-TYPED_TEST(CDynamicArrayFixture, array_ctor)
+TYPED_TEST(DynamicArrayFixture, array_ctor)
 {
 	EXPECT_EQ(this->wrapper_array->get_num_elements(), 5);
 	EXPECT_EQ(this->wrapper_array->get_array_size(), 5);
@@ -49,20 +49,20 @@ TYPED_TEST(CDynamicArrayFixture, array_ctor)
 	}
 }
 
-TYPED_TEST(CDynamicArrayFixture, resize_array)
+TYPED_TEST(DynamicArrayFixture, resize_array)
 {
 	this->wrapper_array->resize_array(10);
 	EXPECT_EQ(this->wrapper_array->get_array_size(), 15);
 }
 
-TYPED_TEST(CDynamicArrayFixture, set_array)
+TYPED_TEST(DynamicArrayFixture, set_array)
 {
 	this->wrapper_array->reset_array();
 	EXPECT_EQ(this->wrapper_array->get_num_elements(), 0);
 	TypeParam* array = SG_MALLOC(TypeParam, 5);
 	for (int32_t i = 0; i < 5; i++)
 	{
-		array[i] = (TypeParam)CMath::random(1, 10);
+		array[i] = (TypeParam)Math::random(1, 10);
 	}
 	this->wrapper_array->set_array(array, 5);
 
@@ -74,12 +74,12 @@ TYPED_TEST(CDynamicArrayFixture, set_array)
 	SG_FREE(array);
 }
 
-TYPED_TEST(CDynamicArrayFixture, const_set_array)
+TYPED_TEST(DynamicArrayFixture, const_set_array)
 {
 	TypeParam* array = SG_MALLOC(TypeParam, 5);
 	for (int32_t i = 0; i < 5; i++)
 	{
-		array[i] = (TypeParam)CMath::random(1, 10);
+		array[i] = (TypeParam)Math::random(1, 10);
 	}
 	const TypeParam* const_array = array;
 	this->wrapper_array->reset_array();
@@ -95,7 +95,7 @@ TYPED_TEST(CDynamicArrayFixture, const_set_array)
 	SG_FREE(array);
 }
 
-TYPED_TEST(CDynamicArrayFixture, get_array)
+TYPED_TEST(DynamicArrayFixture, get_array)
 {
 	TypeParam* array = this->wrapper_array->get_array();
 
@@ -105,7 +105,7 @@ TYPED_TEST(CDynamicArrayFixture, get_array)
 	}
 }
 
-TYPED_TEST(CDynamicArrayFixture, push_array)
+TYPED_TEST(DynamicArrayFixture, push_array)
 {
 	this->wrapper_array->reset_array();
 	EXPECT_EQ(this->wrapper_array->get_num_elements(), 0);
@@ -119,7 +119,7 @@ TYPED_TEST(CDynamicArrayFixture, push_array)
 	}
 }
 
-TYPED_TEST(CDynamicArrayFixture, append_array)
+TYPED_TEST(DynamicArrayFixture, append_array)
 {
 	this->wrapper_array->reset_array();
 	EXPECT_EQ(this->wrapper_array->get_num_elements(), 0);
@@ -133,30 +133,30 @@ TYPED_TEST(CDynamicArrayFixture, append_array)
 	}
 }
 
-TYPED_TEST(CDynamicArrayFixture, back_operation)
+TYPED_TEST(DynamicArrayFixture, back_operation)
 {
 	EXPECT_EQ(this->wrapper_array->back(), (TypeParam)4);
 }
 
-TYPED_TEST(CDynamicArrayFixture, set_operation)
+TYPED_TEST(DynamicArrayFixture, set_operation)
 {
 	this->wrapper_array->set_element(1, (TypeParam)4);
 	EXPECT_EQ(this->wrapper_array->get_element(4), (TypeParam)1);
 }
 
-TYPED_TEST(CDynamicArrayFixture, pop_operation)
+TYPED_TEST(DynamicArrayFixture, pop_operation)
 {
 	this->wrapper_array->pop_back();
 	EXPECT_EQ(this->wrapper_array->back(), (TypeParam)3);
 }
 
-TYPED_TEST(CDynamicArrayFixture, insert_operation)
+TYPED_TEST(DynamicArrayFixture, insert_operation)
 {
 	this->wrapper_array->insert_element((TypeParam)10, 2);
 	EXPECT_EQ(this->wrapper_array->get_element(2), (TypeParam)10);
 }
 
-TYPED_TEST(CDynamicArrayFixture, append_array_bool)
+TYPED_TEST(DynamicArrayFixture, append_array_bool)
 {
 	this->wrapper_array->reset_array();
 	EXPECT_EQ(this->wrapper_array->get_num_elements(), 0);
@@ -169,10 +169,10 @@ TYPED_TEST(CDynamicArrayFixture, append_array_bool)
 	EXPECT_EQ(this->wrapper_array->get_element(2), (TypeParam)1);
 }
 
-TYPED_TEST(CDynamicArrayFixture, save_serializable)
+TYPED_TEST(DynamicArrayFixture, save_serializable)
 {
 	/* generate file name */
-	char filename[] = "serialization-asciiCDynamicArray.XXXXXX";
+	char filename[] = "serialization-asciiDynamicArray.XXXXXX";
 	generate_temp_filename(filename);
 
 	io::serialize(filename, this->wrapper_array, std::make_shared<CJsonSerializer>());

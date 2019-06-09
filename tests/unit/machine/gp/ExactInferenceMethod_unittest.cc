@@ -67,17 +67,17 @@ TEST(ExactInferenceMethod,get_cholesky)
 	}
 
 	/* shogun representation */
-	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
-	auto label_train=std::make_shared<CRegressionLabels>(Y);
+	auto feat_train=std::make_shared<DenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<RegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
-	auto mean=std::make_shared<CZeroMean>();
-	auto lik=std::make_shared<CGaussianLikelihood>();
+	auto kernel=std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<ZeroMean>();
+	auto lik=std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
@@ -86,15 +86,15 @@ TEST(ExactInferenceMethod,get_cholesky)
 	//                 0   1.360478357154224   0.383538270389077
 	//                 0                   0   1.359759121359794
 	SGMatrix<float64_t> L=inf->get_cholesky();
-	EXPECT_LE(CMath::abs(L(0,0)-1.414213562373095), 10E-15);
-	EXPECT_LE(CMath::abs(L(0,1)-0.386132930109494), 10E-15);
-	EXPECT_LE(CMath::abs(L(0,2)-0.062877078699608), 10E-15);
-	EXPECT_LE(CMath::abs(L(1,0)-0), 10E-15);
-	EXPECT_LE(CMath::abs(L(1,1)-1.360478357154224), 10E-15);
-	EXPECT_LE(CMath::abs(L(1,2)-0.383538270389077), 10E-15);
-	EXPECT_LE(CMath::abs(L(2,0)-0), 10E-15);
-	EXPECT_LE(CMath::abs(L(2,1)-0), 10E-15);
-	EXPECT_LE(CMath::abs(L(2,2)-1.359759121359794), 10E-15);
+	EXPECT_LE(Math::abs(L(0,0)-1.414213562373095), 10E-15);
+	EXPECT_LE(Math::abs(L(0,1)-0.386132930109494), 10E-15);
+	EXPECT_LE(Math::abs(L(0,2)-0.062877078699608), 10E-15);
+	EXPECT_LE(Math::abs(L(1,0)-0), 10E-15);
+	EXPECT_LE(Math::abs(L(1,1)-1.360478357154224), 10E-15);
+	EXPECT_LE(Math::abs(L(1,2)-0.383538270389077), 10E-15);
+	EXPECT_LE(Math::abs(L(2,0)-0), 10E-15);
+	EXPECT_LE(Math::abs(L(2,1)-0), 10E-15);
+	EXPECT_LE(Math::abs(L(2,2)-1.359759121359794), 10E-15);
 
 
 }
@@ -122,17 +122,17 @@ TEST(ExactInferenceMethod,get_alpha)
 	}
 
 	/* shogun representation */
-	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
-	auto label_train=std::make_shared<CRegressionLabels>(Y);
+	auto feat_train=std::make_shared<DenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<RegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
-	auto mean=std::make_shared<CZeroMean>();
-	auto lik=std::make_shared<CGaussianLikelihood>();
+	auto kernel=std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<ZeroMean>();
+	auto lik=std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
@@ -142,9 +142,9 @@ TEST(ExactInferenceMethod,get_alpha)
 	// 0.396533145765454
 	// 0.301389368713216
 	SGVector<float64_t> alpha=inf->get_alpha();
-	EXPECT_LE(CMath::abs(alpha[0]+0.121668320184276), 10E-15);
-	EXPECT_LE(CMath::abs(alpha[1]-0.396533145765454), 10E-15);
-	EXPECT_LE(CMath::abs(alpha[2]-0.301389368713216), 10E-15);
+	EXPECT_LE(Math::abs(alpha[0]+0.121668320184276), 10E-15);
+	EXPECT_LE(Math::abs(alpha[1]-0.396533145765454), 10E-15);
+	EXPECT_LE(Math::abs(alpha[2]-0.301389368713216), 10E-15);
 
 
 }
@@ -172,24 +172,24 @@ TEST(ExactInferenceMethod,get_negative_marginal_likelihood)
 	}
 
 	/* shogun representation */
-	auto feat_train=std::make_shared<CDenseFeatures<float64_t>>(X);
-	auto label_train=std::make_shared<CRegressionLabels>(Y);
+	auto feat_train=std::make_shared<DenseFeatures<float64_t>>(X);
+	auto label_train=std::make_shared<RegressionLabels>(Y);
 
 	/* specity GPR with exact inference */
 	float64_t sigma=1;
 	float64_t shogun_sigma=sigma*sigma*2;
-	auto kernel=std::make_shared<CGaussianKernel>(10, shogun_sigma);
-	auto mean=std::make_shared<CZeroMean>();
-	auto lik=std::make_shared<CGaussianLikelihood>();
+	auto kernel=std::make_shared<GaussianKernel>(10, shogun_sigma);
+	auto mean=std::make_shared<ZeroMean>();
+	auto lik=std::make_shared<GaussianLikelihood>();
 	lik->set_sigma(1);
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, feat_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, feat_train,
 			mean, label_train, lik);
 
 	/* do some checks against gpml toolbox*/
 	// nlZ =
 	// 4.017065867797999
 	float64_t nml=inf->get_negative_log_marginal_likelihood();
-	EXPECT_LE(CMath::abs(nml-4.017065867797999), 10E-15);
+	EXPECT_LE(Math::abs(nml-4.017065867797999), 10E-15);
 
 
 }
@@ -215,25 +215,25 @@ TEST(ExactInferenceMethod,get_negative_log_marginal_likelihood_derivatives)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 2*ell*ell);
+	auto kernel=std::make_shared<GaussianKernel>(10, 2*ell*ell);
 
-	auto mean=std::make_shared<CZeroMean>();
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
+	auto lik=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter*, CSGObject*>>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 
 	// compute derivatives wrt parameters
 	auto gradient=
@@ -284,19 +284,19 @@ TEST(ExactInferenceMethod,get_posterior_mean)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
+	auto lik=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
@@ -339,19 +339,19 @@ TEST(ExactInferenceMethod,get_posterior_covariance)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
-	auto mean=std::make_shared<CZeroMean>();
+	auto kernel=std::make_shared<GaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<ZeroMean>();
 
 	// Gaussian likelihood with sigma = 0.25
-	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
+	auto lik=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
@@ -367,59 +367,59 @@ TEST(ExactInferenceMethod,get_posterior_covariance)
 	//-0.0000000002307207284608972 0.0000000000000000000000000 0.0000003178376535342790568 0.0000000942718277538447182 0.0569395017595935928889084
 	SGMatrix<float64_t> Sigma=inf->get_posterior_covariance();
 
-	abs_tolerance = CMath::get_abs_tolerance(0.0569394684731059849691626, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0569394684731059849691626, rel_tolerance);
 	EXPECT_NEAR(Sigma(0,0),  0.0569394684731059849691626,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000053289, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000000000000000053289, rel_tolerance);
 	EXPECT_NEAR(Sigma(0,1),  0.0000000000000000000053289,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000131879791500, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000000000131879791500, rel_tolerance);
 	EXPECT_NEAR(Sigma(0,2),  0.0000000000000131879791500,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000136088380251857096650, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000136088380251857096650, rel_tolerance);
 	EXPECT_NEAR(Sigma(0,3),  0.0000136088380251857096650,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000002307207284608970, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000002307207284608970, rel_tolerance);
 	EXPECT_NEAR(Sigma(0,4),  -0.0000000002307207284608970,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000053289, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000000000000000053289, rel_tolerance);
 	EXPECT_NEAR(Sigma(1,0),  0.0000000000000000000053289,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0569395017793594276911406, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0569395017793594276911406, rel_tolerance);
 	EXPECT_NEAR(Sigma(1,1),  0.0569395017793594276911406,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000000000000000000000, rel_tolerance);
 	EXPECT_NEAR(Sigma(1,2),  -0.0000000000000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000130, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000000000000000000130, rel_tolerance);
 	EXPECT_NEAR(Sigma(1,3),  -0.0000000000000000000000130,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000000000000000000000, rel_tolerance);
 	EXPECT_NEAR(Sigma(1,4),  0.0000000000000000000000000,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000131879791500, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000000000131879791500, rel_tolerance);
 	EXPECT_NEAR(Sigma(2,0),  0.0000000000000131879791500,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000000000000000000000, rel_tolerance);
 	EXPECT_NEAR(Sigma(2,1),  -0.0000000000000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0569395017611918560773709, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0569395017611918560773709, rel_tolerance);
 	EXPECT_NEAR(Sigma(2,2),  0.0569395017611918560773709,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000053885704468227, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000000053885704468227, rel_tolerance);
 	EXPECT_NEAR(Sigma(2,3),  -0.0000000000053885704468227,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000003178376535342790039, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000003178376535342790039, rel_tolerance);
 	EXPECT_NEAR(Sigma(2,4),  0.0000003178376535342790039,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(0.0000136088380251857249116, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000136088380251857249116, rel_tolerance);
 	EXPECT_NEAR(Sigma(3,0),  0.0000136088380251857249116,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000000000000000130, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000000000000000000130, rel_tolerance);
 	EXPECT_NEAR(Sigma(3,1),  -0.0000000000000000000000130,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000000053885704468227, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000000053885704468227, rel_tolerance);
 	EXPECT_NEAR(Sigma(3,2),  -0.0000000000053885704468227,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0569394684715077217807000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0569394684715077217807000, rel_tolerance);
 	EXPECT_NEAR(Sigma(3,3),  0.0569394684715077217807000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000942718277538447049, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000942718277538447049, rel_tolerance);
 	EXPECT_NEAR(Sigma(3,4),  0.0000000942718277538447049,  abs_tolerance);
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.0000000002307207284608972, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.0000000002307207284608972, rel_tolerance);
 	EXPECT_NEAR(Sigma(4,0),  -0.0000000002307207284608972,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000000000000000000000, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000000000000000000000, rel_tolerance);
 	EXPECT_NEAR(Sigma(4,1),  0.0000000000000000000000000,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000003178376535342790568, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000003178376535342790568, rel_tolerance);
 	EXPECT_NEAR(Sigma(4,2),  0.0000003178376535342790568,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0000000942718277538447182, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0000000942718277538447182, rel_tolerance);
 	EXPECT_NEAR(Sigma(4,3),  0.0000000942718277538447182,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.0569395017595935928889084, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.0569395017595935928889084, rel_tolerance);
 	EXPECT_NEAR(Sigma(4,4),  0.0569395017595935928889084,  abs_tolerance);
 
 	// clean up
@@ -447,19 +447,19 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	lab_train[4]=-0.08232;
 
 	// shogun representation of features and labels
-	auto features_train=std::make_shared<CDenseFeatures<float64_t>>(feat_train);
-	auto labels_train=std::make_shared<CRegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with width = 2 * ell^2 = 0.02 and zero mean
 	// function
-	auto kernel=std::make_shared<CGaussianKernel>(10, 0.02);
-	auto mean=std::make_shared<CConstMean>(1.0);
+	auto kernel=std::make_shared<GaussianKernel>(10, 0.02);
+	auto mean=std::make_shared<ConstMean>(1.0);
 
 	// Gaussian likelihood with sigma = 0.25
-	auto lik=std::make_shared<CGaussianLikelihood>(0.25);
+	auto lik=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with exact inference
-	auto inf=std::make_shared<CExactInferenceMethod>(kernel, features_train,
+	auto inf=std::make_shared<ExactInferenceMethod>(kernel, features_train,
 			mean, labels_train, lik);
 	inf->set_scale(0.8);
 
@@ -474,15 +474,15 @@ TEST(ExactInferenceMethod,get_posterior_mean2)
 	// -0.9860387397670280495987072
 	SGVector<float64_t> mu=inf->get_posterior_mean();
 
-	abs_tolerance = CMath::get_abs_tolerance(-0.5498667882510408499996402, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.5498667882510408499996402, rel_tolerance);
 	EXPECT_NEAR(mu[0],  -0.5498667882510408499996402,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.9077705338078291275039078, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.9077705338078291275039078, rel_tolerance);
 	EXPECT_NEAR(mu[1],  -0.9077705338078291275039078,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-1.9873216600130905185039865, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-1.9873216600130905185039865, rel_tolerance);
 	EXPECT_NEAR(mu[2],  -1.9873216600130905185039865,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(0.3235837493820302168678893, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(0.3235837493820302168678893, rel_tolerance);
 	EXPECT_NEAR(mu[3],  0.3235837493820302168678893,  abs_tolerance);
-	abs_tolerance = CMath::get_abs_tolerance(-0.9860387397670280495987072, rel_tolerance);
+	abs_tolerance = Math::get_abs_tolerance(-0.9860387397670280495987072, rel_tolerance);
 	EXPECT_NEAR(mu[4],  -0.9860387397670280495987072,  abs_tolerance);
 
 	// clean up

@@ -23,13 +23,13 @@ namespace shogun
 
 /** @brief Class MCLDA implements multiclass Linear Discriminant Analysis.
  *
- * MCLDA learns a linear classifier and requires examples to be CDenseFeatures.
+ * MCLDA learns a linear classifier and requires examples to be DenseFeatures.
  * The learned linear classification rule is optimal under the assumption that
  * the classes are gaussian distributed with equal co-variance
  *
  */
 
-class CMCLDA : public CNativeMulticlassMachine
+class MCLDA : public NativeMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
@@ -39,7 +39,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_cov whether to store the within class covariances
 		 */
-		CMCLDA(float64_t tolerance = 1e-4, bool store_cov = false);
+		MCLDA(float64_t tolerance = 1e-4, bool store_cov = false);
 
 		/** constructor
 		 *
@@ -48,16 +48,16 @@ class CMCLDA : public CNativeMulticlassMachine
 		 * @param tolerance tolerance used in training
 		 * @param store_cov whether to store the within class covariances
 		 */
-		CMCLDA(std::shared_ptr<CDenseFeatures<float64_t>> traindat, std::shared_ptr<CLabels> trainlab, float64_t tolerance = 1e-4, bool store_cov = false);
+		MCLDA(std::shared_ptr<DenseFeatures<float64_t>> traindat, std::shared_ptr<Labels> trainlab, float64_t tolerance = 1e-4, bool store_cov = false);
 
-		virtual ~CMCLDA();
+		virtual ~MCLDA();
 
-		/** apply CMCLDA to data
+		/** apply MCLDA to data
 		 *
 		 * @param data (test) data to be classified
 		 * @return labels result of classification
 		 */
-		virtual std::shared_ptr<CMulticlassLabels> apply_multiclass(std::shared_ptr<CFeatures> data=NULL);
+		virtual std::shared_ptr<MulticlassLabels> apply_multiclass(std::shared_ptr<Features> data=NULL);
 
 		/** set tolerance
 		 *
@@ -81,7 +81,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		 *
 		 * @param feat features to set
 		 */
-		virtual void set_features(std::shared_ptr<CDotFeatures> feat)
+		virtual void set_features(std::shared_ptr<DotFeatures> feat)
 		{
 			if (feat->get_feature_class() != C_DENSE ||
 				feat->get_feature_type() != F_DREAL)
@@ -96,7 +96,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		 *
 		 * @return features
 		 */
-		virtual std::shared_ptr<CDotFeatures> get_features() {  return m_features; }
+		virtual std::shared_ptr<DotFeatures> get_features() {  return m_features; }
 
 		/** get object name
 		 *
@@ -131,7 +131,7 @@ class CMCLDA : public CNativeMulticlassMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<CFeatures> data = NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 	private:
 		void init();
@@ -140,7 +140,7 @@ class CMCLDA : public CNativeMulticlassMachine
 
 		private:
 			/** feature vectors */
-		std::shared_ptr<CDotFeatures> m_features;
+		std::shared_ptr<DotFeatures> m_features;
 
 		/** tolerance used during training */
 		float64_t m_tolerance;

@@ -11,28 +11,28 @@
 
 using namespace shogun;
 
-CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding() :
-		CLocallyLinearEmbedding()
+KernelLocallyLinearEmbedding::KernelLocallyLinearEmbedding() :
+		LocallyLinearEmbedding()
 {
 }
 
-CKernelLocallyLinearEmbedding::CKernelLocallyLinearEmbedding(std::shared_ptr<CKernel> kernel) :
-		CLocallyLinearEmbedding()
+KernelLocallyLinearEmbedding::KernelLocallyLinearEmbedding(std::shared_ptr<Kernel> kernel) :
+		LocallyLinearEmbedding()
 {
 	set_kernel(kernel);
 }
 
-const char* CKernelLocallyLinearEmbedding::get_name() const
+const char* KernelLocallyLinearEmbedding::get_name() const
 {
 	return "KernelLocallyLinearEmbedding";
 };
 
-CKernelLocallyLinearEmbedding::~CKernelLocallyLinearEmbedding()
+KernelLocallyLinearEmbedding::~KernelLocallyLinearEmbedding()
 {
 }
 
-std::shared_ptr<CFeatures>
-CKernelLocallyLinearEmbedding::transform(std::shared_ptr<CFeatures> features, bool inplace)
+std::shared_ptr<Features>
+KernelLocallyLinearEmbedding::transform(std::shared_ptr<Features> features, bool inplace)
 {
 	ASSERT(features)
 
@@ -52,7 +52,7 @@ CKernelLocallyLinearEmbedding::transform(std::shared_ptr<CFeatures> features, bo
 	return embedding;
 }
 
-std::shared_ptr<CDenseFeatures<float64_t>> CKernelLocallyLinearEmbedding::embed_kernel(std::shared_ptr<CKernel> kernel)
+std::shared_ptr<DenseFeatures<float64_t>> KernelLocallyLinearEmbedding::embed_kernel(std::shared_ptr<Kernel> kernel)
 {
 	TAPKEE_PARAMETERS_FOR_SHOGUN parameters;
 	parameters.n_neighbors = m_k;

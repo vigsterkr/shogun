@@ -27,14 +27,14 @@ namespace shogun
  * k'({\bf x},{\bf x'}) = \gamma(task({\bf x}),task({\bf x'})) k({\bf x},{\bf x'})
  * \f]
  */
-class CMultitaskKernelNormalizer: public CKernelNormalizer
+class MultitaskKernelNormalizer: public KernelNormalizer
 {
 
 public:
 
 	/** default constructor
 	 */
-	CMultitaskKernelNormalizer() : CKernelNormalizer(), scale(1.0)
+	MultitaskKernelNormalizer() : KernelNormalizer(), scale(1.0)
 	{
 	}
 
@@ -42,8 +42,8 @@ public:
 	 *
 	 * @param task_vector task vector with containing task_id for each example
 	 */
-	CMultitaskKernelNormalizer(std::vector<int32_t> task_vector)
-		: CKernelNormalizer(), scale(1.0)
+	MultitaskKernelNormalizer(std::vector<int32_t> task_vector)
+		: KernelNormalizer(), scale(1.0)
 	{
 
 		num_tasks = get_num_unique_tasks(task_vector);
@@ -57,13 +57,13 @@ public:
 	}
 
 	/** default destructor */
-	virtual ~CMultitaskKernelNormalizer()
+	virtual ~MultitaskKernelNormalizer()
 	{
 	}
 
 	/** initialization of the normalizer
 	 * @param k kernel */
-	virtual bool init(CKernel* k)
+	virtual bool init(Kernel* k)
 	{
 
 		//same as first-element normalizer
@@ -229,13 +229,13 @@ public:
 		return "MultitaskKernelNormalizer";
 	}
 
-	/** convert generic kernel normalizer object into CMultitaskKernelNormalizer
+	/** convert generic kernel normalizer object into MultitaskKernelNormalizer
 	 *
-	 * @return converted CMultitaskKernelNormalizer object
+	 * @return converted MultitaskKernelNormalizer object
 	 */
-	inline std::shared_ptr<CMultitaskKernelNormalizer> KernelNormalizerToMultitaskKernelNormalizer(std::shared_ptr<CKernelNormalizer> n)
+	inline std::shared_ptr<MultitaskKernelNormalizer> KernelNormalizerToMultitaskKernelNormalizer(std::shared_ptr<KernelNormalizer> n)
 	{
-		return n->as<CMultitaskKernelNormalizer>();
+		return n->as<MultitaskKernelNormalizer>();
 	}
 
 

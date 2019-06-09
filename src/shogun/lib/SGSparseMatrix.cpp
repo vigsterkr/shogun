@@ -89,7 +89,7 @@ const SGVector<float64_t> SGSparseMatrix<float64_t>::operator*(
 }
 
 template<class T>
-void SGSparseMatrix<T>::load(std::shared_ptr<CFile> loader)
+void SGSparseMatrix<T>::load(std::shared_ptr<File> loader)
 {
 	ASSERT(loader)
 	unref();
@@ -100,12 +100,12 @@ void SGSparseMatrix<T>::load(std::shared_ptr<CFile> loader)
 }
 
 template<>
-void SGSparseMatrix<complex128_t>::load(std::shared_ptr<CFile> loader)
+void SGSparseMatrix<complex128_t>::load(std::shared_ptr<File> loader)
 {
 	SG_SERROR("SGSparseMatrix::load():: Not supported for complex128_t");
 }
 
-template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(std::shared_ptr<CLibSVMFile> file, bool do_sort_features)
+template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(std::shared_ptr<LibSVMFile> file, bool do_sort_features)
 {
 	ASSERT(file)
 
@@ -121,11 +121,11 @@ template<class T> SGVector<float64_t> SGSparseMatrix<T>::load_with_labels(std::s
 	return labels;
 }
 
-template<> SGVector<float64_t> SGSparseMatrix<complex128_t>::load_with_labels(std::shared_ptr<CLibSVMFile> file, bool do_sort_features) { return SGVector<float64_t>(); }
+template<> SGVector<float64_t> SGSparseMatrix<complex128_t>::load_with_labels(std::shared_ptr<LibSVMFile> file, bool do_sort_features) { return SGVector<float64_t>(); }
 
 
 template<class T>
-void SGSparseMatrix<T>::save(std::shared_ptr<CFile> saver)
+void SGSparseMatrix<T>::save(std::shared_ptr<File> saver)
 {
 	ASSERT(saver)
 
@@ -135,12 +135,12 @@ void SGSparseMatrix<T>::save(std::shared_ptr<CFile> saver)
 }
 
 template<>
-void SGSparseMatrix<complex128_t>::save(std::shared_ptr<CFile> saver)
+void SGSparseMatrix<complex128_t>::save(std::shared_ptr<File> saver)
 {
 	SG_SERROR("SGSparseMatrix::save():: Not supported for complex128_t");
 }
 
-template<class T> void SGSparseMatrix<T>::save_with_labels(std::shared_ptr<CLibSVMFile> file,
+template<class T> void SGSparseMatrix<T>::save_with_labels(std::shared_ptr<LibSVMFile> file,
 		SGVector<float64_t> labels)
 {
 	ASSERT(file)
@@ -153,7 +153,7 @@ template<class T> void SGSparseMatrix<T>::save_with_labels(std::shared_ptr<CLibS
 			raw_labels);
 }
 
-template <> void SGSparseMatrix<complex128_t>::save_with_labels(std::shared_ptr<CLibSVMFile> saver, SGVector<float64_t> labels) { }
+template <> void SGSparseMatrix<complex128_t>::save_with_labels(std::shared_ptr<LibSVMFile> saver, SGVector<float64_t> labels) { }
 
 
 template <class T>

@@ -38,20 +38,20 @@ using namespace shogun;
 TEST(BinaryTreeMachineNode, build_tree)
 {
 	auto root=
-			std::make_shared<CBinaryTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 
 	auto child1=
-			std::make_shared<CBinaryTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 
 	auto child2=
-			std::make_shared<CBinaryTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 	child2->machine(2);
 	child2->data.attribute_id=2;
 	child2->data.transit_if_feature_value=2.0;
 	child2->data.class_label=22.0;
 
 	auto child3=
-			std::make_shared<CBinaryTreeMachineNode<id3TreeNodeData>>();
+			std::make_shared<BinaryTreeMachineNode<id3TreeNodeData>>();
 
 	root->left(child1);
 	root->right(child2);

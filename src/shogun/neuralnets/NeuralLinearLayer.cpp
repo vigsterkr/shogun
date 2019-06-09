@@ -39,41 +39,41 @@
 
 using namespace shogun;
 
-CNeuralLinearLayer::CNeuralLinearLayer() : CNeuralLayer()
+NeuralLinearLayer::NeuralLinearLayer() : NeuralLayer()
 {
 }
 
-CNeuralLinearLayer::CNeuralLinearLayer(int32_t num_neurons):
-CNeuralLayer(num_neurons)
+NeuralLinearLayer::NeuralLinearLayer(int32_t num_neurons):
+NeuralLayer(num_neurons)
 {
 }
 
-void CNeuralLinearLayer::initialize_neural_layer(std::shared_ptr<CDynamicObjectArray> layers,
+void NeuralLinearLayer::initialize_neural_layer(std::shared_ptr<DynamicObjectArray> layers,
 		SGVector< int32_t > input_indices)
 {
-	CNeuralLayer::initialize_neural_layer(layers, input_indices);
+	NeuralLayer::initialize_neural_layer(layers, input_indices);
 
 	m_num_parameters = m_num_neurons;
 	for (int32_t i=0; i<input_indices.vlen; i++)
 		m_num_parameters += m_num_neurons*m_input_sizes[i];
 }
 
-void CNeuralLinearLayer::initialize_parameters(SGVector<float64_t> parameters,
+void NeuralLinearLayer::initialize_parameters(SGVector<float64_t> parameters,
 		SGVector<bool> parameter_regularizable,
 		float64_t sigma)
 {
 	for (int32_t i=0; i<m_num_parameters; i++)
 	{
 		// random the parameters
-		parameters[i] = CMath::normal_random(0.0, sigma);
+		parameters[i] = Math::normal_random(0.0, sigma);
 
 		// turn regularization off for the biases, on for the weights
 		parameter_regularizable[i] = (i>=m_num_neurons);
 	}
 }
 
-void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
-		std::shared_ptr<CDynamicObjectArray> layers)
+void NeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
+		std::shared_ptr<DynamicObjectArray> layers)
 {
 	float64_t* biases = parameters.vector;
 
@@ -89,7 +89,7 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
 		auto layer =
-			layers->get_element<CNeuralLayer>(m_input_indices[l]);
+			layers->get_element<NeuralLayer>(m_input_indices[l]);
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		weights_index_offset += m_num_neurons*layer->get_num_neurons();
@@ -103,10 +103,10 @@ void CNeuralLinearLayer::compute_activations(SGVector<float64_t> parameters,
 	}
 }
 
-void CNeuralLinearLayer::compute_gradients(
+void NeuralLinearLayer::compute_gradients(
 		SGVector<float64_t> parameters,
 		SGMatrix<float64_t> targets,
-		std::shared_ptr<CDynamicObjectArray> layers,
+		std::shared_ptr<DynamicObjectArray> layers,
 		SGVector<float64_t> parameter_gradients)
 {
 	compute_local_gradients(targets);
@@ -133,7 +133,7 @@ void CNeuralLinearLayer::compute_gradients(
 	for (int32_t l=0; l<m_input_indices.vlen; l++)
 	{
 		auto layer =
-			layers->get_element<CNeuralLayer>(m_input_indices[l]);
+			layers->get_element<NeuralLayer>(m_input_indices[l]);
 
 		float64_t* weights = parameters.vector + weights_index_offset;
 		float64_t* weight_gradients = parameter_gradients.vector +
@@ -164,7 +164,7 @@ void CNeuralLinearLayer::compute_gradients(
 	}
 }
 
-void CNeuralLinearLayer::compute_local_gradients(SGMatrix<float64_t> targets)
+void NeuralLinearLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 {
 	if (targets.num_rows != 0)
 	{
@@ -182,7 +182,7 @@ void CNeuralLinearLayer::compute_local_gradients(SGMatrix<float64_t> targets)
 	}
 }
 
-float64_t CNeuralLinearLayer::compute_error(SGMatrix<float64_t> targets)
+float64_t NeuralLinearLayer::compute_error(SGMatrix<float64_t> targets)
 {
 	// error = 0.5*(sum(targets-activations)^2)/batch_size
 	float64_t sum = 0;
@@ -193,7 +193,7 @@ float64_t CNeuralLinearLayer::compute_error(SGMatrix<float64_t> targets)
 	return sum;
 }
 
-void CNeuralLinearLayer::enforce_max_norm(SGVector<float64_t> parameters,
+void NeuralLinearLayer::enforce_max_norm(SGVector<float64_t> parameters,
 		float64_t max_norm)
 {
 	int32_t weights_index_offset = m_num_neurons;
@@ -217,7 +217,7 @@ void CNeuralLinearLayer::enforce_max_norm(SGVector<float64_t> parameters,
 	}
 }
 
-float64_t CNeuralLinearLayer::compute_contraction_term(SGVector<float64_t> parameters)
+float64_t NeuralLinearLayer::compute_contraction_term(SGVector<float64_t> parameters)
 {
 	float64_t contraction_term = 0;
 	for (int32_t i=m_num_neurons; i<parameters.vlen; i++)
@@ -226,7 +226,7 @@ float64_t CNeuralLinearLayer::compute_contraction_term(SGVector<float64_t> param
 	return contraction_coefficient*contraction_term;
 }
 
-void CNeuralLinearLayer::compute_contraction_term_gradients(
+void NeuralLinearLayer::compute_contraction_term_gradients(
 	SGVector< float64_t > parameters, SGVector< float64_t > gradients)
 {
 	for (int32_t i=m_num_neurons; i<parameters.vlen; i++)

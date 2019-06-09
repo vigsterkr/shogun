@@ -22,26 +22,26 @@ using namespace shogun;
 namespace shogun
 {
 
-CKMeans::CKMeans():CKMeansBase()
+KMeans::KMeans():KMeansBase()
 {
 }
 
-CKMeans::CKMeans(int32_t k_i, std::shared_ptr<CDistance> d_i, bool use_kmpp_i):CKMeansBase(k_i, d_i, use_kmpp_i)
+KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, bool use_kmpp_i):KMeansBase(k_i, d_i, use_kmpp_i)
 {
 }
 
-CKMeans::CKMeans(int32_t k_i, std::shared_ptr<CDistance> d_i, SGMatrix<float64_t> centers_i):CKMeansBase(k_i, d_i, centers_i)
+KMeans::KMeans(int32_t k_i, std::shared_ptr<Distance> d_i, SGMatrix<float64_t> centers_i):KMeansBase(k_i, d_i, centers_i)
 {
 }
 
-CKMeans::~CKMeans()
+KMeans::~KMeans()
 {
 }
 
-void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
+void KMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 {
 	auto lhs =
-		std::dynamic_pointer_cast<CDenseFeatures<float64_t>>(distance->get_lhs());
+		std::dynamic_pointer_cast<DenseFeatures<float64_t>>(distance->get_lhs());
 
 	int32_t lhs_size=lhs->get_num_vectors();
 	int32_t dim=lhs->get_num_features();
@@ -68,7 +68,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 				   	Terminating. \n", iter)
 
 		changed=0;
-		auto rhs_mus = std::make_shared<CDenseFeatures<float64_t>>(centers.clone());
+		auto rhs_mus = std::make_shared<DenseFeatures<float64_t>>(centers.clone());
 		distance->replace_rhs(rhs_mus);
 
 #pragma omp parallel for firstprivate(lhs_size, dim, num_centers) \
@@ -180,7 +180,7 @@ void CKMeans::Lloyd_KMeans(SGMatrix<float64_t> centers, int32_t num_centers)
 
 }
 
-bool CKMeans::train_machine(std::shared_ptr<CFeatures> data)
+bool KMeans::train_machine(std::shared_ptr<Features> data)
 {
 	initialize_training(data);
 	Lloyd_KMeans(mus, k);

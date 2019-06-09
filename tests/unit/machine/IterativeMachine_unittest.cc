@@ -38,11 +38,11 @@ TEST(IterativeMachine, continue_training_consistency)
 		// to know if a test fails, which machine is the culprit
 		SCOPED_TRACE(machine_obj->get_name());
 
-		auto machine = machine_obj->->as<CIterativeMachine>();
+		auto machine = machine_obj->->as<IterativeMachine>();
 		auto machine_stop =
-		    machine->clone()->as<CIterativeMachine<CLinearMachine>>();
+		    machine->clone()->as<IterativeMachine<LinearMachine>>();
 		auto machine_iters =
-		    machine->clone()->as<CIterativeMachine<CLinearMachine>>();
+		    machine->clone()->as<IterativeMachine<LinearMachine>>();
 
 		// get result of fully trained machine
 		machine->set_labels(labels);

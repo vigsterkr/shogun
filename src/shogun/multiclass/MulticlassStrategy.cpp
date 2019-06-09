@@ -11,21 +11,21 @@
 using namespace shogun;
 
 
-CMulticlassStrategy::CMulticlassStrategy()
-	: CSGObject()
+MulticlassStrategy::MulticlassStrategy()
+	: SGObject()
 {
 	init();
 }
 
-CMulticlassStrategy::CMulticlassStrategy(EProbHeuristicType prob_heuris)
-	: CSGObject()
+MulticlassStrategy::MulticlassStrategy(EProbHeuristicType prob_heuris)
+	: SGObject()
 {
 	init();
 
 	m_prob_heuris=prob_heuris;
 }
 
-void CMulticlassStrategy::init()
+void MulticlassStrategy::init()
 {
 	m_rejection_strategy=NULL;
 	m_train_labels=NULL;
@@ -35,7 +35,7 @@ void CMulticlassStrategy::init()
 	m_num_classes=0;
 
 	SG_ADD(
-	    (std::shared_ptr<CSGObject>*)&m_rejection_strategy, "rejection_strategy",
+	    (std::shared_ptr<SGObject>*)&m_rejection_strategy, "rejection_strategy",
 	    "Strategy of rejection");
 	SG_ADD(&m_num_classes, "num_classes", "Number of classes");
 	SG_ADD_OPTIONS(
@@ -45,7 +45,7 @@ void CMulticlassStrategy::init()
 	    OVO_HAMAMURA));
 }
 
-void CMulticlassStrategy::train_start(std::shared_ptr<CMulticlassLabels >orig_labels, std::shared_ptr<CBinaryLabels >train_labels)
+void MulticlassStrategy::train_start(std::shared_ptr<MulticlassLabels >orig_labels, std::shared_ptr<BinaryLabels >train_labels)
 {
 	if (m_train_labels != NULL)
 		SG_ERROR("Stop the previous training task before starting a new one!")
@@ -56,13 +56,13 @@ void CMulticlassStrategy::train_start(std::shared_ptr<CMulticlassLabels >orig_la
 	m_train_iter=0;
 }
 
-SGVector<int32_t> CMulticlassStrategy::train_prepare_next()
+SGVector<int32_t> MulticlassStrategy::train_prepare_next()
 {
 	m_train_iter++;
 	return SGVector<int32_t>();
 }
 
-void CMulticlassStrategy::train_stop()
+void MulticlassStrategy::train_stop()
 {
 
 

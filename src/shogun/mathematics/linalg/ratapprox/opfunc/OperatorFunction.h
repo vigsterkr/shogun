@@ -25,17 +25,17 @@ enum EOperatorFunction
 };
 
 template<class T> class SGVector;
-template<class T> class CLinearOperator;
+template<class T> class LinearOperator;
 
 /** @brief Abstract template base class for computing \f$s^{T} f(C) s\f$ for a
  * linear operator C and a vector s.
  */
-template<class T> class COperatorFunction : public CSGObject
+template<class T> class OperatorFunction : public SGObject
 {
 public:
 	/** default constructor */
-	COperatorFunction()
-	: CSGObject(),
+	OperatorFunction()
+	: SGObject(),
 	  m_function_type(OF_UNDEFINED)
 	{
 		init();
@@ -47,9 +47,9 @@ public:
 	 * @param op the linear operator of this operator function
 	 * @param type the type of the operator function (sqrt, log, etc)
 	 */
-	COperatorFunction(std::shared_ptr<CLinearOperator<T>> op,
+	OperatorFunction(std::shared_ptr<LinearOperator<T>> op,
 		EOperatorFunction type=OF_UNDEFINED)
-	: CSGObject(),
+	: SGObject(),
 	  m_function_type(type)
 	{
 		init();
@@ -58,12 +58,12 @@ public:
 	}
 
 	/** destructor */
-	virtual ~COperatorFunction()
+	virtual ~OperatorFunction()
 	{
 	}
 
 	/** @return the operator */
-	std::shared_ptr<CLinearOperator<T>> get_operator() const
+	std::shared_ptr<LinearOperator<T>> get_operator() const
 	{
 		return m_linear_operator;
 	}
@@ -86,7 +86,7 @@ public:
 	}
 protected:
 	/** the linear operator */
-	std::shared_ptr<CLinearOperator<T>> m_linear_operator;
+	std::shared_ptr<LinearOperator<T>> m_linear_operator;
 
 	/** the linear operator function type */
 	const EOperatorFunction m_function_type;
@@ -97,7 +97,7 @@ private:
 	{
 	  m_linear_operator=NULL;
 
-		SG_ADD((std::shared_ptr<CSGObject>*)&m_linear_operator, "linear_operator",
+		SG_ADD((std::shared_ptr<SGObject>*)&m_linear_operator, "linear_operator",
 			"Linear operator of this operator function");
 	}
 };

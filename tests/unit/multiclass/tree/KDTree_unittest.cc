@@ -47,12 +47,12 @@ TEST(KDTree,tree_structure)
 	data(0,3)=1;
 	data(1,3)=-2;
 
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto tree=std::make_shared<CKDTree>();
+	auto tree=std::make_shared<KDTree>();
 	tree->build_tree(feats);
 
-	auto node=tree->get_root()->as<CBinaryTreeMachineNode<NbodyTreeNodeData>>();
+	auto node=tree->get_root()->as<BinaryTreeMachineNode<NbodyTreeNodeData>>();
 
 	EXPECT_EQ(0,node->data.start_idx);
 	EXPECT_EQ(3,node->data.end_idx);
@@ -96,16 +96,16 @@ TEST(KDTree, knn_query)
 	data(0,3)=0;
 	data(1,3)=1;
 
-	auto feats=std::make_shared<CDenseFeatures<float64_t>>(data);
+	auto feats=std::make_shared<DenseFeatures<float64_t>>(data);
 
-	auto tree=std::make_shared<CKDTree>();
+	auto tree=std::make_shared<KDTree>();
 	tree->build_tree(feats);
 
 	SGMatrix<float64_t> test_data(2,1);
 	test_data(0,0)=0;
 	test_data(1,0)=0;
 
-	auto qfeats=std::make_shared<CDenseFeatures<float64_t>>(test_data);
+	auto qfeats=std::make_shared<DenseFeatures<float64_t>>(test_data);
 	tree->query_knn(qfeats,3);
 
 	SGMatrix<index_t> ind=tree->get_knn_indices();

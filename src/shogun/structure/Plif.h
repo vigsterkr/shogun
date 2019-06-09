@@ -34,15 +34,15 @@ enum ETransformType
 };
 
 /** @brief class Plif */
-class CPlif: public CPlifBase
+class Plif: public PlifBase
 {
 	public:
 		/** constructor
 		 *
 		 * @param len len
 		 */
-		CPlif(int32_t len=0);
-		virtual ~CPlif();
+		Plif(int32_t len=0);
+		virtual ~Plif();
 
 		/** init penalty struct cache */
 		void init_penalty_struct_cache();
@@ -411,7 +411,7 @@ class CPlif: public CPlifBase
 		 * @param PEN array of plifs
 		 * @param P id of plif
 		 */
-		static void delete_penalty_struct(std::vector<std::shared_ptr<CPlif>>& PEN, int32_t P);
+		static void delete_penalty_struct(std::vector<std::shared_ptr<Plif>>& PEN, int32_t P);
 
 		/** @return object name */
 		virtual const char* get_name() const { return "Plif"; }

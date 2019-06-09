@@ -13,7 +13,7 @@ TEST(MulticlassStrategy,rescale_ova_norm)
 	for (int32_t i=0; i<3; i++)
 		scores[i] = (i+1)*0.1;
 
-	CMulticlassOneVsRestStrategy ova(OVA_NORM);
+	MulticlassOneVsRestStrategy ova(OVA_NORM);
 	ova.set_num_classes(3);
 	ova.rescale_outputs(scores);
 
@@ -39,7 +39,7 @@ TEST(MulticlassStrategy,rescale_ova_softmax)
 	for (int32_t i=0; i<3; i++)
 		As[i] = (i+1)*0.1;
 
-	CMulticlassOneVsRestStrategy ova(OVA_SOFTMAX);
+	MulticlassOneVsRestStrategy ova(OVA_SOFTMAX);
 	ova.set_num_classes(3);
 	ova.rescale_outputs(scores,As,Bs);
 
@@ -60,7 +60,7 @@ TEST(MulticlassStrategy,rescale_ova_price)
 	SGVector<float64_t> scores(3);
 	SGVector<float64_t>::fill_vector(scores.vector,scores.vlen,0.5);
 
-	CMulticlassOneVsOneStrategy ovo(OVO_PRICE);
+	MulticlassOneVsOneStrategy ovo(OVO_PRICE);
 	ovo.set_num_classes(3);
 	ovo.rescale_outputs(scores);
 
@@ -78,17 +78,17 @@ TEST(MulticlassStrategy,rescale_ova_price)
 
 TEST(MulticlassStrategy,rescale_ova_hastie)
 {
-	CMulticlassOneVsOneStrategy ovo(OVO_HASTIE);
+	MulticlassOneVsOneStrategy ovo(OVO_HASTIE);
 	ovo.set_num_classes(3);
 
 	// training simulation
 	SGVector<float64_t> labels(3);
 	labels.range_fill(0);
 
-	auto orig_labels = std::make_shared<CMulticlassLabels>(labels);
+	auto orig_labels = std::make_shared<MulticlassLabels>(labels);
 
 
-	auto train_labels = std::make_shared<CBinaryLabels>(2);
+	auto train_labels = std::make_shared<BinaryLabels>(2);
 
 
 	ovo.train_start(orig_labels, train_labels);
@@ -118,7 +118,7 @@ TEST(MulticlassStrategy,rescale_ova_hamamura)
 	SGVector<float64_t> scores(3);
 	SGVector<float64_t>::fill_vector(scores.vector,scores.vlen,0.5);
 
-	CMulticlassOneVsOneStrategy ovo(OVO_HAMAMURA);
+	MulticlassOneVsOneStrategy ovo(OVO_HAMAMURA);
 	ovo.set_num_classes(3);
 	ovo.rescale_outputs(scores);
 

@@ -113,11 +113,11 @@ protected:
 		test_matrix(2,11)=186;
 		test_matrix(3,11)=56;
 
-		dense_feat=std::make_shared<CDenseFeatures<float64_t>>(test_matrix);
+		dense_feat=std::make_shared<DenseFeatures<float64_t>>(test_matrix);
 		for(int i=0; i<classes; ++i)
 			for(int j=0; j<num; ++j)
 					labels_vector[i*num+j]=i;
-		labels=std::make_shared<CMulticlassLabels>(labels_vector);
+		labels=std::make_shared<MulticlassLabels>(labels_vector);
 
 
 
@@ -129,8 +129,8 @@ protected:
 
 	}
 
-	std::shared_ptr<CDenseFeatures<float64_t>> dense_feat;
-	std::shared_ptr<CMulticlassLabels> labels;
+	std::shared_ptr<DenseFeatures<float64_t>> dense_feat;
+	std::shared_ptr<MulticlassLabels> labels;
 };
 
 
@@ -143,10 +143,10 @@ TEST_F(FLDATest, CANVAR_FLDA_Unit_test)
 
 	// comparing outputs against BRMLtoolbox MATLAB "CannonVar.m" implementation
 	// http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.Software
-	CFisherLDA fisherlda(1, CANVAR_FLDA);
+	FisherLDA fisherlda(1, CANVAR_FLDA);
 	fisherlda.fit(dense_feat, labels);
 	SGMatrix<float64_t> y = fisherlda.transform(dense_feat)
-	                            ->as<CDenseFeatures<float64_t>>()
+	                            ->as<DenseFeatures<float64_t>>()
 	                            ->get_feature_matrix();
 
 	float64_t epsilon=0.00000000001;
@@ -183,10 +183,10 @@ TEST_F(FLDATest, CLASSIC_FLDA_Unit_test)
 
 
 
-	CFisherLDA fisherlda(1, CLASSIC_FLDA);
+	FisherLDA fisherlda(1, CLASSIC_FLDA);
 	fisherlda.fit(dense_feat, labels);
 	auto y = fisherlda.transform(dense_feat)
-	             ->as<CDenseFeatures<float64_t>>()
+	             ->as<DenseFeatures<float64_t>>()
 	             ->get_feature_matrix();
 
 	float64_t epsilon=0.00000000001;
@@ -264,13 +264,13 @@ TEST_F(FLDATest, CANVAR_FLDA_for_D_greater_than_N )
 	labels_vector[3]=1;
 	labels_vector[4]=1;
 
-	auto l=std::make_shared<CMulticlassLabels>(labels_vector);
-	auto df=std::make_shared<CDenseFeatures<float64_t>>(tm);
+	auto l=std::make_shared<MulticlassLabels>(labels_vector);
+	auto df=std::make_shared<DenseFeatures<float64_t>>(tm);
 
 
 
 
-	CFisherLDA fisherlda(1, CANVAR_FLDA);
+	FisherLDA fisherlda(1, CANVAR_FLDA);
 	fisherlda.fit(df, l);
 	SGMatrix<float64_t> transformy=fisherlda.get_transformation_matrix();
 

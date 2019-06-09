@@ -41,32 +41,32 @@ namespace {
 
 };
 
-CFastICA::CFastICA() : CICAConverter()
+FastICA::FastICA() : ICAConverter()
 {
 	init();
 }
 
-void CFastICA::init()
+void FastICA::init()
 {
 	whiten = true;
 	SG_ADD(&whiten, "whiten", "flag indicating whether to whiten the data");
 }
 
-CFastICA::~CFastICA()
+FastICA::~FastICA()
 {
 }
 
-void CFastICA::set_whiten(bool _whiten)
+void FastICA::set_whiten(bool _whiten)
 {
 	whiten = _whiten;
 }
 
-bool CFastICA::get_whiten() const
+bool FastICA::get_whiten() const
 {
 	return whiten;
 }
 
-void CFastICA::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
+void FastICA::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 {
 	auto X = features->get_feature_matrix();
 	REQUIRE(X.data(), "Features have not been provided.\n");
@@ -116,7 +116,7 @@ void CFastICA::fit_dense(std::shared_ptr<CDenseFeatures<float64_t>> features)
 		for (int i = 0; i < m; i++)
 		{
 			for (int j = 0; j < m; j++)
-				m_mixing_matrix(i,j) = CMath::randn_double();
+				m_mixing_matrix(i,j) = Math::randn_double();
 		}
 	}
 

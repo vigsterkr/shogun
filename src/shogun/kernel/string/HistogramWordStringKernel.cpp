@@ -13,14 +13,14 @@
 
 using namespace shogun;
 
-CHistogramWordStringKernel::CHistogramWordStringKernel()
-: CStringKernel<uint16_t>()
+HistogramWordStringKernel::HistogramWordStringKernel()
+: StringKernel<uint16_t>()
 {
 	init();
 }
 
-CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, std::shared_ptr<CPluginEstimate> pie)
-: CStringKernel<uint16_t>(size)
+HistogramWordStringKernel::HistogramWordStringKernel(int32_t size, std::shared_ptr<PluginEstimate> pie)
+: StringKernel<uint16_t>(size)
 {
 	init();
 
@@ -28,9 +28,9 @@ CHistogramWordStringKernel::CHistogramWordStringKernel(int32_t size, std::shared
 
 }
 
-CHistogramWordStringKernel::CHistogramWordStringKernel(
-	std::shared_ptr<CStringFeatures<uint16_t>> l, std::shared_ptr<CStringFeatures<uint16_t>> r, std::shared_ptr<CPluginEstimate> pie)
-: CStringKernel<uint16_t>()
+HistogramWordStringKernel::HistogramWordStringKernel(
+	std::shared_ptr<StringFeatures<uint16_t>> l, std::shared_ptr<StringFeatures<uint16_t>> r, std::shared_ptr<PluginEstimate> pie)
+: StringKernel<uint16_t>()
 {
 	init();
 
@@ -38,7 +38,7 @@ CHistogramWordStringKernel::CHistogramWordStringKernel(
 	init(l, r);
 }
 
-CHistogramWordStringKernel::~CHistogramWordStringKernel()
+HistogramWordStringKernel::~HistogramWordStringKernel()
 {
 
 
@@ -55,11 +55,11 @@ CHistogramWordStringKernel::~CHistogramWordStringKernel()
 	SG_FREE(plo_lhs);
 }
 
-bool CHistogramWordStringKernel::init(std::shared_ptr<CFeatures> p_l, std::shared_ptr<CFeatures> p_r)
+bool HistogramWordStringKernel::init(std::shared_ptr<Features> p_l, std::shared_ptr<Features> p_r)
 {
-	CStringKernel<uint16_t>::init(p_l,p_r);
-	auto l=std::static_pointer_cast<CStringFeatures<uint16_t>>(p_l);
-	auto r=std::static_pointer_cast<CStringFeatures<uint16_t>>(p_r);
+	StringKernel<uint16_t>::init(p_l,p_r);
+	auto l=std::static_pointer_cast<StringFeatures<uint16_t>>(p_l);
+	auto r=std::static_pointer_cast<StringFeatures<uint16_t>>(p_r);
 	ASSERT(l)
 	ASSERT(r)
 
@@ -172,7 +172,7 @@ bool CHistogramWordStringKernel::init(std::shared_ptr<CFeatures> p_l, std::share
 			bool free_vec;
 			uint16_t* vec=l->get_feature_vector(i, len, free_vec);
 
-			variance[0] += CMath::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
+			variance[0] += Math::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 
 			for (int32_t j=0; j<len; j++)
 			{
@@ -186,9 +186,9 @@ bool CHistogramWordStringKernel::init(std::shared_ptr<CFeatures> p_l, std::share
 					}
 					else
 					{
-						variance[idx] += CMath::sq(estimate->log_derivative_pos_obsolete(vec[j], j)
+						variance[idx] += Math::sq(estimate->log_derivative_pos_obsolete(vec[j], j)
 								-mean[idx])/num_vectors;
-						variance[idx+num_params] += CMath::sq(estimate->log_derivative_neg_obsolete(vec[j], j)
+						variance[idx+num_params] += Math::sq(estimate->log_derivative_neg_obsolete(vec[j], j)
 								-mean[idx+num_params])/num_vectors;
 					}
 				}
@@ -311,7 +311,7 @@ bool CHistogramWordStringKernel::init(std::shared_ptr<CFeatures> p_l, std::share
 	return init_normalizer();
 }
 
-void CHistogramWordStringKernel::cleanup()
+void HistogramWordStringKernel::cleanup()
 {
 	SG_FREE(variance);
 	variance=NULL;
@@ -346,15 +346,15 @@ void CHistogramWordStringKernel::cleanup()
 	sum_m2_s2=0;
 	initialized = false;
 
-	CKernel::cleanup();
+	Kernel::cleanup();
 }
 
-float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t HistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	int32_t alen, blen;
 	bool free_avec, free_bvec;
-	uint16_t* avec=std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
-	uint16_t* bvec=std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
+	uint16_t* avec=std::static_pointer_cast<StringFeatures<uint16_t>>(lhs)->get_feature_vector(idx_a, alen, free_avec);
+	uint16_t* bvec=std::static_pointer_cast<StringFeatures<uint16_t>>(rhs)->get_feature_vector(idx_b, blen, free_bvec);
 	// can only deal with strings of same length
 	ASSERT(alen==blen)
 
@@ -382,12 +382,12 @@ float64_t CHistogramWordStringKernel::compute(int32_t idx_a, int32_t idx_b)
 	if (fabs(result - result2)>1e-10)
 		SG_ERROR("new=%e  old = %e  diff = %e\n", result, result2, result - result2)
 #endif
-	std::static_pointer_cast<CStringFeatures<uint16_t>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
-	std::static_pointer_cast<CStringFeatures<uint16_t>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
+	std::static_pointer_cast<StringFeatures<uint16_t>>(lhs)->free_feature_vector(avec, idx_a, free_avec);
+	std::static_pointer_cast<StringFeatures<uint16_t>>(rhs)->free_feature_vector(bvec, idx_b, free_bvec);
 	return result;
 }
 
-void CHistogramWordStringKernel::init()
+void HistogramWordStringKernel::init()
 {
 	estimate=NULL;
 	mean=NULL;
@@ -434,7 +434,7 @@ void CHistogramWordStringKernel::init()
 	/*m_parameters->add_vector(&variance, &num_params2, "variance");*/
 	watch_param("variance", &variance, &num_params2);
 
-	SG_ADD((std::shared_ptr<CSGObject>*) &estimate, "estimate", "Plugin Estimate.");
+	SG_ADD((std::shared_ptr<SGObject>*) &estimate, "estimate", "Plugin Estimate.");
 }
 
 #ifdef DEBUG_HWSK_COMPUTATION

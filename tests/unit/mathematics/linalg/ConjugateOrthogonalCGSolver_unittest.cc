@@ -21,7 +21,7 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 {
 	const int32_t size=10;
 	SGSparseMatrix<complex128_t> m(size, size);
-	auto A=std::make_shared<CSparseMatrixOperator<complex128_t>>(m);
+	auto A=std::make_shared<SparseMatrixOperator<complex128_t>>(m);
 
 	// diagonal non-Hermintian matrix with random complex entries
 	SGVector<complex128_t> diag(size);
@@ -41,7 +41,7 @@ TEST(ConjugateOrthogonalCGSolver, solve)
 
 	// Solve with COCG
 	auto cocg_linear_solver
-		=std::make_shared<CConjugateOrthogonalCGSolver>();
+		=std::make_shared<ConjugateOrthogonalCGSolver>();
 	const SGVector<complex128_t>& x=cocg_linear_solver->solve(A, b);
 
 	const SGVector<complex128_t>& Ax=A->apply(x);

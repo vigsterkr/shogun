@@ -9,7 +9,7 @@
 
 using namespace shogun;
 
-CLatentModel::CLatentModel()
+LatentModel::LatentModel()
 	: m_features(NULL),
 	m_labels(NULL),
 	m_do_caching(false),
@@ -18,7 +18,7 @@ CLatentModel::CLatentModel()
 	register_parameters();
 }
 
-CLatentModel::CLatentModel(std::shared_ptr<CLatentFeatures> feats, std::shared_ptr<CLatentLabels> labels, bool do_caching)
+LatentModel::LatentModel(std::shared_ptr<LatentFeatures> feats, std::shared_ptr<LatentLabels> labels, bool do_caching)
 	: m_features(feats),
 	m_labels(labels),
 	m_do_caching(do_caching),
@@ -29,39 +29,39 @@ CLatentModel::CLatentModel(std::shared_ptr<CLatentFeatures> feats, std::shared_p
 
 }
 
-CLatentModel::~CLatentModel()
+LatentModel::~LatentModel()
 {
 
 
 
 }
 
-int32_t CLatentModel::get_num_vectors() const
+int32_t LatentModel::get_num_vectors() const
 {
 	return m_features->get_num_vectors();
 }
 
-void CLatentModel::set_labels(std::shared_ptr<CLatentLabels> labs)
+void LatentModel::set_labels(std::shared_ptr<LatentLabels> labs)
 {
 
 
 	m_labels = labs;
 }
 
-std::shared_ptr<CLatentLabels> CLatentModel::get_labels() const
+std::shared_ptr<LatentLabels> LatentModel::get_labels() const
 {
 
 	return m_labels;
 }
 
-void CLatentModel::set_features(std::shared_ptr<CLatentFeatures> feats)
+void LatentModel::set_features(std::shared_ptr<LatentFeatures> feats)
 {
 
 
 	m_features = feats;
 }
 
-void CLatentModel::argmax_h(const SGVector<float64_t>& w)
+void LatentModel::argmax_h(const SGVector<float64_t>& w)
 {
 	int32_t num = get_num_vectors();
 	auto y = binary_labels(m_labels->get_labels());
@@ -80,7 +80,7 @@ void CLatentModel::argmax_h(const SGVector<float64_t>& w)
 	}
 }
 
-void CLatentModel::register_parameters()
+void LatentModel::register_parameters()
 {
 	SG_ADD(&m_features, "features", "Latent features");
 	SG_ADD(&m_labels, "labels", "Latent labels");
@@ -92,13 +92,13 @@ void CLatentModel::register_parameters()
 }
 
 
-std::shared_ptr<CLatentFeatures> CLatentModel::get_features() const
+std::shared_ptr<LatentFeatures> LatentModel::get_features() const
 {
 
 	return m_features;
 }
 
-void CLatentModel::cache_psi_features()
+void LatentModel::cache_psi_features()
 {
 	if (m_do_caching)
 	{
@@ -109,7 +109,7 @@ void CLatentModel::cache_psi_features()
 	}
 }
 
-std::shared_ptr<CDotFeatures> CLatentModel::get_cached_psi_features() const
+std::shared_ptr<DotFeatures> LatentModel::get_cached_psi_features() const
 {
 	if (m_do_caching)
 	{

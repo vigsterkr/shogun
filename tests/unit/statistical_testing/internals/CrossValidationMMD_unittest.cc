@@ -62,23 +62,23 @@ TEST(CrossValidationMMD, biased_full)
 	const float64_t alpha=0.05;
 	const auto stype=ST_BIASED_FULL;
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
-	auto merged_feats=feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
+	auto merged_feats=feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
 	{
 		auto width=pow(2, i);
-		auto kernel=std::make_shared<CGaussianKernel>(cache_size, width);
+		auto kernel=std::make_shared<GaussianKernel>(cache_size, width);
 		kernel_mgr.push_back(kernel);
 	}
 	auto distance_instance=kernel_mgr.get_distance_instance();
 	distance_instance->init(merged_feats, merged_feats);
-	auto precomputed_distance=std::make_shared<CCustomDistance>();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	auto distance_matrix=distance_instance->get_distance_matrix<float32_t>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(distance_matrix.data(), n+m, n+m);
 
@@ -96,8 +96,8 @@ TEST(CrossValidationMMD, biased_full)
 	SGVector<int64_t> dummy_labels_p(n);
 	SGVector<int64_t> dummy_labels_q(m);
 
-	auto kfold_p=std::make_shared<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_p), num_folds);
-	auto kfold_q=std::make_shared<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_q), num_folds);
+	auto kfold_p=std::make_shared<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_p), num_folds);
+	auto kfold_q=std::make_shared<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_q), num_folds);
 
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
@@ -106,7 +106,7 @@ TEST(CrossValidationMMD, biased_full)
 	sg_rand->set_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
-		std::shared_ptr<CKernel> kernel=kernel_mgr.kernel_at(k);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
 		for (auto current_run=0; current_run<num_runs; ++current_run)
 		{
 			kfold_p->build_subsets();
@@ -124,7 +124,7 @@ TEST(CrossValidationMMD, biased_full)
 				permutation_mmd.m_n_y=feats_q->get_num_vectors();
 
 				auto current_merged_feats=
-					feats_p->create_merged_copy(feats_q)->as<CDenseFeatures<float64_t>>();
+					feats_p->create_merged_copy(feats_q)->as<DenseFeatures<float64_t>>();
 
 				kernel->init(current_merged_feats, current_merged_feats);
 				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());
@@ -156,24 +156,24 @@ TEST(CrossValidationMMD, unbiased_full)
 	const float64_t alpha=0.05;
 	const auto stype=ST_UNBIASED_FULL;
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
 	auto merged_feats=
-		(feats_p->create_merged_copy(feats_q))->as<CDenseFeatures<float64_t>>();
+		(feats_p->create_merged_copy(feats_q))->as<DenseFeatures<float64_t>>();
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
 	{
 		auto width=pow(2, i);
-		auto kernel=std::make_shared<CGaussianKernel>(cache_size, width);
+		auto kernel=std::make_shared<GaussianKernel>(cache_size, width);
 		kernel_mgr.push_back(kernel);
 	}
 	auto distance_instance=kernel_mgr.get_distance_instance();
 	distance_instance->init(merged_feats, merged_feats);
-	auto precomputed_distance=std::make_shared<CCustomDistance>();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	auto distance_matrix=distance_instance->get_distance_matrix<float32_t>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(distance_matrix.data(), n+m, n+m);
 
@@ -191,8 +191,8 @@ TEST(CrossValidationMMD, unbiased_full)
 	SGVector<int64_t> dummy_labels_p(n);
 	SGVector<int64_t> dummy_labels_q(m);
 
-	auto kfold_p=std::make_shared<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_p), num_folds);
-	auto kfold_q=std::make_shared<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_q), num_folds);
+	auto kfold_p=std::make_shared<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_p), num_folds);
+	auto kfold_q=std::make_shared<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_q), num_folds);
 
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
@@ -201,7 +201,7 @@ TEST(CrossValidationMMD, unbiased_full)
 	sg_rand->set_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
-		std::shared_ptr<CKernel> kernel=kernel_mgr.kernel_at(k);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
 		for (auto current_run=0; current_run<num_runs; ++current_run)
 		{
 			kfold_p->build_subsets();
@@ -219,7 +219,7 @@ TEST(CrossValidationMMD, unbiased_full)
 				permutation_mmd.m_n_y=feats_q->get_num_vectors();
 
 				auto current_merged_feats=
-					(feats_p->create_merged_copy(feats_q))->as<CDenseFeatures<float64_t>>();
+					(feats_p->create_merged_copy(feats_q))->as<DenseFeatures<float64_t>>();
 
 				kernel->init(current_merged_feats, current_merged_feats);
 				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());
@@ -251,24 +251,24 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	const float64_t alpha=0.05;
 	const auto stype=ST_UNBIASED_INCOMPLETE;
 
-	auto gen_p=std::make_shared<CMeanShiftDataGenerator>(0, dim, 0);
-	auto gen_q=std::make_shared<CMeanShiftDataGenerator>(difference, dim, 0);
+	auto gen_p=std::make_shared<MeanShiftDataGenerator>(0, dim, 0);
+	auto gen_q=std::make_shared<MeanShiftDataGenerator>(difference, dim, 0);
 
 	auto feats_p=gen_p->get_streamed_features(n);
 	auto feats_q=gen_q->get_streamed_features(m);
 	auto merged_feats=
-		(feats_p->create_merged_copy(feats_q))->as<CDenseFeatures<float64_t>>();
+		(feats_p->create_merged_copy(feats_q))->as<DenseFeatures<float64_t>>();
 
 	KernelManager kernel_mgr;
 	for (auto i=0; i<num_kernels; ++i)
 	{
 		auto width=pow(2, i);
-		auto kernel=std::make_shared<CGaussianKernel>(cache_size, width);
+		auto kernel=std::make_shared<GaussianKernel>(cache_size, width);
 		kernel_mgr.push_back(kernel);
 	}
 	auto distance_instance=kernel_mgr.get_distance_instance();
 	distance_instance->init(merged_feats, merged_feats);
-	auto precomputed_distance=std::make_shared<CCustomDistance>();
+	auto precomputed_distance=std::make_shared<CustomDistance>();
 	auto distance_matrix=distance_instance->get_distance_matrix<float32_t>();
 	precomputed_distance->set_triangle_distance_matrix_from_full(distance_matrix.data(), n+m, n+m);
 
@@ -286,8 +286,8 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	SGVector<int64_t> dummy_labels_p(n);
 	SGVector<int64_t> dummy_labels_q(m);
 
-	auto kfold_p=std::make_shared<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_p), num_folds);
-	auto kfold_q=std::make_shared<CCrossValidationSplitting>(std::make_shared<CBinaryLabels>(dummy_labels_q), num_folds);
+	auto kfold_p=std::make_shared<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_p), num_folds);
+	auto kfold_q=std::make_shared<CrossValidationSplitting>(std::make_shared<BinaryLabels>(dummy_labels_q), num_folds);
 
 	auto permutation_mmd=PermutationMMD();
 	permutation_mmd.m_stype=stype;
@@ -296,7 +296,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 	sg_rand->set_seed(12345);
 	for (auto k=0; k<num_kernels; ++k)
 	{
-		std::shared_ptr<CKernel> kernel=kernel_mgr.kernel_at(k);
+		std::shared_ptr<Kernel> kernel=kernel_mgr.kernel_at(k);
 		for (auto current_run=0; current_run<num_runs; ++current_run)
 		{
 			kfold_p->build_subsets();
@@ -314,7 +314,7 @@ TEST(CrossValidationMMD, unbiased_incomplete)
 				permutation_mmd.m_n_y=feats_q->get_num_vectors();
 
 				auto current_merged_feats=
-					(feats_p->create_merged_copy(feats_q))->as<CDenseFeatures<float64_t>>();
+					(feats_p->create_merged_copy(feats_q))->as<DenseFeatures<float64_t>>();
 
 				kernel->init(current_merged_feats, current_merged_feats);
 				auto p_value=permutation_mmd.p_value(kernel->get_kernel_matrix<float32_t>());

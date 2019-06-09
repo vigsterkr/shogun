@@ -13,7 +13,7 @@
 
 using namespace shogun;
 
-void CKernelMulticlassMachine::store_model_features()
+void KernelMulticlassMachine::store_model_features()
 {
 	auto kernel= m_kernel;
 	if (!kernel)
@@ -29,10 +29,10 @@ void CKernelMulticlassMachine::store_model_features()
 	}
 
 	/* this map will be abused as a map */
-	CSet<index_t> all_sv;
+	Set<index_t> all_sv;
 	for (index_t i=0; i<m_machines->get_num_elements(); ++i)
 	{
-		auto machine=get_machine(i)->as<CKernelMachine>();
+		auto machine=get_machine(i)->as<KernelMachine>();
 		for (index_t j=0; j<machine->get_num_support_vectors(); ++j)
 			all_sv.add(machine->get_support_vector(j));
 
@@ -57,7 +57,7 @@ void CKernelMulticlassMachine::store_model_features()
 	/* update SV of all machines */
 	for (int32_t i=0; i<m_machines->get_num_elements(); ++i)
 	{
-		auto machine=get_machine(i)->as<CKernelMachine>();
+		auto machine=get_machine(i)->as<KernelMachine>();
 
 		/* for each machine, replace SV by index in sv_idx array */
 		for (int32_t j=0; j<machine->get_num_support_vectors(); ++j)
@@ -79,7 +79,7 @@ void CKernelMulticlassMachine::store_model_features()
 
 }
 
-CKernelMulticlassMachine::CKernelMulticlassMachine() : CMulticlassMachine(), m_kernel(NULL)
+KernelMulticlassMachine::KernelMulticlassMachine() : MulticlassMachine(), m_kernel(NULL)
 {
 	SG_ADD(&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);
 }
@@ -90,15 +90,15 @@ CKernelMulticlassMachine::CKernelMulticlassMachine() : CMulticlassMachine(), m_k
  * @param machine kernel machine
  * @param labs labels
  */
-CKernelMulticlassMachine::CKernelMulticlassMachine(std::shared_ptr<CMulticlassStrategy >strategy, std::shared_ptr<CKernel> kernel, std::shared_ptr<CMachine> machine, std::shared_ptr<CLabels> labs) :
-	CMulticlassMachine(strategy,machine,labs), m_kernel(NULL)
+KernelMulticlassMachine::KernelMulticlassMachine(std::shared_ptr<MulticlassStrategy >strategy, std::shared_ptr<Kernel> kernel, std::shared_ptr<Machine> machine, std::shared_ptr<Labels> labs) :
+	MulticlassMachine(strategy,machine,labs), m_kernel(NULL)
 {
 	set_kernel(kernel);
 	SG_ADD(&m_kernel,"kernel", "The kernel to be used", ParameterProperties::HYPER);
 }
 
 /** destructor */
-CKernelMulticlassMachine::~CKernelMulticlassMachine()
+KernelMulticlassMachine::~KernelMulticlassMachine()
 {
 
 }
@@ -107,31 +107,31 @@ CKernelMulticlassMachine::~CKernelMulticlassMachine()
  *
  * @param k kernel
  */
-void CKernelMulticlassMachine::set_kernel(std::shared_ptr<CKernel> k)
+void KernelMulticlassMachine::set_kernel(std::shared_ptr<Kernel> k)
 {
-	m_machine->as<CKernelMachine>()->set_kernel(k);
+	m_machine->as<KernelMachine>()->set_kernel(k);
 
 
 	m_kernel=k;
 }
 
-std::shared_ptr<CKernel> CKernelMulticlassMachine::get_kernel() const
+std::shared_ptr<Kernel> KernelMulticlassMachine::get_kernel() const
 {
 
 	return m_kernel;
 }
 
-bool CKernelMulticlassMachine::init_machine_for_train(std::shared_ptr<CFeatures> data)
+bool KernelMulticlassMachine::init_machine_for_train(std::shared_ptr<Features> data)
 {
 	if (data)
 		m_kernel->init(data,data);
 
-	m_machine->as<CKernelMachine>()->set_kernel(m_kernel);
+	m_machine->as<KernelMachine>()->set_kernel(m_kernel);
 
 	return true;
 }
 
-bool CKernelMulticlassMachine::init_machines_for_apply(std::shared_ptr<CFeatures> data)
+bool KernelMulticlassMachine::init_machines_for_apply(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
@@ -144,7 +144,7 @@ bool CKernelMulticlassMachine::init_machines_for_apply(std::shared_ptr<CFeatures
 	/* set kernel to all sub-machines */
 	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
 	{
-		auto machine=m_machines->get_element<CKernelMachine>(i);
+		auto machine=m_machines->get_element<KernelMachine>(i);
 		machine->set_kernel(m_kernel);
 
 	}
@@ -152,7 +152,7 @@ bool CKernelMulticlassMachine::init_machines_for_apply(std::shared_ptr<CFeatures
 	return true;
 }
 
-bool CKernelMulticlassMachine::is_ready()
+bool KernelMulticlassMachine::is_ready()
 {
 	if (m_kernel && m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
 			return true;
@@ -160,22 +160,22 @@ bool CKernelMulticlassMachine::is_ready()
 	return false;
 }
 
-std::shared_ptr<CMachine> CKernelMulticlassMachine::get_machine_from_trained(std::shared_ptr<CMachine> machine) const
+std::shared_ptr<Machine> KernelMulticlassMachine::get_machine_from_trained(std::shared_ptr<Machine> machine) const
 {
-	return std::make_shared<CKernelMachine>(machine->as<CKernelMachine>());
+	return std::make_shared<KernelMachine>(machine->as<KernelMachine>());
 }
 
-int32_t CKernelMulticlassMachine::get_num_rhs_vectors() const
+int32_t KernelMulticlassMachine::get_num_rhs_vectors() const
 {
 	return m_kernel->get_num_vec_rhs();
 }
 
-void CKernelMulticlassMachine::add_machine_subset(SGVector<index_t> subset)
+void KernelMulticlassMachine::add_machine_subset(SGVector<index_t> subset)
 {
 	SG_NOTIMPLEMENTED
 }
 
-void CKernelMulticlassMachine::remove_machine_subset()
+void KernelMulticlassMachine::remove_machine_subset()
 {
 	SG_NOTIMPLEMENTED
 }

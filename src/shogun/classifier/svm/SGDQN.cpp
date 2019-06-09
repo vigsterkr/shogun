@@ -15,14 +15,14 @@
 
 using namespace shogun;
 
-CSGDQN::CSGDQN()
-: CLinearMachine()
+SGDQN::SGDQN()
+: LinearMachine()
 {
 	init();
 }
 
-CSGDQN::CSGDQN(float64_t C)
-: CLinearMachine()
+SGDQN::SGDQN(float64_t C)
+: LinearMachine()
 {
 	init();
 
@@ -30,8 +30,8 @@ CSGDQN::CSGDQN(float64_t C)
 	C2=C;
 }
 
-CSGDQN::CSGDQN(float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab)
-: CLinearMachine()
+SGDQN::SGDQN(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
+: LinearMachine()
 {
 	init();
 	C1=C;
@@ -41,19 +41,19 @@ CSGDQN::CSGDQN(float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_
 	set_labels(trainlab);
 }
 
-CSGDQN::~CSGDQN()
+SGDQN::~SGDQN()
 {
 
 }
 
-void CSGDQN::set_loss_function(std::shared_ptr<CLossFunction> loss_func)
+void SGDQN::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 {
 
 
 	loss=loss_func;
 }
 
-void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)
+void SGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* dst,int32_t dim,float64_t lambda,float64_t loss_val)
 {
 	for (int32_t i=0; i < dim;i++)
 	{
@@ -65,19 +65,19 @@ void CSGDQN::compute_ratio(float64_t* W,float64_t* W_1,float64_t* B,float64_t* d
 	}
 }
 
-void CSGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1,float64_t c2,float64_t v1,float64_t v2)
+void SGDQN::combine_and_clip(float64_t* Bc,float64_t* B,int32_t dim,float64_t c1,float64_t c2,float64_t v1,float64_t v2)
 {
 	for (int32_t i=0; i < dim;i++)
 	{
 		if(B[i])
 		{
 			Bc[i] = Bc[i] * c1 + B[i] * c2;
-			Bc[i]= CMath::min(CMath::max(Bc[i],v1),v2);
+			Bc[i]= Math::min(Math::max(Bc[i],v1),v2);
 		}
 	}
 }
 
-bool CSGDQN::train(std::shared_ptr<CFeatures> data)
+bool SGDQN::train(std::shared_ptr<Features> data)
 {
 
 	ASSERT(m_labels)
@@ -86,8 +86,8 @@ bool CSGDQN::train(std::shared_ptr<CFeatures> data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
-		set_features(std::static_pointer_cast<CDotFeatures>(data));
+			SG_ERROR("Specified features are not of type DotFeatures\n")
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 
 	ASSERT(features)
@@ -108,7 +108,7 @@ bool CSGDQN::train(std::shared_ptr<CFeatures> data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
+	float64_t eta0 = typw / Math::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
 	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0)
@@ -130,7 +130,7 @@ bool CSGDQN::train(std::shared_ptr<CFeatures> data)
 	if ((loss_type == L_LOGLOSS) || (loss_type == L_LOGLOSSMARGIN))
 		is_log_loss = true;
 
-	auto binary_labels = std::static_pointer_cast<CBinaryLabels>(m_labels);
+	auto binary_labels = std::static_pointer_cast<BinaryLabels>(m_labels);
 	for (auto e : SG_PROGRESS(range(epochs)))
 	{
 		COMPUTATION_CONTROLLERS
@@ -193,7 +193,7 @@ bool CSGDQN::train(std::shared_ptr<CFeatures> data)
 
 
 
-void CSGDQN::calibrate()
+void SGDQN::calibrate()
 {
 	ASSERT(features)
 	int32_t num_vec=features->get_num_vectors();
@@ -215,7 +215,7 @@ void CSGDQN::calibrate()
 	skip = (int32_t) ((16 * n * c_dim) / r);
 }
 
-void CSGDQN::init()
+void SGDQN::init()
 {
 	t=0;
 	C1=1;
@@ -224,7 +224,7 @@ void CSGDQN::init()
 	skip=1000;
 	count=1000;
 
-	loss=std::make_shared<CHingeLoss>();
+	loss=std::make_shared<HingeLoss>();
 
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);

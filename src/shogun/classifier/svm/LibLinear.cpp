@@ -19,19 +19,19 @@
 
 using namespace shogun;
 
-CLibLinear::CLibLinear() : CLinearMachine()
+LibLinear::LibLinear() : LinearMachine()
 {
 	init();
 }
 
-CLibLinear::CLibLinear(LIBLINEAR_SOLVER_TYPE l) : CLinearMachine()
+LibLinear::LibLinear(LIBLINEAR_SOLVER_TYPE l) : LinearMachine()
 {
 	init();
 	set_liblinear_solver_type(l);
 }
 
-CLibLinear::CLibLinear(float64_t C, std::shared_ptr<CDotFeatures> traindat, std::shared_ptr<CLabels> trainlab)
-    : CLinearMachine()
+LibLinear::LibLinear(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
+    : LinearMachine()
 {
 	init();
 	set_C(C, C);
@@ -42,7 +42,7 @@ CLibLinear::CLibLinear(float64_t C, std::shared_ptr<CDotFeatures> traindat, std:
 	init_linear_term();
 }
 
-void CLibLinear::init()
+void LibLinear::init()
 {
 	set_liblinear_solver_type(L2R_L1LOSS_SVC_DUAL);
 	set_bias_enabled(true);
@@ -64,11 +64,11 @@ void CLibLinear::init()
 	        L1R_L2LOSS_SVC, L1R_LR, L2R_LR_DUAL));
 }
 
-CLibLinear::~CLibLinear()
+LibLinear::~LibLinear()
 {
 }
 
-bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
+bool LibLinear::train_machine(std::shared_ptr<Features> data)
 {
 
 	ASSERT(m_labels)
@@ -77,9 +77,9 @@ bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			SG_ERROR("Specified features are not of type DotFeatures\n")
 
-		set_features(std::static_pointer_cast<CDotFeatures>(data));
+		set_features(std::static_pointer_cast<DotFeatures>(data));
 	}
 	ASSERT(features)
 
@@ -99,7 +99,7 @@ bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 			    "training labels %d\n",
 			    num_feat, num_train_labels);
 		}
-		CMath::swap(num_feat, num_vec);
+		Math::swap(num_feat, num_vec);
 	}
 	else
 	{
@@ -168,8 +168,8 @@ bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 	case L2R_LR:
 	{
 		fun_obj = new l2r_lr_fun(&prob, Cs);
-		CTron tron_obj(
-		    fun_obj, get_epsilon() * CMath::min(pos, neg) / prob.l,
+		Tron tron_obj(
+		    fun_obj, get_epsilon() * Math::min(pos, neg) / prob.l,
 		    get_max_iterations());
 		SG_DEBUG("starting L2R_LR training via tron\n")
 		tron_obj.tron(w.vector, m_max_train_time);
@@ -180,8 +180,8 @@ bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 	case L2R_L2LOSS_SVC:
 	{
 		fun_obj = new l2r_l2_svc_fun(&prob, Cs);
-		CTron tron_obj(
-		    fun_obj, get_epsilon() * CMath::min(pos, neg) / prob.l,
+		Tron tron_obj(
+		    fun_obj, get_epsilon() * Math::min(pos, neg) / prob.l,
 		    get_max_iterations());
 		tron_obj.tron(w.vector, m_max_train_time);
 		delete fun_obj;
@@ -199,14 +199,14 @@ bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 	{
 		// ASSUME FEATURES ARE TRANSPOSED ALREADY
 		solve_l1r_l2_svc(
-		    w, &prob, get_epsilon() * CMath::min(pos, neg) / prob.l, Cp, Cn);
+		    w, &prob, get_epsilon() * Math::min(pos, neg) / prob.l, Cp, Cn);
 		break;
 	}
 	case L1R_LR:
 	{
 		// ASSUME FEATURES ARE TRANSPOSED ALREADY
 		solve_l1r_lr(
-		    w, &prob, get_epsilon() * CMath::min(pos, neg) / prob.l, Cp, Cn);
+		    w, &prob, get_epsilon() * Math::min(pos, neg) / prob.l, Cp, Cn);
 		break;
 	}
 	case L2R_LR_DUAL:
@@ -260,7 +260,7 @@ bool CLibLinear::train_machine(std::shared_ptr<CFeatures> data)
 #define GETI(i) (y[i] + 1)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinear::solve_l2r_l1l2_svc(
+void LibLinear::solve_l2r_l1l2_svc(
     SGVector<float64_t>& w, const liblinear_problem* prob, double eps,
     double Cp, double Cn, LIBLINEAR_SOLVER_TYPE st)
 {
@@ -276,8 +276,8 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	// PG: projected gradient, for shrinking and stopping
 	double PG;
-	double PGmax_old = CMath::INFTY;
-	double PGmin_old = -CMath::INFTY;
+	double PGmax_old = Math::INFTY;
+	double PGmin_old = -Math::INFTY;
 	double PGmax_new, PGmin_new;
 
 	SGVector<float64_t> linear_term;
@@ -288,7 +288,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 	// default solver_type: L2R_L2LOSS_SVC_DUAL
 	double diag[3] = {0.5 / Cn, 0, 0.5 / Cp};
-	double upper_bound[3] = {CMath::INFTY, 0, CMath::INFTY};
+	double upper_bound[3] = {Math::INFTY, 0, Math::INFTY};
 	if (st == L2R_L1LOSS_SVC_DUAL)
 	{
 		diag[0] = 0;
@@ -323,7 +323,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 	}
 
 	auto pb = SG_PROGRESS(range(10));
-	CTime start_time;
+	Time start_time;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -331,13 +331,13 @@ void CLibLinear::solve_l2r_l1l2_svc(
 		    start_time.cur_time_diff() > m_max_train_time)
 			break;
 
-		PGmax_new = -CMath::INFTY;
-		PGmin_new = CMath::INFTY;
+		PGmax_new = -Math::INFTY;
+		PGmin_new = Math::INFTY;
 
 		for (i = 0; i < active_size; i++)
 		{
-			int j = CMath::random(i, active_size - 1);
-			CMath::swap(index[i], index[j]);
+			int j = Math::random(i, active_size - 1);
+			Math::swap(index[i], index[j]);
 		}
 
 		for (s = 0; s < active_size; s++)
@@ -363,7 +363,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 				if (G > PGmax_old)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -375,7 +375,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 				if (G < PGmin_old)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -385,13 +385,13 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			else
 				PG = G;
 
-			PGmax_new = CMath::max(PGmax_new, PG);
-			PGmin_new = CMath::min(PGmin_new, PG);
+			PGmax_new = Math::max(PGmax_new, PG);
+			PGmin_new = Math::min(PGmin_new, PG);
 
 			if (fabs(PG) > 1.0e-12)
 			{
 				double alpha_old = alpha[i];
-				alpha[i] = CMath::min(CMath::max(alpha[i] - G / QD[i], 0.0), C);
+				alpha[i] = Math::min(Math::max(alpha[i] - G / QD[i], 0.0), C);
 				d = (alpha[i] - alpha_old) * yi;
 
 				prob->x->add_to_dense_vec(d, i, w.vector, n);
@@ -405,7 +405,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 
 		float64_t gap=PGmax_new - PGmin_new;
 		pb.print_absolute(
-		    gap, -CMath::log10(gap), -CMath::log10(1), -CMath::log10(eps));
+		    gap, -Math::log10(gap), -Math::log10(1), -Math::log10(eps));
 
 		if (gap <= eps)
 		{
@@ -414,17 +414,17 @@ void CLibLinear::solve_l2r_l1l2_svc(
 			else
 			{
 				active_size = l;
-				PGmax_old = CMath::INFTY;
-				PGmin_old = -CMath::INFTY;
+				PGmax_old = Math::INFTY;
+				PGmin_old = -Math::INFTY;
 				continue;
 			}
 		}
 		PGmax_old = PGmax_new;
 		PGmin_old = PGmin_new;
 		if (PGmax_old <= 0)
-			PGmax_old = CMath::INFTY;
+			PGmax_old = Math::INFTY;
 		if (PGmin_old >= 0)
-			PGmin_old = -CMath::INFTY;
+			PGmin_old = -Math::INFTY;
 	}
 
 	pb.complete_absolute();
@@ -472,7 +472,7 @@ void CLibLinear::solve_l2r_l1l2_svc(
 #define GETI(i) (y[i] + 1)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinear::solve_l1r_l2_svc(
+void LibLinear::solve_l1r_l2_svc(
     SGVector<float64_t>& w, liblinear_problem* prob_col, double eps, double Cp,
     double Cn)
 {
@@ -484,7 +484,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 	double sigma = 0.01;
 	double d, G_loss, G, H;
-	double Gmax_old = CMath::INFTY;
+	double Gmax_old = Math::INFTY;
 	double Gmax_new;
 	double Gmax_init = 0;
 	double d_old, d_diff;
@@ -496,7 +496,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	double* b = SG_MALLOC(double, l); // b = 1-ywTx
 	double* xj_sq = SG_MALLOC(double, w_size);
 
-	auto x = std::static_pointer_cast<CDotFeatures>(prob_col->x);
+	auto x = std::static_pointer_cast<DotFeatures>(prob_col->x);
 	void* iterator;
 	int32_t ind;
 	float64_t val;
@@ -537,7 +537,7 @@ void CLibLinear::solve_l1r_l2_svc(
 	}
 
 	auto pb = SG_PROGRESS(range(10));
-	CTime start_time;
+	Time start_time;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -549,8 +549,8 @@ void CLibLinear::solve_l1r_l2_svc(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = CMath::random(j, active_size - 1);
-			CMath::swap(index[i], index[j]);
+			int i = Math::random(j, active_size - 1);
+			Math::swap(index[i], index[j]);
 		}
 
 		for (s = 0; s < active_size; s++)
@@ -591,7 +591,7 @@ void CLibLinear::solve_l1r_l2_svc(
 
 			G = G_loss;
 			H *= 2;
-			H = CMath::max(H, 1e-12);
+			H = Math::max(H, 1e-12);
 
 			double Gp = G + 1;
 			double Gn = G - 1;
@@ -605,7 +605,7 @@ void CLibLinear::solve_l1r_l2_svc(
 				else if (Gp > Gmax_old / l && Gn < -Gmax_old / l)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -615,7 +615,7 @@ void CLibLinear::solve_l1r_l2_svc(
 			else
 				violation = fabs(Gn);
 
-			Gmax_new = CMath::max(Gmax_new, violation);
+			Gmax_new = Math::max(Gmax_new, violation);
 
 			// obtain Newton direction d
 			if (Gp <= H * w.vector[j])
@@ -761,8 +761,8 @@ void CLibLinear::solve_l1r_l2_svc(
 		iter++;
 
 		pb.print_absolute(
-		    Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init),
-		    -CMath::log10(eps * Gmax_init));
+		    Gmax_new, -Math::log10(Gmax_new), -Math::log10(Gmax_init),
+		    -Math::log10(eps * Gmax_init));
 
 		if (Gmax_new <= eps * Gmax_init)
 		{
@@ -771,7 +771,7 @@ void CLibLinear::solve_l1r_l2_svc(
 			else
 			{
 				active_size = w_size;
-				Gmax_old = CMath::INFTY;
+				Gmax_old = Math::INFTY;
 				continue;
 			}
 		}
@@ -824,7 +824,7 @@ void CLibLinear::solve_l1r_l2_svc(
 #define GETI(i) (y[i] + 1)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinear::solve_l1r_lr(
+void LibLinear::solve_l1r_lr(
     SGVector<float64_t>& w, const liblinear_problem* prob_col, double eps,
     double Cp, double Cn)
 {
@@ -837,7 +837,7 @@ void CLibLinear::solve_l1r_lr(
 	double x_min = 0;
 	double sigma = 0.01;
 	double d, G, H;
-	double Gmax_old = CMath::INFTY;
+	double Gmax_old = Math::INFTY;
 	double Gmax_new;
 	double Gmax_init = 0;
 	double sum1, appxcond1;
@@ -885,8 +885,8 @@ void CLibLinear::solve_l1r_lr(
 		{
 			for (ind = 0; ind < l; ind++)
 			{
-				x_min = CMath::min(x_min, 1.0);
-				xj_max[j] = CMath::max(xj_max[j], 1.0);
+				x_min = Math::min(x_min, 1.0);
+				xj_max[j] = Math::max(xj_max[j], 1.0);
 				C_sum[j] += C[GETI(ind)];
 				if (y[ind] == -1)
 					xjneg_sum[j] += C[GETI(ind)];
@@ -899,8 +899,8 @@ void CLibLinear::solve_l1r_lr(
 			iterator = x->get_feature_iterator(j);
 			while (x->get_next_feature(ind, val, iterator))
 			{
-				x_min = CMath::min(x_min, val);
-				xj_max[j] = CMath::max(xj_max[j], val);
+				x_min = Math::min(x_min, val);
+				xj_max[j] = Math::max(xj_max[j], val);
 				C_sum[j] += C[GETI(ind)];
 				if (y[ind] == -1)
 					xjneg_sum[j] += C[GETI(ind)] * val;
@@ -912,7 +912,7 @@ void CLibLinear::solve_l1r_lr(
 	}
 
 	auto pb = SG_PROGRESS(range(10));
-	CTime start_time;
+	Time start_time;
 	while (iter < get_max_iterations())
 	{
 		COMPUTATION_CONTROLLERS
@@ -924,8 +924,8 @@ void CLibLinear::solve_l1r_lr(
 
 		for (j = 0; j < active_size; j++)
 		{
-			int i = CMath::random(j, active_size - 1);
-			CMath::swap(index[i], index[j]);
+			int i = Math::random(j, active_size - 1);
+			Math::swap(index[i], index[j]);
 		}
 
 		for (s = 0; s < active_size; s++)
@@ -978,7 +978,7 @@ void CLibLinear::solve_l1r_lr(
 				else if (Gp > Gmax_old / l && Gn < -Gmax_old / l)
 				{
 					active_size--;
-					CMath::swap(index[s], index[active_size]);
+					Math::swap(index[s], index[active_size]);
 					s--;
 					continue;
 				}
@@ -988,7 +988,7 @@ void CLibLinear::solve_l1r_lr(
 			else
 				violation = fabs(Gn);
 
-			Gmax_new = CMath::max(Gmax_new, violation);
+			Gmax_new = Math::max(Gmax_new, violation);
 
 			// obtain Newton direction d
 			if (Gp <= H * w.vector[j])
@@ -1001,7 +1001,7 @@ void CLibLinear::solve_l1r_lr(
 			if (fabs(d) < 1.0e-12)
 				continue;
 
-			d = CMath::min(CMath::max(d, -10.0), 10.0);
+			d = Math::min(Math::max(d, -10.0), 10.0);
 
 			double delta = fabs(w.vector[j] + d) - fabs(w.vector[j]) + G * d;
 			int num_linesearch;
@@ -1022,7 +1022,7 @@ void CLibLinear::solve_l1r_lr(
 					    log(1 + sum2 * (1 / tmp - 1) / xj_max[j] / C_sum[j]) *
 					        C_sum[j] +
 					    cond + d * xjneg_sum[j];
-					if (CMath::min(appxcond1, appxcond2) <= 0)
+					if (Math::min(appxcond1, appxcond2) <= 0)
 					{
 						if (get_bias_enabled() && j == n)
 						{
@@ -1139,8 +1139,8 @@ void CLibLinear::solve_l1r_lr(
 		iter++;
 
 		pb.print_absolute(
-		    Gmax_new, -CMath::log10(Gmax_new), -CMath::log10(Gmax_init),
-		    -CMath::log10(eps * Gmax_init));
+		    Gmax_new, -Math::log10(Gmax_new), -Math::log10(Gmax_init),
+		    -Math::log10(eps * Gmax_init));
 
 		if (Gmax_new <= eps * Gmax_init)
 		{
@@ -1149,7 +1149,7 @@ void CLibLinear::solve_l1r_lr(
 			else
 			{
 				active_size = w_size;
-				Gmax_old = CMath::INFTY;
+				Gmax_old = Math::INFTY;
 				continue;
 			}
 		}
@@ -1214,7 +1214,7 @@ void CLibLinear::solve_l1r_lr(
 #define GETI(i) (y[i] + 1)
 // To support weights for instances, use GETI(i) (i)
 
-void CLibLinear::solve_l2r_lr_dual(
+void LibLinear::solve_l2r_lr_dual(
     SGVector<float64_t>& w, const liblinear_problem* prob, double eps,
     double Cp, double Cn)
 {
@@ -1228,7 +1228,7 @@ void CLibLinear::solve_l2r_lr_dual(
 	int32_t* y = new int32_t[l];
 	int max_inner_iter = 100; // for inner Newton
 	double innereps = 1e-2;
-	double innereps_min = CMath::min(1e-8, eps);
+	double innereps_min = Math::min(1e-8, eps);
 	double upper_bound[3] = {Cn, 0, Cp};
 	double Gmax_init = 0;
 
@@ -1249,7 +1249,7 @@ void CLibLinear::solve_l2r_lr_dual(
 	// alpha[2*i] + alpha[2*i+1] = upper_bound[GETI(i)]
 	for (i = 0; i < l; i++)
 	{
-		alpha[2 * i] = CMath::min(0.001 * upper_bound[GETI(i)], 1e-8);
+		alpha[2 * i] = Math::min(0.001 * upper_bound[GETI(i)], 1e-8);
 		alpha[2 * i + 1] = upper_bound[GETI(i)] - alpha[2 * i];
 	}
 
@@ -1273,8 +1273,8 @@ void CLibLinear::solve_l2r_lr_dual(
 	{
 		for (i = 0; i < l; i++)
 		{
-			int j = CMath::random(i, l - 1);
-			CMath::swap(index[i], index[j]);
+			int j = Math::random(i, l - 1);
+			Math::swap(index[i], index[j]);
 		}
 		int newton_iter = 0;
 		double Gmax = 0;
@@ -1308,7 +1308,7 @@ void CLibLinear::solve_l2r_lr_dual(
 			if (C - z < 0.5 * C)
 				z = 0.1 * z;
 			double gp = a * (z - alpha_old) + sign * b + std::log(z / (C - z));
-			Gmax = CMath::max(Gmax, CMath::abs(gp));
+			Gmax = Math::max(Gmax, Math::abs(gp));
 
 			// Newton method on the sub-problem
 			const double eta = 0.1; // xi in the paper
@@ -1346,14 +1346,14 @@ void CLibLinear::solve_l2r_lr_dual(
 		iter++;
 
 		pb.print_absolute(
-		    Gmax, -CMath::log10(Gmax), -CMath::log10(Gmax_init),
-		    -CMath::log10(eps * Gmax_init));
+		    Gmax, -Math::log10(Gmax), -Math::log10(Gmax_init),
+		    -Math::log10(eps * Gmax_init));
 
 		if (Gmax < eps)
 			break;
 
 		if (newton_iter <= l / 10)
-			innereps = CMath::max(innereps_min, 0.1 * innereps);
+			innereps = Math::max(innereps_min, 0.1 * innereps);
 	}
 
 	pb.complete_absolute();
@@ -1381,7 +1381,7 @@ void CLibLinear::solve_l2r_lr_dual(
 	delete[] index;
 }
 
-void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
+void LibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 {
 	if (!m_labels)
 		SG_ERROR("Please assign labels first!\n")
@@ -1399,7 +1399,7 @@ void CLibLinear::set_linear_term(const SGVector<float64_t> linear_term)
 	m_linear_term = linear_term;
 }
 
-SGVector<float64_t> CLibLinear::get_linear_term()
+SGVector<float64_t> LibLinear::get_linear_term()
 {
 	if (!m_linear_term.vlen || !m_linear_term.vector)
 		SG_ERROR("Please assign linear term first!\n")
@@ -1407,7 +1407,7 @@ SGVector<float64_t> CLibLinear::get_linear_term()
 	return m_linear_term;
 }
 
-void CLibLinear::init_linear_term()
+void LibLinear::init_linear_term()
 {
 	if (!m_labels)
 		SG_ERROR("Please assign labels first!\n")

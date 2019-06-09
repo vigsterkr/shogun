@@ -13,8 +13,8 @@ using namespace shogun;
 TEST(ROCEvaluation,one)
 {
 	index_t num_labels=10;
-	auto gt=std::make_shared<CBinaryLabels>(num_labels);
-	auto roc=std::make_shared<CROCEvaluation>();
+	auto gt=std::make_shared<BinaryLabels>(num_labels);
+	auto roc=std::make_shared<ROCEvaluation>();
 
 	for (index_t i=0; i<num_labels; i++)
 	{

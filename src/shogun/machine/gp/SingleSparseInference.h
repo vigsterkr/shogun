@@ -45,13 +45,13 @@ class SingleSparseInferenceCostFunction;
 /** @brief The sparse inference base class
  * for classification and regression for 1-D labels (1D regression and binary classification)
  */
-class CSingleSparseInference: public CSparseInference
+class SingleSparseInference: public SparseInference
 {
 friend class SingleSparseInferenceCostFunction;
 
 public:
 	/** default constructor */
-	CSingleSparseInference();
+	SingleSparseInference();
 
 	/** constructor
 	 *
@@ -62,11 +62,11 @@ public:
 	 * @param model likelihood model to use
 	 * @param inducing_features features to use
 	 */
-	CSingleSparseInference(std::shared_ptr<CKernel> kernel, std::shared_ptr<CFeatures> features,
-			std::shared_ptr<CMeanFunction> mean, std::shared_ptr<CLabels> labels, std::shared_ptr<CLikelihoodModel> model,
-			std::shared_ptr<CFeatures> inducing_features);
+	SingleSparseInference(std::shared_ptr<Kernel> kernel, std::shared_ptr<Features> features,
+			std::shared_ptr<MeanFunction> mean, std::shared_ptr<Labels> labels, std::shared_ptr<LikelihoodModel> model,
+			std::shared_ptr<Features> inducing_features);
 
-	virtual ~CSingleSparseInference();
+	virtual ~SingleSparseInference();
 
 	/** returns the name of the inference method
 	 *
@@ -78,7 +78,7 @@ public:
 	 *
 	 * @param kern kernel to set
 	 */
-	virtual void set_kernel(std::shared_ptr<CKernel> kern);
+	virtual void set_kernel(std::shared_ptr<Kernel> kern);
 
 	/** opitmize inducing features
 	 *

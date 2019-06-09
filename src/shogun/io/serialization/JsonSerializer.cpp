@@ -39,10 +39,10 @@ struct COutputStreamAdapter
 		m_stream->flush();
 	}
 
-	std::shared_ptr<COutputStream> m_stream;
+	std::shared_ptr<OutputStream> m_stream;
 };
 
-template<typename Writer> void write_object(Writer& writer, std::shared_ptr<CSGObject> object);
+template<typename Writer> void write_object(Writer& writer, std::shared_ptr<SGObject> object);
 
 template<class Writer>
 class JSONWriterVisitor : public AnyVisitor
@@ -167,7 +167,7 @@ public:
 		SG_SDEBUG("writing std::string with value %s\n", v->c_str());
 		m_json_writer.String(v->c_str());
 	}
-	void on(std::shared_ptr<CSGObject>* v) override
+	void on(std::shared_ptr<SGObject>* v) override
 	{
 		if (*v)
 		{
@@ -284,7 +284,7 @@ private:
 };
 
 template<typename Writer>
-void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, std::shared_ptr<CSGObject> object) noexcept(false)
+void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, std::shared_ptr<SGObject> object) noexcept(false)
 {
 	pre_serialize(object);
 
@@ -315,17 +315,17 @@ void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, std::share
 
 using JsonWriter = Writer<COutputStreamAdapter, UTF8<>, UTF8<>, CrtAllocator, kWriteNanAndInfFlag>;
 
-CJsonSerializer::CJsonSerializer() : CSerializer()
+JsonSerializer::JsonSerializer() : Serializer()
 {
 }
 
-CJsonSerializer::~CJsonSerializer()
+JsonSerializer::~JsonSerializer()
 {
 }
 
-void CJsonSerializer::write(std::shared_ptr<CSGObject> object) noexcept(false)
+void JsonSerializer::write(std::shared_ptr<SGObject> object) noexcept(false)
 {
-	COutputStreamAdapter adapter { stream() };
+	OutputStreamAdapter adapter { stream() };
 	JsonWriter writer(adapter);
 	auto writer_visitor =
 		make_unique<JSONWriterVisitor<JsonWriter>>(writer);
