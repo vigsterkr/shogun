@@ -15,6 +15,8 @@
 #include <shogun/lib/DynamicObjectArray.h>
 #include <shogun/multiclass/MulticlassStrategy.h>
 
+#include <shogun/util/converters.h>
+
 namespace shogun
 {
 
@@ -54,11 +56,11 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 */
 		inline bool set_machine(int32_t num, std::shared_ptr<Machine> machine)
 		{
-			ASSERT(num<m_machines->get_num_elements() && num>=0)
+			ASSERT(num<utils::safe_convert<int32_t>(m_machines.size()) && num>=0)
 			if (machine != NULL && !is_acceptable_machine(machine))
 				SG_ERROR("Machine %s is not acceptable by %s", machine->get_name(), this->get_name())
 
-			m_machines->set_element(machine, num);
+			m_machines.insert(m_machines.begin()+num, machine);
 			return true;
 		}
 
@@ -69,7 +71,7 @@ class MulticlassMachine : public BaseMulticlassMachine
 		 */
 		inline std::shared_ptr<Machine> get_machine(int32_t num) const
 		{
-			return m_machines->get_element_safe<Machine>(num);
+			return m_machines.at(num);
 		}
 
 		/** get outputs of i-th submachine

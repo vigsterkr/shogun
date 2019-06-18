@@ -400,11 +400,11 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_p
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -988,11 +988,11 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_l
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1348,11 +1348,11 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_g
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1713,11 +1713,11 @@ TEST(SingleLaplaceInferenceMethodWithLBFGS,get_marginal_likelihood_derivatives_t
 	inf->register_minimizer(opt);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives

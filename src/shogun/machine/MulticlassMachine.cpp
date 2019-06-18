@@ -62,7 +62,7 @@ void MulticlassMachine::init_strategy()
 
 std::shared_ptr<BinaryLabels> MulticlassMachine::get_submachine_outputs(int32_t i)
 {
-	auto machine = m_machines->get_element<Machine>(i);
+	auto machine = m_machines.at(i);
 	ASSERT(machine)
 	return machine->apply_binary();
 }
@@ -92,7 +92,7 @@ std::shared_ptr<MulticlassLabels> MulticlassMachine::apply_multiclass(std::share
 		int32_t num_vectors=data ? data->get_num_vectors() :
 				get_num_rhs_vectors();
 
-		int32_t num_machines=m_machines->get_num_elements();
+		int32_t num_machines=m_machines.size();
 		if (num_machines <= 0)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 
@@ -187,13 +187,13 @@ std::shared_ptr<MultilabelLabels> MulticlassMachine::apply_multilabel_output(std
 		int32_t num_vectors=data ? data->get_num_vectors() :
 				get_num_rhs_vectors();
 
-		int32_t num_machines=m_machines->get_num_elements();
+		int32_t num_machines=m_machines.size();
 		if (num_machines <= 0)
 			SG_ERROR("num_machines = %d, did you train your machine?", num_machines)
 		REQUIRE(n_outputs<=num_machines,"You request more outputs than machines available")
 
 		auto result=std::make_shared<MultilabelLabels>(num_vectors, n_outputs);
-		std::shared_ptr<BinaryLabels>* outputs=SG_MALLOC(std::shared_ptr<BinaryLabels>, num_machines);
+		std::vector<std::shared_ptr<BinaryLabels>> outputs(num_machines);
 
 		for (int32_t i=0; i < num_machines; ++i)
 			outputs[i] = get_submachine_outputs(i);
@@ -208,8 +208,6 @@ std::shared_ptr<MultilabelLabels> MulticlassMachine::apply_multilabel_output(std
 		}
 		for (int32_t i=0; i < num_machines; ++i)
 			outputs[i].reset();
-
-		SG_FREE(outputs);
 
 		return_labels=result;
 	}
@@ -229,7 +227,7 @@ bool MulticlassMachine::train_machine(std::shared_ptr<Features> data)
 	else
 		init_machine_for_train(data);
 
-	m_machines->reset_array();
+	m_machines.clear();
 	auto train_labels = std::make_shared<BinaryLabels>(get_num_rhs_vectors());
 
 	m_machine->set_labels(train_labels);
@@ -246,7 +244,7 @@ bool MulticlassMachine::train_machine(std::shared_ptr<Features> data)
 		}
 
 		m_machine->train();
-		m_machines->push_back(get_machine_from_trained(m_machine));
+		m_machines.push_back(get_machine_from_trained(m_machine));
 
 		if (subset.vlen)
 		{
@@ -265,10 +263,10 @@ float64_t MulticlassMachine::apply_one(int32_t vec_idx)
 {
 	init_machines_for_apply(NULL);
 
-	ASSERT(m_machines->get_num_elements()>0)
-	SGVector<float64_t> outputs(m_machines->get_num_elements());
+	ASSERT(m_machines.size()>0)
+	SGVector<float64_t> outputs(m_machines.size());
 
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (int32_t i=0; i<m_machines.size(); i++)
 		outputs[i] = get_submachine_output(i, vec_idx);
 
 	float64_t result = m_multiclass_strategy->decide_label(outputs);

@@ -68,7 +68,7 @@
 %include "Converter_includes.i"
 %include "Preprocessor_includes.i"
 %include "Regression_includes.i"
-/*%include "Structure_includes.i"*/
+%include "Structure_includes.i"
 %include "Multiclass_includes.i"
 %include "Transfer_includes.i"
 %include "Loss_includes.i"
@@ -99,7 +99,7 @@
 %include "Classifier.i"
 %include "Regression.i"
 %include "Clustering.i"
-/*%include "Structure.i"*/
+%include "Structure.i"
 %include "Multiclass.i"
 %include "Transfer.i"
 %include "Loss.i"

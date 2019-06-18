@@ -18,25 +18,25 @@
 
 using namespace shogun;
 
-CDomainAdaptationSVM::CDomainAdaptationSVM() : SVMLight()
+DomainAdaptationSVM::DomainAdaptationSVM() : SVMLight()
 {
 	init();
 }
 
-CDomainAdaptationSVM::CDomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> pre_svm, float64_t B_param) : SVMLight(C, k, lab)
+DomainAdaptationSVM::DomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> pre_svm, float64_t B_param) : SVMLight(C, k, lab)
 {
 	init();
 	init(pre_svm, B_param);
 }
 
-CDomainAdaptationSVM::~CDomainAdaptationSVM()
+DomainAdaptationSVM::~DomainAdaptationSVM()
 {
 
 	SG_DEBUG("deleting DomainAdaptationSVM\n")
 }
 
 
-void CDomainAdaptationSVM::init(std::shared_ptr<SVM> pre_svm, float64_t B_param)
+void DomainAdaptationSVM::init(std::shared_ptr<SVM> pre_svm, float64_t B_param)
 {
 	REQUIRE(pre_svm != NULL, "Pre SVM should not be null");
 	// increase reference counts
@@ -53,7 +53,7 @@ void CDomainAdaptationSVM::init(std::shared_ptr<SVM> pre_svm, float64_t B_param)
 	is_presvm_sane();
 }
 
-bool CDomainAdaptationSVM::is_presvm_sane()
+bool DomainAdaptationSVM::is_presvm_sane()
 {
 	if (!presvm) {
 		SG_ERROR("presvm is null")
@@ -79,7 +79,7 @@ bool CDomainAdaptationSVM::is_presvm_sane()
 }
 
 
-bool CDomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
+bool DomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
 {
 
 	if (data)
@@ -123,32 +123,32 @@ bool CDomainAdaptationSVM::train_machine(std::shared_ptr<Features> data)
 }
 
 
-std::shared_ptr<SVM> CDomainAdaptationSVM::get_presvm()
+std::shared_ptr<SVM> DomainAdaptationSVM::get_presvm()
 {
 
 	return presvm;
 }
 
 
-float64_t CDomainAdaptationSVM::get_B()
+float64_t DomainAdaptationSVM::get_B()
 {
 	return B;
 }
 
 
-float64_t CDomainAdaptationSVM::get_train_factor()
+float64_t DomainAdaptationSVM::get_train_factor()
 {
 	return train_factor;
 }
 
 
-void CDomainAdaptationSVM::set_train_factor(float64_t factor)
+void DomainAdaptationSVM::set_train_factor(float64_t factor)
 {
 	train_factor = factor;
 }
 
 
-std::shared_ptr<BinaryLabels> CDomainAdaptationSVM::apply_binary(std::shared_ptr<Features> data)
+std::shared_ptr<BinaryLabels> DomainAdaptationSVM::apply_binary(std::shared_ptr<Features> data)
 {
 	ASSERT(data)
 	ASSERT(presvm->get_bias()==0.0)
@@ -173,7 +173,7 @@ std::shared_ptr<BinaryLabels> CDomainAdaptationSVM::apply_binary(std::shared_ptr
 
 }
 
-void CDomainAdaptationSVM::init()
+void DomainAdaptationSVM::init()
 {
 	presvm = NULL;
 	B = 0;

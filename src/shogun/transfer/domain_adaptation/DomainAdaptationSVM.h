@@ -18,12 +18,12 @@
 namespace shogun
 {
 /** @brief class DomainAdaptationSVM */
-class CDomainAdaptationSVM : public SVMLight
+class DomainAdaptationSVM : public SVMLight
 {
 	public:
 
 		/** default constructor */
-		CDomainAdaptationSVM();
+		DomainAdaptationSVM();
 
 		/** constructor
 		 *
@@ -33,10 +33,10 @@ class CDomainAdaptationSVM : public SVMLight
 		 * @param presvm trained SVM to regularize against
 		 * @param B trade-off constant B
 		 */
-		CDomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> presvm, float64_t B);
+		DomainAdaptationSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab, std::shared_ptr<SVM> presvm, float64_t B);
 
 		/** destructor */
-		virtual ~CDomainAdaptationSVM();
+		virtual ~DomainAdaptationSVM();
 
 		/** init SVM
 		 *

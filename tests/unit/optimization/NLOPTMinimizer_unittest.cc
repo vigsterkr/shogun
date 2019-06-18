@@ -161,8 +161,6 @@ void NLOPTTestCostFunction::set_target(std::shared_ptr<CPiecewiseQuadraticObject
 {
 	if(obj!=m_obj)
 	{
-		
-		
 		m_obj=obj;
 	}
 }
@@ -176,15 +174,15 @@ float64_t NLOPTTestCostFunction::get_cost()
 SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
 	for(index_t i=0; i<num_variables; i++)
 	{
-		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(i);
+		if(node && node->data==m_obj.get())
 			bound=m_obj->get_lower_bound(node->key);
 	}
 	
@@ -194,15 +192,15 @@ SGVector<float64_t> NLOPTTestCostFunction::get_lower_bound()
 SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> bound;
 
 	for(index_t i=0; i<num_variables; i++)
 	{
-		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(i);
+		if(node && node->data==m_obj.get())
 			bound=m_obj->get_upper_bound(node->key);
 	}
 	
@@ -212,15 +210,15 @@ SGVector<float64_t> NLOPTTestCostFunction::get_upper_bound()
 SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 	index_t num_variables=parameters->get_num_elements();
 	SGVector<float64_t> variable;
 
 	for(index_t i=0; i<num_variables; i++)
 	{
-		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(i);
+		if(node && node->data==m_obj.get())
 			variable=m_obj->get_variable(node->key);
 	
 	}
@@ -231,7 +229,7 @@ SGVector<float64_t> NLOPTTestCostFunction::obtain_variable_reference()
 SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 {
 	REQUIRE(m_obj,"object not set\n");
-	auto parameters=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameters=std::make_shared<CMap<TParameter*, SGObject*>>();
 	m_obj->build_gradient_parameter_dictionary(parameters);
 
 	index_t num_gradients=parameters->get_num_elements();
@@ -239,8 +237,8 @@ SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 
 	for(index_t i=0; i<num_gradients; i++)
 	{
-		CMapNode<TParameter*, SGObject*>* node=parameters->get_node_ptr(i);
-		if(node && node->data==m_obj)
+		auto node=parameters->get_node_ptr(i);
+		if(node && node->data==m_obj.get())
 			gradient=m_obj->get_gradient(node->key);
 	}
 	
@@ -249,7 +247,7 @@ SGVector<float64_t>  NLOPTTestCostFunction::get_gradient()
 
 TEST(CNLOPTMinimizer,test1)
 {
-	autoobj=std::make_shared<CPiecewiseQuadraticObject2>();
+	auto obj=std::make_shared<CPiecewiseQuadraticObject2>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);
@@ -267,21 +265,18 @@ TEST(CNLOPTMinimizer,test1)
 	obj->set_x_lower_bound(0.0);
 	obj->set_x_upper_bound(4.0);
 
-	autob=std::make_shared<NLOPTTestCostFunction>();
+	auto b=std::make_shared<NLOPTTestCostFunction>();
 	
 	b->set_target(obj);
 	
-	FirstOrderMinimizer* opt=std::make_shared<CNLOPTMinimizer>(b);
+	auto opt=std::make_shared<NLOPTMinimizer>(b);
 	float64_t cost=opt->minimize();
 	EXPECT_NEAR(cost, 2.0, 1e-6);
-
-	
-	delete opt;
 }
 
 TEST(CNLOPTMinimizer,test2)
 {
-	autoobj=std::make_shared<CPiecewiseQuadraticObject2>();
+	auto obj=std::make_shared<CPiecewiseQuadraticObject2>();
 	SGVector<float64_t> init_x(5);
 	init_x.set_const(0.0);
 	SGVector<float64_t> truth_x(5);
@@ -299,11 +294,11 @@ TEST(CNLOPTMinimizer,test2)
 	obj->set_x_lower_bound(0.0);
 	obj->set_x_upper_bound(4.0);
 
-	autob=std::make_shared<NLOPTTestCostFunction>();
+	auto b=std::make_shared<NLOPTTestCostFunction>();
 	
 	b->set_target(obj);
 	
-	FirstOrderMinimizer* opt=std::make_shared<CNLOPTMinimizer>(b);
+	auto opt=std::make_shared<NLOPTMinimizer>(b);
 	opt->minimize();
 
 	for(index_t i=0; i<init_x.vlen; i++)
@@ -317,8 +312,6 @@ TEST(CNLOPTMinimizer,test2)
 			EXPECT_NEAR(init_x[i], 3.0, 1e-6);
 		}
 	}
-	
-	delete opt;
 }
 #endif /* HAVE_NLOPT */
 #endif //USE_GPL_SHOGUN

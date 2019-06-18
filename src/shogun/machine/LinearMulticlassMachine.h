@@ -30,7 +30,7 @@ class LinearMulticlassMachine : public MulticlassMachine
 		/** default constructor  */
 		LinearMulticlassMachine() : MulticlassMachine(), m_features(NULL)
 		{
-			SG_ADD((std::shared_ptr<SGObject>*)&m_features, "m_features", "Feature object.");
+			SG_ADD(&m_features, "m_features", "Feature object.");
 		}
 
 		/** standard constructor
@@ -64,15 +64,11 @@ class LinearMulticlassMachine : public MulticlassMachine
 		 */
 		void set_features(std::shared_ptr<DotFeatures> f)
 		{
-
-
 			m_features = f;
-
-			for (index_t i=0; i<m_machines->get_num_elements(); i++)
+			for (auto m: m_machines)
 			{
-				auto machine = m_machines->get_element<LinearMachine>(i);
+				auto machine = m->as<LinearMachine>();
 				machine->set_features(f);
-
 			}
 		}
 
@@ -82,7 +78,6 @@ class LinearMulticlassMachine : public MulticlassMachine
 		 */
 		std::shared_ptr<DotFeatures> get_features() const
 		{
-
 			return m_features;
 		}
 
@@ -108,13 +103,12 @@ class LinearMulticlassMachine : public MulticlassMachine
 			if (data)
 				set_features(data->as<DotFeatures>());
 
-			for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+			for (auto m: m_machines)
 			{
-				auto machine = m_machines->get_element<LinearMachine>(i);
+				auto machine = m->as<LinearMachine>();
 				ASSERT(m_features)
 				ASSERT(machine)
 				machine->set_features(m_features);
-
 			}
 
 			return true;

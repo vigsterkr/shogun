@@ -74,7 +74,7 @@ APPLY_MULTICLASS(DistanceMachine);
 APPLY_BINARY(LinearMachine);
 APPLY_BINARY(KernelMachine);
 #ifdef USE_GPL_SHOGUN
-APPLY_BINARY(CWDSVMOcas);
+APPLY_BINARY(WDSVMOcas);
 #endif //USE_GPL_SHOGUN
 APPLY_BINARY(PluginEstimate);
 #ifdef USE_GPL_SHOGUN
@@ -97,10 +97,10 @@ APPLY_STRUCTURED(StructuredOutputMachine);
 APPLY_STRUCTURED(LinearStructuredOutputMachine);
 APPLY_STRUCTURED(KernelStructuredOutputMachine);
 #ifdef USE_MOSEK
-APPLY_STRUCTURED(CPrimalMosekSOSVM);
+APPLY_STRUCTURED(PrimalMosekSOSVM);
 #endif
 #ifdef USE_GPL_SHOGUN
-APPLY_STRUCTURED(CDualLibQPBMSOSVM);
+APPLY_STRUCTURED(DualLibQPBMSOSVM);
 APPLY_LATENT(LatentSVM);
 #endif //USE_GPL_SHOGUN
 
@@ -112,7 +112,7 @@ APPLY_LATENT(LatentSVM);
 %rename(apply_generic) LinearMachine::apply(std::shared_ptr<Features> data=NULL);
 %rename(apply_generic) KernelMachine::apply(std::shared_ptr<Features> data=NULL);
 #ifdef USE_GPL_SHOGUN
-%rename(apply_generic) CWDSVMOcas::apply(std::shared_ptr<Features> data=NULL);
+%rename(apply_generic) WDSVMOcas::apply(std::shared_ptr<Features> data=NULL);
 #endif //USE_GPL_SHOGUN
 %rename(apply_generic) PluginEstimate::apply(std::shared_ptr<Features> data=NULL);
 #ifdef USE_SVMLIGHT

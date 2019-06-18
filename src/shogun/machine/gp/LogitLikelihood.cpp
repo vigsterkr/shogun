@@ -47,7 +47,7 @@ namespace shogun
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /** Class of the probability density function of the normal distribution */
-class NormalPDF : public CFunction
+class NormalPDF : public Function
 {
 public:
 	/** default constructor */
@@ -101,7 +101,7 @@ private:
 };
 
 /** Class of the sigmoid function */
-class SigmoidFunction : public CFunction
+class SigmoidFunction : public Function
 {
 public:
 	/** default constructor */
@@ -142,7 +142,7 @@ private:
 };
 
 /** Class of the function, which is a product of two given functions */
-class ProductFunction : public CFunction
+class ProductFunction : public Function
 {
 public:
 	/** constructor
@@ -150,7 +150,7 @@ public:
 	 * @param f f(x)
 	 * @param g g(x)
 	 */
-	ProductFunction(std::shared_ptr<CFunction> f, std::shared_ptr<CFunction> g)
+	ProductFunction(std::shared_ptr<Function> f, std::shared_ptr<Function> g)
 	{
 
 
@@ -177,13 +177,13 @@ public:
 
 private:
 	/** function f(x) */
-	std::shared_ptr<CFunction> m_f;
+	std::shared_ptr<Function> m_f;
 	/**	function g(x) */
-	std::shared_ptr<CFunction> m_g;
+	std::shared_ptr<Function> m_g;
 };
 
 /** Class of the f(x)=x */
-class LinearFunction : public CFunction
+class LinearFunction : public Function
 {
 public:
 	/** default constructor */
@@ -204,7 +204,7 @@ public:
 };
 
 /** Class of the f(x)=x^2 */
-class QuadraticFunction : public CFunction
+class QuadraticFunction : public Function
 {
 public:
 	/** default constructor */
@@ -391,8 +391,8 @@ SGVector<float64_t> LogitLikelihood::get_log_zeroth_moments(
 
 		// evaluate integral on (-inf, inf)
 #ifdef USE_GPL_SHOGUN
-		r[i]=CIntegration::integrate_quadgk(h, -Math::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(h, mu[i], Math::INFTY);
+		r[i]=Integration::integrate_quadgk(h, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(h, mu[i], Math::INFTY);
 #else
 		SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN
@@ -439,12 +439,12 @@ float64_t LogitLikelihood::get_first_moment(SGVector<float64_t> mu,
 	float64_t Ex=0;
 #ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
-	float64_t Z=CIntegration::integrate_quadgk(h, -Math::INFTY, mu[i])+
-		CIntegration::integrate_quadgk(h, mu[i], Math::INFTY);
+	float64_t Z=Integration::integrate_quadgk(h, -Math::INFTY, mu[i])+
+		Integration::integrate_quadgk(h, mu[i], Math::INFTY);
 
 	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
-	Ex=(CIntegration::integrate_quadgk(k, -Math::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(k, mu[i], Math::INFTY))/Z;
+	Ex=(Integration::integrate_quadgk(k, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(k, mu[i], Math::INFTY))/Z;
 #else
 	SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN
@@ -495,16 +495,16 @@ float64_t LogitLikelihood::get_second_moment(SGVector<float64_t> mu,
 	float64_t Ex2=0;
 #ifdef USE_GPL_SHOGUN
 	// compute Z = \int N(x|mu,sigma)*sigmoid(a*x) dx
-	float64_t Z=CIntegration::integrate_quadgk(h, -Math::INFTY, mu[i])+
-		CIntegration::integrate_quadgk(h, mu[i], Math::INFTY);
+	float64_t Z=Integration::integrate_quadgk(h, -Math::INFTY, mu[i])+
+		Integration::integrate_quadgk(h, mu[i], Math::INFTY);
 
 	// compute 1st moment: E[x] = Z^-1 * \int x*N(x|mu,sigma)*sigmoid(a*x)dx
-	Ex=(CIntegration::integrate_quadgk(k, -Math::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(k, mu[i], Math::INFTY))/Z;
+	Ex=(Integration::integrate_quadgk(k, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(k, mu[i], Math::INFTY))/Z;
 
 	// compute E[x^2] = Z^-1 * \int x^2*N(x|mu,sigma)*sigmoid(a*x)dx
-	Ex2=(CIntegration::integrate_quadgk(p, -Math::INFTY, mu[i])+
-			CIntegration::integrate_quadgk(p, mu[i], Math::INFTY))/Z;
+	Ex2=(Integration::integrate_quadgk(p, -Math::INFTY, mu[i])+
+			Integration::integrate_quadgk(p, mu[i], Math::INFTY))/Z;
 #else
 	SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN

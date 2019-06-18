@@ -83,8 +83,8 @@ std::shared_ptr<Features> ICAConverter::transform(std::shared_ptr<Features> feat
 	if (!inplace)
 		X = X.clone();
 
-	Map<MatrixXd> EX(X.matrix, X.num_rows, X.num_cols);
-	Map<MatrixXd> C(
+	Eigen::Map<MatrixXd> EX(X.matrix, X.num_rows, X.num_cols);
+	Eigen::Map<MatrixXd> C(
 	    m_mixing_matrix.matrix, m_mixing_matrix.num_rows,
 	    m_mixing_matrix.num_cols);
 

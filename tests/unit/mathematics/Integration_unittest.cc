@@ -45,7 +45,7 @@ using namespace shogun;
 
 /** @brief Class of the simple function
  */
-class CSimpleFunction : public CFunction
+class SimpleFunction : public Function
 {
 public:
 	/** returns value of the function at given point
@@ -63,7 +63,7 @@ public:
 /** @brief Class of the probability density function of the normal
  * distribution
  */
-class NormalPDF : public CFunction
+class NormalPDF : public Function
 {
 public:
 	/** constructor
@@ -112,7 +112,7 @@ private:
 /** @brief Class of the probability density function of the
  * non-standardized Student's t-distribution
  */
-class StudentsTPDF : public CFunction
+class StudentsTPDF : public Function
 {
 public:
 	/** constructor
@@ -178,7 +178,7 @@ private:
 
 /** @brief Class of the sigmoid function
  */
-class SigmoidFunction : public CFunction
+class SigmoidFunction : public Function
 {
 public:
 	/** return value of the function at given point
@@ -196,7 +196,7 @@ public:
 /** @brief Class of the function, which is a product of two given
  * functions h(x)=f(x)*g(x)
  */
-class ProductFunction : public CFunction
+class ProductFunction : public Function
 {
 public:
 	/** constructor
@@ -204,7 +204,7 @@ public:
 	 * @param f f(x)
 	 * @param g g(x)
 	 */
-	ProductFunction(std::shared_ptr<CFunction> f, std::shared_ptr<CFunction> g)
+	ProductFunction(std::shared_ptr<Function> f, std::shared_ptr<Function> g)
 	{
 		
 		
@@ -231,9 +231,9 @@ public:
 
 private:
 	/** function f(x) */
-	std::shared_ptr<CFunction> m_f;
+	std::shared_ptr<Function> m_f;
 	/**	function g(x) */
-	std::shared_ptr<CFunction> m_g;
+	std::shared_ptr<Function> m_g;
 };
 
 /** @brief Class of the transform function
@@ -241,7 +241,7 @@ private:
  * integral of N(x,mu,sigma^2)*f(x) on (-inf, inf) using Gauss-Hermite
  * quadrature formula
  */
-class CTransformFunction : public CFunction
+class TransformFunction : public Function
 {
 public:
 	/** constructor
@@ -250,7 +250,7 @@ public:
 	 * @param mu mean
 	 * @param sigma standard deviation
 	 */
-	CTransformFunction(std::shared_ptr<CFunction> f, float64_t mu, float64_t sigma)
+	TransformFunction(std::shared_ptr<Function> f, float64_t mu, float64_t sigma)
 	{
 		
 		m_f=f;
@@ -258,7 +258,7 @@ public:
 		m_sigma=sigma;
 	}
 
-	virtual ~CTransformFunction() {  }
+	virtual ~TransformFunction() {  }
 
 	/** set mean
 	 *
@@ -286,7 +286,7 @@ public:
 
 private:
 	/* function f(x) */
-	std::shared_ptr<CFunction> m_f;
+	std::shared_ptr<Function> m_f;
 
 	/* mean */
 	float64_t m_mu;
@@ -299,27 +299,27 @@ private:
 TEST(Integration,integrate_quadgk_simple_function)
 {
 	// create object of the simple function
-	auto f=std::make_shared<CSimpleFunction>();
+	auto f=std::make_shared<SimpleFunction>();
 	
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -5.1, 3.2);
+	float64_t q=Integration::integrate_quadgk(f, -5.1, 3.2);
 	EXPECT_NEAR(q, 165.419000000000, 1E-12);
 
-	q=CIntegration::integrate_quadgk(f, 0.0, 0.01);
+	q=Integration::integrate_quadgk(f, 0.0, 0.01);
 	EXPECT_NEAR(q, 0.00000100000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -2.0, -0.2);
+	q=Integration::integrate_quadgk(f, -2.0, -0.2);
 	EXPECT_NEAR(q, 7.99200000000000, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, -21.23, 0.0);
+	q=Integration::integrate_quadgk(f, -21.23, 0.0);
 	EXPECT_NEAR(q, 9568.63486700000, 1E-11);
 
-	q=CIntegration::integrate_quadgk(f, 0.0, 21.23);
+	q=Integration::integrate_quadgk(f, 0.0, 21.23);
 	EXPECT_NEAR(q, 9568.63486700000, 1E-11);
 
-	q=CIntegration::integrate_quadgk(f, -21.11, 21.11);
+	q=Integration::integrate_quadgk(f, -21.11, 21.11);
 	EXPECT_NEAR(q, 18814.5872620000, 1E-10);
 
 	// clean up
@@ -334,31 +334,31 @@ TEST(Integration,integrate_quadgk_normal_pdf)
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -Math::INFTY, Math::INFTY);
+	float64_t q=Integration::integrate_quadgk(f, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 1.000000000000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -Math::INFTY, -0.1);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, -0.1);
 	EXPECT_NEAR(q, 0.158655253931457, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -Math::INFTY, 0.01);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, 0.01);
 	EXPECT_NEAR(q, 0.539827837277029, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 0.03, Math::INFTY);
+	q=Integration::integrate_quadgk(f, 0.03, Math::INFTY);
 	EXPECT_NEAR(q, 0.382088577811047, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.4, Math::INFTY);
+	q=Integration::integrate_quadgk(f, -0.4, Math::INFTY);
 	EXPECT_NEAR(q, 0.999968328759696, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.1959963984540054, 0.1959963984540054);
+	q=Integration::integrate_quadgk(f, -0.1959963984540054, 0.1959963984540054);
 	EXPECT_NEAR(q, 0.950000000000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.3, 0.1);
+	q=Integration::integrate_quadgk(f, -0.3, 0.1);
 	EXPECT_NEAR(q, 0.839994848036913, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 0.2, 0.4);
+	q=Integration::integrate_quadgk(f, 0.2, 0.4);
 	EXPECT_NEAR(q, 0.0227184607063461, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.1, -0.01);
+	q=Integration::integrate_quadgk(f, -0.1, -0.01);
 	EXPECT_NEAR(q, 0.301516908791514, 1E-15);
 
 	// clean up
@@ -374,28 +374,28 @@ TEST(Integration,integrate_quadgk_students_t_pdf)
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -Math::INFTY, Math::INFTY);
+	float64_t q=Integration::integrate_quadgk(f, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 1.000000000000000, 1E-10);
 
-	q=CIntegration::integrate_quadgk(f, -Math::INFTY, -0.7);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, -0.7);
 	EXPECT_NEAR(q, 0.00584559356909982, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -Math::INFTY, 2.0);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, 2.0);
 	EXPECT_NEAR(q, 0.813049516849971, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 1.3, Math::INFTY);
+	q=Integration::integrate_quadgk(f, 1.3, Math::INFTY);
 	EXPECT_NEAR(q, 0.645201369285002, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.4, Math::INFTY);
+	q=Integration::integrate_quadgk(f, -0.4, Math::INFTY);
 	EXPECT_NEAR(q, 0.990448168804432, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, 1.25, 1.75);
+	q=Integration::integrate_quadgk(f, 1.25, 1.75);
 	EXPECT_NEAR(q, 0.356670036818137, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.3, 0.1);
+	q=Integration::integrate_quadgk(f, -0.3, 0.1);
 	EXPECT_NEAR(q, 0.0130267055593582, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -0.2, 2.0);
+	q=Integration::integrate_quadgk(f, -0.2, 2.0);
 	EXPECT_NEAR(q, 0.7994108541947792, 1E-15);
 
 	// clean up
@@ -410,22 +410,22 @@ TEST(Integration,integrate_quadgk_sigmoid_function)
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(f, -Math::INFTY, 0.0);
+	float64_t q=Integration::integrate_quadgk(f, -Math::INFTY, 0.0);
 	EXPECT_NEAR(q, 0.693147180559945, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -Math::INFTY, -2.7);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, -2.7);
 	EXPECT_NEAR(q, 0.0650435617765905, 1E-15);
 
-	q=CIntegration::integrate_quadgk(f, -Math::INFTY, 3.0);
+	q=Integration::integrate_quadgk(f, -Math::INFTY, 3.0);
 	EXPECT_NEAR(q, 3.04858735157374, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, -1.0, 5.0);
+	q=Integration::integrate_quadgk(f, -1.0, 5.0);
 	EXPECT_NEAR(q, 4.69345366097090, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, 10.0, 20.0);
+	q=Integration::integrate_quadgk(f, 10.0, 20.0);
 	EXPECT_NEAR(q, 9.99995460316194, 1E-14);
 
-	q=CIntegration::integrate_quadgk(f, -3.0, -2.0);
+	q=Integration::integrate_quadgk(f, -3.0, -2.0);
 	EXPECT_NEAR(q, 0.0783406594692304, 1E-15);
 
 	// clean up
@@ -447,22 +447,22 @@ TEST(Integration,integrate_quadgk_product_sigmoid_normal_pdf)
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(h, -Math::INFTY, Math::INFTY);
+	float64_t q=Integration::integrate_quadgk(h, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 0.500000000000000, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -Math::INFTY, 0.2);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, 0.2);
 	EXPECT_NEAR(q, 0.487281864084370, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -Math::INFTY, -0.1);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, -0.1);
 	EXPECT_NEAR(q, 0.0732934168890405, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, 0.03, Math::INFTY);
+	q=Integration::integrate_quadgk(h, 0.03, Math::INFTY);
 	EXPECT_NEAR(q, 0.200562444119857, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -0.4, Math::INFTY);
+	q=Integration::integrate_quadgk(h, -0.4, Math::INFTY);
 	EXPECT_NEAR(q, 0.499987460846813, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -2.0, 0.0);
+	q=Integration::integrate_quadgk(h, -2.0, 0.0);
 	EXPECT_NEAR(q, 0.240042999495053, 1E-15);
 
 	// clean up
@@ -485,22 +485,22 @@ TEST(Integration,integrate_quadgk_product_students_t_pdf_normal_pdf)
 
 	// compare approximate value of definite integral with result form
 	// Octave package (quadgk.m)
-	float64_t q=CIntegration::integrate_quadgk(h, -Math::INFTY, Math::INFTY);
+	float64_t q=Integration::integrate_quadgk(h, -Math::INFTY, Math::INFTY);
 	EXPECT_NEAR(q, 0.145255619704035, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -5.0, Math::INFTY);
+	q=Integration::integrate_quadgk(h, -5.0, Math::INFTY);
 	EXPECT_NEAR(q, 0.145255619704012, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, 0.2, Math::INFTY);
+	q=Integration::integrate_quadgk(h, 0.2, Math::INFTY);
 	EXPECT_NEAR(q, 0.0339899906690967, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -Math::INFTY, -0.8);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, -0.8);
 	EXPECT_NEAR(q, 0.0127254813827678, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -Math::INFTY, 2.17);
+	q=Integration::integrate_quadgk(h, -Math::INFTY, 2.17);
 	EXPECT_NEAR(q, 0.145255453120542, 1E-15);
 
-	q=CIntegration::integrate_quadgk(h, -20.0, 3.0);
+	q=Integration::integrate_quadgk(h, -20.0, 3.0);
 	EXPECT_NEAR(q, 0.145255619691797, 1E-14);
 
 	// clean up
@@ -514,12 +514,12 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 
 	// create object of transform function
 	// g(x)=(1/sqrt(pi))*f(sqrt(2)*sigma*x+mu)
-	auto g=std::make_shared<CTransformFunction>(f, 0.0, 0.1);
+	auto g=std::make_shared<TransformFunction>(f, 0.0, 0.1);
 	
 
 	// compute integral of sigmoid(x)*N(x, 0.0, 0.01) on (-inf, inf)
 	// using Gauss-Hermite quadrature
-	float64_t q=CIntegration::integrate_quadgh(g);
+	float64_t q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.500000000000000, 1E-15);
 
 	// compute integral of sigmoid(x)*N(x, 2.0, 0.04) on (-inf, inf)
@@ -527,7 +527,7 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 	g->set_mu(2.0);
 	g->set_sigma(0.2);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.879202123093179, 1E-15);
 
 	// compute integral of sigmoid(x)*N(x, -1.0, 0.0009) on (-inf,
@@ -535,7 +535,7 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 	g->set_mu(-1.0);
 	g->set_sigma(0.03);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.268982294855682, 1E-15);
 
 	// compute integral of sigmoid(x)*N(x, -2.5, 1.0) on (-inf, inf)
@@ -543,7 +543,7 @@ TEST(Integration,integrate_quadgh_product_sigmoid_normal_pdf)
 	g->set_mu(-2.5);
 	g->set_sigma(1.0);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.105362117215756, 1E-15);
 
 	// clean up
@@ -558,12 +558,12 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 
 	// create object of transform function
 	// g(x)=(1/sqrt(pi))*f(sqrt(2)*sigma*x+mu)
-	auto g=std::make_shared<CTransformFunction>(f, 0.0, 0.1);
+	auto g=std::make_shared<TransformFunction>(f, 0.0, 0.1);
 	
 
 	// compute integral of t(x, 0.1, 0.7, 0.3)*N(x, 0, 0.01) on (-inf,
 	// inf) using Gauss-Hermite quadrature formula
-	float64_t q=CIntegration::integrate_quadgh(g);
+	float64_t q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.0149093164709605, 1E-15);
 
 	// compute integral of t(x, 1, 1.5, 5)*N(x, 0, 0.16) on (-inf,
@@ -575,7 +575,7 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 	g->set_sigma(0.4);
 	g->set_mu(1.0);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.310385847323180, 1E-15);
 
 	// compute integral of t(x, 1, 0.5, 10)*N(x, 1, 0.49) on (-inf,
@@ -587,7 +587,7 @@ TEST(Integration,integrate_quadgh_product_students_t_pdf_normal_pdf)
 	g->set_sigma(0.7);
 	g->set_mu(1.0);
 
-	q=CIntegration::integrate_quadgh(g);
+	q=Integration::integrate_quadgh(g);
 	EXPECT_NEAR(q, 0.290698368717942, 1E-15);
 
 	// clean up
@@ -601,7 +601,7 @@ TEST(Integration, generate_gauher)
 	SGVector<float64_t> xgh(n);
 	SGVector<float64_t> wgh(n);
 
-	CIntegration::generate_gauher(xgh, wgh);
+	Integration::generate_gauher(xgh, wgh);
 
 	SGVector<index_t> index = Math::argsort(xgh);
 
@@ -695,7 +695,7 @@ TEST(Integration, generate_gauher20)
 	SGVector<float64_t> xgh(n);
 	SGVector<float64_t> wgh(n);
 
-	CIntegration::generate_gauher20(xgh, wgh);
+	Integration::generate_gauher20(xgh, wgh);
 
 	abs_tolerance = Math::get_abs_tolerance(-7.619048541679757, rel_tolerance);
 	EXPECT_NEAR(xgh[0],  -7.619048541679757,  abs_tolerance);

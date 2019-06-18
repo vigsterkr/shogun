@@ -88,7 +88,7 @@ TEST(ProbitVGLikelihood,get_variational_expection)
 	v[8] = 100;
 	v[9] = 625;
 
-	auto lik = std::make_shared<CProbitVGLikelihood>();
+	auto lik = std::make_shared<ProbitVGLikelihood>();
 	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
@@ -165,11 +165,11 @@ TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	v[8] = 100;
 	v[9] = 625;
 
-	auto lik = std::make_shared<CProbitVGLikelihood>();
+	auto lik = std::make_shared<ProbitVGLikelihood>();
 	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=/*lik->m*/_parameters->get_parameter("sigma2");
+	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 
 	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
 
@@ -245,11 +245,11 @@ TEST(ProbitVGLikelihood,get_variational_first_derivative_wrt_mu)
 	v[8] = 100;
 	v[9] = 625;
 
-	auto lik = std::make_shared<CProbitVGLikelihood>();
+	auto lik = std::make_shared<ProbitVGLikelihood>();
 	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* mu_param=/*lik->m*/_parameters->get_parameter("mu");
+	TParameter* mu_param=lik->m_parameters->get_parameter("mu");
 
 	SGVector<float64_t> dm = lik->get_variational_first_derivative(mu_param);
 

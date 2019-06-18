@@ -10,10 +10,7 @@ using namespace shogun;
 
 BaseMulticlassMachine::BaseMulticlassMachine()
 {
-	m_machines = std::make_shared<DynamicObjectArray>();
-	
-
-	SG_ADD((std::shared_ptr<SGObject>*)&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
+	SG_ADD(&m_machines, "machines", "Machines that jointly make up the multi-class machine.");
 }
 
 BaseMulticlassMachine::~BaseMulticlassMachine()
@@ -23,7 +20,7 @@ BaseMulticlassMachine::~BaseMulticlassMachine()
 
 int32_t BaseMulticlassMachine::get_num_machines() const
 {
-	return m_machines->get_num_elements();
+	return m_machines.size();
 }
 
 EProblemType BaseMulticlassMachine::get_machine_problem_type() const

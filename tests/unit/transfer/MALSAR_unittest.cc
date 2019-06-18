@@ -18,8 +18,8 @@
 
 using namespace shogun;
 
-typedef std::pair<DotFeatures*, DotFeatures*> SplittedFeatures;
-typedef std::pair<SplittedFeatures, BinaryLabels*> SplittedDataset;
+typedef std::pair<std::shared_ptr<DotFeatures>, std::shared_ptr<DotFeatures>> SplittedFeatures;
+typedef std::pair<SplittedFeatures, std::shared_ptr<BinaryLabels>> SplittedDataset;
 
 #ifdef HAVE_LAPACK
 SplittedDataset generate_data()
@@ -55,11 +55,11 @@ TEST(MalsarL12Test, train)
 {
 	SplittedDataset data = generate_data();
 
-	auto task_group = std::make_shared<CTaskGroup>();
-	auto task = std::make_shared<CTask>(0, data.second->get_num_labels());
+	auto task_group = std::make_shared<TaskGroup>();
+	auto task = std::make_shared<Task>(0, data.second->get_num_labels());
 	task_group->append_task(task);
 
-	auto mtlr = std::make_shared<CMultitaskL12LogisticRegression>(0.1,0.1,data.first.first,data.second,task_group);
+	auto mtlr = std::make_shared<MultitaskL12LogisticRegression>(0.1,0.1,data.first.first,data.second,task_group);
 	mtlr->train();
 	mtlr->set_features(data.first.second);
 	mtlr->set_current_task(0);
@@ -72,11 +72,11 @@ TEST(MalsarClusteredTest, train)
 {
 	SplittedDataset data = generate_data();
 
-	auto task_group = std::make_shared<CTaskGroup>();
-	auto task = std::make_shared<CTask>(0, data.second->get_num_labels());
+	auto task_group = std::make_shared<TaskGroup>();
+	auto task = std::make_shared<Task>(0, data.second->get_num_labels());
 	task_group->append_task(task);
 
-	auto mtlr = std::make_shared<CMultitaskClusteredLogisticRegression>(0.1,0.1,data.first.first,data.second,task_group,1);
+	auto mtlr = std::make_shared<MultitaskClusteredLogisticRegression>(0.1,0.1,data.first.first,data.second,task_group,1);
 	mtlr->train();
 	mtlr->set_features(data.first.second);
 	mtlr->set_current_task(0);
@@ -89,11 +89,11 @@ TEST(MalsarTraceTest, train)
 {
 	SplittedDataset data = generate_data();
 
-	auto task_group = std::make_shared<CTaskGroup>();
-	auto task = std::make_shared<CTask>(0, data.second->get_num_labels());
+	auto task_group = std::make_shared<TaskGroup>();
+	auto task = std::make_shared<Task>(0, data.second->get_num_labels());
 	task_group->append_task(task);
 
-	auto mtlr = std::make_shared<CMultitaskTraceLogisticRegression>(0.1,data.first.first,data.second,task_group);
+	auto mtlr = std::make_shared<MultitaskTraceLogisticRegression>(0.1,data.first.first,data.second,task_group);
 	mtlr->train();
 	mtlr->set_features(data.first.second);
 	mtlr->set_current_task(0);

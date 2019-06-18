@@ -88,8 +88,8 @@ TEST(LogitDVGLikelihood,get_variational_expection)
 	v[8] = 100;
 	v[9] = 625;
 
-	autolik = std::make_shared<CLogitDVGLikelihood>();
-	BinaryLabels* lab = std::make_shared<BinaryLabels>(y);
+	auto lik = std::make_shared<LogitDVGLikelihood>();
+	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
 	SGVector<float64_t> aa= lik->get_variational_expection();
@@ -165,11 +165,11 @@ TEST(LogitDVGLikelihood,get_variational_first_derivative_wrt_sigma2)
 	v[8] = 100;
 	v[9] = 625;
 
-	autolik = std::make_shared<CLogitDVGLikelihood>();
-	BinaryLabels* lab = std::make_shared<BinaryLabels>(y);
+	auto lik = std::make_shared<LogitDVGLikelihood>();
+	auto lab = std::make_shared<BinaryLabels>(y);
 	lik->set_variational_distribution(m, v, lab);
 
-	TParameter* s2_param=/*lik->m*/_parameters->get_parameter("sigma2");
+	TParameter* s2_param=lik->m_parameters->get_parameter("sigma2");
 
 	SGVector<float64_t> dv = lik->get_variational_first_derivative(s2_param);
 

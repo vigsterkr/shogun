@@ -45,9 +45,9 @@ std::shared_ptr<MulticlassLabels> RelaxedTree::apply_multiclass(std::shared_ptr<
 	}
 
 	// init kernels for all sub-machines
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (auto m: m_machines)
 	{
-		auto machine = m_machines->get_element<SVM>(i);
+		auto machine = m->as<SVM>();
 		auto kernel = machine->get_kernel();
 		auto lhs = kernel->get_lhs();
 		kernel->init(lhs, m_feats);
@@ -69,7 +69,7 @@ float64_t RelaxedTree::apply_one(int32_t idx)
 	int32_t klass = -1;
 	while (node != NULL)
 	{
-		auto svm = m_machines->get_element<SVM>(node->machine());
+		auto svm = m_machines.at(node->machine())->as<SVM>();
 		float64_t result = svm->apply_one(idx);
 
 		if (result < 0)
@@ -227,8 +227,8 @@ std::shared_ptr<RelaxedTree::bnode_t> RelaxedTree::train_node(const SGMatrix<flo
 	auto node = std::make_shared<bnode_t>();
 
 
-	m_machines->push_back(best_svm);
-	node->machine(m_machines->get_num_elements()-1);
+	m_machines.push_back(best_svm);
+	node->machine(m_machines.size()-1);
 
 	SGVector<int32_t> long_mu(m_num_classes);
 	std::fill(&long_mu[0], &long_mu[m_num_classes], -2);

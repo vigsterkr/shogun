@@ -315,7 +315,7 @@ void KNN::init_solver(KNN_SOLVER knn_solver)
 	case KNN_COVER_TREE:
 	{
 #ifdef USE_GPL_SHOGUN
-		solver = std::make_shared<CCoverTreeKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
+		solver = std::make_shared<CoverTreeKNNSolver>(m_k, m_q, m_num_classes, m_min_label, m_train_labels);
 
 		break;
 #else

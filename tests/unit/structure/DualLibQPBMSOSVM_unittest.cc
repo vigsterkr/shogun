@@ -82,15 +82,15 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 
 	// Create train labels
 	SGVector<float64_t> labs = create_test_labels(N);
-	CMulticlassSOLabels* labels = std::make_shared<CMulticlassSOLabels>(labs);
+	auto labels = std::make_shared<MulticlassSOLabels>(labs);
 
 	// Create train features
 	SGSparseMatrix<float64_t> feats = create_test_features(N, feat_dim, num_feat);
-	SparseFeatures< float64_t >* features = std::make_shared<SparseFeatures>< float64_t >(feats);
+	auto features = std::make_shared<SparseFeatures< float64_t >>(feats);
 
 	// Create SO model, SO-SVM
-	CMulticlassModel* model = new CMulticlassModel(features, labels);
-	CDualLibQPBMSOSVM* sosvm = std::make_shared<CDualLibQPBMSOSVM>(model, labels, 1e3);
+	auto model = std::make_shared<MulticlassModel>(features, labels);
+	auto sosvm = std::make_shared<DualLibQPBMSOSVM>(model, labels, 1e3);
 	
 
 	sosvm->set_cleanAfter(10);
@@ -112,8 +112,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 	ASSERT_LE(res.nzA, 8u);
 	ASSERT_LE(res.exitflag, 0);
 
-	StructuredLabels* out = sosvm->apply()->as<StructuredLabels>();
-	SG_REF(out);
+	auto out = sosvm->apply()->as<StructuredLabels>();
 
 	// Compute error
 	//-------------------------------------------------------------------------
@@ -121,7 +120,7 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 
 	for (int32_t i=0; i<num_feat; ++i)
 	{
-		RealNumber* rn = out->get_label(i)->as<RealNumber>();
+		auto rn = out->get_label(i)->as<RealNumber>();
 		error+=(rn->value==labs.get_element(i)) ? 0.0 : 1.0;
 		
 	}
@@ -129,9 +128,6 @@ TEST_P(DualLibQPBMSOSVMTestLoopSolvers,train_small_problem_and_predict)
 	// SG_SPRINT("Error = %lf %% \n", error/num_feat*100);
 	ASSERT_LE(error/num_feat*100, 75.0);
 
-	// Free memory
-	
-	SG_UNREF(out);
 }
 
 INSTANTIATE_TEST_CASE_P(IterateAllBMSOSolvers,

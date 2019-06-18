@@ -158,7 +158,6 @@ DynProg::~DynProg()
 	  SG_FREE(m_num_lin_feat_plifs_cum);
 
 }
-#if 0
 ////////////////////////////////////////////////////////////////////////////////
 int32_t DynProg::get_num_svms()
 {
@@ -2454,9 +2453,8 @@ void DynProg::lookup_content_svm_values(const int32_t from_state, const int32_t 
 	content_svm_values_time += MyTime.time_diff_sec() ;
 #endif
 }
-void DynProg::set_intron_list(std::shared_ptr<CIntronList> intron_list, int32_t num_plifs)
+void DynProg::set_intron_list(std::shared_ptr<IntronList> intron_list, int32_t num_plifs)
 {
 	m_intron_list = intron_list;
 	m_num_intron_plifs = num_plifs;
 }
-#endif

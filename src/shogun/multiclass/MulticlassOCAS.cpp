@@ -125,13 +125,13 @@ bool MulticlassOCAS::train_machine(std::shared_ptr<Features> data)
 	SG_DEBUG("QP exit flag [qp_exitflag] = %d \n",value.qp_exitflag)
 	SG_DEBUG("Exit flag [exitflag] = %d \n",value.exitflag)
 
-	m_machines->reset_array();
+	m_machines.clear();
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		auto machine = std::make_shared<LinearMachine>();
 		machine->set_w(SGVector<float64_t>(&user_data.W[i*num_features],num_features,false).clone());
 
-		m_machines->push_back(machine);
+		m_machines.push_back(machine);
 	}
 
 	SG_FREE(user_data.W);

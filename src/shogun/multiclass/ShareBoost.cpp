@@ -68,9 +68,9 @@ bool ShareBoost::train_machine(std::shared_ptr<Features> data)
 	m_activeset = SGVector<int32_t>(m_fea.num_rows);
 	m_activeset.vlen = 0;
 
-	m_machines->reset_array();
+	m_machines.clear();
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
-		m_machines->push_back(std::make_shared<LinearMachine>());
+		m_machines.push_back(std::make_shared<LinearMachine>());
 
 	auto timer = std::make_shared<Time>();
 
@@ -112,7 +112,7 @@ void ShareBoost::compute_pred()
 	auto subset_fea = std::make_shared<DenseSubsetFeatures<float64_t>>(fea, m_activeset);
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 	{
-		auto machine = m_machines->get_element<LinearMachine>(i);
+		auto machine = m_machines.at(i)->as<LinearMachine>();
 		auto lab = machine->apply_regression(subset_fea);
 		SGVector<float64_t> lab_raw = lab->get_labels();
 		std::copy(lab_raw.vector, lab_raw.vector + lab_raw.vlen, m_pred.get_column_vector(i));
@@ -127,7 +127,7 @@ void ShareBoost::compute_pred(const float64_t *W)
 
 	for (int32_t i=0; i < m_multiclass_strategy->get_num_classes(); ++i)
 	{
-		auto machine = m_machines->get_element<LinearMachine>(i);
+		auto machine = m_machines.at(i)->as<LinearMachine>();
 		SGVector<float64_t> w(w_len);
 		std::copy(W + i*w_len, W + (i+1)*w_len, w.vector);
 		machine->set_w(w);

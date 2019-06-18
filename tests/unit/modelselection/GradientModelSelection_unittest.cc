@@ -76,16 +76,16 @@ TEST(GradientModelSelection,select_model_exact_inference)
 	auto gpr=std::make_shared<GaussianProcessRegression>(inf);
 
 	// specify gradient evaluation object
-	auto grad_eval=std::make_shared<CGradientEvaluation>(gpr, feat_train,
-			lab_train, std::make_shared<CGradientCriterion>(), false);
+	auto grad_eval=std::make_shared<GradientEvaluation>(gpr, feat_train,
+			lab_train, std::make_shared<GradientCriterion>(), false);
 
 	// set diffirentiable function
 	grad_eval->set_function(inf);
 
 	// specify gradient search
-	auto grad_search=std::make_shared<CGradientModelSelection>(grad_eval);
+	auto grad_search=std::make_shared<GradientModelSelection>(grad_eval);
 
-	autominimizer = std::make_shared<CNLOPTMinimizer>();
+	auto minimizer = std::make_shared<NLOPTMinimizer>();
 	minimizer->set_nlopt_parameters(LD_MMA);
 	grad_search->set_minimizer(minimizer);
 
@@ -160,15 +160,15 @@ TEST(GradientModelSelection,select_model_ep_inference)
 	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 
 	// specify gradient evaluation object
-	auto grad_eval=std::make_shared<CGradientEvaluation>(gpc, features_train,
-			labels_train, std::make_shared<CGradientCriterion>(), false);
+	auto grad_eval=std::make_shared<GradientEvaluation>(gpc, features_train,
+			labels_train, std::make_shared<GradientCriterion>(), false);
 
 	// set diffirentiable function
 	grad_eval->set_function(inf);
 
 	// specify gradient search
-	auto grad_search=std::make_shared<CGradientModelSelection>(grad_eval);
-	autominimizer = std::make_shared<CNLOPTMinimizer>();
+	auto grad_search=std::make_shared<GradientModelSelection>(grad_eval);
+	auto minimizer = std::make_shared<NLOPTMinimizer>();
 	minimizer->set_nlopt_parameters(LD_MMA);
 	grad_search->set_minimizer(minimizer);
 

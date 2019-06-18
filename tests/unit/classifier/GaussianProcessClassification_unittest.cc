@@ -68,7 +68,7 @@
 using namespace shogun;
 
 #ifdef USE_GPL_SHOGUN
-class GaussianProcessClassification : public ::testing::Test
+class GaussianProcessClassificationTest : public ::testing::Test
 {
 public:
 	virtual void SetUp()
@@ -125,9 +125,9 @@ public:
 		}
 
 		// shogun representation of features and labels
-		features_train = std::make_shared<DenseFeatures><float64_t>(feat_train);
+		features_train = std::make_shared<DenseFeatures<float64_t>>(feat_train);
 		labels_train = std::make_shared<BinaryLabels>(lab_train);
-		features_test = std::make_shared<DenseFeatures><float64_t>(feat_test);
+		features_test = std::make_shared<DenseFeatures<float64_t>>(feat_test);
 		
 		
 		
@@ -142,11 +142,6 @@ public:
 
 	virtual void TearDown()
 	{
-		
-		
-		
-		
-		
 	}
 	const index_t m = 25;
 	const index_t n = 10;
@@ -158,18 +153,18 @@ public:
 };
 
 class GaussianProcessClassificationUsingSingleLaplaceWithLBFGS
-    : public GaussianProcessClassification
+    : public GaussianProcessClassificationTest
 {
 public:
 	virtual void SetUp()
 	{
-		GaussianProcessClassification::SetUp();
+		GaussianProcessClassificationTest::SetUp();
 
 		// probit likelihood
 		auto likelihood = std::make_shared<ProbitLikelihood>();
 
 		// specify GP classification with SingleLaplace inference
-		SingleLaplaceInferenceMethod* inf = std::make_shared<SingleLaplaceInferenceMethod>(
+		auto inf = std::make_shared<SingleLaplaceInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 		ELBFGSLineSearch linesearch = BACKTRACKING_STRONG_WOLFE;
 		auto opt = std::make_shared<LBFGSMinimizer>();
@@ -179,12 +174,12 @@ public:
 		inf->register_minimizer(opt);
 
 		// train Gaussian process binary classifier
-		gpc = new GaussianProcessClassification(inf);
+		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
 	virtual void TearDown()
 	{
-		GaussianProcessClassification::TearDown();
+		GaussianProcessClassificationTest::TearDown();
 		
 	}
 	float64_t abs_tolerance;
@@ -199,26 +194,26 @@ public:
 };
 
 class GaussianProcessClassificationUsingKLCovariance
-    : public GaussianProcessClassification
+    : public GaussianProcessClassificationTest
 {
 public:
 	virtual void SetUp()
 	{
-		GaussianProcessClassification::SetUp();
+		GaussianProcessClassificationTest::SetUp();
 
 		// probit likelihood
-		auto likelihood = std::make_shared<CLogitVGLikelihood>();
+		auto likelihood = std::make_shared<LogitVGLikelihood>();
 
-		KLCovarianceInferenceMethod* inf = std::make_shared<KLCovarianceInferenceMethod>(
+		auto inf = std::make_shared<KLCovarianceInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
-		gpc = new GaussianProcessClassification(inf);
+		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
 	virtual void TearDown()
 	{
-		GaussianProcessClassification::TearDown();
+		GaussianProcessClassificationTest::TearDown();
 		
 	}
 	float64_t abs_tolerance;
@@ -227,26 +222,26 @@ public:
 };
 
 class GaussianProcessClassificationUsingKLCholesky
-    : public GaussianProcessClassification
+    : public GaussianProcessClassificationTest
 {
 public:
 	virtual void SetUp()
 	{
-		GaussianProcessClassification::SetUp();
+		GaussianProcessClassificationTest::SetUp();
 
 		// probit likelihood
-		auto likelihood = std::make_shared<CLogitVGLikelihood>();
+		auto likelihood = std::make_shared<LogitVGLikelihood>();
 
-		KLCholeskyInferenceMethod* inf = std::make_shared<KLCholeskyInferenceMethod>(
+		auto inf = std::make_shared<KLCholeskyInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
-		gpc = new GaussianProcessClassification(inf);
+		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
 	virtual void TearDown()
 	{
-		GaussianProcessClassification::TearDown();
+		GaussianProcessClassificationTest::TearDown();
 		
 	}
 	float64_t abs_tolerance;
@@ -255,26 +250,26 @@ public:
 };
 
 class GaussianProcessClassificationUsingKLDiagonal
-    : public GaussianProcessClassification
+    : public GaussianProcessClassificationTest
 {
 public:
 	virtual void SetUp()
 	{
-		GaussianProcessClassification::SetUp();
+		GaussianProcessClassificationTest::SetUp();
 
 		// probit likelihood
-		auto likelihood = std::make_shared<CLogitVGLikelihood>();
+		auto likelihood = std::make_shared<LogitVGLikelihood>();
 
-		KLDiagonalInferenceMethod* inf = std::make_shared<KLDiagonalInferenceMethod>(
+		auto inf = std::make_shared<KLDiagonalInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
-		gpc = new GaussianProcessClassification(inf);
+		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
 	virtual void TearDown()
 	{
-		GaussianProcessClassification::TearDown();
+		GaussianProcessClassificationTest::TearDown();
 		
 	}
 	float64_t abs_tolerance;
@@ -283,26 +278,26 @@ public:
 };
 
 class GaussianProcessClassificationUsingKLDual
-    : public GaussianProcessClassification
+    : public GaussianProcessClassificationTest
 {
 public:
 	virtual void SetUp()
 	{
-		GaussianProcessClassification::SetUp();
+		GaussianProcessClassificationTest::SetUp();
 
 		// probit likelihood
-		auto likelihood = std::make_shared<CLogitDVGLikelihood>();
+		auto likelihood = std::make_shared<LogitDVGLikelihood>();
 
-		CKLDualInferenceMethod* inf = std::make_shared<CKLDualInferenceMethod>(
+		auto inf = std::make_shared<KLDualInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
 
 		// train Gaussian process binary classifier
-		gpc = new GaussianProcessClassification(inf);
+		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
 	virtual void TearDown()
 	{
-		GaussianProcessClassification::TearDown();
+		GaussianProcessClassificationTest::TearDown();
 
 		
 	}
@@ -313,30 +308,30 @@ public:
 
 #if defined HAVE_NLOPT
 class GaussianProcessClassificationUsingSingleLaplaceWithNLOPT
-    : public GaussianProcessClassification
+    : public GaussianProcessClassificationTest
 {
 public:
 	virtual void SetUp()
 	{
-		GaussianProcessClassification::SetUp();
+		GaussianProcessClassificationTest::SetUp();
 
 		// probit likelihood
 		auto likelihood = std::make_shared<ProbitLikelihood>();
 		
 
 		// specify GP classification with SingleLaplace inference
-		SingleLaplaceInferenceMethod* inf = std::make_shared<SingleLaplaceInferenceMethod>(
+		auto inf = std::make_shared<SingleLaplaceInferenceMethod>(
 		    kernel, features_train, mean, labels_train, likelihood);
-		FirstOrderMinimizer* opt = std::make_shared<CNLOPTMinimizer>();
+		auto opt = std::make_shared<NLOPTMinimizer>();
 		inf->register_minimizer(opt);
 
 		// train gaussian process classifier
-		gpc = new GaussianProcessClassification(inf);
+		gpc = std::make_shared<GaussianProcessClassification>(inf);
 		gpc->train();
 	}
 	virtual void TearDown()
 	{
-		GaussianProcessClassification::TearDown();
+		GaussianProcessClassificationTest::TearDown();
 		
 	}
 	float64_t abs_tolerance;
@@ -384,11 +379,11 @@ public:
 		lab_train[5] = -1;
 
 		// shogun representation of features and labels
-		DenseFeatures<float64_t>* features_train =
-		    std::make_shared<DenseFeatures><float64_t>(feat_train);
-		DenseFeatures<float64_t>* latent_features_train =
-		    std::make_shared<DenseFeatures><float64_t>(lat_feat_train);
-		BinaryLabels* labels_train = std::make_shared<BinaryLabels>(lab_train);
+		auto features_train =
+		    std::make_shared<DenseFeatures<float64_t>>(feat_train);
+		auto latent_features_train =
+		    std::make_shared<DenseFeatures<float64_t>>(lat_feat_train);
+		auto labels_train = std::make_shared<BinaryLabels>(lab_train);
 
 		// choose Gaussian kernel with sigma = 2 and zero mean function
 		auto kernel = std::make_shared<GaussianARDSparseKernel>(10);
@@ -411,8 +406,8 @@ public:
 		auto lik = std::make_shared<LogitLikelihood>();
 
 		// specify GP regression with FITC inference
-		SingleFITCLaplaceInferenceMethod* inf =
-		    new SingleFITCLaplaceInferenceMethod(
+		auto inf =
+		    std::make_shared<SingleFITCLaplaceInferenceMethod>(
 		        kernel, features_train, mean, labels_train, lik,
 		        latent_features_train);
 		
@@ -435,9 +430,9 @@ public:
 		feat_test(1, 2) = 2.3546;
 		feat_test(1, 3) = -0.46;
 
-		features_test = std::make_shared<DenseFeatures><float64_t>(feat_test);
+		features_test = std::make_shared<DenseFeatures<float64_t>>(feat_test);
 
-		gpc = new GaussianProcessClassification(inf);
+		gpc = std::make_shared<GaussianProcessClassification>(inf);
 
 		// train model
 		gpc->train();
@@ -456,17 +451,17 @@ public:
 	std::shared_ptr<DenseFeatures<float64_t>> features_test;
 };
 
-TEST_F(GaussianProcessClassification, get_mean_vector)
+TEST_F(GaussianProcessClassificationTest, get_mean_vector)
 {
 	// probit likelihood
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train Gaussian process binary classifier
-	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 	gpc->train();
 
 	// compare mean vector with result form GPML
@@ -501,17 +496,17 @@ TEST_F(GaussianProcessClassification, get_mean_vector)
 	
 }
 
-TEST_F(GaussianProcessClassification, get_variance_vector)
+TEST_F(GaussianProcessClassificationTest, get_variance_vector)
 {
 	// probit likelihood
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
-	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 	gpc->train();
 
 	// compare variance vector with result form GPML
@@ -546,17 +541,17 @@ TEST_F(GaussianProcessClassification, get_variance_vector)
 	
 }
 
-TEST_F(GaussianProcessClassification, get_probabilities)
+TEST_F(GaussianProcessClassificationTest, get_probabilities)
 {
 	// probit likelihood
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// train gaussian process classifier
-	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 	gpc->train();
 
 	// compare variance vector with result form GPML
@@ -591,9 +586,9 @@ TEST_F(GaussianProcessClassification, get_probabilities)
 	
 }
 
-TEST_F(GaussianProcessClassification, apply_preprocessor_and_binary)
+TEST_F(GaussianProcessClassificationTest, apply_preprocessor_and_binary)
 {
-	auto preproc=std::make_shared<CRescaleFeatures>();
+	auto preproc=std::make_shared<RescaleFeatures>();
 	preproc->fit(features_train);
 
 	features_train = preproc->transform(features_train);
@@ -605,16 +600,16 @@ TEST_F(GaussianProcessClassification, apply_preprocessor_and_binary)
 	// logit likelihood
 	auto likelihood=std::make_shared<LogitLikelihood>();
 
-	EPInferenceMethod* inf=std::make_shared<EPInferenceMethod>(kernel, features_train,
+	auto inf=std::make_shared<EPInferenceMethod>(kernel, features_train,
 			mean, labels_train, likelihood);
 
 	inf->set_scale(1.5);
 
 	// train gaussian process classifier
-	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 
 	// compare predictions with result form GPML
-	BinaryLabels* prediction=gpc->apply_binary(features_test);
+	auto prediction=gpc->apply_binary(features_test);
 
 	SGVector<float64_t> p=prediction->get_labels();
 
@@ -1999,7 +1994,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_mean_vector)
 	feat_test(1, 9)=2;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
 	auto labels_train=std::make_shared<MulticlassLabels>();
 	labels_train->set_int_labels(lab_train);
 
@@ -2009,16 +2004,16 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_mean_vector)
 	auto mean=std::make_shared<ZeroMean>();
 
 	auto likelihood=std::make_shared<SoftMaxLikelihood>();
-	MultiLaplaceInferenceMethod* inf=new MultiLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<MultiLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale = std::sqrt(497.3965463400368);
 	inf->set_scale(scale);
 
-	DenseFeatures<float64_t>* features_test=std::make_shared<DenseFeatures><float64_t>(feat_test);
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(feat_test);
 
 	// train gaussian process classifier
-	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 	gpc->train();
 
 	// compare mean vector with result form GP-Stuff 4.4
@@ -2143,7 +2138,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_variance_vector)
 	feat_test(1, 9)=2;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
 	auto labels_train=std::make_shared<MulticlassLabels>();
 	labels_train->set_int_labels(lab_train);
 
@@ -2153,16 +2148,16 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, get_variance_vector)
 	auto mean=std::make_shared<ZeroMean>();
 
 	auto likelihood=std::make_shared<SoftMaxLikelihood>();
-	MultiLaplaceInferenceMethod* inf=new MultiLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<MultiLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale = std::sqrt(497.3965463400368);
 	inf->set_scale(scale);
 
-	DenseFeatures<float64_t>* features_test=std::make_shared<DenseFeatures><float64_t>(feat_test);
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(feat_test);
 
 	// train gaussian process classifier
-	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 	gpc->train();
 
 	// compare variance vector with result form the following Matlab code
@@ -2255,7 +2250,7 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, apply_multiclass)
 	feat_test(1,2)=0.0023812;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
 	auto labels_train=std::make_shared<MulticlassLabels>();
 	labels_train->set_int_labels(lab_train);
 
@@ -2265,18 +2260,18 @@ TEST(GaussianProcessClassificationUsingMultiLaplace, apply_multiclass)
 	auto mean=std::make_shared<ZeroMean>();
 
 	auto likelihood=std::make_shared<SoftMaxLikelihood>();
-	MultiLaplaceInferenceMethod* inf=new MultiLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<MultiLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	const float64_t scale = std::sqrt(5.114014937226176);
 	inf->set_scale(scale);
 
-	DenseFeatures<float64_t>* features_test=std::make_shared<DenseFeatures><float64_t>(feat_test);
+	auto features_test=std::make_shared<DenseFeatures<float64_t>>(feat_test);
 
-	GaussianProcessClassification* gpc=new GaussianProcessClassification(inf);
+	auto gpc=std::make_shared<GaussianProcessClassification>(inf);
 	gpc->train();
 
-	MulticlassLabels* prediction=gpc->apply_multiclass(features_test);
+	auto prediction=gpc->apply_multiclass(features_test);
 	SGVector<int32_t> p=prediction->get_int_labels();
 
 	EXPECT_EQ(p[0], 0);

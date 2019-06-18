@@ -124,7 +124,7 @@ bool MulticlassLibLinear::train_machine(std::shared_ptr<Features> data)
 	                       m_max_iter,m_max_train_time,m_train_state);
 	solver.solve();
 
-	m_machines->reset_array();
+	m_machines.clear();
 	for (int32_t i=0; i<num_classes; i++)
 	{
 		auto machine = std::make_shared<LinearMachine>();
@@ -138,7 +138,7 @@ bool MulticlassLibLinear::train_machine(std::shared_ptr<Features> data)
 		if (m_use_bias)
 			machine->set_bias(m_train_state->w[(mc_problem.n-bias_n)*num_classes+i]);
 
-		m_machines->push_back(machine);
+		m_machines.push_back(machine);
 	}
 
 	if (!m_save_train_state)

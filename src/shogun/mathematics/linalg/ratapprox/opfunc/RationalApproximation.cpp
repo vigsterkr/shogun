@@ -157,7 +157,7 @@ void RationalApproximation::compute_shifts_weights_const()
 	// compute K and K'
 	float64_t K=0.0, Kp=0.0;
 #ifdef USE_GPL_SHOGUN
-	CJacobiEllipticFunctions::ellipKKp(L, K, Kp);
+	JacobiEllipticFunctions::ellipKKp(L, K, Kp);
 #else
 	SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN
@@ -180,7 +180,7 @@ void RationalApproximation::compute_shifts_weights_const()
 
 		complex128_t sn, cn, dn;
 #ifdef USE_GPL_SHOGUN
-		CJacobiEllipticFunctions::ellipJC(t, m, sn, cn, dn);
+		JacobiEllipticFunctions::ellipJC(t, m, sn, cn, dn);
 #else
 		SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN

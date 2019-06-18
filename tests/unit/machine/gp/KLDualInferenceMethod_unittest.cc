@@ -73,8 +73,8 @@ TEST(KLDualInferenceMethod,get_cholesky_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=2.0;
 	// choose Gaussian kernel with sigma = 2 and zero mean function
@@ -82,10 +82,10 @@ TEST(KLDualInferenceMethod,get_cholesky_logit_likelihood)
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
+	auto likelihood=std::make_shared<LogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
+	auto inf=std::make_shared<KLDualInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	float64_t scale=2.0;
@@ -194,18 +194,18 @@ TEST(KLDualInferenceMethod,get_posterior_mean_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
+	auto likelihood=std::make_shared<LogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
+	auto inf=std::make_shared<KLDualInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -267,18 +267,18 @@ TEST(KLDualInferenceMethod,get_posterior_covariance_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
+	auto likelihood=std::make_shared<LogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
+	auto inf=std::make_shared<KLDualInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -384,18 +384,18 @@ TEST(KLDualInferenceMethod,get_negative_marginal_likelihood_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
+	auto likelihood=std::make_shared<LogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
+	auto inf=std::make_shared<KLDualInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -443,8 +443,8 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	float64_t ell=2.0;
@@ -452,21 +452,21 @@ TEST(KLDualInferenceMethod,get_marginal_likelihood_derivatives_logit_likelihood)
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitDVGLikelihood>();
+	auto likelihood=std::make_shared<LogitDVGLikelihood>();
 
 	// specify GP classification with KL inference
-	CKLDualInferenceMethod* inf=new CKLDualInferenceMethod(kernel,
+	auto inf=std::make_shared<KLDualInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	float64_t scale=2.0;
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives

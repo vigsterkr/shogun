@@ -74,7 +74,7 @@ void FastICA::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 	int p = X.num_cols;
 	int m = n;
 
-	Map<MatrixXd> EX(X.matrix,n,p);
+	Eigen::Map<MatrixXd> EX(X.matrix,n,p);
 
 	// Whiten
 	MatrixXd K;
@@ -120,7 +120,7 @@ void FastICA::fit_dense(std::shared_ptr<DenseFeatures<float64_t>> features)
 		}
 	}
 
-	Map<MatrixXd> W(m_mixing_matrix.matrix, m, m);
+	Eigen::Map<MatrixXd> W(m_mixing_matrix.matrix, m, m);
 
 	W = sym_decorrelation(W);
 

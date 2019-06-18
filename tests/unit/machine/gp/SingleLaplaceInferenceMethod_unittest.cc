@@ -43,8 +43,8 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_gaussian_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -54,7 +54,7 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_gaussian_likelihood)
 	auto likelihood=std::make_shared<GaussianLikelihood>();
 
 	// specify GP regression with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -122,8 +122,8 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -133,7 +133,7 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_t_likelihood)
 	auto likelihood=std::make_shared<StudentsTLikelihood>(1, 3);
 
 	// specify GP regression with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -207,8 +207,8 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -218,7 +218,7 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_logit_likelihood)
 	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -291,8 +291,8 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -302,7 +302,7 @@ TEST(SingleLaplaceInferenceMethod,get_cholesky_probit_likelihood)
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior cholesky with result from GPML package:
@@ -370,8 +370,8 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_gaussian_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -381,7 +381,7 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_gaussian_likelihood)
 	auto likelihood=std::make_shared<GaussianLikelihood>();
 
 	// specify GP regression with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -425,8 +425,8 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -436,7 +436,7 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_t_likelihood)
 	auto likelihood=std::make_shared<StudentsTLikelihood>(1, 3);
 
 	// specify GP regression with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -486,8 +486,8 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -497,7 +497,7 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_logit_likelihood)
 	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -546,8 +546,8 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -557,7 +557,7 @@ TEST(SingleLaplaceInferenceMethod,get_alpha_probit_likelihood)
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior alpha with result from GPML package:
@@ -601,8 +601,8 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_gaussian_like
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -612,7 +612,7 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_gaussian_like
 	auto likelihood=std::make_shared<GaussianLikelihood>();
 
 	// specify GP regression with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -649,8 +649,8 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -660,7 +660,7 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	auto likelihood=std::make_shared<StudentsTLikelihood>(1, 3);
 
 	// specify GP regression with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -703,8 +703,8 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_logit_likelih
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -714,7 +714,7 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_logit_likelih
 	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -756,8 +756,8 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_probit_likeli
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -767,7 +767,7 @@ TEST(SingleLaplaceInferenceMethod,get_negative_marginal_likelihood_probit_likeli
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	// comparison of posterior negative marginal likelihood with
@@ -804,8 +804,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_gaussian_l
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
@@ -817,15 +817,15 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_gaussian_l
 	auto lik=std::make_shared<GaussianLikelihood>(0.25);
 
 	// specify GP regression with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -874,8 +874,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_t_likeliho
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
@@ -887,15 +887,15 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_t_likeliho
 	auto lik=std::make_shared<StudentsTLikelihood>(0.25, 3);
 
 	// specify GP regression with exact inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -956,8 +956,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -967,15 +967,15 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1027,8 +1027,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -1038,17 +1038,17 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_logit_like
 	auto likelihood=std::make_shared<LogitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	inf->set_scale(3.0);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1098,8 +1098,8 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_lik
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -1109,15 +1109,15 @@ TEST(SingleLaplaceInferenceMethod,get_marginal_likelihood_derivatives_probit_lik
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1168,8 +1168,8 @@ TEST(SingleLaplaceInferenceMethod,get_posterior_mean_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -1179,7 +1179,7 @@ TEST(SingleLaplaceInferenceMethod,get_posterior_mean_probit_likelihood)
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// comparison of the mode with result from GPML package
@@ -1221,8 +1221,8 @@ TEST(SingleLaplaceInferenceMethod,get_posterior_covariance_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -1232,7 +1232,7 @@ TEST(SingleLaplaceInferenceMethod,get_posterior_covariance_probit_likelihood)
 	auto likelihood=std::make_shared<ProbitLikelihood>();
 
 	// specify GP classification with SingleLaplace inference
-	SingleLaplaceInferenceMethod* inf=new SingleLaplaceInferenceMethod(kernel,
+	auto inf=std::make_shared<SingleLaplaceInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	SGMatrix<float64_t> approx_cov=inf->get_posterior_covariance();

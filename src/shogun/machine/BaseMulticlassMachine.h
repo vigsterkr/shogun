@@ -15,7 +15,6 @@
 namespace shogun
 {
 
-class DynamicObjectArray;
 class Labels;
 
 /** Base class of all Multiclass Machines.
@@ -45,12 +44,12 @@ public:
 	 *
 	 * @param lab the labels being checked, guaranteed to be non-NULL
 	 */
-	virtual bool is_label_valid(std::shared_ptr<Labels >lab) const;
+	virtual bool is_label_valid(std::shared_ptr<Labels> lab) const;
 
 protected:
 
 	/** machines */
-	std::shared_ptr<DynamicObjectArray >m_machines;
+	std::vector<std::shared_ptr<Machine>> m_machines;
 };
 
 } /* shogun */

@@ -21,7 +21,7 @@ ScatterSVM::ScatterSVM()
 : MulticlassSVM(std::make_shared<MulticlassOneVsRestStrategy>()), scatter_type(NO_BIAS_LIBSVM),
   norm_wc(NULL), norm_wc_len(0), norm_wcw(NULL), norm_wcw_len(0), rho(0), m_num_classes(0)
 {
-	SG_UNSTABLE("CScatterSVM::CScatterSVM()", "\n")
+	SG_UNSTABLE("ScatterSVM::ScatterSVM()", "\n")
 }
 
 ScatterSVM::ScatterSVM(SCATTER_TYPE type)
@@ -202,8 +202,8 @@ bool ScatterSVM::train_no_bias_libsvm()
 		rho=model->rho[0];
 
 		SG_FREE(norm_wcw);
-		norm_wcw = SG_MALLOC(float64_t, m_machines->get_num_elements());
-		norm_wcw_len = m_machines->get_num_elements();
+		norm_wcw_len = m_machines.size();
+		norm_wcw = SG_MALLOC(float64_t, norm_wcw_len);
 
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
@@ -244,10 +244,10 @@ bool ScatterSVM::train_no_bias_libsvm()
 }
 
 #ifdef USE_SVMLIGHT
-bool CScatterSVM::train_no_bias_svmlight()
+bool ScatterSVM::train_no_bias_svmlight()
 {
 	auto prev_normalizer=m_kernel->get_normalizer();
-	auto n=std::make_shared<CScatterKernelNormalizer>(
+	auto n=std::make_shared<ScatterKernelNormalizer>(
 				 m_num_classes-1, -1, m_labels, prev_normalizer);
 	m_kernel->set_normalizer(n);
 	m_kernel->init_normalizer();
@@ -338,8 +338,8 @@ bool ScatterSVM::train_testrule12()
 		rho=model->rho[0];
 
 		SG_FREE(norm_wcw);
-		norm_wcw = SG_MALLOC(float64_t, m_machines->get_num_elements());
-		norm_wcw_len = m_machines->get_num_elements();
+		norm_wcw_len = m_machines.size();
+		norm_wcw = SG_MALLOC(float64_t, norm_wcw_len);
 
 		for (int32_t i=0; i<m_num_classes; i++)
 		{
@@ -382,13 +382,9 @@ bool ScatterSVM::train_testrule12()
 void ScatterSVM::compute_norm_wc()
 {
 	SG_FREE(norm_wc);
-	norm_wc = SG_MALLOC(float64_t, m_machines->get_num_elements());
-	norm_wc_len = m_machines->get_num_elements();
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
-		norm_wc[i]=0;
-
-
-	for (int c=0; c<m_machines->get_num_elements(); c++)
+	norm_wc_len = m_machines.size();
+	norm_wc = SG_CALLOC(float64_t, norm_wc_len);
+	for (size_t c=0; c<m_machines.size(); c++)
 	{
 		auto svm=get_svm(c);
 		int32_t num_sv = svm->get_num_support_vectors();
@@ -404,10 +400,8 @@ void ScatterSVM::compute_norm_wc()
 		}
 	}
 
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (size_t i=0; i<m_machines.size(); i++)
 		norm_wc[i] = std::sqrt(norm_wc[i]);
-
-	SGVector<float64_t>::display_vector(norm_wc, m_machines->get_num_elements(), "norm_wc");
 }
 
 std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
@@ -428,7 +422,7 @@ std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
 
 	if (scatter_type == TEST_RULE1)
 	{
-		ASSERT(m_machines->get_num_elements()>0)
+		ASSERT(!m_machines.empty())
 		for (int32_t i=0; i<num_vectors; i++)
 			output->set_label(i, apply_one(i));
 	}
@@ -477,11 +471,11 @@ std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
 #endif //USE_SVMLIGHT
 	else
 	{
-		ASSERT(m_machines->get_num_elements()>0)
+		ASSERT(!m_machines.empty())
 		ASSERT(num_vectors==output->get_num_labels())
-		std::vector<std::shared_ptr<Labels>> outputs(m_machines->get_num_elements());
+		std::vector<std::shared_ptr<Labels>> outputs(m_machines.size());
 
-		for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+		for (size_t i=0; i<m_machines.size(); i++)
 		{
 			//SG_PRINT("svm %d\n", i)
 			auto svm = get_svm(i);
@@ -497,7 +491,7 @@ std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
 			int32_t winner=0;
 			float64_t max_out=outputs[0]->as<RegressionLabels>()->get_label(i)/norm_wc[0];
 
-			for (int32_t j=1; j<m_machines->get_num_elements(); j++)
+			for (size_t j=1; j<m_machines.size(); j++)
 			{
 				float64_t out=outputs[j]->as<RegressionLabels>()->get_label(i)/norm_wc[j];
 
@@ -518,16 +512,16 @@ std::shared_ptr<Labels> ScatterSVM::classify_one_vs_rest()
 
 float64_t ScatterSVM::apply_one(int32_t num)
 {
-	ASSERT(m_machines->get_num_elements()>0)
-	float64_t* outputs=SG_MALLOC(float64_t, m_machines->get_num_elements());
+	ASSERT(!m_machines.empty())
+	float64_t* outputs=SG_MALLOC(float64_t, m_machines.size());
 	int32_t winner=0;
 
 	if (scatter_type == TEST_RULE1)
 	{
-		for (int32_t c=0; c<m_machines->get_num_elements(); c++)
+		for (size_t c=0; c<m_machines.size(); c++)
 			outputs[c]=get_svm(c)->get_bias()-rho;
 
-		for (int32_t c=0; c<m_machines->get_num_elements(); c++)
+		for (size_t c=0; c<m_machines.size(); c++)
 		{
 			float64_t v=0;
 
@@ -539,15 +533,15 @@ float64_t ScatterSVM::apply_one(int32_t num)
 			}
 
 			outputs[c] += v;
-			for (int32_t j=0; j<m_machines->get_num_elements(); j++)
-				outputs[j] -= v/m_machines->get_num_elements();
+			for (size_t j=0; j<m_machines.size(); j++)
+				outputs[j] -= v/m_machines.size();
 		}
 
-		for (int32_t j=0; j<m_machines->get_num_elements(); j++)
+		for (size_t j=0; j<m_machines.size(); j++)
 			outputs[j]/=norm_wcw[j];
 
 		float64_t max_out=outputs[0];
-		for (int32_t j=0; j<m_machines->get_num_elements(); j++)
+		for (size_t j=0; j<m_machines.size(); j++)
 		{
 			if (outputs[j]>max_out)
 			{
@@ -566,7 +560,7 @@ float64_t ScatterSVM::apply_one(int32_t num)
 	{
 		float64_t max_out=get_svm(0)->apply_one(num)/norm_wc[0];
 
-		for (int32_t i=1; i<m_machines->get_num_elements(); i++)
+		for (size_t i=1; i<m_machines.size(); i++)
 		{
 			outputs[i]=get_svm(i)->apply_one(num)/norm_wc[i];
 			if (outputs[i]>max_out)

@@ -252,7 +252,7 @@ bool NumericalVGLikelihood::set_variational_distribution(SGVector<float64_t> mu,
 			m_xgh=SGVector<float64_t>(m_GHQ_N);
 			m_wgh=SGVector<float64_t>(m_GHQ_N);
 #ifdef USE_GPL_SHOGUN
-			CIntegration::generate_gauher(m_xgh, m_wgh);
+			Integration::generate_gauher(m_xgh, m_wgh);
 #else
 			SG_GPL_ONLY
 #endif //USE_GPL_SHOGUN

@@ -178,7 +178,7 @@ TEST(KernelSelectionMaxMMD, linear_time_weighted_kernel_streaming)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto weighted_kernel=dynamic_cast<CombinedKernel*>(mmd->get_kernel());
+	auto weighted_kernel=mmd->get_kernel()->as<CombinedKernel>();
 	ASSERT_TRUE(weighted_kernel!=nullptr);
 	ASSERT_TRUE(weighted_kernel->get_num_subkernels()==num_kernels);
 
@@ -289,7 +289,7 @@ TEST(KernelSelectionMaxTestPower, linear_time_weighted_kernel_streaming)
 	mmd->select_kernel();
 	mmd->set_train_test_mode(false);
 
-	auto weighted_kernel=dynamic_cast<CombinedKernel*>(mmd->get_kernel());
+	auto weighted_kernel=mmd->get_kernel()->as<CombinedKernel>();
 	ASSERT_TRUE(weighted_kernel!=nullptr);
 	ASSERT_TRUE(weighted_kernel->get_num_subkernels()==num_kernels);
 

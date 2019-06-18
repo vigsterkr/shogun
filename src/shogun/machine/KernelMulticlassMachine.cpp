@@ -30,9 +30,9 @@ void KernelMulticlassMachine::store_model_features()
 
 	/* this map will be abused as a map */
 	Set<index_t> all_sv;
-	for (index_t i=0; i<m_machines->get_num_elements(); ++i)
+	for (auto m: m_machines)
 	{
-		auto machine=get_machine(i)->as<KernelMachine>();
+		auto machine=m->as<KernelMachine>();
 		for (index_t j=0; j<machine->get_num_support_vectors(); ++j)
 			all_sv.add(machine->get_support_vector(j));
 
@@ -55,9 +55,9 @@ void KernelMulticlassMachine::store_model_features()
 	/* now the old SV indices have to be mapped to the new features */
 
 	/* update SV of all machines */
-	for (int32_t i=0; i<m_machines->get_num_elements(); ++i)
+	for (auto m: m_machines)
 	{
-		auto machine=get_machine(i)->as<KernelMachine>();
+		auto machine=m->as<KernelMachine>();
 
 		/* for each machine, replace SV by index in sv_idx array */
 		for (int32_t j=0; j<machine->get_num_support_vectors(); ++j)
@@ -142,11 +142,10 @@ bool KernelMulticlassMachine::init_machines_for_apply(std::shared_ptr<Features> 
 	}
 
 	/* set kernel to all sub-machines */
-	for (int32_t i=0; i<m_machines->get_num_elements(); i++)
+	for (auto m: m_machines)
 	{
-		auto machine=m_machines->get_element<KernelMachine>(i);
+		auto machine=m->as<KernelMachine>();
 		machine->set_kernel(m_kernel);
-
 	}
 
 	return true;

@@ -108,7 +108,7 @@ bool ConditionalProbabilityTree::train_machine(std::shared_ptr<Features> data)
 			SG_ERROR("No data features provided\n")
 	}
 
-	m_machines->reset_array();
+	m_machines.clear();
 
 	m_root = NULL;
 
@@ -128,11 +128,10 @@ bool ConditionalProbabilityTree::train_machine(std::shared_ptr<Features> data)
 	}
 	m_feats->end_parser();
 
-	for (int32_t i=0; i < m_machines->get_num_elements(); ++i)
+	for (auto m: m_machines)
 	{
-		auto lll = m_machines->get_element<OnlineLibLinear>(i);
+		auto lll = m->as<OnlineLibLinear>();
 		lll->stop_train();
-
 	}
 
 	return true;
@@ -179,12 +178,12 @@ void ConditionalProbabilityTree::train_example(std::shared_ptr<StreamingDenseFea
 		auto left_node = std::make_shared<bnode_t>();
 		left_node->data.label = node->data.label;
 		node->data.label = -1;
-		auto node_mch = m_machines->get_element<OnlineLibLinear>(node->machine());
+		auto node_mch = m_machines.at(node->machine())->as<OnlineLibLinear>();
 		auto mch = std::make_shared<OnlineLibLinear>(node_mch);
 
 		mch->start_train();
-		m_machines->push_back(mch);
-		left_node->machine(m_machines->get_num_elements()-1);
+		m_machines.push_back(mch);
+		left_node->machine(m_machines.size()-1);
 		m_leaves.emplace(left_node->data.label, left_node);
 		node->left(left_node);
 
@@ -218,7 +217,7 @@ void ConditionalProbabilityTree::train_path(std::shared_ptr<StreamingDenseFeatur
 void ConditionalProbabilityTree::train_node(std::shared_ptr<StreamingDenseFeatures<float32_t>> ex, float64_t label, std::shared_ptr<bnode_t> node)
 {
 	REQUIRE(node, "Node must not be NULL\n");
-	auto mch = m_machines->get_element<OnlineLibLinear>(node->machine());
+	auto mch = m_machines.at(node->machine())->as<OnlineLibLinear>();
 	REQUIRE(mch, "Instance of %s could not be casted to OnlineLibLinear\n", node->get_name());
 	mch->train_example(ex, label);
 
@@ -227,7 +226,7 @@ void ConditionalProbabilityTree::train_node(std::shared_ptr<StreamingDenseFeatur
 float64_t ConditionalProbabilityTree::predict_node(SGVector<float32_t> ex, std::shared_ptr<bnode_t> node)
 {
 	REQUIRE(node, "Node must not be NULL\n");
-	auto mch = m_machines->get_element<OnlineLibLinear>(node->machine());
+	auto mch = m_machines.at(node->machine())->as<OnlineLibLinear>();
 	REQUIRE(mch, "Instance of %s could not be casted to OnlineLibLinear\n", node->get_name());
 	float64_t pred = mch->apply_one(ex.vector, ex.vlen);
 
@@ -240,6 +239,6 @@ int32_t ConditionalProbabilityTree::create_machine(std::shared_ptr<StreamingDens
 	auto mch = std::make_shared<OnlineLibLinear>();
 	mch->start_train();
 	mch->train_example(ex, 0);
-	m_machines->push_back(mch);
-	return m_machines->get_num_elements()-1;
+	m_machines.push_back(mch);
+	return m_machines.size()-1;
 }

@@ -243,7 +243,7 @@ SGMatrix<float64_t> KMeansBase::kmeanspp()
 #ifdef HAVE_LINALG
 	float64_t sum=linalg::vector_sum(min_dist);
 #else //HAVE_LINALG
-	Map<VectorXd> eigen_min_dist(min_dist.vector, min_dist.vlen);
+	Eigen::Map<VectorXd> eigen_min_dist(min_dist.vector, min_dist.vlen);
 	float64_t sum=eigen_min_dist.sum();
 #endif //HAVE_LINALG
 	int32_t n_rands = 2 + int32_t(std::log(k));
@@ -287,7 +287,7 @@ SGMatrix<float64_t> KMeansBase::kmeanspp()
 #ifdef HAVE_LINALG
 			temp_sum=linalg::vector_sum(temp_min_dist);
 #else //HAVE_LINALG
-			Map<VectorXd> eigen_temp_sum(temp_min_dist.vector, temp_min_dist.vlen);
+			Eigen::Map<VectorXd> eigen_temp_sum(temp_min_dist.vector, temp_min_dist.vlen);
 			temp_sum=eigen_temp_sum.sum();
 #endif //HAVE_LINALG
 			if ((temp_sum<best_sum) || (best_sum<0))

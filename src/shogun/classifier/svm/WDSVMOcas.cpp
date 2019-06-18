@@ -47,7 +47,7 @@ WDSVMOcas::WDSVMOcas()
 : Machine(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(SVM_OCAS)
 {
-	SG_UNSTABLE("CWDSVMOcas::CWDSVMOcas()", "\n")
+	SG_UNSTABLE("WDSVMOcas::CWDSVMOcas()", "\n")
 
 	w=NULL;
 	old_w=NULL;

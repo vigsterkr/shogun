@@ -6,6 +6,7 @@
 
 /* Multitask renames */
 %shared_ptr(shogun::Node)
+%shared_ptr(shogun::MultitaskLinearMachine)
 %shared_ptr(shogun::MultitaskKernelNormalizer)
 %shared_ptr(shogun::MultitaskKernelMklNormalizer)
 %shared_ptr(shogun::MultitaskKernelTreeNormalizer)

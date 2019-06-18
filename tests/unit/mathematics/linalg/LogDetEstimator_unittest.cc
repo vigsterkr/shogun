@@ -107,11 +107,11 @@ TEST(LogDetEstimator, sample_ratapp_dense)
 	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
 
-	auto linear_solver=std::make_shared<CDirectLinearSolverComplex>();
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
 
 
 	auto op_func =
-	    std::make_shared<CLogRationalApproximationIndividual>(
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver,
 	        linear_solver->as<LinearSolver<complex128_t, float64_t>>(), accuracy);
 
@@ -184,13 +184,13 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler)
 	auto eig_solver=std::make_shared<LanczosEigenSolver>(op);
 
 
-	auto linear_solver=std::make_shared<CDirectLinearSolverComplex>();
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
 
 
 	auto op_func =
-	    std::make_shared<CLogRationalApproximationIndividual>(
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        opd, eig_solver,
-	        (LinearSolver<complex128_t, float64_t>*)linear_solver, accuracy);
+	        linear_solver->as<LinearSolver<complex128_t, float64_t>>(), accuracy);
 
 
 	auto trace_sampler=std::make_shared<ProbingSampler>(op, 1, NATURAL, DISTANCE_TWO);
@@ -269,7 +269,7 @@ TEST(LogDetEstimator, sample_ratapp_probing_sampler_cgm)
 	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
 
 
-	auto op_func = std::make_shared<CLogRationalApproximationCGM>(
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
 
 
@@ -321,7 +321,7 @@ TEST(LogDetEstimator, sample_ratapp_big_diag_matrix)
 	auto linear_solver=std::make_shared<CGMShiftedFamilySolver>();
 
 
-	auto op_func = std::make_shared<CLogRationalApproximationCGM>(
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
 
 
@@ -384,7 +384,7 @@ TEST(LogDetEstimator, sample_ratapp_big_matrix)
 	//linear_solver->set_iteration_limit(2000);
 
 
-	auto op_func = std::make_shared<CLogRationalApproximationCGM>(
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
 
 

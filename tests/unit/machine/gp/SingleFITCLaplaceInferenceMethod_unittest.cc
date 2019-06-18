@@ -413,7 +413,7 @@ TEST(SingleFITCLaplaceInferenceMethod,get_marginal_likelihood_derivatives)
 	inf->set_scale(scale);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap<TParameter>*, SGObject*>>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters

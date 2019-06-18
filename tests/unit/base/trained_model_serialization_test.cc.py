@@ -35,7 +35,7 @@ IGNORE = set([
     # KernelMulticlassMachines
     'CMulticlassSVM', # doesn't implement a solver
     'MKLMulticlass',
-    'CScatterSVM', # error C <= 0
+    'ScatterSVM', # error C <= 0
     'CMulticlassLibSVM' # error C <= 0
 ])
 

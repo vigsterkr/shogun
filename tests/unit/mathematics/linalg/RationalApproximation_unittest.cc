@@ -43,11 +43,11 @@ TEST(RationalApproximation, precompute)
 	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
 
-	auto linear_solver=std::make_shared<CDirectLinearSolverComplex>();
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
 
 
 	auto op_func =
-	    std::make_shared<CLogRationalApproximationIndividual>(
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver,
 	        linear_solver->as<LinearSolver<complex128_t, float64_t>>(), 0);
 
@@ -116,7 +116,7 @@ TEST(RationalApproximation, trace_accuracy)
 
 	// create the direct linear solver for solving the systems that generates from
 	// rational approximation of the operator function
-	auto linear_solver=std::make_shared<CDirectLinearSolverComplex>();
+	auto linear_solver=std::make_shared<DirectLinearSolverComplex>();
 
 
 	// compute the number of shifts to assure a given accuracy
@@ -125,7 +125,7 @@ TEST(RationalApproximation, trace_accuracy)
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
 	auto op_func =
-	    std::make_shared<CLogRationalApproximationIndividual>(
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver, linear_solver, accuracy);
 
 
@@ -180,14 +180,14 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 	auto eig_solver=std::make_shared<DirectEigenSolver>(op);
 
 
-	auto dense_solver=std::make_shared<CDirectLinearSolverComplex>();
+	auto dense_solver=std::make_shared<DirectLinearSolverComplex>();
 
 
-	ConjugateOrthogonalCGSolver *sparse_solver
-		=new ConjugateOrthogonalCGSolver();
+	auto sparse_solver
+		=std::make_shared<ConjugateOrthogonalCGSolver>();
 
 	auto op_func =
-	    std::make_shared<CLogRationalApproximationIndividual>(
+	    std::make_shared<LogRationalApproximationIndividual>(
 	        op, eig_solver,
 	        dense_solver->as<LinearSolver<complex128_t, float64_t>>(), 0);
 
@@ -202,14 +202,14 @@ TEST(RationalApproximation, compare_direct_vs_cocg_accuracy)
 
 	// create complex copies of operators, complex_dense/sparse
 	auto complex_dense
-		=std::dynamic_pointer_cast<DenseMatrixOperator>(*op);
+		=std::dynamic_pointer_cast<DenseMatrixOperator<complex128_t>>(op);
 
 	for (index_t i=0; i<shifts.vlen; ++i)
 	{
 		SGVector<float64_t> sample=trace_sampler->sample(0);
 
 		auto shifted_dense
-			=std::make_shared<DenseMatrixOperator<complex128>_t>(*complex_dense);
+			=std::make_shared<DenseMatrixOperator<complex128_t>>(*complex_dense);
 
 		SGVector<complex128_t> diag=shifted_dense->get_diagonal();
 		for (index_t j=0; j<diag.vlen; ++j)
@@ -276,7 +276,7 @@ TEST(RationalApproximation, trace_accuracy_cg_m)
 
 	// create the operator function that extracts the trace
 	// of the approximation of log of the linear operator
-	auto op_func = std::make_shared<CLogRationalApproximationCGM>(
+	auto op_func = std::make_shared<LogRationalApproximationCGM>(
 	    op, eig_solver, linear_solver, accuracy);
 
 

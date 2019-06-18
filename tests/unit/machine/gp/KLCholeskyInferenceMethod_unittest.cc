@@ -70,8 +70,8 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -81,7 +81,7 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_t_likelihood)
 	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -188,18 +188,18 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitVGLikelihood>();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 	//Reference result is generated from the Matlab code, which can be found at
 	//https://gist.github.com/yorkerlin/bb400ebded2dbe90c58d
@@ -304,8 +304,8 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=10;
 	// choose Gaussian kernel with sigma = 200 and zero mean function
@@ -313,10 +313,10 @@ TEST(KLCholeskyInferenceMethod,get_cholesky_probit_likelihood)
 	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitVGLikelihood>();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -416,8 +416,8 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -427,7 +427,7 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_t_likelihood)
 	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -482,8 +482,8 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -493,7 +493,7 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_t_likelihood)
 	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -598,18 +598,18 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitVGLikelihood>();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -669,18 +669,18 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_logit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitVGLikelihood>();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -786,8 +786,8 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=10;
 	// choose Gaussian kernel with sigma = 200 and zero mean function
@@ -796,10 +796,10 @@ TEST(KLCholeskyInferenceMethod,get_posterior_mean_probit_likelihood)
 	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitVGLikelihood>();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -861,8 +861,8 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_probit_likelihood)
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=10;
 	// choose Gaussian kernel with sigma = 200 and zero mean function
@@ -870,10 +870,10 @@ TEST(KLCholeskyInferenceMethod,get_posterior_covariance_probit_likelihood)
 	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitVGLikelihood>();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -974,8 +974,8 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
@@ -985,7 +985,7 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_t_likelihood)
 	auto likelihood=std::make_shared<StudentsTVGLikelihood>(1, 3);
 
 	// specify GP regression with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1033,18 +1033,18 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_logit_likelihood
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitVGLikelihood>();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1091,8 +1091,8 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_probit_likelihoo
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=10;
 	// choose Gaussian kernel with sigma = 200 and zero mean function
@@ -1100,10 +1100,10 @@ TEST(KLCholeskyInferenceMethod,get_negative_marginal_likelihood_probit_likelihoo
 	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitVGLikelihood>();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, likelihood);
 
 	//Reference result is generated from the Matlab code, which can be found at
@@ -1145,8 +1145,8 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	lab_train[4]=1.52609;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	RegressionLabels* labels_train=std::make_shared<RegressionLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<RegressionLabels>(lab_train);
 
 	float64_t ell=0.1;
 
@@ -1158,15 +1158,15 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_t_likelihood)
 	auto lik=std::make_shared<StudentsTVGLikelihood>(0.25, 3);
 
 	// specify GP regression with exact inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 		features_train,	mean, labels_train, lik);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1240,26 +1240,26 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_logit_likelih
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	// choose Gaussian kernel with sigma = 2 and zero mean function
 	auto kernel=std::make_shared<GaussianKernel>(10, 2);
 	auto mean=std::make_shared<ZeroMean>();
 
 	// logit likelihood
-	auto likelihood=std::make_shared<CLogitVGLikelihood>();
+	auto likelihood=std::make_shared<LogitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives
@@ -1318,8 +1318,8 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 	lab_train[4]=-1.0;
 
 	// shogun representation of features and labels
-	DenseFeatures<float64_t>* features_train=std::make_shared<DenseFeatures><float64_t>(feat_train);
-	BinaryLabels* labels_train=std::make_shared<BinaryLabels>(lab_train);
+	auto features_train=std::make_shared<DenseFeatures<float64_t>>(feat_train);
+	auto labels_train=std::make_shared<BinaryLabels>(lab_train);
 
 	float64_t ell=10;
 	// choose Gaussian kernel with sigma = 200 and zero mean function
@@ -1327,18 +1327,18 @@ TEST(KLCholeskyInferenceMethod,get_marginal_likelihood_derivatives_probit_likeli
 	auto mean=std::make_shared<ZeroMean>();
 
 	// probit likelihood
-	auto likelihood=std::make_shared<CProbitVGLikelihood>();
+	auto likelihood=std::make_shared<ProbitVGLikelihood>();
 
 	// specify GP classification with KL inference
-	KLCholeskyInferenceMethod* inf=new KLCholeskyInferenceMethod(kernel,
+	auto inf=std::make_shared<KLCholeskyInferenceMethod>(kernel,
 			features_train,	mean, labels_train, likelihood);
 
 	// build parameter dictionary
-	auto parameter_dictionary=std::make_shared<CMap><TParameter*, SGObject*>();
+	auto parameter_dictionary=std::make_shared<CMap<TParameter*, SGObject*>>();
 	inf->build_gradient_parameter_dictionary(parameter_dictionary);
 
 	// compute derivatives wrt parameters
-	CMap<TParameter*, SGVector<float64_t> >* gradient=
+	auto gradient=
 		inf->get_negative_log_marginal_likelihood_derivatives(parameter_dictionary);
 
 	// get parameters to compute derivatives

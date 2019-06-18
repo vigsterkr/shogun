@@ -33,6 +33,7 @@
 #define KERNEL_SELECTION_H__
 
 #include <shogun/lib/common.h>
+#include <memory>
 
 namespace shogun
 {

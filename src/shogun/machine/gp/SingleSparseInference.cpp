@@ -333,7 +333,7 @@ void SingleSparseInference::enable_optimizing_inducing_features(bool is_optmizat
 
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-		m_inducing_minimizer=std::make_shared<CNLOPTMinimizer>();
+		m_inducing_minimizer=std::make_shared<NLOPTMinimizer>();
 
 #else
 		m_inducing_minimizer=NULL;
@@ -357,7 +357,7 @@ void SingleSparseInference::optimize_inducing_features()
 
 #ifdef USE_GPL_SHOGUN
 #ifdef HAVE_NLOPT
-	auto opt=std::dynamic_pointer_cast<CNLOPTMinimizer>(m_inducing_minimizer);
+	auto opt=std::dynamic_pointer_cast<NLOPTMinimizer>(m_inducing_minimizer);
 	if (opt)
 		opt->set_nlopt_parameters(LD_LBFGS, m_max_ind_iterations, m_ind_tolerance, m_ind_tolerance);
 #endif //HAVE_NLOPT
