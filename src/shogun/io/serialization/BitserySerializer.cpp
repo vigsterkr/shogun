@@ -123,7 +123,7 @@ void write_object(Writer& writer, BitseryWriterVisitor<Writer>* visitor, std::sh
 }
 
 using OutputAdapter = AdapterWriter<OutputStreamAdapter, bitsery::DefaultConfig>;
-using BitserySerializer = BasicSerializer<OutputAdapter>;
+using BitserySer = BasicSerializer<OutputAdapter>;
 
 BitserySerializer::BitserySerializer() : Serializer()
 {
@@ -136,7 +136,7 @@ BitserySerializer::~BitserySerializer()
 void BitserySerializer::write(std::shared_ptr<SGObject> object) noexcept(false)
 {
 	OutputStreamAdapter adapter { stream() };
- 	BitserySerializer serializer {std::move(adapter)};
- 	BitseryWriterVisitor<BitserySerializer> writer_visitor(serializer);
+ 	BitserySer serializer {std::move(adapter)};
+ 	BitseryWriterVisitor<BitserySer> writer_visitor(serializer);
  	write_object(serializer, addressof(writer_visitor), object);
 }

@@ -54,8 +54,8 @@ namespace shogun{
 			data = distance->get_lhs();
 		}
 
-		auto multiclass_labels = m_labels->as<CMulticlassLabels>();
-		auto dense_data = data->as<CDenseFeatures<float64_t>>();
+		auto multiclass_labels = m_labels->as<MulticlassLabels>();
+		auto dense_data = data->as<DenseFeatures<float64_t>>();
 
 		int32_t num_classes = multiclass_labels->get_num_classes();
 		int32_t num_feats = dense_data->get_num_features();

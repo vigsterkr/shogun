@@ -619,25 +619,10 @@ template <class T> class DynamicArray :public SGObject
 		virtual void init()
 		{
 			set_generic<T>();
-/*
-			m_parameters->add_vector(&m_array.array,
-					&m_array.current_num_elements, "array",
-					"Memory for dynamic array.");
-			watch_param("array", &m_array.array, &m_array.current_num_elements);
-
-			SG_ADD(&m_array.resize_granularity,
-							  "resize_granularity",
-							  "shrink/grow step size.");
-			SG_ADD(&m_array.use_sg_mallocs,
-							  "use_sg_malloc",
-							  "whether SG_MALLOC or malloc should be used");
-			SG_ADD(&m_array.free_array,
-							  "free_array",
-							  "whether array must be freed");
+			watch_param("array", &m_array.array);
 			SG_ADD(&dim1_size, "dim1_size", "Dimension 1");
 			SG_ADD(&dim2_size, "dim2_size", "Dimension 2");
 			SG_ADD(&dim3_size, "dim3_size", "Dimension 3");
-			*/
 		}
 
 	protected:

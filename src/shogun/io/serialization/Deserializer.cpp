@@ -65,7 +65,7 @@ std::shared_ptr<SGObject> shogun::io::deserialize(const std::string& _path, std:
 	if ((ec = fs->new_random_access_file(_path, &raf)))
 		throw to_system_error(ec);
 
-	auto fis = std::make_shared<io::CFileInputStream>(raf.get());
+	auto fis = std::make_shared<io::FileInputStream>(raf.get());
 	_deser->attach(fis);
 	return _deser->read_object();
 }

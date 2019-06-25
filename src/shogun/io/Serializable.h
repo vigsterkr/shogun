@@ -72,7 +72,7 @@ public:
 	 * @param value Value to serialize as SGObject.
 	 * @param value_name Name under which value is registered.
 	*/
-	Serializable(T value, const char* value_name=""): CSGObject(), m_name(value_name)
+	Serializable(T value, const char* value_name=""): SGObject(), m_name(value_name)
 	{
 		init();
 		m_value = value;

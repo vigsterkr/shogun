@@ -129,11 +129,11 @@ TEST(ParameterObserverCV, get_observations_locked)
 			    fold->get<SGVector<index_t>>("train_indices").size() != 0);
 			EXPECT_TRUE(
 			    fold->get<SGVector<index_t>>("test_indices").size() != 0);
-			EXPECT_TRUE(fold->get<CMachine>("trained_machine") != NULL);
+			EXPECT_TRUE(fold->get<Machine>("trained_machine") != NULL);
 			EXPECT_TRUE(
-			    fold->get<CLabels>("predicted_labels")->get_num_labels() != 0);
+			    fold->get<Labels>("predicted_labels")->get_num_labels() != 0);
 			EXPECT_TRUE(
-			    fold->get<CLabels>("ground_truth_labels")->get_num_labels() !=
+			    fold->get<Labels>("ground_truth_labels")->get_num_labels() !=
 			    0);
 			EXPECT_TRUE(fold->get<float64_t>("evaluation_result") != 0);
 		}
@@ -162,11 +162,11 @@ TEST(ParameterObserverCV, get_observations_unlocked)
 			    fold->get<SGVector<index_t>>("train_indices").size() != 0);
 			EXPECT_TRUE(
 			    fold->get<SGVector<index_t>>("test_indices").size() != 0);
-			EXPECT_TRUE(fold->get<CMachine>("trained_machine") != NULL);
+			EXPECT_TRUE(fold->get<Machine>("trained_machine") != NULL);
 			EXPECT_TRUE(
-			    fold->get<CLabels>("predicted_labels")->get_num_labels() != 0);
+			    fold->get<Labels>("predicted_labels")->get_num_labels() != 0);
 			EXPECT_TRUE(
-			    fold->get<CLabels>("ground_truth_labels")->get_num_labels() !=
+			    fold->get<Labels>("ground_truth_labels")->get_num_labels() !=
 			    0);
 			EXPECT_TRUE(fold->get<float64_t>("evaluation_result") != 0);
 		}

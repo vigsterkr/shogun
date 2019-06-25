@@ -18,7 +18,7 @@ void AUCKernel::init()
 	SG_ADD(
 	    &subkernel, "subkernel", "The subkernel.", ParameterProperties::HYPER);
 	SG_ADD(&labels, "labels", "The labels.");
-	watch_method("setup_auc_maximization", &CAUCKernel::setup_auc_maximization);
+	watch_method("setup_auc_maximization", &AUCKernel::setup_auc_maximization);
 }
 
 AUCKernel::AUCKernel() : DotKernel(0), subkernel(nullptr), labels(nullptr)

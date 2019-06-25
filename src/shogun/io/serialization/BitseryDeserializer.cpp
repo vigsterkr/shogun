@@ -147,9 +147,9 @@ std::shared_ptr<SGObject> object_reader(Reader& reader, BitseryReaderVisitor<Rea
 }
 
 using InputAdapter = AdapterReader<InputStreamAdapter, bitsery::DefaultConfig>;
-using BitseryDeserializer = BasicDeserializer<InputAdapter>;
+using BitseryDeser = BasicDeserializer<InputAdapter>;
 
-BitseryDeserializer::BitseryDeserializer() : CDeserializer()
+BitseryDeserializer::BitseryDeserializer() : Deserializer()
 {
 }
 
@@ -160,15 +160,15 @@ BitseryDeserializer::~BitseryDeserializer()
 std::shared_ptr<SGObject> BitseryDeserializer::read_object()
 {
 	InputStreamAdapter adapter { stream() };
-	BitseryDeserializer deser {std::move(adapter)};
-	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
+	BitseryDeser deser {std::move(adapter)};
+	BitseryReaderVisitor<BitseryDeser> reader_visitor(deser);
 	return object_reader(deser, addressof(reader_visitor));
 }
 
 void BitseryDeserializer::read(std::shared_ptr<SGObject> _this)
 {
 	InputStreamAdapter adapter { stream() };
-	BitseryDeserializer deser {std::move(adapter)};
-	BitseryReaderVisitor<BitseryDeserializer> reader_visitor(deser);
+	BitseryDeser deser {std::move(adapter)};
+	BitseryReaderVisitor<BitseryDeser> reader_visitor(deser);
 	object_reader(deser, addressof(reader_visitor), _this);
 }

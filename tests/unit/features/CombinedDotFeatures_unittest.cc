@@ -175,11 +175,11 @@ TEST(CombinedDotFeaturesTest, feature_weights)
 	index_t num_subfeats = 20;
 	index_t insert_pos = 10;
 
-	std::vector<std::shared_ptr<CDenseFeatures<float64_t>>> feats(num_subfeats);
+	std::vector<std::shared_ptr<DenseFeatures<float64_t>>> feats(num_subfeats);
 	for (index_t i = 0; i < num_subfeats; i++)
-		feats[i] = std::make_shared<CDenseFeatures<float64_t>>();
+		feats[i] = std::make_shared<DenseFeatures<float64_t>>();
 
-	auto comb_feat = std::make_shared<CCombinedDotFeatures>();
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
 	// test get_subfeature_weight & set_subfeature_weight
 	for (index_t i = 0; i < num_subfeats; i++)
 	{
@@ -194,7 +194,7 @@ TEST(CombinedDotFeaturesTest, feature_weights)
 	}
 
 	// test insert_feature_obj
-	auto inserted_feat = std::make_shared<CDenseFeatures<float64_t>>();
+	auto inserted_feat = std::make_shared<DenseFeatures<float64_t>>();
 	comb_feat->insert_feature_obj(inserted_feat, insert_pos);
 	comb_feat->set_subfeature_weight(10, -1);
 	for (index_t i = 0; i < insert_pos; i++)
@@ -215,7 +215,7 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 	index_t dim = 10;
 	float64_t b = 23;
 
-	auto comb_feat = std::make_shared<CCombinedDotFeatures>();
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
 
 	// first vector is [0, 1, ..., dim-1]
 	// second vector is [0, 2,..., 2*dim-2], and so on
@@ -228,7 +228,7 @@ TEST(CombinedDotFeaturesTest, dense_dot_range)
 	// repeated num_subfeats times
 	for (index_t i = 0; i < num_subfeats; i++)
 	{
-		comb_feat->append_feature_obj(std::make_shared<CDenseFeatures<float64_t>>(data));
+		comb_feat->append_feature_obj(std::make_shared<DenseFeatures<float64_t>>(data));
 		comb_feat->set_subfeature_weight(i, i);
 	}
 
@@ -269,10 +269,10 @@ TEST(CombinedDotFeaturesTest, add_to_dense_vec)
 	for (int j = 0; j < num_vectors * dim; j++)
 		data[j] = (j % 2 == 0) ? j : -j;
 
-	CCombinedDotFeatures* comb_feat = new CCombinedDotFeatures();
+	auto comb_feat = std::make_shared<CombinedDotFeatures>();
 	for (index_t i = 0; i < num_subfeats; i++)
 	{
-		comb_feat->append_feature_obj(new CDenseFeatures<float64_t>(data));
+		comb_feat->append_feature_obj(std::make_shared<DenseFeatures<float64_t>>(data));
 		comb_feat->set_subfeature_weight(i, i);
 	}
 

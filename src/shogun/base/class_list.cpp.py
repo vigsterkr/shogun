@@ -56,7 +56,10 @@ class_blacklist = ["SGVector", "SGMatrix", "SGSparseVector", "SGSparseMatrix",
         "Tag", "LinalgBackendGPUBase", "LinalgBackendEigen", "LinalgBackendViennaCL",
         "TypeMismatchException", "FlatHashTableError", "SimpleHeap", "LSHNNTableSetupError",
         "KDTREEKNNSolver", "LMNNStatistics", "LDACanVarSolver",
-        "GammaFeatureNumberInit", "StdVectorPrefetcher"]
+        "GammaFeatureNumberInit", "StdVectorPrefetcher", "ShogunNotImplementedException",
+        "ToStringVisitor", "BitseryVisitor", "FileSystem", "PosixFileSystem",
+        "WindowsFileSystem", "LocalWindowsFileSystem", "LocalPosixFileSystem",
+        "NullFileSystem"]
 ignore_namespace = ["internal"]
 
 SHOGUN_TEMPLATE_CLASS = "SHOGUN_TEMPLATE_CLASS"

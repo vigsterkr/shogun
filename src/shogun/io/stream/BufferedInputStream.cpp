@@ -4,7 +4,7 @@
 using namespace std;
 using namespace shogun::io;
 
-BufferedInputStream::BufferedInputStream(CInputStream* is, size_t buffer_bytes):
+BufferedInputStream::BufferedInputStream(InputStream* is, size_t buffer_bytes):
 	InputStream(),
 	m_is(is),
 	m_size(buffer_bytes)

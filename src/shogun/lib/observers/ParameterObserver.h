@@ -49,7 +49,7 @@ namespace shogun
 	/**
 	 * Interface for the parameter observer classes
 	 */
-	class ParameterObserver : public CSGObject
+	class ParameterObserver : public SGObject
 	{
 
 	public:

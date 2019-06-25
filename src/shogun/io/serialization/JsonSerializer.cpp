@@ -25,7 +25,7 @@ const char* const kGenericKey = "generic";
 extern const char* const kParametersKey;
 const char* const kParametersKey = "parameters";
 
-struct COutputStreamAdapter
+struct OutputStreamAdapter
 {
 	typedef char Ch;
 	void Put(Ch c)
@@ -313,7 +313,7 @@ void write_object(Writer& writer, JSONWriterVisitor<Writer>* visitor, std::share
 	post_serialize(object);
 }
 
-using JsonWriter = Writer<COutputStreamAdapter, UTF8<>, UTF8<>, CrtAllocator, kWriteNanAndInfFlag>;
+using JsonWriter = Writer<OutputStreamAdapter, UTF8<>, UTF8<>, CrtAllocator, kWriteNanAndInfFlag>;
 
 JsonSerializer::JsonSerializer() : Serializer()
 {

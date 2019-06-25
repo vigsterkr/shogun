@@ -48,8 +48,8 @@ template <class T>
 class ObservedValueTemplated;
 	namespace io
 	{
-		class CDeserializer;
-		class CSerializer;
+		class Deserializer;
+		class Serializer;
 	}
 
 #ifndef SWIG
@@ -70,14 +70,6 @@ template <class T> class DynArray;
 template <class T> class SGStringList;
 
 using stringToEnumMapType = std::unordered_map<std::string, std::unordered_map<std::string, machine_int_t>>;
-
-/*******************************************************************************
- * define reference counter macros
- ******************************************************************************/
-
-#define SG_REF(x) { if (x) (x)->ref(); }
-#define SG_UNREF(x) { if (x) { if ((x)->unref()==0) (x)=NULL; } }
-#define SG_UNREF_NO_NULL(x) { if (x) { (x)->unref(); } }
 
 /*******************************************************************************
  * Macros for registering parameter properties

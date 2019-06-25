@@ -225,10 +225,10 @@ public:
 	 * @param segment_mask segment mask
 	 * @param m dimension m
 	 */
-	void best_path_set_segment_ids_mask(int32_t* segment_ids, float64_t* segment_mask, int32_t m);
+	void best_path_set_segment_ids_mask(const std::vector<int32_t>& segment_ids, const std::vector<float64_t>& segment_mask, int32_t m);
 
 	/** set sparse feature matrices */
-	void set_sparse_features(SparseFeatures<float64_t>* seq_sparse1, SparseFeatures<float64_t>* seq_sparse2);
+	void set_sparse_features(std::shared_ptr<SparseFeatures<float64_t>> seq_sparse1, std::shared_ptr<SparseFeatures<float64_t>> seq_sparse2);
 
 	/** set plif matrices
 	 *
@@ -684,9 +684,9 @@ protected:
 	/** segment loss */
 	DynamicArray<float64_t> m_segment_loss; // 3d
 	/** segment IDs */
-	DynamicArray<int32_t> m_segment_ids;
+	std::vector<int32_t> m_segment_ids;
 	/** segment mask */
-	DynamicArray<float64_t> m_segment_mask;
+	std::vector<float64_t> m_segment_mask;
 	/** my state seq */
 	DynamicArray<int32_t> m_my_state_seq;
 	/** my position sequence */
@@ -709,9 +709,9 @@ protected:
 	DynamicArray<int32_t> m_positions; // 2d
 
 	/** sparse feature matrix dim1*/
-	SparseFeatures<float64_t>* m_seq_sparse1;
+	std::shared_ptr<SparseFeatures<float64_t>> m_seq_sparse1;
 	/** sparse feature matrix dim2*/
-	SparseFeatures<float64_t>* m_seq_sparse2;
+	std::shared_ptr<SparseFeatures<float64_t>> m_seq_sparse2;
 	/** plif matrices*/
 	std::shared_ptr<PlifMatrix> m_plif_matrices;
 

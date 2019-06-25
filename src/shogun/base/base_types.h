@@ -53,7 +53,7 @@ namespace shogun
 	                    std::is_same<LikelihoodModel, T>::value ||
 	                    std::is_same<MeanFunction, T>::value ||
 	                    std::is_same<LossFunction, T>::value ||
-	                    std::is_same<Tokenizer, T>::value>
+	                    std::is_same<Tokenizer, T>::value ||
 	                    std::is_same<EvaluationResult, T>::value>
 	{
 	};

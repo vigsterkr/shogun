@@ -131,7 +131,7 @@ TEST_F(DotFeaturesTest, dense_dot_range)
 	SGMatrix<float64_t> data(num_feats, num_vectors);
 	for (index_t i = 0; i < num_vectors; i++)
 		data.get_column(i).set_const(i);
-	auto feats = some<CDenseFeatures<float64_t>>(data);
+	auto feats = std::make_shared<DenseFeatures<float64_t>>(data);
 
 	SGVector<float64_t> vec(num_feats);
 	vec.range_fill(1);

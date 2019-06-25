@@ -22,7 +22,7 @@
 namespace shogun
 {
 
-/** @brief A Node is an element of a CTaxonomy, which is used to describe hierarchical
+/** @brief A Node is an element of a Taxonomy, which is used to describe hierarchical
  *	structure between tasks.
  *
  */
@@ -136,18 +136,18 @@ protected:
 };
 
 
-/** @brief CTaxonomy is used to describe hierarchical
+/** @brief Taxonomy is used to describe hierarchical
  *	structure between tasks.
  *
  */
-class CTaxonomy
+class Taxonomy
 {
 
 public:
 
 	/** default constructor
 	 */
-	CTaxonomy()
+	Taxonomy()
 	{
 		root = std::make_shared<Node>();
 		nodes.push_back(root);
@@ -156,7 +156,7 @@ public:
 		name2id["root"] = 0;
 	}
 
-	virtual ~CTaxonomy()
+	virtual ~Taxonomy()
 	{
 		nodes.clear();
 		name2id.clear();
@@ -223,7 +223,7 @@ public:
 	 *  @param node_rhs node of right hand side
 	 *  @return intersection of the two sets of ancestors
 	 */
-	Node::NodeSet intersect_root_path(std::shared_ptr<CNode> node_lhs, std::shared_ptr<CNode> node_rhs) const
+	Node::NodeSet intersect_root_path(std::shared_ptr<Node> node_lhs, std::shared_ptr<Node> node_rhs) const
 	{
 
 		Node::NodeSet root_path_lhs = node_lhs->get_path_root();
@@ -389,7 +389,7 @@ public:
 	 */
 	MultitaskKernelTreeNormalizer(std::vector<std::string> task_lhs,
 								   std::vector<std::string> task_rhs,
-								   CTaxonomy tax) : MultitaskKernelMklNormalizer()
+								   Taxonomy tax) : MultitaskKernelMklNormalizer()
 	{
 
 		taxonomy = tax;
@@ -587,7 +587,7 @@ public:
 
 protected:
 	/** taxonomy **/
-	CTaxonomy taxonomy;
+	Taxonomy taxonomy;
 
 	/** number of tasks **/
 	int32_t num_nodes;

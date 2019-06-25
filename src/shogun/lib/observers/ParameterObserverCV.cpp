@@ -96,11 +96,11 @@ void ParameterObserverCV::print_observed_value(
 		    .display_vector("Train Indices ");
 		f->get<SGVector<index_t>>("test_indices")
 		    .display_vector("Test Indices ");
-		print_machine_information(f->get<CMachine>("trained_machine"));
-		f->get<CLabels>("test_result")
+		print_machine_information(f->get<Machine>("trained_machine"));
+		f->get<Labels>("test_result")
 		    ->get_values()
 		    .display_vector("Test Labels ");
-		f->get<CLabels>("test_true_result")
+		f->get<Labels>("test_true_result")
 		    ->get_values()
 		    .display_vector("Test True Label ");
 		SG_PRINT(

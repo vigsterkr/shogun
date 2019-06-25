@@ -23,7 +23,7 @@ namespace shogun
 			 * @param os
 			 * @param buffer_bytes
 			 */
-			BufferedInputStream(CInputStream* is, size_t buffer_bytes = 4096);
+			BufferedInputStream(InputStream* is, size_t buffer_bytes = 4096);
 
 			~BufferedInputStream() override;
 
@@ -51,7 +51,7 @@ namespace shogun
 			size_t m_limit = 0;
 			std::error_condition m_status;
 
-			SG_DELETE_COPY_AND_ASSIGN(CBufferedInputStream);
+			SG_DELETE_COPY_AND_ASSIGN(BufferedInputStream);
 		};
 	}
 }

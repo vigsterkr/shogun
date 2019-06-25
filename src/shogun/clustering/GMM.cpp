@@ -185,7 +185,7 @@ float64_t GMM::train_em(float64_t min_cov, int32_t max_iter, float64_t min_chang
 		    iter, "log_likelihood", "Log Likelihood", log_likelihood_cur);
 		this->observe<SGVector<float64_t>>(
 		    iter, "coefficients", "Mixture Coefficients", alpha);
-		this->observe<std::vector<CGaussian*>>(iter, "components");
+		this->observe<std::vector<std::shared_ptr<Gaussian>>>(iter, "components");
 
 		iter++;
 	}
@@ -341,7 +341,7 @@ float64_t GMM::train_smem(int32_t max_iter, int32_t max_cand, float64_t min_cov,
 		this->observe<float64_t>(
 		    iter, "log_likelihood", "Log Likelihood", cur_likelihood);
 		this->observe<SGVector<float64_t>>(iter, "coefficients");
-		this->observe<std::vector<CGaussian*>>(iter, "components");
+		this->observe<std::vector<std::shared_ptr<Gaussian>>>(iter, "components");
 
 		iter++;
 		pb.print_progress();

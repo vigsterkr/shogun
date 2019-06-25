@@ -992,7 +992,7 @@ float64_t HMM::backward_comp(int32_t time, int32_t state, int32_t dimension)
 	{
 	  if (BETA_CACHE(dimension).table)
 	    {
-	      float64_t sum=-CMath::INFTY;
+	      float64_t sum=-Math::INFTY;
 	      for (int32_t j=0; j<N; j++)
 		sum= Math::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
 	      BETA_CACHE(dimension).sum=sum;

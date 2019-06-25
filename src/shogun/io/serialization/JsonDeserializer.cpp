@@ -234,12 +234,12 @@ private:
 	SG_DELETE_COPY_AND_ASSIGN(JSONReaderVisitor);
 };
 
-class CIStreamAdapter
+class IStreamAdapter
 {
 public:
 	typedef char Ch;
 
-	CIStreamAdapter(std::shared_ptr<CInputStream> is, size_t buffer_size = 65536):
+	IStreamAdapter(std::shared_ptr<InputStream> is, size_t buffer_size = 65536):
 		m_stream(is),
 		m_buffer_size(buffer_size)
 	{
@@ -248,7 +248,7 @@ public:
 	}
 
 
-	~CIStreamAdapter()
+	~IStreamAdapter()
 	{
 		m_buffer.clear();
 	}
@@ -305,7 +305,7 @@ private:
 	size_t m_pos = 0;
 	size_t m_limit = 0;
 	bool m_eof = false;
-	SG_DELETE_COPY_AND_ASSIGN(CIStreamAdapter);
+	SG_DELETE_COPY_AND_ASSIGN(IStreamAdapter);
 };
 
 template<typename V>

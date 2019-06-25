@@ -1,7 +1,7 @@
 #include "sg_gtest_utilities.h"
 
-#include <shogun/io/serilzation/Serializer.h>
-#include <shogun/io/serilzation/Deserializer.h>
+#include <shogun/io/serialization/JsonSerializer.h>
+#include <shogun/io/serialization/JsonDeserializer.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/mathematics/Math.h>
 
@@ -175,10 +175,9 @@ TYPED_TEST(DynamicArrayFixture, save_serializable)
 	char filename[] = "serialization-asciiDynamicArray.XXXXXX";
 	generate_temp_filename(filename);
 
-	io::serialize(filename, this->wrapper_array, std::make_shared<CJsonSerializer>());
+	io::serialize(filename, this->wrapper_array, std::make_shared<io::JsonSerializer>());
 
-	auto new_array = std::make_shared<CDynamicArray<TypeParam>>();
-	io::deserialize(filename, new_array, std::make_shared<JsonDeserializer>());
+	auto new_array = io::deserialize(filename, std::make_shared<io::JsonDeserializer>())->as<DynamicArray<TypeParam>>();
 
 	ASSERT(this->wrapper_array->get_num_elements() == 5)
 	for (int32_t i = 0; i < this->wrapper_array->get_num_elements(); i++)

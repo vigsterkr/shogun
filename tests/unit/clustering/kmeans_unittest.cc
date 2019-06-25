@@ -17,7 +17,7 @@
 using namespace shogun;
 
 void check_consistency_observable(
-    const CKMeans* kmeans, ParameterObserver* observer)
+    const std::shared_ptr<KMeans> kmeans, std::shared_ptr<ParameterObserver> observer)
 {
 	auto total_observations = observer->get<int32_t>("num_observations");
 	auto observation = observer->get_observation(total_observations - 1);
@@ -52,7 +52,7 @@ TEST(KMeans, manual_center_initialization_test)
 	auto distance=std::make_shared<EuclideanDistance>(features, features);
 	auto clustering=std::make_shared<KMeans>(2, distance,initial_centers);
 
-	auto observer = std::make_shared<CParameterObserverLogger>();
+	auto observer = std::make_shared<ParameterObserverLogger>();
 	clustering->subscribe(observer);
 
 	for (int32_t loop=0; loop<10; loop++)
@@ -79,7 +79,6 @@ TEST(KMeans, manual_center_initialization_test)
 	}
 
 	clustering->unsubscribe(observer);
-	}
 }
 
 TEST(KMeans, KMeanspp_center_initialization_test)

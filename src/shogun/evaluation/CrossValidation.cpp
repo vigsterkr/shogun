@@ -114,7 +114,7 @@ std::shared_ptr<EvaluationResult> CrossValidation::evaluate_impl()
 		/* Emit the value */
 		observe(
 		    i, "cross_validation_run", "One run of CrossValidation",
-		    storage->as<CEvaluationResult>());
+		    storage->as<EvaluationResult>());
 	}
 
 	/* construct evaluation result */
@@ -186,7 +186,7 @@ float64_t CrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->put("train_indices", inverse_subset_indices);
-			auto fold_machine = m_machine->clone()->as<CMachine>();
+			auto fold_machine = m_machine->clone()->as<Machine>();
 			fold->put("trained_machine", fold_machine);
 
 			/* produce output for desired indices */
@@ -273,7 +273,7 @@ float64_t CrossValidation::evaluate_one_run(
 
 			/* evtl. update xvalidation output class */
 			fold->put("train_indices", inverse_subset_indices);
-			auto fold_machine = machine->clone()->as<CMachine>();
+			auto fold_machine = machine->clone()->as<Machine>();
 			fold->put("trained_machine", fold_machine);
 
 			features->remove_subset();

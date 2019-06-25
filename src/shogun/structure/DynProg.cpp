@@ -280,7 +280,7 @@ void DynProg::resize_lin_feat(const int32_t num_new_feat)
 }
 
 void DynProg::precompute_tiling_plifs(
-	CPlif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs)
+	Plif** PEN, const int32_t* tiling_plif_ids, const int32_t num_tiling_plifs)
 {
 	m_num_lin_feat_plifs_cum[m_num_raw_data] = m_num_lin_feat_plifs_cum[m_num_raw_data-1]+ num_tiling_plifs;
 	float64_t* tiling_plif = SG_MALLOC(float64_t, num_tiling_plifs);
@@ -291,7 +291,7 @@ void DynProg::precompute_tiling_plifs(
 	for (int32_t i=0; i<num_tiling_plifs; i++)
 	{
 		tiling_plif[i]=0.0;
-		CPlif * plif = PEN[tiling_plif_ids[i]];
+		Plif * plif = PEN[tiling_plif_ids[i]];
 		tiling_rows[i] = plif->get_use_svm();
 
 		ASSERT(tiling_rows[i]-1==m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i)
@@ -310,7 +310,7 @@ void DynProg::precompute_tiling_plifs(
 			for (int32_t i=0; i<num_tiling_plifs; i++)
 			{
 				svm_value[m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i]=*p_tiling_data;
-				CPlif * plif = PEN[tiling_plif_ids[i]];
+				Plif * plif = PEN[tiling_plif_ids[i]];
 				ASSERT(m_num_lin_feat_plifs_cum[m_num_raw_data-1]+i==plif->get_use_svm()-1)
 				plif->set_do_calc(true);
 				tiling_plif[i]+=plif->lookup_penalty(0,svm_value);
@@ -562,6 +562,7 @@ void DynProg::init_mod_words_array(SGMatrix<int32_t> mod_words_input)
 	m_mod_words.set_array(mod_words_input.matrix, mod_words_input.num_rows, 2, true, true) ;
 	m_mod_words_array = m_mod_words.get_array() ;
 
+	/*
 	SG_DEBUG("m_mod_words=[")
 	for (int32_t i=0; i<mod_words_input.num_rows; i++)
 		SG_DEBUG("%i, ", p_mod_words_array[i])
@@ -656,32 +657,23 @@ void DynProg::set_content_type_array(SGMatrix<float64_t> seg_path)
 	ASSERT(seg_path.num_rows==2)
 	ASSERT(seg_path.num_cols==m_seq_len)
 
+	std::vector<int32_t> segment_ids(m_seq_len);
+	std::vector<float64_t> segment_mask(m_seq_len);
 	if (seg_path.matrix!=NULL)
 	{
-		int32_t *segment_ids = SG_MALLOC(int32_t, m_seq_len);
-		float64_t *segment_mask = SG_MALLOC(float64_t, m_seq_len);
 		for (int32_t i=0; i<m_seq_len; i++)
 		{
 		        segment_ids[i] = (int32_t)seg_path.matrix[2*i] ;
 		        segment_mask[i] = seg_path.matrix[2*i+1] ;
 		}
 		best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
-		SG_FREE(segment_ids);
-		SG_FREE(segment_mask);
 	}
 	else
 	{
-		int32_t *izeros = SG_MALLOC(int32_t, m_seq_len);
-		float64_t *dzeros = SG_MALLOC(float64_t, m_seq_len);
-		for (int32_t i=0; i<m_seq_len; i++)
-		{
-			izeros[i]=0 ;
-			dzeros[i]=0.0 ;
-		}
-		best_path_set_segment_ids_mask(izeros, dzeros, m_seq_len) ;
-		SG_FREE(izeros);
-		SG_FREE(dzeros);
+		segment_ids.assign(m_seq_len, 0);
+		segment_ids.assign(m_seq_len, 0.0);
 	}
+	best_path_set_segment_ids_mask(segment_ids, segment_mask, m_seq_len) ;
 }
 
 void DynProg::set_pos(SGVector<int32_t> pos)
@@ -703,16 +695,11 @@ void DynProg::set_sparse_features(std::shared_ptr<SparseFeatures<float64_t>> seq
 	if ((!seq_sparse1 && seq_sparse2) || (seq_sparse1 && !seq_sparse2))
 		SG_ERROR("Sparse features must either both be NULL or both NON-NULL\n")
 
-
-
-
 	m_seq_sparse1=seq_sparse1;
 	m_seq_sparse2=seq_sparse2;
-
-
 }
 
-void DynProg::set_plif_matrices(std::shared_ptr<CPlifMatrix> pm)
+void DynProg::set_plif_matrices(std::shared_ptr<PlifMatrix> pm)
 {
 
 
@@ -758,10 +745,8 @@ void DynProg::set_dict_weights(SGMatrix<float64_t> dictionary_weights)
 	// initialize, so it does not bother when not used
 	m_segment_loss.resize_array(m_max_a_id+1, m_max_a_id+1, 2) ;
 	m_segment_loss.set_const(0) ;
-	m_segment_ids.resize_array(m_observation_matrix.get_dim2()) ;
-	m_segment_mask.resize_array(m_observation_matrix.get_dim2()) ;
-	m_segment_ids.set_const(0) ;
-	m_segment_mask.set_const(0) ;
+	m_segment_ids.assign(m_observation_matrix.get_dim2(), 0) ;
+	m_segment_mask.assign(m_observation_matrix.get_dim2(), 0) ;
 }
 
 void DynProg::best_path_set_segment_loss(SGMatrix<float64_t> segment_loss)
@@ -782,20 +767,21 @@ void DynProg::best_path_set_segment_loss(SGMatrix<float64_t> segment_loss)
 }
 
 void DynProg::best_path_set_segment_ids_mask(
-	int32_t* segment_ids, float64_t* segment_mask, int32_t m)
+	const std::vector<int32_t>& segment_ids, 
+	const std::vector<float64_t>& segment_mask, int32_t m)
 {
 
 	if (m!=m_observation_matrix.get_dim2())
 		SG_ERROR("size of segment_ids or segment_mask (%i)  does not match the size of the feature matrix (%i)", m, m_observation_matrix.get_dim2())
 	int32_t max_id = 0;
 	for (int32_t i=1;i<m;i++)
-		max_id = Math::max(max_id,segment_ids[i]);
+		max_id = std::max(max_id,segment_ids[i]);
 	//SG_PRINT("max_id: %i, m:%i\n",max_id, m)
-	m_segment_ids.set_array(segment_ids, m, true, true) ;
-	m_segment_mask.set_array(segment_mask, m, true, true) ;
+        m_segment_ids = segment_ids;	
+	m_segment_mask = segment_mask;
 
-	m_seg_loss_obj->set_segment_mask(&m_segment_mask);
-	m_seg_loss_obj->set_segment_ids(&m_segment_ids);
+	m_seg_loss_obj->set_segment_mask(m_segment_mask);
+	m_seg_loss_obj->set_segment_ids(m_segment_ids);
 	m_seg_loss_obj->compute_loss(m_pos.get_array(), m_seq_len);
 }
 
@@ -937,8 +923,8 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 	int32_t* my_state_seq=m_states.get_array();
 	int32_t* my_pos_seq=m_positions.get_array();
 
-	PlifBase** Plif_matrix=m_plif_matrices->get_plif_matrix();
-	PlifBase** Plif_state_signals=m_plif_matrices->get_state_signals();
+	auto Plif_matrix=m_plif_matrices->get_plif_matrix();
+	auto Plif_state_signals=m_plif_matrices->get_state_signals();
 	//END FIXME
 
 
@@ -982,9 +968,9 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		//for (int32_t i=0;i<m_N*m_seq_len*max_num_signals;i++)
       //   SG_PRINT("(%i)%0.2f ",i,seq_array[i])
 
-		DynamicObjectArray PEN((std::shared_ptr<SGObject>*) Plif_matrix, m_N, m_N, false, false) ; // 2d, PlifBase*
+		DynamicObjectArray PEN((std::shared_ptr<SGObject>*)Plif_matrix.data(), m_N, m_N, false, false) ; // 2d, PlifBase*
 
-		DynamicObjectArray PEN_state_signals((std::shared_ptr<SGObject>*) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d,  PlifBase*
+		DynamicObjectArray PEN_state_signals((std::shared_ptr<SGObject>*)Plif_state_signals.data(), m_N, max_num_signals, false, false) ; // 2d,  PlifBase*
 
 		DynamicArray<float64_t> seq(m_N, m_seq_len) ; // 2d
 		seq.set_const(0) ;
@@ -1008,12 +994,12 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 		{ // convert seq_input to seq
 			// this is independent of the svm values
 
-			DynamicArray<float64_t> *seq_input=NULL ; // 3d
+			std::shared_ptr<DynamicArray<float64_t>> seq_input=NULL ; // 3d
 			if (seq_array!=NULL)
 			{
 				//SG_PRINT("using dense seq_array\n")
 
-				seq_input=std::make_shared<DynamicArray><float64_t>(seq_array, m_N, m_seq_len, max_num_signals) ;
+				seq_input=std::make_shared<DynamicArray<float64_t>>(seq_array, m_N, m_seq_len, max_num_signals) ;
 				//seq_input.display_array() ;
 
 				ASSERT(m_seq_sparse1==NULL)
@@ -1055,7 +1041,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 							{
 								// just one plif
 								if (Math::is_finite(seq_input->element(i,j,k)))
-									seq.element(i,j) += ((PlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
+									seq.element(i,j) += PEN_state_signals.element(i,k)->as<PlifBase>()->lookup_penalty(seq_input->element(i,j,k), svm_value) ;
 								else
 									// keep infinity values
 									seq.element(i,j) = seq_input->element(i, j, k) ;
@@ -1066,7 +1052,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (Math::is_finite(m_seq_sparse1->get_feature(i,j)))
-										seq.element(i,j) += ((PlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += PEN_state_signals.element(i,k)->as<PlifBase>()->lookup_penalty(m_seq_sparse1->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse1->get_feature(i, j) ;
@@ -1075,7 +1061,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									// just one plif
 									if (Math::is_finite(m_seq_sparse2->get_feature(i,j)))
-										seq.element(i,j) += ((PlifBase*) PEN_state_signals.element(i,k))->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
+										seq.element(i,j) += PEN_state_signals.element(i,k)->as<PlifBase>()->lookup_penalty(m_seq_sparse2->get_feature(i,j), svm_value) ;
 									else
 										// keep infinity values
 										seq.element(i,j) = m_seq_sparse2->get_feature(i, j) ;
@@ -1085,7 +1071,6 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 						else
 							break ;
 					}
-			delete seq_input;
 			SG_FREE(svm_value);
 		}
 
@@ -1155,7 +1140,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 				{
 					T_STATES ii = elem_list[i] ;
 
-					auto penij=(PlifBase*) PEN.element(j, ii) ;
+					auto penij=PEN.element(j, ii)->as<PlifBase>() ;
 					if (penij==NULL)
 					{
 						if (long_transitions)
@@ -1439,7 +1424,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const PlifBase* penalty = (PlifBase*) PEN.element(j,ii) ;
+						const auto penalty = PEN.element(j,ii)->as<PlifBase>() ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -1606,7 +1591,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 					{
 						T_STATES ii = elem_list[i] ;
 
-						const PlifBase* penalty = (PlifBase*) PEN.element(j,ii) ;
+						const auto penalty = PEN.element(j,ii)->as<PlifBase>() ;
 
 						/*int32_t look_back = max_look_back ;
 						  if (0)
@@ -1836,7 +1821,7 @@ void DynProg::compute_nbest_paths(int32_t max_num_signals, bool use_orf,
 								{
 									/* then the long transition is better than the short one => replace it */
 									int32_t fromtjk =  fixedtempii_ ;
-									SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to m_pos %i better than short transition (%1.5f,%i) to m_pos %i \n",
+									/*SG_PRINT("%i,%i: Long transition (%1.5f=-(%1.5f+%1.5f+%1.5f+%1.5f), %i) to m_pos %i better than short transition (%1.5f,%i) to m_pos %i \n",
 									  m_pos[t], j,
 									  mval, pen_val_3p*0.5, long_transition_content_scores_pen.get_element(ii, j), long_transition_content_scores_elem.get_element(ii, j), long_transition_content_scores_prev.get_element(ii, j), ii,
 									  m_pos[long_transition_content_position.get_element(ii, j)],
@@ -1986,8 +1971,8 @@ void DynProg::best_path_trans_deriv(
 	m_my_losses.resize_array(my_seq_len);
 	float64_t* my_scores=m_my_scores.get_array();
 	float64_t* my_losses=m_my_losses.get_array();
-	PlifBase** Plif_matrix=m_plif_matrices->get_plif_matrix();
-	PlifBase** Plif_state_signals=m_plif_matrices->get_state_signals();
+	auto Plif_matrix=m_plif_matrices->get_plif_matrix();
+	auto Plif_state_signals=m_plif_matrices->get_state_signals();
 
 	if (!m_svm_arrays_clean)
 	{
@@ -2001,9 +1986,9 @@ void DynProg::best_path_trans_deriv(
 
 	bool use_svm = false ;
 
-	DynamicObjectArray PEN((std::shared_ptr<SGObject>*) Plif_matrix, m_N, m_N, false, false) ; // 2d, PlifBase*
+	DynamicObjectArray PEN((std::shared_ptr<SGObject>*)Plif_matrix.data(), m_N, m_N, false, false) ; // 2d, PlifBase*
 
-	DynamicObjectArray PEN_state_signals((std::shared_ptr<SGObject>*) Plif_state_signals, m_N, max_num_signals, false, false) ; // 2d, PlifBase*
+	DynamicObjectArray PEN_state_signals((std::shared_ptr<SGObject>*)Plif_state_signals.data(), m_N, max_num_signals, false, false) ; // 2d, PlifBase*
 
 	DynamicArray<float64_t> seq_input(seq_array, m_N, m_seq_len, max_num_signals) ;
 
@@ -2011,7 +1996,7 @@ void DynProg::best_path_trans_deriv(
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<m_N; j++)
 			{
-				PlifBase* penij=(PlifBase*) PEN.element(i,j) ;
+				auto penij=PEN.element(i,j)->as<PlifBase>() ;
 				if (penij==NULL)
 					continue ;
 
@@ -2022,7 +2007,7 @@ void DynProg::best_path_trans_deriv(
 		for (int32_t i=0; i<m_N; i++)
 			for (int32_t j=0; j<max_num_signals; j++)
 			{
-				PlifBase* penij=(PlifBase*) PEN_state_signals.element(i,j) ;
+				auto penij=PEN_state_signals.element(i,j)->as<PlifBase>() ;
 				if (penij==NULL)
 					continue ;
 				if (penij->uses_svm_values())
@@ -2184,7 +2169,7 @@ void DynProg::best_path_trans_deriv(
 					int32_t num_current_svms=0;
 					int32_t svm_ids[] = {-8, -7, -6, -5, -4, -3, -2, -1};
 					SG_PRINT("penalties(%i, %i), frame:%i  ", from_state, to_state, frame)
-					((PlifBase*) PEN.element(to_state, from_state))->get_used_svms(&num_current_svms, svm_ids);
+					PEN.element(to_state, from_state)->as<PlifBase>()->get_used_svms(&num_current_svms, svm_ids);
 					SG_PRINT("\n")
 				}
 
@@ -2203,12 +2188,12 @@ void DynProg::best_path_trans_deriv(
 			float64_t nscore = 0 ;
 			if (is_long_transition)
 			{
-				float64_t pen_value_part1 = ((PlifBase*) PEN.element(to_state, from_state))->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
-				float64_t pen_value_part2 = ((PlifBase*) PEN.element(to_state, from_state))->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
+				float64_t pen_value_part1 = PEN.element(to_state, from_state)->as<PlifBase>()->lookup_penalty(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1) ;
+				float64_t pen_value_part2 = PEN.element(to_state, from_state)->as<PlifBase>()->lookup_penalty(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2) ;
 				nscore= 0.5*pen_value_part1 + 0.5*pen_value_part2 ;
 			}
 			else
-				nscore = ((PlifBase*) PEN.element(to_state, from_state))->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
+				nscore = PEN.element(to_state, from_state)->as<PlifBase>()->lookup_penalty(m_pos[to_pos]-m_pos[from_pos], svm_value) ;
 
 			if (false)//(nscore<-1e9)
 					SG_PRINT("is_long_transition=%i  (from_pos=%i (%i), to_pos=%i (%i)=> %1.5f\n",
@@ -2244,11 +2229,11 @@ void DynProg::best_path_trans_deriv(
 
 			if (is_long_transition)
 			{
-				((PlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
-				((PlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
+				PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(m_pos[from_pos_thresh]-m_pos[from_pos], svm_value_part1, 0.5) ;
+				PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(m_pos[to_pos]-m_pos[to_pos_thresh], svm_value_part2, 0.5) ;
 			}
 			else
-				((PlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
+				PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(m_pos[to_pos]-m_pos[from_pos], svm_value, 1) ;
 
 			//SG_PRINT("m_num_raw_data = %i \n", m_num_raw_data)
 
@@ -2269,7 +2254,7 @@ void DynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						((PlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
+						PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
 
 					}
 					num_intensities = raw_intensities_interval_query(m_pos[to_pos_thresh], m_pos[to_pos],intensities, d);
@@ -2278,7 +2263,7 @@ void DynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						((PlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
+						PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 0.5) ;
 
 					}
 					SG_FREE(intensities);
@@ -2299,7 +2284,7 @@ void DynProg::best_path_trans_deriv(
 						for (int32_t j=m_num_lin_feat_plifs_cum[d-1];j<m_num_lin_feat_plifs_cum[d];j++)
 							svm_value[j]=intensities[k];
 
-						((PlifBase*) PEN.element(to_state, from_state))->penalty_add_derivative(-Math::INFTY, svm_value, 1) ;
+						PEN.element(to_state, from_state)->as<PlifBase>()->penalty_add_derivative(-Math::INFTY, svm_value, 1) ;
 
 					}
 					SG_FREE(intensities);
@@ -2326,7 +2311,7 @@ void DynProg::best_path_trans_deriv(
 			}
 			if (PEN_state_signals.element(to_state, k)!=NULL)
 			{
-				float64_t nscore = ((PlifBase*) PEN_state_signals.element(to_state,k))->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
+				float64_t nscore = PEN_state_signals.element(to_state,k)->as<PlifBase>()->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ; // this should be ok for long_transitions (svm_value does not matter)
 				my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
 				if (false)//(nscore<-1e9)
@@ -2353,7 +2338,7 @@ void DynProg::best_path_trans_deriv(
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG("%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k)
 #endif
-				((PlifBase*) PEN_state_signals.element(to_state,k))->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
+				PEN_state_signals.element(to_state,k)->as<PlifBase>()->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value, 1) ; // this should be ok for long_transitions (svm_value does not matter)
 			} else
 				break ;
 		}

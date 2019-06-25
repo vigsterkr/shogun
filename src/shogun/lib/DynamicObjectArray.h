@@ -58,9 +58,8 @@ class DynamicObjectArray : public SGObject
 		}
 
 		DynamicObjectArray(std::shared_ptr<SGObject>* p_array, size_t dim1, size_t dim2, bool p_free_array=true, bool p_copy_array=false)
-		: SGObject(), m_array(dim1*dim2)
+		: SGObject(), m_array(p_array, p_array + dim1*dim2)
 		{
-			m_array.assign(p_array, p_array+(dim1*dim2));
 			dim1_size = dim1;
 			dim2_size = dim2;
 
