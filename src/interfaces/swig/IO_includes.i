@@ -23,6 +23,8 @@
 #include <shogun/io/serialization/BitseryDeserializer.h>
 #include <shogun/io/serialization/JsonSerializer.h>
 #include <shogun/io/serialization/JsonDeserializer.h>
+#include <shogun/io/renku/RenkuSerializer.h>
+#include <shogun/io/renku/renku.h>
 #include <shogun/io/SimpleFile.h>
 #include <shogun/io/MemoryMappedFile.h>
 

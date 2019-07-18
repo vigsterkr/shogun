@@ -22,6 +22,7 @@
 %shared_ptr(shogun::io::JsonDeserializer)
 %shared_ptr(shogun::io::ByteArrayInputStream)
 %shared_ptr(shogun::io::ByteArrayOutputStream)
+%shared_ptr(shogun::renku::RenkuSerializer)
 
 %shared_ptr(shogun::StreamingFileFromFeatures)
 %shared_ptr(shogun::BinaryFile)
@@ -180,6 +181,8 @@ namespace shogun
 %include <shogun/io/stream/OutputStream.h>
 %include <shogun/io/stream/ByteArrayInputStream.h>
 %include <shogun/io/stream/ByteArrayOutputStream.h>
+%include <shogun/io/renku/RenkuSerializer.h>
+%include <shogun/io/renku/renku.h>
 
 %include <shogun/io/BinaryFile.h>
 %include <shogun/io/HDF5File.h>
