@@ -6,8 +6,8 @@ ExternalProject_Add(
 	bitsery
 	PREFIX ${BITSERY_PREFIX}
 	DOWNLOAD_DIR ${THIRD_PARTY_DIR}/bitsery
-	URL https://github.com/fraillt/bitsery/archive/v4.6.0.tar.gz
-	URL_MD5 accb462f98a59ed2bc4ffa7de374c24b
+	URL https://github.com/fraillt/bitsery/archive/v5.0.1.tar.gz
+	URL_MD5 479b4a1a444af215bfc70b4e395e5886
 	INSTALL_COMMAND ""
 )
 
