@@ -57,7 +57,7 @@ void ParameterObserverCV::on_next_impl(const shogun::TimedObservedValue& value)
 	try
 	{
 		auto recalled_value =
-		        value.first->get(value.first->get<std::string>("name"))->as<CrossValidationStorage>();
+		        value.first->get<std::shared_ptr<CrossValidationStorage>>(value.first->get<std::string>("name"));
 
 		/* Print information on screen if enabled*/
 		if (m_verbose)
@@ -86,7 +86,7 @@ void ParameterObserverCV::print_observed_value(
 {
 	for (index_t i = 0; i < value->get<index_t>("num_folds"); i++)
 	{
-		auto f = value->get("folds", i);
+		auto f = value->get<EvaluationResult>("folds", i);
 		io::print("\n");
 		io::print(
 		    "Current run index: {}\n", f->get<index_t>("current_run_index"));
@@ -110,16 +110,14 @@ void ParameterObserverCV::print_observed_value(
 
 void ParameterObserverCV::print_machine_information(const std::shared_ptr<Machine>& machine) const
 {
-	if (std::dynamic_pointer_cast<LinearMachine>(machine))
+	if (auto linear_machine = std::dynamic_pointer_cast<LinearMachine>(machine))
 	{
-		auto linear_machine = std::static_pointer_cast<LinearMachine>(machine);
 		linear_machine->get_w().display_vector("Learned Weights = ");
 		io::print("Learned Bias = {}\n", linear_machine->get_bias());
 	}
 
-	if (std::dynamic_pointer_cast<KernelMachine>(machine))
+	if (auto kernel_machine = std::dynamic_pointer_cast<KernelMachine>(machine))
 	{
-		auto kernel_machine = machine->as<KernelMachine>();
 		kernel_machine->get_alphas().display_vector("Learned alphas = ");
 		io::print("Learned Bias = {}\n", kernel_machine->get_bias());
 	}
@@ -135,22 +133,19 @@ void ParameterObserverCV::print_machine_information(const std::shared_ptr<Machin
 		}
 	}
 
-	if (std::dynamic_pointer_cast<MKL>(machine))
+	if (auto mkl = std::dynamic_pointer_cast<MKL>(machine))
 	{
-		auto mkl = machine->as<MKL>();
 		auto kernel = mkl->get_kernel()->as<CombinedKernel>();
 		kernel->get_subkernel_weights().display_vector(
 		    "MKL sub-kernel weights =");
 
 	}
 
-	if (std::dynamic_pointer_cast<MKLMulticlass>(machine))
+	if (auto mkl_mc = std::dynamic_pointer_cast<MKLMulticlass>(machine))
 	{
-		auto mkl = machine->as<MKLMulticlass>();
-		auto kernel = mkl->get_kernel()->as<CombinedKernel>();
+		auto kernel = mkl_mc->get_kernel()->as<CombinedKernel>();
 		kernel->get_subkernel_weights().display_vector(
 		    "MKL sub-kernel weights =");
-
 	}
 }
 

@@ -244,12 +244,6 @@ std::shared_ptr<SGObject> SGObject::shallow_copy() const
 	return NULL;
 }
 
-std::shared_ptr<SGObject> SGObject::deep_copy() const
-{
-	not_implemented(SOURCE_LOCATION);
-	return NULL;
-}
-
 void SGObject::update_parameter_hash() const
 {
 	SG_TRACE("entering");
@@ -350,17 +344,20 @@ std::string SGObject::get_description(std::string_view name) const
 
 void SGObject::build_gradient_parameter_dictionary(std::map<Parameters::value_type, std::shared_ptr<SGObject>>& dict)
 {
-	for (auto& param: self->filter(ParameterProperties::GRADIENT)) 
-		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this(); 
+	for (auto& param: self->filter(ParameterProperties::GRADIENT))
+		dict[{param.first.name(), std::make_shared<const AnyParameter>(param.second)}] = shared_from_this();
 
-	for (const auto& param: self->filter(ParameterProperties::HYPER)) 
+	for (const auto& param: self->filter(ParameterProperties::HYPER))
 	{
-		if (auto child = sgo_details::get_by_tag(shared_from_this(), param.first.name(), sgo_details::GetByName())) 
-			child->build_gradient_parameter_dictionary(dict); 
-		else if (auto child = get(param.first.name(), std::nothrow))
+		try
+		{
+			auto child = param.second.get_value().cast<std::shared_ptr<SGObject>>();
 			child->build_gradient_parameter_dictionary(dict);
-		else
-			SG_DEBUG("Parameter {} is not a SGObject. Skipping...", param.first.name().c_str())
+		}
+		catch (std::logic_error& e)
+		{
+			SG_DEBUG("Parameter {} is not a SGObject. Skipping...", param.first.name().c_str());
+		}
 	}
 }
 
@@ -710,42 +707,6 @@ void SGObject::init_auto_params()
 	{
 		update_parameter(param.first, param.second.get_init_function()->operator()());
 	}
-}
-
-std::shared_ptr<SGObject> SGObject::get(std::string_view name, index_t index) const
-{
-	auto result = sgo_details::get_by_tag(shared_from_this(), name, sgo_details::GetByNameIndex(index));
-	if (!result && has(name))
-	{
-		error(
-			"Cannot get array parameter {}::{}[{}] of type {} as object.",
-			get_name(), name.data(), index,
-			self->map[BaseTag(name)].get_value().type().c_str());
-	}
-	return result;
-}
-
-std::shared_ptr<SGObject> SGObject::get(std::string_view name, std::nothrow_t) const
-    noexcept
-{
-	return sgo_details::get_by_tag(shared_from_this(), name, sgo_details::GetByName());
-}
-
-std::shared_ptr<SGObject> SGObject::get(std::string_view name) const noexcept(false)
-{
-	if (!has(name))
-	{
-		error("Parameter {}::{} does not exist.", get_name(), name.data());
-	}
-	if (auto result = get(name, std::nothrow))
-	{
-		return result;
-	}
-	error(
-			"Cannot get parameter {}::{} of type {} as object.",
-			get_name(), name.data(),
-			self->map[BaseTag(name.data())].get_value().type().c_str());
-	return nullptr;
 }
 
 std::string SGObject::string_enum_reverse_lookup(

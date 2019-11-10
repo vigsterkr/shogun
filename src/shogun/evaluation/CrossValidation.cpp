@@ -20,6 +20,13 @@
 
 using namespace shogun;
 
+template <class T>
+std::shared_ptr<T> make_clone(const std::shared_ptr<T>& orig, ParameterProperties pp = ParameterProperties::ALL)
+{
+	require(orig, "No object provided.");
+	return std::static_pointer_cast<T>(orig->clone(pp));
+}
+
 CrossValidation::CrossValidation() : Seedable<MachineEvaluation>()
 {
 	init();

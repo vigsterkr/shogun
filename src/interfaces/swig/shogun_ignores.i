@@ -12,6 +12,11 @@
 %ignore shogun::bmrm_ll::next;
 #endif
 
+#if defined(SWIGPYTHON) || defined(SWIGR)
+%ignore shogun::SGObject::get;
+#endif
+%ignore shogun::SGObject::watch_param;
+
 %ignore *::operator bool*;
 %ignore *::operator char*;
 %ignore *::operator unsigned char*;
