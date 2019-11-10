@@ -724,14 +724,6 @@ void DenseFeatures<ST>::save(std::shared_ptr<File> writer)
 	feature_matrix.save(writer);
 }
 
-template< class ST > std::shared_ptr<DenseFeatures< ST >> DenseFeatures< ST >::obtain_from_generic(std::shared_ptr<Features> base_features)
-{
-	require(base_features->get_feature_class() == C_DENSE,
-			"base_features must be of dynamic type DenseFeatures");
-
-	return std::static_pointer_cast<DenseFeatures< ST >>(base_features);
-}
-
 template <typename ST>
 SGVector<ST> DenseFeatures<ST>::sum() const
 {

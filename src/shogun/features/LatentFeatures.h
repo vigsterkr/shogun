@@ -76,11 +76,6 @@ namespace shogun
 			 */
 			std::shared_ptr<Data> get_sample(index_t idx);
 
-			/** helper method used to specialize a base class instance
-			 *
-			 * @param base_feats its dynamic type must be LatentFeatures
-			 */
-			static std::shared_ptr<LatentFeatures> obtain_from_generic(const std::shared_ptr<Features>& base_feats);
 		protected:
 			/** array of Data */
 			std::vector<std::shared_ptr<Data>> m_samples;

@@ -63,18 +63,6 @@ GaussianARDSparseKernel::GaussianARDSparseKernel(std::shared_ptr<DotFeatures> l,
 	initialize_sparse_kernel();
 }
 
-std::shared_ptr<GaussianARDSparseKernel> GaussianARDSparseKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
-{
-	if (kernel->get_kernel_type()!=K_GAUSSIANARDSPARSE)
-	{
-		error("Provided kernel is not of type GaussianARDSparseKernel!");
-	}
-
-	/* since an additional reference is returned */
-
-	return kernel->as<GaussianARDSparseKernel>();
-}
-
 SGVector<float64_t> GaussianARDSparseKernel::get_parameter_gradient_diagonal(
 		Parameters::const_reference param, index_t index)
 {

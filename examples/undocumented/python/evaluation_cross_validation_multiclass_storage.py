@@ -22,7 +22,7 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
     from shogun import parameter_observer
     from shogun import MulticlassAccuracy, F1Measure
     from shogun import splitting_strategy
-    from shogun import MulticlassLabels
+    from shogun import MulticlassLabels, multiclass_labels
     from shogun import CombinedFeatures
     from shogun import MKLMulticlass
     from shogun import Statistics, MSG_DEBUG, Math
@@ -78,14 +78,14 @@ def evaluation_cross_validation_multiclass_storage (traindat=traindat, label_tra
 
     # get fold ROC for first class
     eval_ROC = ROCEvaluation()
-    pred_lab_binary = MulticlassLabels.obtain_from_generic(fold.get("test_result")).get_binary_for_class(0)
-    true_lab_binary = MulticlassLabels.obtain_from_generic(fold.get("test_true_result").get_binary_for_class(0)
+    pred_lab_binary = multiclass_labels(fold.get("test_result")).get_binary_for_class(0)
+    true_lab_binary = multiclass_labels(fold.get("test_true_result")).get_binary_for_class(0)
     eval_ROC.evaluate(pred_lab_binary, true_lab_binary)
-    print eval_ROC.get_ROC()
+    print(eval_ROC.get_ROC())
 
     # get fold evaluation result
     acc_measure = F1Measure()
-    print acc_measure.evaluate(pred_lab_binary, true_lab_binary)
+    print(acc_measure.evaluate(pred_lab_binary, true_lab_binary))
 
 
 if __name__=='__main__':

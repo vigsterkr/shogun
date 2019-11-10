@@ -292,17 +292,6 @@ StudentsTLikelihood::~StudentsTLikelihood()
 {
 }
 
-std::shared_ptr<StudentsTLikelihood> StudentsTLikelihood::obtain_from_generic(
-		const std::shared_ptr<LikelihoodModel>& lik)
-{
-	ASSERT(lik!=NULL);
-
-	if (lik->get_model_type()!=LT_STUDENTST)
-		error("Provided likelihood is not of type StudentsTLikelihood!");
-
-	return lik->as<StudentsTLikelihood>();
-}
-
 SGVector<float64_t> StudentsTLikelihood::get_predictive_means(
 		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {

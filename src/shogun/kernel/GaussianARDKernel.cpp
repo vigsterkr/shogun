@@ -97,19 +97,6 @@ void GaussianARDKernel::precompute_squared()
 		m_sq_rhs=precompute_squared_helper(std::static_pointer_cast<DotFeatures>(rhs));
 }
 
-
-std::shared_ptr<GaussianARDKernel> GaussianARDKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
-{
-	if (kernel->get_kernel_type()!=K_GAUSSIANARD)
-	{
-		error("Provided kernel is not of type GaussianARDKernel!");
-	}
-
-	/* since an additional reference is returned */
-
-	return std::static_pointer_cast<GaussianARDKernel>(kernel);
-}
-
 float64_t GaussianARDKernel::compute_helper(SGVector<float64_t> avec, SGVector<float64_t>bvec)
 {
 	SGMatrix<float64_t> left;

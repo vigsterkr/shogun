@@ -31,7 +31,7 @@ namespace shogun
  */
 class SingleLaplaceInferenceMethod: public LaplaceInference
 {
-friend class SingleLaplaceNewtonOptimizer; 
+friend class SingleLaplaceNewtonOptimizer;
 friend class SingleLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
@@ -61,13 +61,6 @@ public:
 	 * @return inference type Laplace_Single
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_LAPLACE_SINGLE; }
-
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted SingleLaplaceInferenceMethod object
-	 */
-	static std::shared_ptr<SingleLaplaceInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get negative log marginal likelihood
 	 *
@@ -132,7 +125,7 @@ public:
 	 */
 	virtual SGVector<float64_t> get_posterior_mean();
 
-	  
+
 	/** Set a minimizer
 	 *
 	 * @param minimizer minimizer used in inference method
@@ -225,7 +218,7 @@ protected:
 	/** third derivative of log likelihood with respect to function location */
 	SGVector<float64_t> m_d3lp;
 
-	/** derivative of negative log (approximated) marginal likelihood wrt fhat */ 
+	/** derivative of negative log (approximated) marginal likelihood wrt fhat */
 	SGVector<float64_t> m_dfhat;
 
 	/** z */
@@ -259,8 +252,8 @@ public:
 	 */
 	void unset_target(bool is_unref);
 
-	/** Do minimization and get the optimal value 
-	 * 
+	/** Do minimization and get the optimal value
+	 *
 	 * @return optimal value
 	 */
 	virtual float64_t minimize();

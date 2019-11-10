@@ -112,19 +112,6 @@ void VarDTCInferenceMethod::update()
 	SG_TRACE("leaving");
 }
 
-std::shared_ptr<VarDTCInferenceMethod> VarDTCInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_SPARSE_REGRESSION)
-		error("Provided inference is not of type CVarDTCInferenceMethod!");
-
-
-	return inference->as<VarDTCInferenceMethod>();
-}
-
 void VarDTCInferenceMethod::check_members() const
 {
 	SingleSparseInference::check_members();
@@ -421,7 +408,7 @@ SGVector<float64_t> VarDTCInferenceMethod::get_derivative_wrt_mean(
 	SGVector<float64_t> result;
 	auto visitor = std::make_unique<ShapeVisitor>();
 	param.second->get_value().visit(visitor.get());
-	int64_t len= visitor->get_size();	
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	SGVector<float64_t> y=m_labels->as<RegressionLabels>()->get_labels();

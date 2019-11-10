@@ -85,18 +85,6 @@ void FITCInferenceMethod::update()
 	SG_TRACE("leaving");
 }
 
-std::shared_ptr<FITCInferenceMethod> FITCInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_FITC_REGRESSION)
-		error("Provided inference is not of type FITCInferenceMethod!");
-
-	return inference->as<FITCInferenceMethod>();
-}
-
 void FITCInferenceMethod::check_members() const
 {
 	SingleFITCInference::check_members();

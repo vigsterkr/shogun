@@ -878,19 +878,6 @@ SGMatrix<float64_t> CombinedKernel::get_parameter_gradient(
 	return result;
 }
 
-std::shared_ptr<CombinedKernel> CombinedKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
-{
-	if (kernel->get_kernel_type()!=K_COMBINED)
-	{
-		error("CombinedKernel::obtain_from_generic(): provided kernel is "
-				"not of type CombinedKernel!");
-	}
-
-	/* since an additional reference is returned */
-
-	return std::static_pointer_cast<CombinedKernel>(kernel);
-}
-
 std::vector<std::shared_ptr<CombinedKernel>> CombinedKernel::combine_kernels(std::vector<std::vector<std::shared_ptr<Kernel>>> kernel_list)
 {
 	std::vector<std::shared_ptr<CombinedKernel>> return_list;
@@ -971,7 +958,7 @@ std::vector<std::shared_ptr<CombinedKernel>> CombinedKernel::combine_kernels(std
 		/* index of kernel in the list */
 		kernel_index = 0;
 		first_kernel = true;
-		for (auto kernel=c_list->begin(); kernel != c_list->end(); ++kernel) 
+		for (auto kernel=c_list->begin(); kernel != c_list->end(); ++kernel)
 		{
 			auto c_kernel = *kernel;
 

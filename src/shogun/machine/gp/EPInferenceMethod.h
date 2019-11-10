@@ -81,13 +81,6 @@ public:
 	 */
 	virtual const char* get_name() const { return "EPInferenceMethod"; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted EPInferenceMethod object
-	 */
-	static std::shared_ptr<EPInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
-
 	/** returns the negative logarithm of the marginal likelihood function:
 	 *
 	 * \f[

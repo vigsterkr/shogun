@@ -303,18 +303,6 @@ SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_inference_method(
 	return result;
 }
 
-std::shared_ptr<ExactInferenceMethod> ExactInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_EXACT)
-		error("Provided inference is not of type ExactInferenceMethod!");
-
-	return inference->as<ExactInferenceMethod>();
-}
-
 SGVector<float64_t> ExactInferenceMethod::get_derivative_wrt_likelihood_model(
 		Parameters::const_reference param)
 {

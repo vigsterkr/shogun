@@ -72,13 +72,6 @@ public:
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_FITC_REGRESSION; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted FITCInferenceMethod object
-	 */
-	static std::shared_ptr<FITCInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
-
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:

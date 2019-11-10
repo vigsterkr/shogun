@@ -128,11 +128,6 @@ template< class ST > class MatrixFeatures : public Features
 		/** @return the number of features */
 		inline int32_t get_num_features() const { return m_num_features; }
 
-		/** helper method used to specialize a base class instance
-		 *
-		 */
-		static std::shared_ptr<MatrixFeatures<ST>> obtain_from_generic(std::shared_ptr<Features> base_features);
-
 	private:
 		/** internal initialization */
 		void init();

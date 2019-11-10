@@ -109,18 +109,6 @@ KLCovarianceInferenceMethod::~KLCovarianceInferenceMethod()
 {
 }
 
-std::shared_ptr<KLCovarianceInferenceMethod> KLCovarianceInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_COVARIANCE)
-		error("Provided inference is not of type KLCovarianceInferenceMethod!");
-
-	return inference->as<KLCovarianceInferenceMethod>();
-}
-
 bool KLCovarianceInferenceMethod::precompute()
 {
 	SGVector<float64_t> mean=m_mean->get_mean_vector(m_features);

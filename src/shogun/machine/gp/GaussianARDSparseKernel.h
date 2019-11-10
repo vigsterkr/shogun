@@ -87,12 +87,6 @@ public:
 	GaussianARDSparseKernel(std::shared_ptr<DotFeatures> l, std::shared_ptr<DotFeatures> r,
 		int32_t size=10);
 
-	/** @param kernel is casted to GaussianARDSparseKernel, error if not possible
-	 * is SG_REF'ed
-	 * @return casted GaussianARDSparseKernel object
-	 */
-	static std::shared_ptr<GaussianARDSparseKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
-
 	/** return derivative with respect to specified parameter
 	 *
 	 * @param param the parameter

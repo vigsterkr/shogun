@@ -45,14 +45,6 @@ GaussianKernel::~GaussianKernel()
 	cleanup();
 }
 
-std::shared_ptr<GaussianKernel> GaussianKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
-{
-	require(kernel->get_kernel_type()==K_GAUSSIAN,
-		"Provided kernel ({}) must be of type GaussianKernel!", kernel->get_name());
-
-	return std::static_pointer_cast<GaussianKernel>(kernel);
-}
-
 #include <typeinfo>
 std::shared_ptr<SGObject >GaussianKernel::shallow_copy() const
 {

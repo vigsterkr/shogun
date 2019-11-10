@@ -37,16 +37,3 @@ void MKLClassification::init_training()
 	require(m_labels, "Labels not set.");
 	require(m_labels->get_num_labels(), "Number of labels is zero.");
 }
-
-std::shared_ptr<MKLClassification> MKLClassification::obtain_from_generic(const std::shared_ptr<Machine>& machine)
-{
-	if (machine == NULL)
-		return NULL;
-
-	if (machine->get_classifier_type() != CT_MKLCLASSIFICATION)
-		error("Provided machine is not of type CMKLClassification!");
-
-	auto casted = std::dynamic_pointer_cast<MKLClassification>(machine);
-	
-	return casted;
-}

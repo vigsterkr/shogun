@@ -63,15 +63,3 @@ void LatentFeatures::init()
 {
 	SG_ADD(&m_samples, "samples", "Array of examples");
 }
-
-std::shared_ptr<LatentFeatures> LatentFeatures::obtain_from_generic(const std::shared_ptr<Features>& base_feats)
-{
-	ASSERT(base_feats != NULL)
-	if (base_feats->get_feature_class() == C_LATENT)
-		return std::static_pointer_cast<LatentFeatures>(base_feats);
-	else
-		error("base_labels must be of dynamic type CLatentLabels");
-
-	return NULL;
-}
-

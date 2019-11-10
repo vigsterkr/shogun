@@ -40,20 +40,6 @@ public:
 
 	~FactorGraphObservation() { }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param base_data its dynamic type must be FactorGraphObservation
-	 */
-	static std::shared_ptr<FactorGraphObservation> obtain_from_generic(std::shared_ptr<StructuredData> base_data)
-	{
-		if ( base_data->get_structured_data_type() == SDT_FACTOR_GRAPH )
-			return std::static_pointer_cast<FactorGraphObservation>(base_data);
-		else
-			error("base_data must be of dynamic type FactorGraphObservation");
-
-		return NULL;
-	}
-
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "FactorGraphObservation"; }
 

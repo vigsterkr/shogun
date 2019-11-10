@@ -76,13 +76,6 @@ class FactorGraphFeatures : public Features
 		 */
 		std::shared_ptr<FactorGraph> get_sample(index_t idx);
 
-		/** helper method used to specialize a base class instance
-		 *
-		 * @param base_feats its dynamic type must be FactorGraphFeatures
-		 * @return pointer to FactorGraphFeatures
-		 */
-		static std::shared_ptr<FactorGraphFeatures> obtain_from_generic(const std::shared_ptr<Features>& base_feats);
-
 	protected:
 		/** array of FactorGraph */
 		std::vector<std::shared_ptr<FactorGraph>> m_samples;

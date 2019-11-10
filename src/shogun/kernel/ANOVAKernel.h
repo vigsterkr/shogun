@@ -105,11 +105,6 @@ public:
 	 */
 	float64_t compute_rec2(int32_t idx_a, int32_t idx_b);
 
-	/** Casts the given kernel to CANOVAKernel.
-	 * @param kernel Kernel to cast. Must be CANOVAKernel. Might be NULL
-	 * @return casted CANOVAKernel object, NULL if input was NULL
-	 */
-	static std::shared_ptr<ANOVAKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 protected:
 
 	/**

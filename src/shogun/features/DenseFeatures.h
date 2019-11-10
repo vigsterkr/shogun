@@ -480,14 +480,6 @@ public:
 	 */
 	std::shared_ptr<Features> create_merged_copy(std::shared_ptr<Features> other) const;
 
-/** helper method used to specialize a base class instance
- *
- */
-#ifndef SWIG
-	[[deprecated("use .as template function")]]
-#endif
-	static std::shared_ptr<DenseFeatures> obtain_from_generic(std::shared_ptr<Features> base_features);
-
 #ifndef SWIG // SWIG should skip this part
 	virtual std::shared_ptr<Features> shallow_subset_copy();
 #endif

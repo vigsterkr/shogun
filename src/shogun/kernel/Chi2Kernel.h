@@ -65,12 +65,6 @@ class Chi2Kernel: public DotKernel
 		/** @return width of the kernel */
 		virtual float64_t get_width();
 
-		/** @param kernel is casted to CChi2Kernel, error if not possible
-		 * is SG_REF'ed
-		 * @return casted GaussianKernel object
-		 */
-		static std::shared_ptr<Chi2Kernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
-
 		/** return what type of kernel we are
 		 *
 		 * @return kernel type CHI2

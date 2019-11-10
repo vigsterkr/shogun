@@ -94,13 +94,6 @@ public:
 	 */
 	virtual const char* get_name() const { return "ExactInferenceMethod"; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted ExactInferenceMethod object
-	 */
-	static std::shared_ptr<ExactInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
-
 	/** get negative log marginal likelihood
 	 *
 	 * @return the negative log of the marginal likelihood function:

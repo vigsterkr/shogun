@@ -90,18 +90,6 @@ void EPInferenceMethod::init()
 	m_fail_on_non_convergence=true;
 }
 
-std::shared_ptr<EPInferenceMethod> EPInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_EP)
-		error("Provided inference is not of type EPInferenceMethod!");
-
-	return inference->as<EPInferenceMethod>();
-}
-
 float64_t EPInferenceMethod::get_negative_log_marginal_likelihood()
 {
 	if (parameter_hash_changed())

@@ -59,17 +59,6 @@ GaussianLikelihood::~GaussianLikelihood()
 {
 }
 
-std::shared_ptr<GaussianLikelihood> GaussianLikelihood::obtain_from_generic(
-		const std::shared_ptr<LikelihoodModel>& lik)
-{
-	ASSERT(lik!=NULL);
-
-	if (lik->get_model_type()!=LT_GAUSSIAN)
-		error("Provided likelihood is not of type GaussianLikelihood!");
-
-	return lik->as<GaussianLikelihood>();
-}
-
 SGVector<float64_t> GaussianLikelihood::get_predictive_means(
 		SGVector<float64_t> mu, SGVector<float64_t> s2, std::shared_ptr<const Labels> lab) const
 {

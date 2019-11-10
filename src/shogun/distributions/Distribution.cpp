@@ -17,7 +17,7 @@ Distribution::Distribution()
 
 Distribution::~Distribution()
 {
-	
+
 }
 
 float64_t Distribution::get_log_likelihood_sample()
@@ -75,16 +75,4 @@ float64_t Distribution::update_params_em(const SGVector<float64_t> alpha_k)
 	io::warn("Not implemented in this class. This class cannot be used for Mixture models.");
 	not_implemented(SOURCE_LOCATION);
 	return -1;
-}
-
-std::shared_ptr<Distribution> Distribution::obtain_from_generic(const std::shared_ptr<SGObject>& object)
-{
-	if (!object)
-		return NULL;
-
-	auto casted=std::dynamic_pointer_cast<Distribution>(object);
-	if (!casted)
-		return NULL;
-
-	return casted;
 }

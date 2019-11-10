@@ -408,16 +408,6 @@ SGVector<float64_t> SingleFITCLaplaceInferenceMethod::compute_mvmK(SGVector<floa
 	return res;
 }
 
-std::shared_ptr<SingleFITCLaplaceInferenceMethod> SingleFITCLaplaceInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	require(inference!=NULL, "Inference should be not NULL");
-
-	if (inference->get_inference_type()!=INF_FITC_LAPLACE_SINGLE)
-		error("Provided inference is not of type SingleFITCLaplaceInferenceMethod!");
-	return inference->as<SingleFITCLaplaceInferenceMethod>();
-}
-
 SGMatrix<float64_t> SingleFITCLaplaceInferenceMethod::get_chol_inv(SGMatrix<float64_t> mtx)
 {
 	//time complexity O(m^3), where mtx is a m-by-m matrix

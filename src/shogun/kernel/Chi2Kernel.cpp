@@ -85,19 +85,6 @@ float64_t Chi2Kernel::get_width()
 	return width;
 }
 
-std::shared_ptr<Chi2Kernel> Chi2Kernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
-{
-	if (kernel->get_kernel_type()!=K_CHI2)
-	{
-		error("Provided kernel is "
-				"not of type CChi2Kernel!");
-	}
-
-	/* since an additional reference is returned */
-
-	return std::static_pointer_cast<Chi2Kernel>(kernel);
-}
-
 void Chi2Kernel::set_width(int32_t w)
 {
 	require(w>0, "Parameter width should be > 0");

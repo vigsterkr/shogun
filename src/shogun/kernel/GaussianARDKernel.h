@@ -1,7 +1,7 @@
 /*
  * This software is distributed under BSD 3-clause license (see LICENSE file).
  *
- * Authors: Wu Lin, Jacob Walker, Heiko Strathmann, Roman Votyakov, Yuyu Zhang, 
+ * Authors: Wu Lin, Jacob Walker, Heiko Strathmann, Roman Votyakov, Yuyu Zhang,
  *          Sergey Lisitsyn, Soumyajit De, Pan Deng
  */
 
@@ -105,12 +105,6 @@ public:
 	 */
 	GaussianARDKernel(const std::shared_ptr<DotFeatures>& l, const std::shared_ptr<DotFeatures>& r,
 		int32_t size=10);
-
-	/** @param kernel is casted to GaussianARDKernel, error if not possible
-	 * is SG_REF'ed
-	 * @return casted GaussianARDKernel object
-	 */
-	static std::shared_ptr<GaussianARDKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
 
 	/** initialize kernel
 	 *

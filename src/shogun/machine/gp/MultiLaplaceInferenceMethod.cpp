@@ -174,19 +174,6 @@ SGVector<float64_t> MultiLaplaceInferenceMethod::get_derivative_wrt_likelihood_m
 	return SGVector<float64_t> ();
 }
 
-std::shared_ptr<MultiLaplaceInferenceMethod> MultiLaplaceInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_LAPLACE_MULTIPLE)
-		error("Provided inference is not of type MultiLaplaceInferenceMethod!");
-
-	return inference->as<MultiLaplaceInferenceMethod>();
-}
-
-
 void MultiLaplaceInferenceMethod::update_approx_cov()
 {
 	//Sigma=K-K*(E-E*R(M*M')^{-1}*R'*E)*K

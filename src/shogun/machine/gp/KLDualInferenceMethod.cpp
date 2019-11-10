@@ -221,21 +221,6 @@ KLDualInferenceMethod::KLDualInferenceMethod(std::shared_ptr<Kernel> kern,
 	init();
 }
 
-std::shared_ptr<KLDualInferenceMethod> KLDualInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_DUAL)
-	{
-		error("Provided inference is not of type CKLDualInferenceMethod!");
-	}
-
-
-	return inference->as<KLDualInferenceMethod>();
-}
-
 SGVector<float64_t> KLDualInferenceMethod::get_alpha()
 {
 	if (parameter_hash_changed())
@@ -271,7 +256,7 @@ std::shared_ptr<DualVariationalGaussianLikelihood> KLDualInferenceMethod::get_du
 void KLDualInferenceMethod::register_minimizer(std::shared_ptr<Minimizer> minimizer)
 {
 	auto opt=minimizer->as<KLDualInferenceMethodMinimizer>();
-	require(opt,"The minimizer must be an instance of CKLDualInferenceMethodMinimizer"); 
+	require(opt,"The minimizer must be an instance of CKLDualInferenceMethodMinimizer");
 	Inference::register_minimizer(minimizer);
 }
 
@@ -548,7 +533,7 @@ void KLDualInferenceMethod::update_alpha()
 float64_t KLDualInferenceMethod::optimization()
 {
 	auto minimizer=m_minimizer->as<KLDualInferenceMethodMinimizer>();
-	require(minimizer,"The minimizer must be an instance of KLDualInferenceMethodMinimizer"); 
+	require(minimizer,"The minimizer must be an instance of KLDualInferenceMethodMinimizer");
 	auto cost_fun=std::make_shared<KLDualInferenceMethodCostFunction>();
 	cost_fun->set_target(shared_from_this()->as<KLDualInferenceMethod>());
 	bool cleanup=false;

@@ -71,18 +71,6 @@ void KLDiagonalInferenceMethod::init()
 		"The K^{-1} matrix");
 }
 
-std::shared_ptr<KLDiagonalInferenceMethod> KLDiagonalInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_DIAGONAL)
-		error("Provided inference is not of type KLDiagonalInferenceMethod!");
-
-	return inference->as<KLDiagonalInferenceMethod>();
-}
-
 SGVector<float64_t> KLDiagonalInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
@@ -145,7 +133,7 @@ void KLDiagonalInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<flo
 
 	auto lik=get_variational_likelihood();
 	//[a,df,dV] = a_related2(mu,s2,y,lik);
-	auto params = lik->get_params();	
+	auto params = lik->get_params();
 	require(params.count("sigma2"), "Could not find sigma2 parameter in {}", lik->get_name());
 	auto s2_param=params.find("sigma2");
 	SGVector<float64_t> dv=lik->get_variational_first_derivative(*s2_param);

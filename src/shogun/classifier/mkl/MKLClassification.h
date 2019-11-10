@@ -38,16 +38,6 @@ class MKLClassification : public MKL
 		 */
 		virtual float64_t compute_sum_alpha();
 
-		/**
-		 * Helper method used to specialize a base class instance.
-		 * @param machine the machine we want to cast
-		 * @return a MKLClassification machine (already SGREF'ed)
-		 */
-#ifndef SWIG
-		[[deprecated("use .as template function")]]
-#endif
-		static std::shared_ptr<MKLClassification> obtain_from_generic(const std::shared_ptr<Machine>& machine);
-
 		/** @return object name */
 		virtual const char* get_name() const { return "MKLClassification"; }
 

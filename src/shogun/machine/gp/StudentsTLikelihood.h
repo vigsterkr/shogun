@@ -113,13 +113,6 @@ public:
 		m_log_df = std::log(df - 1);
 	}
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param likelihood likelihood model
-	 * @return casted StudentsTLikelihood object
-	 */
-	static std::shared_ptr<StudentsTLikelihood> obtain_from_generic(const std::shared_ptr<LikelihoodModel>& likelihood);
-
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.

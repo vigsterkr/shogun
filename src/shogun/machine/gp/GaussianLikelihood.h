@@ -91,13 +91,6 @@ public:
 		m_log_sigma = std::log(sigma);
 	}
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param lik likelihood model
-	 * @return casted GaussianLikelihood object
-	 */
-	static std::shared_ptr<GaussianLikelihood> obtain_from_generic(const std::shared_ptr<LikelihoodModel>& lik);
-
 	/** returns mean of the predictive marginal \f$p(y_*|X,y,x_*)\f$.
 	 *
 	 * NOTE: if lab equals to NULL, then each \f$y_*\f$ equals to one.

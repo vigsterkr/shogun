@@ -48,7 +48,6 @@ class MulticlassLabels : public DenseLabels
 		 */
 		MulticlassLabels(SGVector<float64_t> src);
 
-
 		/** constructor
 		 *
 		 * @param loader File object via which to load data
@@ -145,13 +144,6 @@ class MulticlassLabels : public DenseLabels
 #ifndef SWIG // SWIG should skip this part
 		virtual std::shared_ptr<Labels> shallow_subset_copy();
 #endif
-		/**
-		 * Cast a generic label object to a multiclass one
-		 * @param labels generic Labels instance
-		 * @return the casted pointer (already SG_REF'ed)
-		 */
-		static std::shared_ptr<MulticlassLabels> obtain_from_generic(const std::shared_ptr<Labels>& labels);
-
 	private:
 		/** initialises and register parameters */
 		void init();
@@ -162,8 +154,6 @@ class MulticlassLabels : public DenseLabels
 		SGMatrix<float64_t> m_multiclass_confidences;
 };
 
-#ifndef SWIG
 std::shared_ptr<MulticlassLabels> multiclass_labels(const std::shared_ptr<Labels>& orig);
-#endif // SWIG
 }
 #endif

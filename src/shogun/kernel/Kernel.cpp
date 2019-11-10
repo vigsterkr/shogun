@@ -853,20 +853,6 @@ void Kernel::set_subkernel_weights(const SGVector<float64_t> weights)
 	combined_kernel_weight = weights.vector[0] ;
 }
 
-std::shared_ptr<Kernel> Kernel::obtain_from_generic(const std::shared_ptr<SGObject>& kernel)
-{
-	if (kernel)
-	{
-		auto casted=std::dynamic_pointer_cast<Kernel>(kernel);
-		require(casted, "Kernel::obtain_from_generic(): Error, provided object"
-				" of class \"{}\" is not a subclass of Kernel!",
-				kernel->get_name());
-		return casted;
-	}
-	else
-		return NULL;
-}
-
 bool Kernel::init_optimization_svm(const std::shared_ptr<SVM >& svm)
 {
 	int32_t num_suppvec=svm->get_num_support_vectors();

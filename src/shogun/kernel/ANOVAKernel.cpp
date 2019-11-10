@@ -172,17 +172,3 @@ float64_t ANOVAKernel::compute_recursive2(float64_t* avec, float64_t* bvec, int3
 
 	return result;
 }
-
-std::shared_ptr<ANOVAKernel> ANOVAKernel::obtain_from_generic(const std::shared_ptr<Kernel>& kernel)
-{
-	if (!kernel)
-		return NULL;
-
-	require(kernel->get_kernel_type()==K_ANOVA, "Provided kernel is "
-				"not of type CANOVAKernel, but type {}!",
-				kernel->get_kernel_type());
-
-	/* since an additional reference is returned */
-
-	return std::static_pointer_cast<ANOVAKernel>(kernel);
-}

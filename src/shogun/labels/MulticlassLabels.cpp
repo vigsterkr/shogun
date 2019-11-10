@@ -185,20 +185,6 @@ std::shared_ptr<Labels> MulticlassLabels::shallow_subset_copy()
 	return shallow_copy_labels;
 }
 
-std::shared_ptr<MulticlassLabels> MulticlassLabels::obtain_from_generic(const std::shared_ptr<Labels>& labels)
-{
-	if (labels == NULL)
-		return NULL;
-
-	if (labels->get_label_type() != LT_MULTICLASS)
-	{
-		error("The Labels passed cannot be casted to MulticlassLabels!");
-		return NULL;
-	}
-
-	return std::dynamic_pointer_cast<MulticlassLabels>(labels);
-}
-
 std::shared_ptr<Labels> MulticlassLabels::duplicate() const
 {
 	return std::make_shared<MulticlassLabels>(*this);

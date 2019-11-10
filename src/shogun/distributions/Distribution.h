@@ -189,16 +189,6 @@ class Distribution : public SGObject
 		 */
 		virtual float64_t update_params_em(const SGVector<float64_t> alpha_k);
 
-		/** obtain from generic
-		 *
-		 * @param object generic object
-		 * @return Distribution object
-		 */
-#ifndef SWIG
-		[[deprecated("use .as template function")]]
-#endif
-		static std::shared_ptr<Distribution> obtain_from_generic(const std::shared_ptr<SGObject>& object);
-
 	protected:
 		/** feature vectors */
 		std::shared_ptr<Features> features;

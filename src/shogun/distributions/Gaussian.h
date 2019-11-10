@@ -207,15 +207,6 @@ class Gaussian : public RandomMixin<Distribution>
 		 */
 		SGVector<float64_t> sample();
 
-		/** @param distribution is casted to Gaussian, NULL if not possible
-		 * Note that the object is SG_REF'ed
-		 * @return casted Gaussian object
-		 */
-#ifndef SWIG
-		[[deprecated("use .as template function")]]
-#endif
-		static std::shared_ptr<Gaussian> obtain_from_generic(const std::shared_ptr<Distribution>& distribution);
-
 		/** @return object name */
 		virtual const char* get_name() const { return "Gaussian"; }
 

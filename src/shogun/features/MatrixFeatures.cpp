@@ -162,14 +162,6 @@ template< class ST > void MatrixFeatures< ST >::cleanup()
 	m_num_features = 0;
 }
 
-template< class ST > std::shared_ptr<MatrixFeatures< ST >> MatrixFeatures< ST >::obtain_from_generic(std::shared_ptr<Features> base_features)
-{
-	require(base_features->get_feature_class() == C_MATRIX,
-			"base_features must be of dynamic type CMatrixFeatures");
-
-	return std::dynamic_pointer_cast<MatrixFeatures< ST >>(base_features);
-}
-
 template class MatrixFeatures<bool>;
 template class MatrixFeatures<char>;
 template class MatrixFeatures<int8_t>;

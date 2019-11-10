@@ -438,17 +438,3 @@ SGVector<float64_t> Gaussian::sample()
 	SG_TRACE("Leaving");
 	return samp;
 }
-
-std::shared_ptr<Gaussian> Gaussian::obtain_from_generic(const std::shared_ptr<Distribution>& distribution)
-{
-	if (!distribution)
-		return NULL;
-
-	auto casted=std::dynamic_pointer_cast<Gaussian>(distribution);
-	if (!casted)
-		return NULL;
-
-	/* since an additional reference is returned */
-
-	return casted;
-}

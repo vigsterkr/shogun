@@ -395,15 +395,6 @@ class CombinedKernel : public Kernel
 		/** precompute all sub-kernels */
 		bool precompute_subkernels();
 
-		/** Returns a  casted version of the given kernel. Throws an error
-		 * if parameter is not of class CombinedKernel. SG_REF's the returned
-		 * kernel
-		 *
-		 * @param kernel kernel to cast to CombinedKernel
-		 * @return casted version of kernel.
-		 */
-		static std::shared_ptr<CombinedKernel> obtain_from_generic(const std::shared_ptr<Kernel>& kernel);
-
 #ifndef SWIG
 		/** return derivative with respect to specified parameter
 		 *

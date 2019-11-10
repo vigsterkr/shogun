@@ -36,20 +36,6 @@ public:
 	/** destructor */
 	~Sequence() { }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param base_data its dynamic type must be CSequence
-	 */
-	static std::shared_ptr<Sequence> obtain_from_generic(std::shared_ptr<StructuredData> base_data)
-	{
-		if ( base_data->get_structured_data_type() == SDT_SEQUENCE )
-			return std::static_pointer_cast<Sequence>(base_data);
-		else
-			error("base_data must be of dynamic type CSequence");
-
-		return NULL;
-	}
-
 	/** @return name of SGSerializable */
 	virtual const char* get_name() const { return "Sequence"; }
 

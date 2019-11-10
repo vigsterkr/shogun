@@ -60,16 +60,3 @@ void FactorGraphFeatures::init()
 {
 	SG_ADD(&m_samples, "samples", "Array of examples");
 }
-
-std::shared_ptr<FactorGraphFeatures> FactorGraphFeatures::obtain_from_generic(const std::shared_ptr<Features>& base_feats)
-{
-	require(base_feats != NULL, "FactorGraphFeatures::obtain_from_generic(): base_feats is NULL!");
-
-	if (base_feats->get_feature_class() == C_FACTOR_GRAPH)
-		return std::dynamic_pointer_cast<FactorGraphFeatures>(base_feats);
-	else
-		error("base_labels must be of dynamic type FactorGraph!");
-
-	return NULL;
-}
-

@@ -73,18 +73,6 @@ void KLCholeskyInferenceMethod::init()
 		" The K^{-1}C matrix");
 }
 
-std::shared_ptr<KLCholeskyInferenceMethod> KLCholeskyInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_KL_CHOLESKY)
-		error("Provided inference is not of type KLCholeskyInferenceMethod!");
-
-	return inference->as<KLCholeskyInferenceMethod>();
-}
-
 SGVector<float64_t> KLCholeskyInferenceMethod::get_alpha()
 {
 	/** Note that m_alpha contains not only the alpha vector defined in the reference
@@ -157,7 +145,7 @@ void KLCholeskyInferenceMethod::get_gradient_of_nlml_wrt_parameters(SGVector<flo
 	auto params = lik->get_params();
 	require(params.count("sigma2"), "Could not find sigma2 parameter in {}", lik->get_name());
 	auto s2_param=params.find("sigma2");
-	SGVector<float64_t> dv=lik->get_variational_first_derivative(*s2_param);	
+	SGVector<float64_t> dv=lik->get_variational_first_derivative(*s2_param);
 	Map<VectorXd> eigen_dv(dv.vector, dv.vlen);
 	//FIXME
 	require(params.count("mu"), "Could not find mu parameter in {}", lik->get_name());

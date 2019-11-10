@@ -49,22 +49,22 @@ class KLDualInferenceMethodMinimizer: public LBFGSMinimizer
 {
 public:
 	KLDualInferenceMethodMinimizer(): LBFGSMinimizer() { init(); }
-  
+
 	/** Constructor
 	 * @param fun a cost function
 	 */
 	KLDualInferenceMethodMinimizer(std::shared_ptr<FirstOrderCostFunction >fun): LBFGSMinimizer(fun) { init(); }
-  
+
 	virtual ~KLDualInferenceMethodMinimizer() {}
 
-	/** Do minimization and get the optimal value 
-	 *  
+	/** Do minimization and get the optimal value
+	 *
 	 * @return optimal value
 	 */
 	virtual float64_t minimize();
 
 	virtual const char* get_name() const { return "KLDualInferenceMethodMinimizer"; }
-  
+
 protected:
 	/** Init before minimization */
 	virtual void init_minimization();
@@ -87,7 +87,7 @@ private:
 	/** Init */
 	void init() { }
 };
- 
+
 /** @brief The dual KL approximation inference method class.
  *
  * This inference process is described in the reference paper
@@ -136,13 +136,6 @@ public:
 	 * @return inference type KL_DUAL
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_KL_DUAL; }
-
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted CKLDualInferenceMethod object
-	 */
-	static std::shared_ptr<KLDualInferenceMethod > obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/** get alpha vector
 	 *

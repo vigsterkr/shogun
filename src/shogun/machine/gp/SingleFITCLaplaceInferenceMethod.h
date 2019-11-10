@@ -58,7 +58,7 @@ namespace shogun
 class SingleFITCLaplaceInferenceMethod: public SingleFITCInference
 {
 friend class CFITCPsiLine;
-friend class SingleFITCLaplaceNewtonOptimizer; 
+friend class SingleFITCLaplaceNewtonOptimizer;
 friend class SingleFITCLaplaceInferenceMethodCostFunction;
 public:
 	/** default constructor */
@@ -91,13 +91,6 @@ public:
 	 * @return inference type FITC
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_FITC_LAPLACE_SINGLE; }
-
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted SingleFITCLaplaceInferenceMethod object
-	 */
-	static std::shared_ptr<SingleFITCLaplaceInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
 
 	/**
 	 * @return whether combination of Laplace approximation inference method and
@@ -407,9 +400,9 @@ public:
 	 * @param is_unref do we SG_UNREF the method
 	 */
 	void unset_target(bool is_unref);
-	
-	/** Do minimization and get the optimal value 
-	 * 
+
+	/** Do minimization and get the optimal value
+	 *
 	 * @return optimal value
 	 */
 	virtual float64_t minimize();
@@ -445,7 +438,7 @@ private:
 
 	/** amount of tolerance for Newton's iterations */
 	float64_t m_tolerance;
-  
+
 	/** max Newton's iterations */
 	index_t m_iter;
 

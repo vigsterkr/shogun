@@ -100,13 +100,6 @@ public:
 	 */
 	virtual EInferenceType get_inference_type() const { return INF_KL_COVARIANCE; }
 
-	/** helper method used to specialize a base class instance
-	 *
-	 * @param inference inference method
-	 * @return casted KLCovarianceInferenceMethod object
-	 */
-	static std::shared_ptr<KLCovarianceInferenceMethod> obtain_from_generic(const std::shared_ptr<Inference>& inference);
-
 	/** get alpha vector
 	 *
 	 * @return vector to compute posterior mean of Gaussian Process:

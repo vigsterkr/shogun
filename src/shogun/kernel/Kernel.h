@@ -868,13 +868,6 @@ class Kernel : public SGObject
 			return get_parameter_gradient(param,index).get_diagonal_vector();
 		}
 #endif
-
-		/** Obtains a kernel from a generic SGObject with error checking. Note
-		 * that if passing NULL, result will be NULL
-		 * @param kernel Object to cast to Kernel, is *not* SG_REFed
-		 * @return object casted to Kernel, NULL if not possible
-		 */
-		static std::shared_ptr<Kernel> obtain_from_generic(const std::shared_ptr<SGObject>& kernel);
 	protected:
 		/** set property
 		 *

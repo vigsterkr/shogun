@@ -290,18 +290,6 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_diagonal_vector()
 	return SGVector<float64_t>(m_sW);
 }
 
-std::shared_ptr<SingleLaplaceInferenceMethod> SingleLaplaceInferenceMethod::obtain_from_generic(
-		const std::shared_ptr<Inference>& inference)
-{
-	if (inference==NULL)
-		return NULL;
-
-	if (inference->get_inference_type()!=INF_LAPLACE_SINGLE)
-		error("Provided inference is not of type SingleLaplaceInferenceMethod");
-
-	return inference->as<SingleLaplaceInferenceMethod>();
-}
-
 SingleLaplaceInferenceMethod::~SingleLaplaceInferenceMethod()
 {
 }
@@ -681,7 +669,7 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_kernel(
 	SGVector<float64_t> result;
 	auto visitor = std::make_unique<ShapeVisitor>();
 	param.second->get_value().visit(visitor.get());
-	int64_t len= visitor->get_size();	
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
@@ -725,7 +713,7 @@ SGVector<float64_t> SingleLaplaceInferenceMethod::get_derivative_wrt_mean(
 	SGVector<float64_t> result;
 	auto visitor = std::make_unique<ShapeVisitor>();
 	param.second->get_value().visit(visitor.get());
-	int64_t len= visitor->get_size();	
+	int64_t len= visitor->get_size();
 	result=SGVector<float64_t>(len);
 
 	for (index_t i=0; i<result.vlen; i++)
